@@ -58,24 +58,101 @@
     line-height:1.5;
   }
 
-  .panel{
+  .filter-sort-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:28px 0 10px;
+  }
+  .search{
+    flex:1;
+    min-width:0;
     background:var(--walnut-light);
     border:1px solid rgba(201,162,75,0.18);
-    border-radius:14px;
-    padding:18px 20px;
-    margin:28px 0 34px;
-    position:sticky;
-    top:12px;
-    z-index:5;
-    backdrop-filter:blur(6px);
+    border-radius:12px;
+    color:var(--parchment);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:10px 14px;
+    outline:none;
   }
-  .filter-row{
+  .search:focus{border-color:var(--brass);}
+  .search::placeholder{color:var(--parchment-dim);}
+
+  .icon-btn{
+    position:relative;
+    flex:none;
+    width:40px;
+    height:40px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--walnut-light);
+    border:1px solid rgba(201,162,75,0.18);
+    border-radius:12px;
+    color:var(--parchment-dim);
+    cursor:pointer;
+    transition:border-color 0.15s ease, color 0.15s ease;
+  }
+  .icon-btn::before{
+    content:"";
+    position:absolute;
+    inset:-4px;
+  }
+  .icon-btn:hover{border-color:var(--brass);color:var(--parchment);}
+  .icon-btn.active{border-color:var(--brass);color:var(--brass);}
+  .filter-badge{
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--brass);
+    color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 0 2px var(--walnut);
+  }
+  .filter-badge[hidden]{display:none;}
+
+  .chips-row{
     display:flex;
     flex-wrap:wrap;
-    gap:8px 26px;
-    align-items:center;
+    gap:8px;
+    margin:0 0 16px;
   }
-  .filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .chips-row[hidden]{display:none;}
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(201,162,75,0.16);
+    border:1px solid rgba(201,162,75,0.4);
+    color:var(--brass);
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    padding:5px 8px 5px 12px;
+    border-radius:999px;
+  }
+  .chip button{
+    background:none;
+    border:none;
+    color:inherit;
+    font-size:13px;
+    line-height:1;
+    padding:2px;
+    cursor:pointer;
+    opacity:0.75;
+  }
+  .chip button:hover{opacity:1;}
+
   .filter-label{
     font-family:'IBM Plex Mono',monospace;
     font-size:11px;
@@ -103,20 +180,171 @@
     color:var(--ink);
     font-weight:600;
   }
-  .search{
-    margin-left:auto;
-    background:var(--walnut);
-    border:1px solid rgba(240,230,210,0.22);
-    border-radius:8px;
-    color:var(--parchment);
-    font-family:'Inter',sans-serif;
-    font-size:13px;
-    padding:8px 12px;
-    width:180px;
-    outline:none;
+
+  .sheet-scrim{
+    position:fixed;
+    inset:0;
+    background:rgba(8,5,2,0.6);
+    z-index:20;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.28s ease;
   }
-  .search:focus{border-color:var(--brass);}
-  .search::placeholder{color:var(--parchment-dim);}
+  .sheet-scrim.open{opacity:1;pointer-events:auto;}
+  .filter-sheet{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:21;
+    max-width:600px;
+    margin:0 auto;
+    max-height:78vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--walnut-light);
+    border:1px solid rgba(201,162,75,0.18);
+    border-bottom:none;
+    border-radius:22px 22px 0 0;
+    box-shadow:0 -12px 32px -8px rgba(0,0,0,0.6);
+    transform:translateY(100%);
+    transition:transform 0.32s cubic-bezier(.32,.72,0,1);
+  }
+  .filter-sheet.open{transform:translateY(0);}
+  .sheet-handle{
+    width:36px;
+    height:4px;
+    border-radius:2px;
+    background:rgba(240,230,210,0.22);
+    margin:12px auto 4px;
+    flex:none;
+  }
+  .sheet-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 20px 14px;
+    border-bottom:1px solid rgba(240,230,210,0.10);
+    flex:none;
+  }
+  .sheet-header h2{
+    font-family:'Fraunces',serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0;
+  }
+  .reset-link{
+    background:none;
+    border:none;
+    color:var(--brass);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+    padding:6px;
+  }
+  .reset-link:hover{color:var(--parchment);}
+  .sheet-body{
+    overflow-y:auto;
+    padding:18px 20px 8px;
+  }
+  .sheet-group{margin-bottom:26px;}
+  .sheet-group .filter-label{display:block;margin-bottom:10px;}
+  .sheet-group .segmented{display:flex;flex-wrap:wrap;gap:8px;}
+
+  .range-wrap{
+    position:relative;
+    height:28px;
+    margin:6px 2px 2px;
+  }
+  .range-track{
+    position:absolute;
+    top:50%;
+    left:0;
+    right:0;
+    height:4px;
+    border-radius:2px;
+    background:rgba(240,230,210,0.16);
+    transform:translateY(-50%);
+  }
+  .range-fill{
+    position:absolute;
+    top:50%;
+    height:4px;
+    border-radius:2px;
+    background:var(--brass);
+    transform:translateY(-50%);
+  }
+  .range-input{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:28px;
+    margin:0;
+    background:transparent;
+    -webkit-appearance:none;
+    appearance:none;
+    pointer-events:none;
+  }
+  .range-input::-webkit-slider-runnable-track{background:transparent;height:28px;}
+  .range-input::-moz-range-track{background:transparent;height:28px;}
+  .range-input::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    pointer-events:auto;
+    width:20px;
+    height:20px;
+    margin-top:4px;
+    border-radius:50%;
+    background:var(--brass);
+    border:2px solid var(--walnut-light);
+    box-shadow:0 1px 4px rgba(0,0,0,0.5);
+    cursor:pointer;
+  }
+  .range-input::-moz-range-thumb{
+    pointer-events:auto;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--brass);
+    border:2px solid var(--walnut-light);
+    box-shadow:0 1px 4px rgba(0,0,0,0.5);
+    cursor:pointer;
+  }
+  .number-cue-row{
+    display:flex;
+    justify-content:space-between;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    color:var(--parchment-dim);
+    opacity:0.55;
+    padding:0 2px;
+  }
+  .number-cue-row span.active{color:var(--brass);font-weight:600;opacity:1;}
+
+  .sheet-footer{
+    flex:none;
+    padding:14px 20px calc(14px + env(safe-area-inset-bottom));
+    border-top:1px solid rgba(240,230,210,0.10);
+  }
+  .apply-btn{
+    width:100%;
+    background:var(--brass);
+    color:var(--ink);
+    border:none;
+    border-radius:12px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    padding:13px;
+    cursor:pointer;
+  }
+  .apply-btn:hover{filter:brightness(1.06);}
+
+  @media (prefers-reduced-motion:reduce){
+    .sheet-scrim, .filter-sheet{transition:none;}
+  }
 
   .shelf-count{
     font-family:'IBM Plex Mono',monospace;
@@ -441,10 +669,6 @@
     line-height:1.6;
   }
 
-  @media (max-width:520px){
-    .search{width:100%;margin-left:0;order:99;}
-    .panel{position:static;}
-  }
 </style>
 </head>
 <body>
@@ -455,39 +679,27 @@
     <p class="sub">Browse the game, judge by its cover.</p>
   </header>
 
-  <div class="panel">
-    <div class="filter-row">
-      <div class="filter-group">
-        <span class="filter-label">Players</span>
-        <button class="pill active" data-type="players" data-value="any">Any</button>
-        <button class="pill" data-type="players" data-value="1">1</button>
-        <button class="pill" data-type="players" data-value="2">2</button>
-        <button class="pill" data-type="players" data-value="3">3</button>
-        <button class="pill" data-type="players" data-value="4">4</button>
-        <button class="pill" data-type="players" data-value="5">5</button>
-        <button class="pill" data-type="players" data-value="6">6</button>
-        <button class="pill" data-type="players" data-value="7">7</button>
-        <button class="pill" data-type="players" data-value="8">8</button>
-        <button class="pill" data-type="players" data-value="9">9</button>
-        <button class="pill" data-type="players" data-value="10">10+</button>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Time</span>
-        <button class="pill active" data-type="time" data-value="any">Any</button>
-        <button class="pill" data-type="time" data-value="quick">Quick</button>
-        <button class="pill" data-type="time" data-value="medium">Medium</button>
-        <button class="pill" data-type="time" data-value="long">Long</button>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Weight</span>
-        <button class="pill active" data-type="weight" data-value="any">Any</button>
-        <button class="pill" data-type="weight" data-value="light">Light</button>
-        <button class="pill" data-type="weight" data-value="medium">Medium</button>
-        <button class="pill" data-type="weight" data-value="heavy">Heavy</button>
-      </div>
-      <input class="search" id="search" type="text" placeholder="Search titles…">
-    </div>
+  <div class="filter-sort-bar">
+    <input class="search" id="search" type="text" placeholder="Search titles…">
+    <button class="icon-btn" id="filterBtn" aria-label="Open filters" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterSheet">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="2.5" x2="15" y2="2.5" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="9.5" cy="2.5" r="2.2" fill="var(--walnut-light)" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="0" y1="7.5" x2="15" y2="7.5" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="4.5" cy="7.5" r="2.2" fill="var(--walnut-light)" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="0" y1="12.5" x2="15" y2="12.5" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="11" cy="12.5" r="2.2" fill="var(--walnut-light)" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span class="filter-badge" id="filterBadge" hidden>0</span>
+    </button>
+    <button class="icon-btn" id="sortBtn" aria-label="Sort ascending" aria-pressed="false">
+      <svg id="sortIcon" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="transition:transform 0.2s ease;">
+        <path d="M7.5 12.5V2.5M7.5 2.5L3 7M7.5 2.5L12 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </div>
+
+  <div class="chips-row" id="chipsRow" hidden></div>
 
   <p class="shelf-count" id="shelf-count">Loading the shelf…</p>
   <div class="shelf" id="shelf">
@@ -518,6 +730,50 @@
   <div class="card" id="card">
     <button class="close-btn" id="close-btn">✕</button>
     <div id="card-body"></div>
+  </div>
+</div>
+
+<div class="sheet-scrim" id="sheetScrim"></div>
+<div class="filter-sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <div class="sheet-header">
+    <h2 id="sheetTitle">Filters</h2>
+    <button class="reset-link" id="resetLink" type="button">Reset</button>
+  </div>
+  <div class="sheet-body">
+    <div class="sheet-group">
+      <span class="filter-label" id="playersGroupLabel">Players — Any</span>
+      <div class="range-wrap">
+        <div class="range-track"></div>
+        <div class="range-fill" id="rangeFill"></div>
+        <input type="range" min="1" max="11" step="1" value="1" id="rangeMin" class="range-input" aria-label="Minimum players">
+        <input type="range" min="1" max="11" step="1" value="11" id="rangeMax" class="range-input" aria-label="Maximum players">
+      </div>
+      <div class="number-cue-row" id="numberCueRow">
+        <span data-n="1">1</span><span data-n="2">2</span><span data-n="3">3</span><span data-n="4">4</span><span data-n="5">5</span><span data-n="6">6</span><span data-n="7">7</span><span data-n="8">8</span><span data-n="9">9</span><span data-n="10">10</span><span data-n="11">11+</span>
+      </div>
+    </div>
+    <div class="sheet-group">
+      <span class="filter-label">Time</span>
+      <div class="segmented" data-type="time" role="group" aria-label="Time">
+        <button class="pill active" data-value="any" aria-pressed="true">Any</button>
+        <button class="pill" data-value="quick" aria-pressed="false">Quick</button>
+        <button class="pill" data-value="medium" aria-pressed="false">Medium</button>
+        <button class="pill" data-value="long" aria-pressed="false">Long</button>
+      </div>
+    </div>
+    <div class="sheet-group">
+      <span class="filter-label">Weight</span>
+      <div class="segmented" data-type="weight" role="group" aria-label="Weight">
+        <button class="pill active" data-value="any" aria-pressed="true">Any</button>
+        <button class="pill" data-value="light" aria-pressed="false">Light</button>
+        <button class="pill" data-value="medium" aria-pressed="false">Medium</button>
+        <button class="pill" data-value="heavy" aria-pressed="false">Heavy</button>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-footer">
+    <button class="apply-btn" id="applyBtn" type="button">Show 195 games</button>
   </div>
 </div>
 
@@ -5216,19 +5472,50 @@ const games = [
     "tag": "Kids · dexterity"
   }
 ];
-const state = { players:"any", time:"any", weight:"any", search:"" };
+const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, time:"any", weight:"any" };
+const state = {
+  filters: { ...DEFAULT_FILTERS },
+  search: "",
+  sort: "off", // 'off' (ascending, default) | 'desc'
+};
+let draftFilters = { ...DEFAULT_FILTERS };
 
+function isFilterActive(filters){
+  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any";
+}
+function activeGroupCount(filters){
+  let n = 0;
+  if(filters.minPlayers !== 1 || filters.maxPlayers !== 11) n++;
+  if(filters.time !== "any") n++;
+  if(filters.weight !== "any") n++;
+  return n;
+}
+function playersLabel(filters){
+  const { minPlayers:min, maxPlayers:max } = filters;
+  if(min===1 && max===11) return "Any";
+  if(max===11) return `${min}+`;
+  if(min===max) return `${min}`;
+  return `${min}–${max}`;
+}
 function timeBucket(t){
   const avg = (t[0]+t[1])/2;
   if(avg < 30) return "quick";
   if(avg <= 60) return "medium";
   return "long";
 }
-function playersMatch(g, val){
-  if(val==="any") return true;
-  if(val==="10") return g.players[1] >= 10;
-  const n = parseInt(val,10);
-  return n >= g.players[0] && n <= g.players[1];
+function playersMatch(g, filters){
+  return filters.maxPlayers === 11
+    ? g.players[1] >= filters.minPlayers
+    : g.players[0] <= filters.maxPlayers && g.players[1] >= filters.minPlayers;
+}
+function applyFilters(list, filters, search){
+  return list.filter(g=>{
+    if(!playersMatch(g, filters)) return false;
+    if(filters.time!=="any" && timeBucket(g.time)!==filters.time) return false;
+    if(filters.weight!=="any" && g.weight!==filters.weight) return false;
+    if(search && !g.title.toLowerCase().includes(search)) return false;
+    return true;
+  });
 }
 function weightLabel(score){
   return `${score.toFixed(1)} / 5`;
@@ -5255,15 +5542,13 @@ function render(){
   const countEl = document.getElementById('shelf-count');
   shelf.innerHTML = "";
 
-  const filtered = games.filter(g=>{
-    if(!playersMatch(g, state.players)) return false;
-    if(state.time!=="any" && timeBucket(g.time)!==state.time) return false;
-    if(state.weight!=="any" && g.weight!==state.weight) return false;
-    if(state.search && !g.title.toLowerCase().includes(state.search)) return false;
-    return true;
-  });
+  let filtered = applyFilters(games, state.filters, state.search);
+  filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? b.bggRating - a.bggRating : a.bggRating - b.bggRating);
 
   countEl.textContent = `${filtered.length} of ${games.length} on the shelf`;
+
+  updateFilterButton();
+  renderChips();
 
   if(filtered.length===0){
     shelf.innerHTML = `<p class="empty-state">Nothing fits that combo. Try loosening a filter.</p>`;
@@ -5398,15 +5683,200 @@ document.getElementById('backdrop').addEventListener('click', (e)=>{
   if(e.target.id==='backdrop') e.currentTarget.classList.remove('open');
 });
 
-document.querySelectorAll('.pill').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    const type = btn.dataset.type;
-    document.querySelectorAll(`.pill[data-type="${type}"]`).forEach(b=>b.classList.remove('active'));
+// ---- Filter/sort bar: badge + chips ----
+
+function updateFilterButton(){
+  const btn = document.getElementById('filterBtn');
+  const badge = document.getElementById('filterBadge');
+  const count = activeGroupCount(state.filters);
+  const active = count > 0;
+  btn.classList.toggle('active', active);
+  if(active){
+    badge.hidden = false;
+    badge.textContent = String(count);
+  } else {
+    badge.hidden = true;
+  }
+}
+
+function renderChips(){
+  const row = document.getElementById('chipsRow');
+  const chips = [];
+  if(state.filters.minPlayers !== 1 || state.filters.maxPlayers !== 11){
+    chips.push({ key:'players', label:`${playersLabel(state.filters)} players` });
+  }
+  if(state.filters.time !== 'any'){
+    const labels = { quick:'Quick', medium:'Medium', long:'Long' };
+    chips.push({ key:'time', label: labels[state.filters.time] });
+  }
+  if(state.filters.weight !== 'any'){
+    const labels = { light:'Light', medium:'Medium', heavy:'Heavy' };
+    chips.push({ key:'weight', label: labels[state.filters.weight] });
+  }
+  if(chips.length===0){
+    row.hidden = true;
+    row.innerHTML = '';
+    return;
+  }
+  row.hidden = false;
+  row.innerHTML = chips.map(c=>`
+    <span class="chip" data-key="${c.key}">
+      ${c.label}
+      <button type="button" aria-label="Remove ${c.label} filter">✕</button>
+    </span>
+  `).join('');
+  row.querySelectorAll('.chip button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const key = btn.closest('.chip').dataset.key;
+      if(key==='players'){ state.filters.minPlayers = 1; state.filters.maxPlayers = 11; }
+      else state.filters[key] = 'any';
+      render();
+    });
+  });
+}
+
+// ---- Filter sheet ----
+
+const filterSheet = document.getElementById('filterSheet');
+const sheetScrim = document.getElementById('sheetScrim');
+const rangeMin = document.getElementById('rangeMin');
+const rangeMax = document.getElementById('rangeMax');
+const rangeFill = document.getElementById('rangeFill');
+const numberCueRow = document.getElementById('numberCueRow');
+const playersGroupLabel = document.getElementById('playersGroupLabel');
+const applyBtn = document.getElementById('applyBtn');
+
+function syncSheetUI(){
+  rangeMin.value = draftFilters.minPlayers;
+  rangeMax.value = draftFilters.maxPlayers;
+  document.querySelectorAll('.segmented').forEach(group=>{
+    const type = group.dataset.type;
+    group.querySelectorAll('.pill').forEach(p=>{
+      const isActive = p.dataset.value === draftFilters[type];
+      p.classList.toggle('active', isActive);
+      p.setAttribute('aria-pressed', String(isActive));
+    });
+  });
+  updateLiveCount();
+}
+
+function updateLiveCount(){
+  const pct = v => ((v-1)/(11-1))*100;
+  rangeFill.style.left = pct(draftFilters.minPlayers)+'%';
+  rangeFill.style.width = (pct(draftFilters.maxPlayers)-pct(draftFilters.minPlayers))+'%';
+  numberCueRow.querySelectorAll('span').forEach(s=>{
+    const n = parseInt(s.dataset.n,10);
+    s.classList.toggle('active', n>=draftFilters.minPlayers && n<=draftFilters.maxPlayers);
+  });
+  playersGroupLabel.textContent = `Players — ${playersLabel(draftFilters)}`;
+  const liveCount = applyFilters(games, draftFilters, state.search).length;
+  applyBtn.textContent = `Show ${liveCount} game${liveCount===1?'':'s'}`;
+}
+
+function clampRange(){
+  let min = parseInt(rangeMin.value,10);
+  let max = parseInt(rangeMax.value,10);
+  if(min > max){
+    if(document.activeElement === rangeMin) max = min; else min = max;
+    rangeMin.value = min;
+    rangeMax.value = max;
+  }
+  draftFilters.minPlayers = min;
+  draftFilters.maxPlayers = max;
+  updateLiveCount();
+}
+rangeMin.addEventListener('input', clampRange);
+rangeMax.addEventListener('input', clampRange);
+
+document.querySelectorAll('.segmented').forEach(group=>{
+  group.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.pill');
+    if(!btn) return;
+    const type = group.dataset.type;
+    group.querySelectorAll('.pill').forEach(p=>{
+      p.classList.remove('active');
+      p.setAttribute('aria-pressed','false');
+    });
     btn.classList.add('active');
-    state[type] = btn.dataset.value;
-    render();
+    btn.setAttribute('aria-pressed','true');
+    draftFilters[type] = btn.dataset.value;
+    updateLiveCount();
   });
 });
+
+let sheetLastFocused = null;
+function getFocusable(){
+  return Array.from(filterSheet.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])'))
+    .filter(el => !el.disabled && el.offsetParent !== null);
+}
+function openSheet(){
+  draftFilters = { ...state.filters };
+  syncSheetUI();
+  sheetLastFocused = document.activeElement;
+  sheetScrim.classList.add('open');
+  filterSheet.classList.add('open');
+  document.getElementById('filterBtn').setAttribute('aria-expanded','true');
+  const focusable = getFocusable();
+  if(focusable.length) focusable[0].focus();
+}
+function closeSheet(){
+  sheetScrim.classList.remove('open');
+  filterSheet.classList.remove('open');
+  document.getElementById('filterBtn').setAttribute('aria-expanded','false');
+  if(sheetLastFocused) sheetLastFocused.focus();
+}
+function isSheetOpen(){
+  return filterSheet.classList.contains('open');
+}
+
+document.getElementById('filterBtn').addEventListener('click', openSheet);
+sheetScrim.addEventListener('click', closeSheet);
+document.getElementById('resetLink').addEventListener('click', ()=>{
+  draftFilters = { ...DEFAULT_FILTERS };
+  syncSheetUI();
+});
+applyBtn.addEventListener('click', ()=>{
+  state.filters = { ...draftFilters };
+  closeSheet();
+  render();
+});
+
+document.addEventListener('keydown', (e)=>{
+  if(e.key !== 'Escape' && e.key !== 'Tab') return;
+  if(!isSheetOpen()) return;
+  if(e.key === 'Escape'){
+    closeSheet();
+    return;
+  }
+  // focus trap
+  const focusable = getFocusable();
+  if(!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length-1];
+  if(e.shiftKey && document.activeElement === first){
+    e.preventDefault();
+    last.focus();
+  } else if(!e.shiftKey && document.activeElement === last){
+    e.preventDefault();
+    first.focus();
+  }
+});
+
+// ---- Sort button ----
+
+const sortBtn = document.getElementById('sortBtn');
+const sortIcon = document.getElementById('sortIcon');
+sortBtn.addEventListener('click', ()=>{
+  state.sort = state.sort === 'off' ? 'desc' : 'off';
+  const isDesc = state.sort === 'desc';
+  sortBtn.classList.toggle('active', isDesc);
+  sortBtn.setAttribute('aria-pressed', String(isDesc));
+  sortBtn.setAttribute('aria-label', isDesc ? 'Sort descending' : 'Sort ascending');
+  sortIcon.style.transform = isDesc ? 'rotate(180deg)' : 'rotate(0deg)';
+  render();
+});
+
+// ---- Search ----
 
 document.getElementById('search').addEventListener('input', (e)=>{
   state.search = e.target.value.toLowerCase();
