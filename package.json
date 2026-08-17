@@ -1,0 +1,23 @@
+{
+  "name": "boardgameshelf",
+  "version": "1.0.0",
+  "description": "Browse the game, judge by its cover - A digital shelf of board games",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noknaruephon/boardgameshelf.git"
+  },
+  "keywords": ["boardgames", "collection", "bgg"],
+  "author": "noknaruephon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noknaruephon/boardgameshelf/issues"
+  },
+  "homepage": "https://github.com/noknaruephon/boardgameshelf#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
