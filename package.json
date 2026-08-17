@@ -1,0 +1,23 @@
+{
+  "name": "boardgameshelf",
+  "version": "1.0.0",
+  "description": "Browse the game, judge by its cover.",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noknaruephon/boardgameshelf.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noknaruephon/boardgameshelf/issues"
+  },
+  "homepage": "https://github.com/noknaruephon/boardgameshelf#readme",
+  "dependencies": {
+    "@vercel/speed-insights": "^2.0.0"
+  }
+}
