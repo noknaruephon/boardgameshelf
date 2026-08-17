@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600" width="480" height="600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4A3323"/>
+      <stop offset="100%" stop-color="#3D2A1C"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="480" height="600" fill="url(#bg)"/>
+  <rect x="18" y="18" width="444" height="564" fill="none" stroke="#C9A24B" stroke-width="2"/>
+  <rect x="26" y="26" width="428" height="548" fill="none" stroke="#8C7239" stroke-width="1"/>
+
+  <text x="240" y="230" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="19" fill="#C9BBA0">マンション・オブ・ザ・ヴァンパイア</text>
+
+  <text x="240" y="300" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="600" fill="#F0E6D2">
+    <tspan x="240" dy="0">Mansion of</tspan>
+    <tspan x="240" dy="52">the Vampire</tspan>
+  </text>
+
+  <line x1="180" y1="392" x2="300" y2="392" stroke="#C9A24B" stroke-width="1.5"/>
+
+  <text x="240" y="424" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="13" letter-spacing="1" fill="#8C7239">COVER ART NOT AVAILABLE</text>
+</svg>
