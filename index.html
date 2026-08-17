@@ -5543,7 +5543,9 @@ function render(){
   shelf.innerHTML = "";
 
   let filtered = applyFilters(games, state.filters, state.search);
-  filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? b.bggRating - a.bggRating : a.bggRating - b.bggRating);
+  // Shelf reads top-to-bottom like a vertical axis: ascending grows upward
+  // (lowest rating at the bottom), descending grows downward (lowest at the top).
+  filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? a.bggRating - b.bggRating : b.bggRating - a.bggRating);
 
   countEl.textContent = `${filtered.length} of ${games.length} on the shelf`;
 
