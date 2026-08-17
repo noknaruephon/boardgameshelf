@@ -100,7 +100,7 @@
     position:absolute;
     inset:-4px;
   }
-  .icon-btn:hover{border-color:rgba(240,230,210,0.4);color:var(--parchment);}
+  .icon-btn:hover{border-color:var(--brass);color:var(--parchment);}
   .icon-btn.active{border-color:var(--brass);color:var(--brass);}
   .filter-badge{
     position:absolute;
@@ -223,7 +223,7 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:8px 56px 14px 20px;
+    padding:8px 20px 14px;
     border-bottom:1px solid rgba(240,230,210,0.10);
     flex:none;
   }
@@ -735,7 +735,6 @@
 
 <div class="sheet-scrim" id="sheetScrim"></div>
 <div class="filter-sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-  <button class="close-btn" id="sheetCloseBtn" aria-label="Close filters">✕</button>
   <div class="sheet-handle" aria-hidden="true"></div>
   <div class="sheet-header">
     <h2 id="sheetTitle">Filters</h2>
@@ -5834,7 +5833,6 @@ function isSheetOpen(){
 
 document.getElementById('filterBtn').addEventListener('click', openSheet);
 sheetScrim.addEventListener('click', closeSheet);
-document.getElementById('sheetCloseBtn').addEventListener('click', closeSheet);
 document.getElementById('resetLink').addEventListener('click', ()=>{
   draftFilters = { ...DEFAULT_FILTERS };
   syncSheetUI();
