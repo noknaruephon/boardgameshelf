@@ -1,0 +1,21 @@
+{
+  "name": "boardgameshelf",
+  "version": "1.0.0",
+  "description": "Browse board games, judge by their covers",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "boardgames",
+    "collection"
+  ],
+  "author": "noknaruephon",
+  "license": "ISC",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "vite": "^8.2.1"
+  }
+}
