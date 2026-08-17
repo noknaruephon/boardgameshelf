@@ -67,7 +67,15 @@
     position:sticky;
     top:0;
     z-index:15;
-    border-bottom:1px solid rgba(240,230,210,0.08);
+    transition:background-color 0.2s ease;
+  }
+  .filter-sort-bar.is-stuck{
+    background:rgba(43,29,20,0.82);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  .sticky-sentinel{
+    height:1px;
   }
   .search{
     flex:1;
@@ -684,7 +692,8 @@
     <p class="sub">Browse the game, judge by its cover.</p>
   </header>
 
-  <div class="filter-sort-bar">
+  <div class="sticky-sentinel" id="stickySentinel" aria-hidden="true"></div>
+  <div class="filter-sort-bar" id="filterSortBar">
     <input class="search" id="search" type="text" placeholder="Search titles…">
     <button class="icon-btn" id="filterBtn" aria-label="Open filters" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterSheet">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5891,6 +5900,17 @@ document.getElementById('search').addEventListener('input', (e)=>{
 });
 
 render();
+
+// ---- Sticky bar background (only while actually pinned) ----
+
+const stickySentinel = document.getElementById('stickySentinel');
+const filterSortBar = document.getElementById('filterSortBar');
+if('IntersectionObserver' in window){
+  new IntersectionObserver(
+    ([entry]) => filterSortBar.classList.toggle('is-stuck', !entry.isIntersecting),
+    { threshold: 0 }
+  ).observe(stickySentinel);
+}
 </script>
 </body>
 </html>
