@@ -367,9 +367,10 @@
   }
 
   .shelf{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:flex-end;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, 68px);
+    justify-content:center;
+    align-items:end;
     gap:6px;
     padding:0 0 18px;
     border-bottom:6px solid var(--brass);
