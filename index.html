@@ -81,20 +81,45 @@
   .sticky-sentinel{
     height:1px;
   }
-  .search{
+  .search-wrap{
+    position:relative;
     flex:1;
     min-width:0;
+  }
+  .search{
+    width:100%;
     background:var(--bgs-plate);
     border:1px solid rgba(var(--bgs-gold-rgb),0.18);
     border-radius:12px;
     color:var(--bgs-ivory);
     font-family:'Inter',sans-serif;
     font-size:16px;
-    padding:10px 14px;
+    padding:10px 34px 10px 14px;
     outline:none;
   }
   .search:focus{border-color:var(--bgs-gold);}
   .search::placeholder{color:var(--bgs-ivory-70);}
+  .search-clear{
+    position:absolute;
+    top:50%;
+    right:4px;
+    transform:translateY(-50%);
+    width:28px;
+    height:28px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:none;
+    border:none;
+    border-radius:50%;
+    color:var(--bgs-ivory-70);
+    font-size:13px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .search-clear:hover{color:var(--bgs-ivory);}
+  .search-clear[hidden]{display:none;}
 
   .icon-btn{
     position:relative;
@@ -693,7 +718,10 @@
 
   <div class="sticky-sentinel" id="stickySentinel" aria-hidden="true"></div>
   <div class="filter-sort-bar" id="filterSortBar">
-    <input class="search" id="search" type="text" placeholder="Search titles…">
+    <div class="search-wrap">
+      <input class="search" id="search" type="text" placeholder="Search titles…">
+      <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>✕</button>
+    </div>
     <button class="icon-btn" id="filterBtn" aria-label="Open filters" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterSheet">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="0" y1="2.5" x2="15" y2="2.5" stroke="currentColor" stroke-width="1.4"/>
@@ -5842,8 +5870,23 @@ sortBtn.addEventListener('click', ()=>{
 
 // ---- Search ----
 
-document.getElementById('search').addEventListener('input', (e)=>{
+const searchInput = document.getElementById('search');
+const searchClear = document.getElementById('searchClear');
+
+function updateSearchClear(){
+  searchClear.hidden = searchInput.value.length === 0;
+}
+
+searchInput.addEventListener('input', (e)=>{
   state.search = e.target.value.toLowerCase();
+  updateSearchClear();
+  render();
+});
+searchClear.addEventListener('click', ()=>{
+  searchInput.value = '';
+  state.search = '';
+  searchInput.focus();
+  updateSearchClear();
   render();
 });
 
