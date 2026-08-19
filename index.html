@@ -5586,7 +5586,6 @@ function render(){
   filtered.forEach(g=>{
     const el = document.createElement('button');
     el.className = 'game-card';
-    const rating5 = Math.max(0, Math.min(5, g.bggRating / 2));
     el.innerHTML = `
       <div class="art">
         <img src="${g.image}" alt="${g.title} cover" loading="lazy" decoding="async" onerror="this.closest('.art').style.background='var(--bgs-plate)';this.remove()">
@@ -5594,7 +5593,7 @@ function render(){
       <div class="plate-body">
         <h3 class="title">${g.title}</h3>
         <div class="meta-row">
-          <span class="rating-pill">★ ${rating5.toFixed(1)}</span>
+          <span class="rating-pill">★ ${g.bggRating.toFixed(1)}</span>
           <span class="players">${playersRangeLabel(g.players)}</span>
         </div>
       </div>
