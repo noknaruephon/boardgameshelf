@@ -677,10 +677,23 @@
     max-width:960px;
     margin:40px auto 0;
     font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    color:var(--brass-dim);
     text-align:center;
-    line-height:1.6;
+    padding-top:18px;
+    border-top:1px solid rgba(201,162,75,0.14);
+  }
+  footer .primary{
+    font-size:12px;
+    letter-spacing:0.015em;
+    color:var(--brass-dim);
+    margin:0 0 7px;
+    line-height:1.55;
+  }
+  footer .secondary{
+    font-size:11px;
+    letter-spacing:0.015em;
+    color:rgba(140,114,57,0.62);
+    margin:0;
+    line-height:1.55;
   }
 
 </style>
@@ -739,7 +752,10 @@
   </div>
 </div>
 
-<footer>Built from Naruephon's BoardGameGeek collection &middot; synced daily &middot; 195 owned games (expansions excluded)<br>Descriptions sourced from BoardGameGeek and publisher listings</footer>
+<footer>
+<p class="primary">195 games in the collection (expansions excluded) &middot; synced daily from BoardGameGeek</p>
+<p class="secondary">Descriptions sourced from BoardGameGeek and publisher listings</p>
+</footer>
 
 <div class="backdrop" id="backdrop">
   <div class="card" id="card">
