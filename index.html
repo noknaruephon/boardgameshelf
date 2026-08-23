@@ -365,6 +365,52 @@
   }
   .number-cue-row span.active{color:var(--bgs-gold);font-weight:600;opacity:1;}
 
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:16px;
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+  }
+  .toggle-switch{
+    position:relative;
+    flex:none;
+    width:34px;
+    height:20px;
+    border-radius:999px;
+    background:rgba(var(--bgs-ivory-rgb),0.16);
+    border:1px solid rgba(var(--bgs-ivory-rgb),0.22);
+    transition:background 0.15s ease,border-color 0.15s ease;
+  }
+  .toggle-switch::after{
+    content:"";
+    position:absolute;
+    top:1px;
+    left:1px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--bgs-ivory-70);
+    transition:transform 0.15s ease,background 0.15s ease;
+  }
+  .toggle-row[aria-checked="true"] .toggle-switch{
+    background:var(--bgs-gold);
+    border-color:var(--bgs-gold);
+  }
+  .toggle-row[aria-checked="true"] .toggle-switch::after{
+    transform:translateX(14px);
+    background:var(--bgs-bg);
+  }
+  .toggle-label{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--bgs-ivory);
+  }
+
   .sheet-footer{
     flex:none;
     padding:14px 20px calc(14px + env(safe-area-inset-bottom));
@@ -790,6 +836,10 @@
       <div class="number-cue-row" id="numberCueRow">
         <span data-n="1">1</span><span data-n="2">2</span><span data-n="3">3</span><span data-n="4">4</span><span data-n="5">5</span><span data-n="6">6</span><span data-n="7">7</span><span data-n="8">8</span><span data-n="9">9</span><span data-n="10">10</span><span data-n="11">11+</span>
       </div>
+      <button type="button" class="toggle-row" id="bestFitToggle" role="switch" aria-checked="false">
+        <span class="toggle-switch" aria-hidden="true"></span>
+        <span class="toggle-label">Recommended counts only</span>
+      </button>
     </div>
     <div class="sheet-group">
       <span class="filter-label">Time</span>
@@ -839,7 +889,13 @@ const games = [
       "Dice-to-tile placement rewards planning several turns ahead",
       "Special Edition brings upgraded components to a genuine modern classic"
     ],
-    "tag": "Dice placement · euro classic"
+    "tag": "Dice placement · euro classic",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "397598",
@@ -863,7 +919,15 @@ const games = [
       "New asymmetric factions add fresh opening strategies",
       "Sandworm mechanic adds a real threat to sprawl across the board"
     ],
-    "tag": "Worker placement · deckbuilding"
+    "tag": "Worker placement · deckbuilding",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "not_recommended",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "356238",
@@ -887,7 +951,14 @@ const games = [
       "Deep, interlocking scoring systems reward long-term strategy over lucky rolls",
       "Big Box format means expansions and variable setups are ready to go, no add-ons needed"
     ],
-    "tag": "Euro · area control"
+    "tag": "Euro · area control",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "title": "Brass: Birmingham",
@@ -911,7 +982,12 @@ const games = [
       "Two distinct eras give the game a real narrative arc",
       "Rewards careful sequencing over brute-force plays"
     ],
-    "bggId": "224517"
+    "bggId": "224517",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "best"
+    }
   },
   {
     "title": "Ark Nova",
@@ -937,7 +1013,13 @@ const games = [
       "Deep card combos reward long-term planning over quick wins",
       "Gorgeous real wildlife photography on every card"
     ],
-    "bggId": "342942"
+    "bggId": "342942",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended",
+      "4": "not_recommended"
+    }
   },
   {
     "bggId": "468508",
@@ -961,7 +1043,10 @@ const games = [
       "High-production Kickstarter edition with striking dragon artwork",
       "Compact enough for a lunch-break duel"
     ],
-    "tag": "Two-player · hidden information"
+    "tag": "Two-player · hidden information",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "434367",
@@ -985,7 +1070,13 @@ const games = [
       "Industrial theme with real tension between output and consequences",
       "A meaty solo-to-four-player experience for a dedicated game night"
     ],
-    "tag": "Heavy economic · engine-building"
+    "tag": "Heavy economic · engine-building",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "367150",
@@ -1009,7 +1100,13 @@ const games = [
       "Hidden movement and bluffing keep both sides guessing",
       "A different way into the Dune universe for Imperium fans who want more combat"
     ],
-    "tag": "Area control · wargame"
+    "tag": "Area control · wargame",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "best",
+      "3": "not_recommended",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "187645",
@@ -1033,7 +1130,12 @@ const games = [
       "Sprawling miniatures and a galaxy-spanning board sell the scale",
       "Asymmetric objectives — the two sides are effectively playing different games"
     ],
-    "tag": "Asymmetric · epic"
+    "tag": "Asymmetric · epic",
+    "playerRecommendations": {
+      "2": "best",
+      "3": "not_recommended",
+      "4": "not_recommended"
+    }
   },
   {
     "bggId": "316554",
@@ -1057,7 +1159,13 @@ const games = [
       "Combat, politics, and economy all compete for the same limited turns",
       "Thematic without slowing the game down"
     ],
-    "tag": "Worker placement · deckbuilding"
+    "tag": "Worker placement · deckbuilding",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "best"
+    }
   },
   {
     "bggId": "321608",
@@ -1081,7 +1189,12 @@ const games = [
       "Economic simulation deep enough to feel like a real system",
       "Rewards players who enjoy negotiation as much as optimization"
     ],
-    "tag": "Political economy · heavy"
+    "tag": "Political economy · heavy",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "421006",
@@ -1105,7 +1218,10 @@ const games = [
       "Fast setup makes it easy to squeeze in before dinner",
       "Strong Tolkien theming without needing the full saga's runtime"
     ],
-    "tag": "Two-player · dueling"
+    "tag": "Two-player · dueling",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "title": "Blood on the Clocktower",
@@ -1131,7 +1247,15 @@ const games = [
       "Dozens of character combinations across three editions",
       "Turns your whole group into gossiping detectives for hours"
     ],
-    "bggId": "240980"
+    "bggId": "240980",
+    "playerRecommendations": {
+      "6": "not_recommended",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "best",
+      "10": "best",
+      "11": "best"
+    }
   },
   {
     "title": "The Million Dollar Doodle",
@@ -1155,7 +1279,13 @@ const games = [
       "Everyone builds on everyone else's ideas together",
       "A great icebreaker for a mixed or new group"
     ],
-    "bggId": "326007"
+    "bggId": "326007",
+    "playerRecommendations": {
+      "4": "no_data",
+      "5": "no_data",
+      "6": "no_data",
+      "7": "no_data"
+    }
   },
   {
     "title": "Spirit Island",
@@ -1179,7 +1309,13 @@ const games = [
       "Deep combo potential between different spirit powers",
       "Fully solo-able if you ever want to play alone"
     ],
-    "bggId": "162886"
+    "bggId": "162886",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "167791",
@@ -1203,7 +1339,14 @@ const games = [
       "Shared terraforming parameters give the whole table a race to watch",
       "Deep enough for strategy gamers, clean enough to teach without a rulebook headache"
     ],
-    "tag": "Engine-building · sci-fi"
+    "tag": "Engine-building · sci-fi",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended",
+      "5": "not_recommended"
+    }
   },
   {
     "bggId": "383469",
@@ -1227,7 +1370,10 @@ const games = [
       "Twenty-to-forty-minute duels that still reward real tactical reads",
       "Mixes freely with older Unmatched sets for bigger fights"
     ],
-    "tag": "Unmatched · duel"
+    "tag": "Unmatched · duel",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "title": "Ticket to Ride: 10th Anniversary",
@@ -1253,7 +1399,13 @@ const games = [
       "Simple rules hide real tension over who claims which route",
       "Reliably wraps up in under an hour"
     ],
-    "bggId": "160069"
+    "bggId": "160069",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best"
+    }
   },
   {
     "bggId": "310100",
@@ -1277,7 +1429,14 @@ const games = [
       "Creature AI that hunts by noise, so every action carries a cost",
       "Long, escalating sessions that build real dread"
     ],
-    "tag": "Semi-co-op · survival horror"
+    "tag": "Semi-co-op · survival horror",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "446893",
@@ -1301,7 +1460,13 @@ const games = [
       "Deep enough strategy to reward multiple plays before it clicks",
       "High table presence — board state that actually looks like a war"
     ],
-    "tag": "Area control · heavy"
+    "tag": "Area control · heavy",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "420033",
@@ -1325,7 +1490,15 @@ const games = [
       "Scales all the way from solo to a full six-player table",
       "A serious time investment — think campaign night, not filler"
     ],
-    "tag": "Sci-fi · exploration"
+    "tag": "Sci-fi · exploration",
+    "playerRecommendations": {
+      "1": "best",
+      "2": "best",
+      "3": "recommended",
+      "4": "not_recommended",
+      "5": "not_recommended",
+      "6": "not_recommended"
+    }
   },
   {
     "bggId": "437356",
@@ -1349,7 +1522,10 @@ const games = [
       "Thirty-minute runtime makes it easy to go for a rematch",
       "Rewards reading your opponent as much as your own hand"
     ],
-    "tag": "Two-player · dueling"
+    "tag": "Two-player · dueling",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "313010",
@@ -1373,7 +1549,12 @@ const games = [
       "Table talk and shifting alliances matter as much as the dice",
       "A genre-defining design that's aged remarkably well"
     ],
-    "tag": "Negotiation · sci-fi"
+    "tag": "Negotiation · sci-fi",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "256960",
@@ -1397,7 +1578,14 @@ const games = [
       "No player elimination, but plenty of ways to fall behind",
       "Considered one of the best solo-capable strategy games around"
     ],
-    "tag": "Area control · political strategy"
+    "tag": "Area control · political strategy",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "367498",
@@ -1421,7 +1609,12 @@ const games = [
       "Fully cooperative with no player elimination",
       "Compatible with the wider Spirit Island ecosystem once you're hooked"
     ],
-    "tag": "Cooperative · asymmetric"
+    "tag": "Cooperative · asymmetric",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended"
+    }
   },
   {
     "bggId": "407570",
@@ -1445,7 +1638,12 @@ const games = [
       "Card-driven system rewards deep strategic planning over quick plays",
       "This combined edition folds years of expansions into one box"
     ],
-    "tag": "Wargame · Cold War"
+    "tag": "Wargame · Cold War",
+    "playerRecommendations": {
+      "2": "best",
+      "3": "not_recommended",
+      "4": "recommended"
+    }
   },
   {
     "title": "Root",
@@ -1469,7 +1667,12 @@ const games = [
       "Endless replayability from mixing faction match-ups",
       "Gorgeous woodland art hiding a genuinely sharp wargame"
     ],
-    "bggId": "237182"
+    "bggId": "237182",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "325635",
@@ -1493,7 +1696,10 @@ const games = [
       "Fast enough to play best-of-three without checking the clock",
       "A great entry point into the wider Unmatched roster of fighters"
     ],
-    "tag": "Unmatched · duel"
+    "tag": "Unmatched · duel",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "175914",
@@ -1517,7 +1723,13 @@ const games = [
       "Every hire and every road sign is a real economic decision",
       "A benchmark 'heavy euro' that rewards repeat plays"
     ],
-    "tag": "Economic · heavy euro"
+    "tag": "Economic · heavy euro",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "400366",
@@ -1541,7 +1753,13 @@ const games = [
       "The sillier the creature, the better the table talk",
       "Plays solo or with up to four, with real replay variety"
     ],
-    "tag": "Drafting · whimsical"
+    "tag": "Drafting · whimsical",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "best",
+      "4": "not_recommended"
+    }
   },
   {
     "bggId": "367396",
@@ -1565,7 +1783,15 @@ const games = [
       "Scales up to 10 players, so nobody's left sitting out",
       "No components to speak of — just cards, votes, and suspicion"
     ],
-    "tag": "Hidden role · big group"
+    "tag": "Hidden role · big group",
+    "playerRecommendations": {
+      "5": "not_recommended",
+      "6": "recommended",
+      "7": "best",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "title": "盤上ダンジョン (Banjo-Dungeon)",
@@ -1589,7 +1815,10 @@ const games = [
       "Fast, mean, tightly tactical duels",
       "Final Fantasy Tactics energy in a small box"
     ],
-    "bggId": "449718"
+    "bggId": "449718",
+    "playerRecommendations": {
+      "2": "no_data"
+    }
   },
   {
     "title": "Catan: 3D Edition",
@@ -1613,7 +1842,11 @@ const games = [
       "Raised 3D board makes it a real table centerpiece",
       "Trading keeps everyone engaged even off their own turn"
     ],
-    "bggId": "338697"
+    "bggId": "338697",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "23540",
@@ -1637,7 +1870,14 @@ const games = [
       "Gorgeous, historically grounded map that rewards close study",
       "A serious commitment that pays off for railway-game fans"
     ],
-    "tag": "Railway · heavy"
+    "tag": "Railway · heavy",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended",
+      "6": "not_recommended"
+    }
   },
   {
     "title": "Viticulture Essential Edition",
@@ -1663,7 +1903,15 @@ const games = [
       "Built-in solo/Automa mode if you're short a player",
       "Rewards planning without punishing newcomers"
     ],
-    "bggId": "183394"
+    "bggId": "183394",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended",
+      "6": "not_recommended"
+    }
   },
   {
     "bggId": "381297",
@@ -1687,7 +1935,13 @@ const games = [
       "Plays solo or co-op, so it fits both game night and downtime",
       "Missions link together instead of resetting each round"
     ],
-    "tag": "Unmatched · cooperative campaign"
+    "tag": "Unmatched · cooperative campaign",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "351817",
@@ -1711,7 +1965,15 @@ const games = [
       "Miniatures-heavy board state that looks as chaotic as it plays",
       "Difficulty scales with player count, so it holds up solo or full table"
     ],
-    "tag": "Co-op · miniatures"
+    "tag": "Co-op · miniatures",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "282391",
@@ -1735,7 +1997,13 @@ const games = [
       "This Epic Edition folds expansion content into the box for more variety",
       "Genuinely tense endgame as everyone races to cash out at the right moment"
     ],
-    "tag": "Stock market · bluffing"
+    "tag": "Stock market · bluffing",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best"
+    }
   },
   {
     "bggId": "205059",
@@ -1759,7 +2027,14 @@ const games = [
       "Branching scenarios mean the same box replays differently",
       "Genuinely tense exploration with real jump-scare moments"
     ],
-    "tag": "Co-op · horror"
+    "tag": "Co-op · horror",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "title": "Agricola 15",
@@ -1785,7 +2060,13 @@ const games = [
       "Constant hard trade-offs between growth and feeding your family",
       "Anniversary polish on a genuine modern classic"
     ],
-    "bggId": "359999"
+    "bggId": "359999",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "best"
+    }
   },
   {
     "bggId": "274638",
@@ -1809,7 +2090,10 @@ const games = [
       "Battlemap movement rewards spacing over brute force",
       "Compatible with every other set in the Unmatched line"
     ],
-    "tag": "Unmatched · duel"
+    "tag": "Unmatched · duel",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "269385",
@@ -1833,7 +2117,14 @@ const games = [
       "Persistent campaign lets characters grow across sessions",
       "Miniatures and map tiles bring real tabletop presence"
     ],
-    "tag": "Cooperative · campaign"
+    "tag": "Cooperative · campaign",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "not_recommended"
+    }
   },
   {
     "bggId": "295947",
@@ -1857,7 +2148,13 @@ const games = [
       "Puzzly tile placement rewards spatial thinking without heavy rules",
       "Gorgeous wildlife art makes it a relaxing one to have on the shelf"
     ],
-    "tag": "Tile-laying · nature"
+    "tag": "Tile-laying · nature",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "title": "Age of Steam",
@@ -1883,7 +2180,15 @@ const games = [
       "Rewards ruthless efficiency over flashy one-off plays",
       "Deep enough to replay with the same group for years"
     ],
-    "bggId": "4098"
+    "bggId": "4098",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "title": "Rebel Princess: Deluxe Edition",
@@ -1907,7 +2212,13 @@ const games = [
       "Five rounds, each with its own twist on the rules",
       "Easy to teach even to people who don't like trick-taking"
     ],
-    "bggId": "418556"
+    "bggId": "418556",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "351913",
@@ -1931,7 +2242,13 @@ const games = [
       "Multiple viable scoring paths keep replays feeling different",
       "Rewards players who like optimizing a tight personal board"
     ],
-    "tag": "Euro · dice-placement"
+    "tag": "Euro · dice-placement",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "best",
+      "4": "not_recommended"
+    }
   },
   {
     "bggId": "372571",
@@ -1955,7 +2272,13 @@ const games = [
       "Long-arc empire building with genuine supply-chain tension",
       "Scales from a focused solo game to a sprawling four-player economy"
     ],
-    "tag": "Economic · empire-building"
+    "tag": "Economic · empire-building",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "35677",
@@ -1979,7 +2302,14 @@ const games = [
       "A genuine solo mode makes it worth owning even for one",
       "A modern classic for fans of Agricola and Caverna"
     ],
-    "tag": "Resource management · heavy euro"
+    "tag": "Resource management · heavy euro",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended",
+      "5": "not_recommended"
+    }
   },
   {
     "bggId": "316377",
@@ -2003,7 +2333,14 @@ const games = [
       "Refreshed second edition folds in Cities and Leaders content",
       "Multiple scoring paths mean no two games play the same way"
     ],
-    "tag": "Card drafting · civilization"
+    "tag": "Card drafting · civilization",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended",
+      "7": "recommended"
+    }
   },
   {
     "bggId": "446497",
@@ -2027,7 +2364,16 @@ const games = [
       "Push-your-luck tension over when to lock in a streak",
       "Setup and teardown both take under a minute"
     ],
-    "tag": "Party · dice"
+    "tag": "Party · dice",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "407343",
@@ -2051,7 +2397,11 @@ const games = [
       "Card-driven engine rewards planning several turns ahead",
       "Nature theme stays understated instead of twee"
     ],
-    "tag": "Engine-building · solo-friendly"
+    "tag": "Engine-building · solo-friendly",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best"
+    }
   },
   {
     "bggId": "291453",
@@ -2075,7 +2425,13 @@ const games = [
       "Fast, mean, and endlessly replayable at 20 minutes a round",
       "One of the highest-rated card games of the last decade for good reason"
     ],
-    "tag": "Card game · climbing"
+    "tag": "Card game · climbing",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "title": "Feed the Kraken",
@@ -2099,7 +2455,16 @@ const games = [
       "Scales up comfortably to 11 players",
       "Constant tension over exactly who to trust"
     ],
-    "bggId": "271601"
+    "bggId": "271601",
+    "playerRecommendations": {
+      "5": "not_recommended",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "best",
+      "9": "best",
+      "10": "best",
+      "11": "best"
+    }
   },
   {
     "title": "Rebirth",
@@ -2123,7 +2488,12 @@ const games = [
       "Two distinct maps double the replay value",
       "Quick to teach, genuinely satisfying to master"
     ],
-    "bggId": "417197"
+    "bggId": "417197",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "225694",
@@ -2147,7 +2517,15 @@ const games = [
       "Rewards clever, deniable clue-giving over obvious ones",
       "The rival team's interception mechanic adds real stakes"
     ],
-    "tag": "Word game · team play"
+    "tag": "Word game · team play",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "best",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "153016",
@@ -2171,7 +2549,17 @@ const games = [
       "Scales up to 12 without slowing down — everyone draws and guesses at once",
       "Zero drawing skill required; bad art is half the fun"
     ],
-    "tag": "Party · drawing"
+    "tag": "Party · drawing",
+    "playerRecommendations": {
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "title": "The Quest for El Dorado",
@@ -2195,7 +2583,12 @@ const games = [
       "Modular board tiles make every race different",
       "Close finishes keep every player in it till the end"
     ],
-    "bggId": "217372"
+    "bggId": "217372",
+    "playerRecommendations": {
+      "2": "best",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "440941",
@@ -2219,7 +2612,10 @@ const games = [
       "Fast turns keep the tension high despite the tactical depth",
       "Built specifically for two — no compromises for a bigger table"
     ],
-    "tag": "Two-player · dueling"
+    "tag": "Two-player · dueling",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "12",
@@ -2243,7 +2639,13 @@ const games = [
       "Set collection with enough scoring paths to keep strategies varied",
       "A genuine classic that still holds up decades later"
     ],
-    "tag": "Auction · set collection"
+    "tag": "Auction · set collection",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "552",
@@ -2267,7 +2669,12 @@ const games = [
       "One of the classic 'gamer's game' heavy euros, back in this Complete Edition",
       "Route-building and cutthroat economics reward serious planning"
     ],
-    "tag": "Heavy euro · economic"
+    "tag": "Heavy euro · economic",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "350205",
@@ -2291,7 +2698,12 @@ const games = [
       "Historical industrial theme comes through in the mechanics, not just the art",
       "Best suited to a group that already enjoys heavy economic games"
     ],
-    "tag": "Economic · heavy"
+    "tag": "Economic · heavy",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "416851",
@@ -2315,7 +2727,13 @@ const games = [
       "Fast rounds make it easy to squeeze in twice in one sitting",
       "Small box, big replayability for a filler-weight game"
     ],
-    "tag": "Card drafting · combo building"
+    "tag": "Card drafting · combo building",
+    "playerRecommendations": {
+      "2": "best",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "not_recommended"
+    }
   },
   {
     "bggId": "406322",
@@ -2339,7 +2757,19 @@ const games = [
       "Rounds are short, so a bad hand never costs you the whole night",
       "Scales up to twelve players without slowing down"
     ],
-    "tag": "Hidden role · big group"
+    "tag": "Hidden role · big group",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "best",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "not_recommended",
+      "11": "not_recommended"
+    }
   },
   {
     "title": "Skyrise",
@@ -2363,7 +2793,12 @@ const games = [
       "A clever spatial auction system with genuine bluffing",
       "Rewards reading opponents as much as reading the board"
     ],
-    "bggId": "298231"
+    "bggId": "298231",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "436126",
@@ -2387,7 +2822,14 @@ const games = [
       "Gorgeous fish illustrations on every card",
       "Approachable engine-building without a steep learning curve"
     ],
-    "tag": "Engine-building"
+    "tag": "Engine-building",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "best",
+      "4": "recommended",
+      "5": "not_recommended"
+    }
   },
   {
     "bggId": "263895",
@@ -2411,7 +2853,13 @@ const games = [
       "Choices carry real narrative weight as the story unfolds",
       "Plays solo or with a small group without losing its tension"
     ],
-    "tag": "Narrative · exploration"
+    "tag": "Narrative · exploration",
+    "playerRecommendations": {
+      "1": "best",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "420914",
@@ -2435,7 +2883,10 @@ const games = [
       "Mythological framing gives every match a bit of drama",
       "Plays fast enough for two or three duels in one sitting"
     ],
-    "tag": "Two-player · dueling"
+    "tag": "Two-player · dueling",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "165722",
@@ -2459,7 +2910,10 @@ const games = [
       "The disqualifying magnets add genuine slapstick tension",
       "Easy to learn, brutally hard to master"
     ],
-    "tag": "Dexterity · two-player"
+    "tag": "Dexterity · two-player",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "351605",
@@ -2483,7 +2937,15 @@ const games = [
       "Trading is freeform — deals happen anywhere, anytime, with anyone",
       "This 25th Anniversary Edition polishes up a genuine gateway classic"
     ],
-    "tag": "Trading · negotiation"
+    "tag": "Trading · negotiation",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended",
+      "7": "recommended"
+    }
   },
   {
     "bggId": "254640",
@@ -2507,7 +2969,14 @@ const games = [
       "Zero setup and no rules beyond a minute of explanation",
       "Genuinely funny when the whole table has the same bad idea"
     ],
-    "tag": "Cooperative · party"
+    "tag": "Cooperative · party",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best"
+    }
   },
   {
     "bggId": "163412",
@@ -2531,7 +3000,10 @@ const games = [
       "Real spatial puzzle in fitting oddly-shaped pieces together",
       "Quick enough to play twice in one sitting"
     ],
-    "tag": "Two-player · tile-laying"
+    "tag": "Two-player · tile-laying",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "415078",
@@ -2555,7 +3027,13 @@ const games = [
       "Fresh enough on the shelf that it hasn't worn out its welcome yet",
       "Worth a look if you're hunting for the next heavier strategy fix"
     ],
-    "tag": "Strategy"
+    "tag": "Strategy",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "263918",
@@ -2579,7 +3057,20 @@ const games = [
       "Shared card reveals keep everyone's map racing forward in parallel",
       "Quiet, low-footprint game that's easy to fit on any table"
     ],
-    "tag": "Flip-and-write · map drawing"
+    "tag": "Flip-and-write · map drawing",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "not_recommended",
+      "10": "not_recommended",
+      "11": "not_recommended"
+    }
   },
   {
     "bggId": "246684",
@@ -2603,7 +3094,14 @@ const games = [
       "Solo mode is robust enough to be a real single-player option",
       "Rewards planning several rounds ahead over reactive play"
     ],
-    "tag": "Economic · engine-building"
+    "tag": "Economic · engine-building",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "407445",
@@ -2627,7 +3125,10 @@ const games = [
       "Rounds are quick enough to play best-of-three",
       "Hidden information keeps both players guessing to the end"
     ],
-    "tag": "2-player · deduction"
+    "tag": "2-player · deduction",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "title": "Intent to Kill",
@@ -2651,7 +3152,12 @@ const games = [
       "Easy rules, genuinely hard bluffing to master",
       "A great head-to-head or date-night pick"
     ],
-    "bggId": "409572"
+    "bggId": "409572",
+    "playerRecommendations": {
+      "2": "best",
+      "3": "recommended",
+      "4": "not_recommended"
+    }
   },
   {
     "bggId": "103343",
@@ -2675,7 +3181,13 @@ const games = [
       "Negotiation and alliances matter as much as the map",
       "A genuine classic for fans of A Song of Ice and Fire"
     ],
-    "tag": "Area control · negotiation"
+    "tag": "Area control · negotiation",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best"
+    }
   },
   {
     "title": "Modern Art",
@@ -2699,7 +3211,12 @@ const games = [
       "Five different auction formats keep every round unpredictable",
       "Reading the table matters as much as your hand"
     ],
-    "bggId": "118"
+    "bggId": "118",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "best"
+    }
   },
   {
     "bggId": "188866",
@@ -2723,7 +3240,17 @@ const games = [
       "Scales from solo play up to a full table of armchair detectives",
       "One of the more demanding mystery games on the shelf, not a quick filler"
     ],
-    "tag": "Mystery · deduction"
+    "tag": "Mystery · deduction",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "not_recommended",
+      "8": "not_recommended"
+    }
   },
   {
     "bggId": "178900",
@@ -2747,7 +3274,16 @@ const games = [
       "Teaches in two minutes, tests you for the whole round",
       "Splits any size group into two competing teams instantly"
     ],
-    "tag": "Word game · team play"
+    "tag": "Word game · team play",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "best"
+    }
   },
   {
     "bggId": "303057",
@@ -2771,7 +3307,12 @@ const games = [
       "Route-building tension over who claims which city first",
       "Approachable enough for a non-gamer aviation buff"
     ],
-    "tag": "Route-building · transport"
+    "tag": "Route-building · transport",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "best"
+    }
   },
   {
     "bggId": "14996",
@@ -2795,7 +3336,13 @@ const games = [
       "Still the same easy-to-teach, hard-to-put-down route-claiming loop",
       "A reliable pick for mixed groups of gamers and non-gamers"
     ],
-    "tag": "Classic · route-building"
+    "tag": "Classic · route-building",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "315695",
@@ -2819,7 +3366,16 @@ const games = [
       "Hidden information rewards careful listening over loud accusations",
       "A fresh whodunit setup every time it hits the table"
     ],
-    "tag": "Social deduction · mystery"
+    "tag": "Social deduction · mystery",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "295374",
@@ -2843,7 +3399,17 @@ const games = [
       "Supports up to eight players without slowing down",
       "Quick enough to run several races in one sitting"
     ],
-    "tag": "Dice · racing"
+    "tag": "Dice · racing",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "30549",
@@ -2867,7 +3433,12 @@ const games = [
       "Escalating outbreaks create real, shared panic near the end",
       "Different roles each game keep replays feeling fresh"
     ],
-    "tag": "Co-op · classic"
+    "tag": "Co-op · classic",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "171131",
@@ -2891,7 +3462,16 @@ const games = [
       "Asymmetric crew roles mean every player has a distinct job to master",
       "Best pick on the shelf for teams who like yelling at each other"
     ],
-    "tag": "Real-time · team vs team"
+    "tag": "Real-time · team vs team",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "not_recommended",
+      "5": "not_recommended",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "best"
+    }
   },
   {
     "bggId": "455337",
@@ -2915,7 +3495,17 @@ const games = [
       "Rewards quick lateral thinking over memorized vocabulary",
       "Easy to teach in the time it takes to deal the cards"
     ],
-    "tag": "Party · word game"
+    "tag": "Party · word game",
+    "playerRecommendations": {
+      "3": "no_data",
+      "4": "no_data",
+      "5": "no_data",
+      "6": "no_data",
+      "7": "no_data",
+      "8": "no_data",
+      "9": "no_data",
+      "10": "no_data"
+    }
   },
   {
     "bggId": "449719",
@@ -2939,7 +3529,14 @@ const games = [
       "Wraps in about half an hour, easy to run back-to-back",
       "Gothic vampire theme gives the bluffing some flavor"
     ],
-    "tag": "Social deduction · party"
+    "tag": "Social deduction · party",
+    "playerRecommendations": {
+      "4": "no_data",
+      "5": "no_data",
+      "6": "no_data",
+      "7": "no_data",
+      "8": "no_data"
+    }
   },
   {
     "title": "The Resistance: Avalon",
@@ -2963,7 +3560,15 @@ const games = [
       "A must-play classic for hidden-role fans",
       "Scales smoothly from 5 all the way up to 10"
     ],
-    "bggId": "128882"
+    "bggId": "128882",
+    "playerRecommendations": {
+      "5": "recommended",
+      "6": "recommended",
+      "7": "best",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "title": "Catch Sketch",
@@ -2987,7 +3592,13 @@ const games = [
       "No actual drawing talent required to have fun",
       "A great energy booster between heavier games"
     ],
-    "bggId": "347889"
+    "bggId": "347889",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "338957",
@@ -3011,7 +3622,11 @@ const games = [
       "Area control tension without the setup time of a bigger war game",
       "Small footprint makes it an easy travel pick"
     ],
-    "tag": "Two-player · area control"
+    "tag": "Two-player · area control",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best"
+    }
   },
   {
     "title": "Ready Set Bet",
@@ -3035,7 +3650,17 @@ const games = [
       "Cheering and jeering are basically built into the rules",
       "Great for a bigger, rowdier group"
     ],
-    "bggId": "351040"
+    "bggId": "351040",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "best",
+      "9": "recommended"
+    }
   },
   {
     "bggId": "188834",
@@ -3059,7 +3684,15 @@ const games = [
       "Minimal setup for how much social deduction drama it generates",
       "A staple for a reason — easy to teach, hard to stop playing"
     ],
-    "tag": "Social deduction · big group"
+    "tag": "Social deduction · big group",
+    "playerRecommendations": {
+      "5": "not_recommended",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "best",
+      "9": "recommended",
+      "10": "best"
+    }
   },
   {
     "bggId": "402111",
@@ -3083,7 +3716,13 @@ const games = [
       "Single-use puzzle design means every solve is one and done",
       "Solo and multiplayer modes both hold up on their own"
     ],
-    "tag": "Deduction · mystery"
+    "tag": "Deduction · mystery",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "236191",
@@ -3107,7 +3746,12 @@ const games = [
       "Streamlined second edition trims the original's rough edges",
       "Rewards efficient planning over brute-force expansion"
     ],
-    "tag": "City-building · hand management"
+    "tag": "City-building · hand management",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "123260",
@@ -3131,7 +3775,13 @@ const games = [
       "Real interaction despite feeling like a tableau-building game on your own board",
       "Endgame scoring goals keep every playthrough shaped differently"
     ],
-    "tag": "Tile-laying · city-building"
+    "tag": "Tile-laying · city-building",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "340466",
@@ -3155,7 +3805,13 @@ const games = [
       "Miniatures and a sinking-ship board sell the slow-motion disaster",
       "A long, tense semi-co-op that rewards a full evening"
     ],
-    "tag": "Semi-cooperative · hidden traitor"
+    "tag": "Semi-cooperative · hidden traitor",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "title": "Chinatown",
@@ -3179,7 +3835,12 @@ const games = [
       "Every single trade is genuinely up for grabs",
       "Rewards reading the table over pure strategy"
     ],
-    "bggId": "47"
+    "bggId": "47",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "title": "Zoo Vadis",
@@ -3203,7 +3864,14 @@ const games = [
       "Politicking and bribery drive every decision",
       "Fast round times keep the tension high throughout"
     ],
-    "bggId": "368061"
+    "bggId": "368061",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "recommended",
+      "7": "recommended"
+    }
   },
   {
     "bggId": "260180",
@@ -3227,7 +3895,13 @@ const games = [
       "Quick to teach and replay, scales cleanly down to solo",
       "Escalating piece sizes make every game feel like it's building toward something"
     ],
-    "tag": "Puzzle · engine-building"
+    "tag": "Puzzle · engine-building",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "381278",
@@ -3251,7 +3925,10 @@ const games = [
       "Hidden movement keeps the tension high the whole game",
       "A focused two-player game with real thematic bite"
     ],
-    "tag": "2-player · hidden movement"
+    "tag": "2-player · hidden movement",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "148228",
@@ -3275,7 +3952,12 @@ const games = [
       "Gorgeous chunky tokens that make every turn feel satisfying",
       "A modern gateway staple that reliably lands with new players"
     ],
-    "tag": "Engine-building · gateway"
+    "tag": "Engine-building · gateway",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "391752",
@@ -3299,7 +3981,14 @@ const games = [
       "Scales cleanly from solo all the way up to five players",
       "From the same design lineage as some of the sharper recent Board&Dice euros"
     ],
-    "tag": "Economic · network-building"
+    "tag": "Economic · network-building",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "156129",
@@ -3323,7 +4012,17 @@ const games = [
       "Plays fast enough for two or three cases in one sitting",
       "Rewards close listening as much as sharp guessing"
     ],
-    "tag": "Social deduction · deduction"
+    "tag": "Social deduction · deduction",
+    "playerRecommendations": {
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "bggId": "352515",
@@ -3347,7 +4046,13 @@ const games = [
       "Fast enough to play several rounds back to back",
       "Easy to teach in under a minute"
     ],
-    "tag": "Card game · light"
+    "tag": "Card game · light",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "470218",
@@ -3371,7 +4076,10 @@ const games = [
       "Short playtime makes it easy to fit in one more round",
       "Worth watching as one of the newer additions to the collection"
     ],
-    "tag": "2-player · duel"
+    "tag": "2-player · duel",
+    "playerRecommendations": {
+      "2": "no_data"
+    }
   },
   {
     "bggId": "92828",
@@ -3395,7 +4103,18 @@ const games = [
       "No reading or writing skill required — just imagination",
       "Scales up to twelve players comfortably"
     ],
-    "tag": "Storytelling · party"
+    "tag": "Storytelling · party",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "title": "Detective Club",
@@ -3419,7 +4138,14 @@ const games = [
       "One-minute rules explanation, no learning curve",
       "Big laughs even from the wrong guesses"
     ],
-    "bggId": "256788"
+    "bggId": "256788",
+    "playerRecommendations": {
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "422668",
@@ -3443,7 +4169,13 @@ const games = [
       "Cooperative format means everyone wins or loses together",
       "Quick enough to replay immediately after a loss"
     ],
-    "tag": "Cooperative · dexterity"
+    "tag": "Cooperative · dexterity",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "257305",
@@ -3467,7 +4199,12 @@ const games = [
       "Political satire with teeth — not a reskin of an existing system",
       "One of the few games actually about how campaigns and power work"
     ],
-    "tag": "Political strategy"
+    "tag": "Political strategy",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "title": "QE",
@@ -3491,7 +4228,12 @@ const games = [
       "Unlimited bidding removes the usual money crunch",
       "Short and sharp — easy to rack up for another round"
     ],
-    "bggId": "266830"
+    "bggId": "266830",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "327778",
@@ -3515,7 +4257,18 @@ const games = [
       "Scales cleanly from a couple's game to a big table",
       "Rounds are short enough to immediately reshuffle and try again"
     ],
-    "tag": "Cooperative · party"
+    "tag": "Cooperative · party",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "not_recommended"
+    }
   },
   {
     "bggId": "434172",
@@ -3539,7 +4292,16 @@ const games = [
       "Rounds wrap up in under half an hour",
       "Arthurian theme without a heavy rulebook to match"
     ],
-    "tag": "Party · quick play"
+    "tag": "Party · quick play",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "400566",
@@ -3563,7 +4325,15 @@ const games = [
       "Swashbuckling theme gives the bluffing and accusations some flair",
       "Easy to teach to newcomers in just a couple of minutes"
     ],
-    "tag": "Hidden role · party"
+    "tag": "Hidden role · party",
+    "playerRecommendations": {
+      "5": "not_recommended",
+      "6": "recommended",
+      "7": "best",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "title": "Ichor",
@@ -3587,7 +4357,10 @@ const games = [
       "Nearly 50 million possible setups keep it fresh",
       "Simple rules that hide real tactical depth"
     ],
-    "bggId": "420915"
+    "bggId": "420915",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "329845",
@@ -3611,7 +4384,13 @@ const games = [
       "More competitive pacing than the original storytelling game",
       "Easy to teach to guests who've never played a 'guess the card' game before"
     ],
-    "tag": "Party · storytelling"
+    "tag": "Party · storytelling",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best"
+    }
   },
   {
     "bggId": "15390",
@@ -3635,7 +4414,15 @@ const games = [
       "Simple crop-cycle mechanics keep downtime low",
       "A relaxed, low-conflict pick between heavier games"
     ],
-    "tag": "Farming · light strategy"
+    "tag": "Farming · light strategy",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "439561",
@@ -3659,7 +4446,10 @@ const games = [
       "Fast rounds make rematches painless",
       "A solid pick for a lunch-break or date-night game"
     ],
-    "tag": "Two-player · duel"
+    "tag": "Two-player · duel",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "420087",
@@ -3683,7 +4473,18 @@ const games = [
       "Scales up to a huge table without slowing down",
       "Bonus and action cards add just enough decision-making"
     ],
-    "tag": "Push your luck · party"
+    "tag": "Push your luck · party",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "not_recommended",
+      "10": "not_recommended",
+      "11": "not_recommended"
+    }
   },
   {
     "bggId": "298638",
@@ -3707,7 +4508,13 @@ const games = [
       "The sheriff role flips the power dynamic every round",
       "Reprint adds smoother scoring and sharper components over the original"
     ],
-    "tag": "Bluffing · negotiation"
+    "tag": "Bluffing · negotiation",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "307997",
@@ -3731,7 +4538,14 @@ const games = [
       "Same fast yes/no questioning engine, less forgiving of sloppy play",
       "A great follow-up once regular Insider gets too easy"
     ],
-    "tag": "Social deduction · quick"
+    "tag": "Social deduction · quick",
+    "playerRecommendations": {
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "best"
+    }
   },
   {
     "bggId": "181304",
@@ -3755,7 +4569,15 @@ const games = [
       "Strong sense of shared discovery when the clues finally click",
       "Beautiful, dreamlike card illustrations carry the whole game"
     ],
-    "tag": "Co-op · deduction"
+    "tag": "Co-op · deduction",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended"
+    }
   },
   {
     "bggId": "262543",
@@ -3779,7 +4601,19 @@ const games = [
       "Sparks genuinely funny arguments about where things 'really' fall",
       "Scales from a small game night to a big party crowd"
     ],
-    "tag": "Party · guessing game"
+    "tag": "Party · guessing game",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "bggId": "223770",
@@ -3803,7 +4637,14 @@ const games = [
       "Simple drafting and timing decisions keep it snappy at higher player counts",
       "Startup/tech flavor makes it an easy pitch to non-gamer coworkers"
     ],
-    "tag": "Card game · light"
+    "tag": "Card game · light",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended",
+      "6": "not_recommended",
+      "7": "not_recommended"
+    }
   },
   {
     "bggId": "313",
@@ -3827,7 +4668,14 @@ const games = [
       "Negotiation is wide open — deals and betrayals both happen at the table",
       "Underrated pick for groups who like to talk trash while they play"
     ],
-    "tag": "Auction · negotiation"
+    "tag": "Auction · negotiation",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "198773",
@@ -3851,7 +4699,16 @@ const games = [
       "Plays well with non-native speakers and younger players",
       "A fresh angle for tables that already know the original"
     ],
-    "tag": "Word game · team play"
+    "tag": "Word game · team play",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "title": "Wolf Street",
@@ -3875,7 +4732,18 @@ const games = [
       "Two distinct winning roles keep both sides engaged",
       "Great chaotic energy for a bigger group"
     ],
-    "bggId": "436843"
+    "bggId": "436843",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "not_recommended",
+      "5": "not_recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "best",
+      "11": "recommended"
+    }
   },
   {
     "bggId": "445423",
@@ -3899,7 +4767,12 @@ const games = [
       "Small player range keeps the table tight and interactive",
       "A newer release worth trying if you like getting to games early"
     ],
-    "tag": "Strategy · quick play"
+    "tag": "Strategy · quick play",
+    "playerRecommendations": {
+      "3": "best",
+      "4": "best",
+      "5": "best"
+    }
   },
   {
     "bggId": "306321",
@@ -3923,7 +4796,17 @@ const games = [
       "Silent communication makes for a lot of frantic gesturing",
       "Short rounds mean losing doesn't sting for long"
     ],
-    "tag": "Party · hidden movement"
+    "tag": "Party · hidden movement",
+    "playerRecommendations": {
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "bggId": "445424",
@@ -3947,7 +4830,13 @@ const games = [
       "The escalating-tension hook keeps the whole table engaged, not just the active player",
       "Scales down to solo if you just want to test yourself"
     ],
-    "tag": "Push-your-luck"
+    "tag": "Push-your-luck",
+    "playerRecommendations": {
+      "1": "no_data",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "464675",
@@ -3971,7 +4860,11 @@ const games = [
       "Compact components make it genuinely portable",
       "A quick fix for Catan fans between full games"
     ],
-    "tag": "Trading · travel game"
+    "tag": "Trading · travel game",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "344768",
@@ -3995,7 +4888,13 @@ const games = [
       "Lighter and quicker than its heavier sibling, Smartphone Inc.",
       "Rewards reading the market as much as building a good phone"
     ],
-    "tag": "Economic · market simulation"
+    "tag": "Economic · market simulation",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "best",
+      "3": "recommended",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "393456",
@@ -4019,7 +4918,12 @@ const games = [
       "Tight 45-60 minute runtime for a game with real strategic depth",
       "Charming period art brings early cinema history to the table"
     ],
-    "tag": "Engine-building · cinema theme"
+    "tag": "Engine-building · cinema theme",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "135779",
@@ -4043,7 +4947,15 @@ const games = [
       "Works with almost no reading — just draw and deduce",
       "Every round produces a genuinely funny collaborative doodle"
     ],
-    "tag": "Social deduction · drawing"
+    "tag": "Social deduction · drawing",
+    "playerRecommendations": {
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "bggId": "12942",
@@ -4067,7 +4979,14 @@ const games = [
       "Consecutive-number scoring adds real push-your-luck tension",
       "One of the best pure fillers ever printed"
     ],
-    "tag": "Filler · push-your-luck"
+    "tag": "Filler · push-your-luck",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "recommended",
+      "7": "recommended"
+    }
   },
   {
     "bggId": "408547",
@@ -4091,7 +5010,14 @@ const games = [
       "Prompts reward creative, specific answers over safe ones",
       "Quick 20-minute rounds keep it moving"
     ],
-    "tag": "Party · word game"
+    "tag": "Party · word game",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "229414",
@@ -4115,7 +5041,12 @@ const games = [
       "The bubble always pops — the only question is who cashes out first",
       "Tense and cutthroat without dragging past an hour"
     ],
-    "tag": "Stock market · bubble economy"
+    "tag": "Stock market · bubble economy",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "256804",
@@ -4139,7 +5070,18 @@ const games = [
       "Rules explain themselves in under two minutes",
       "Cartoon art keeps it approachable for non-gamers"
     ],
-    "tag": "Party · card game"
+    "tag": "Party · card game",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "best",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "bggId": "396618",
@@ -4163,7 +5105,12 @@ const games = [
       "Short enough to fit two plays into one game night",
       "Relaxed pace makes it an easy non-gamer recommendation"
     ],
-    "tag": "Tile-laying · nature"
+    "tag": "Tile-laying · nature",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "206051",
@@ -4187,7 +5134,14 @@ const games = [
       "Fast rounds mean you can play it three times before anyone's bored",
       "A reliable warm-up before a heavier game night"
     ],
-    "tag": "Social deduction · quick"
+    "tag": "Social deduction · quick",
+    "playerRecommendations": {
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "277670",
@@ -4211,7 +5165,14 @@ const games = [
       "Ritual and investigation framing adds a layer beyond simple lying and voting",
       "Quick to teach if your group already knows the genre"
     ],
-    "tag": "Social deduction · big group"
+    "tag": "Social deduction · big group",
+    "playerRecommendations": {
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "best",
+      "8": "best"
+    }
   },
   {
     "bggId": "412230",
@@ -4235,7 +5196,14 @@ const games = [
       "Negotiation and persuasion matter more than any card or die",
       "Best with a group willing to actually argue their case"
     ],
-    "tag": "Negotiation · social"
+    "tag": "Negotiation · social",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended"
+    }
   },
   {
     "bggId": "152242",
@@ -4259,7 +5227,16 @@ const games = [
       "A huge character deck lets the Moderator dial the chaos up or down",
       "Zero setup complexity: just cards, a rulebook, and a loud room"
     ],
-    "tag": "Social deduction · party"
+    "tag": "Social deduction · party",
+    "playerRecommendations": {
+      "5": "not_recommended",
+      "6": "not_recommended",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "best"
+    }
   },
   {
     "title": "Two Rooms and a Boom",
@@ -4283,7 +5260,15 @@ const games = [
       "No board or setup once everyone knows the rules",
       "Constant hostage swaps keep tension high the whole game"
     ],
-    "bggId": "134352"
+    "bggId": "134352",
+    "playerRecommendations": {
+      "6": "not_recommended",
+      "7": "not_recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "title": "In Front of the Elevators",
@@ -4307,7 +5292,12 @@ const games = [
       "Teachable in under a minute",
       "A great palate cleanser between bigger games"
     ],
-    "bggId": "278751"
+    "bggId": "278751",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "131357",
@@ -4331,7 +5321,14 @@ const games = [
       "Every card you claim could be a lie — or a trap",
       "A staple bluffing game that still holds up as a filler"
     ],
-    "tag": "Bluffing · filler"
+    "tag": "Bluffing · filler",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "377983",
@@ -4355,7 +5352,13 @@ const games = [
       "Fast 30-minute runtime fits easily between bigger games",
       "Tower theme gives every game a literal sense of building something"
     ],
-    "tag": "Card game · tableau building"
+    "tag": "Card game · tableau building",
+    "playerRecommendations": {
+      "2": "no_data",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "45",
@@ -4379,7 +5382,18 @@ const games = [
       "No reading required, just nerve and a bit of probability instinct",
       "Elimination keeps tension high as the table thins out"
     ],
-    "tag": "Bluffing · dice"
+    "tag": "Bluffing · dice",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "not_recommended",
+      "9": "not_recommended",
+      "10": "not_recommended"
+    }
   },
   {
     "bggId": "238935",
@@ -4403,7 +5417,14 @@ const games = [
       "Easy rules make it a solid icebreaker for mixed groups",
       "Rewards reading people as much as reading cards"
     ],
-    "tag": "Bluffing · filler"
+    "tag": "Bluffing · filler",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "no_data",
+      "6": "no_data"
+    }
   },
   {
     "bggId": "20100",
@@ -4427,7 +5448,14 @@ const games = [
       "Rounds move fast enough to fit a dozen questions in one sitting",
       "A great icebreaker for groups that don't normally game together"
     ],
-    "tag": "Party · trivia"
+    "tag": "Party · trivia",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best"
+    }
   },
   {
     "bggId": "410382",
@@ -4451,7 +5479,16 @@ const games = [
       "No prep, no strategy — just pure party-game instinct",
       "Quick rounds make it an easy pick between bigger games"
     ],
-    "tag": "Party · guessing"
+    "tag": "Party · guessing",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "best",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "254681",
@@ -4475,7 +5512,15 @@ const games = [
       "Silly premise keeps things from feeling too cutthroat",
       "Plays fast enough for multiple rounds in a night"
     ],
-    "tag": "Bluffing · negotiation"
+    "tag": "Bluffing · negotiation",
+    "playerRecommendations": {
+      "3": "no_data",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "best",
+      "8": "best"
+    }
   },
   {
     "bggId": "417224",
@@ -4499,7 +5544,12 @@ const games = [
       "Performance-based gameplay gets louder as the night goes on",
       "No reading or writing skills required — pure improv"
     ],
-    "tag": "Party · performance"
+    "tag": "Party · performance",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "not_recommended"
+    }
   },
   {
     "bggId": "2453",
@@ -4523,7 +5573,12 @@ const games = [
       "No luck, no hidden information — pure positional strategy",
       "Colorful pieces make it an easy sell to non-gamers and kids alike"
     ],
-    "tag": "Abstract · spatial strategy"
+    "tag": "Abstract · spatial strategy",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "not_recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "215371",
@@ -4547,7 +5602,14 @@ const games = [
       "Rewards knowing your friends' sense of humor",
       "Scales comfortably up to eight players"
     ],
-    "tag": "Party · communication"
+    "tag": "Party · communication",
+    "playerRecommendations": {
+      "4": "best",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "best"
+    }
   },
   {
     "bggId": "169654",
@@ -4571,7 +5633,14 @@ const games = [
       "Quick to teach, quicker to create table groans",
       "Tiny footprint, big tension for its size"
     ],
-    "tag": "Push-your-luck · filler"
+    "tag": "Push-your-luck · filler",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "415780",
@@ -4595,7 +5664,13 @@ const games = [
       "Simple enough to teach between rounds of something heavier",
       "Fishing theme without any actual patience required"
     ],
-    "tag": "Filler · fishing"
+    "tag": "Filler · fishing",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "11971",
@@ -4619,7 +5694,14 @@ const games = [
       "Rounds are short enough to slot between bigger games",
       "A reliable icebreaker that needs almost no rules explanation"
     ],
-    "tag": "Bluffing · quick"
+    "tag": "Bluffing · quick",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "recommended"
+    }
   },
   {
     "bggId": "193308",
@@ -4643,7 +5725,18 @@ const games = [
       "Rounds are fast enough to play three in a row without anyone getting bored",
       "The whole game is just clever questioning — no boards or cards to manage mid-round"
     ],
-    "tag": "Social deduction · party"
+    "tag": "Social deduction · party",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "bggId": "115",
@@ -4667,7 +5760,13 @@ const games = [
       "Works well with a full table of six",
       "A one-hour runtime keeps sessions from overstaying their welcome"
     ],
-    "tag": "Party · social"
+    "tag": "Party · social",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best"
+    }
   },
   {
     "bggId": "257067",
@@ -4691,7 +5790,12 @@ const games = [
       "Runs long enough to reward planning several turns ahead",
       "Best as a dedicated two-player showdown"
     ],
-    "tag": "Dueling · arena combat"
+    "tag": "Dueling · arena combat",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "359893",
@@ -4715,7 +5819,16 @@ const games = [
       "Scales up to ten players without needing extra rules",
       "Quick rounds keep the energy up all night"
     ],
-    "tag": "Party · bluffing"
+    "tag": "Party · bluffing",
+    "playerRecommendations": {
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "best",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "bggId": "244992",
@@ -4739,7 +5852,12 @@ const games = [
       "Tension builds physically as everyone hesitates over the same card",
       "One of the purest 'group flow' experiences in tabletop gaming"
     ],
-    "tag": "Cooperative · minimalist"
+    "tag": "Cooperative · minimalist",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "356907",
@@ -4763,7 +5881,17 @@ const games = [
       "Scales up to twelve players without losing its bite",
       "A full round takes minutes, so it's easy to play again immediately"
     ],
-    "tag": "Bluffing · big group"
+    "tag": "Bluffing · big group",
+    "playerRecommendations": {
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "best",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "not_recommended"
+    }
   },
   {
     "bggId": "230765",
@@ -4787,7 +5915,16 @@ const games = [
       "No prep, no long rules explanation, straight into the guessing",
       "Flexible player count makes it an easy pick for a mixed group"
     ],
-    "tag": "Party · trivia"
+    "tag": "Party · trivia",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "302595",
@@ -4811,7 +5948,16 @@ const games = [
       "Rounds wrap up in minutes, so nobody sits out long",
       "A natural pick for fans of the anime and manga"
     ],
-    "tag": "Social deduction · licensed"
+    "tag": "Social deduction · licensed",
+    "playerRecommendations": {
+      "5": "no_data",
+      "6": "no_data",
+      "7": "no_data",
+      "8": "no_data",
+      "9": "no_data",
+      "10": "no_data",
+      "11": "no_data"
+    }
   },
   {
     "bggId": "194626",
@@ -4835,7 +5981,15 @@ const games = [
       "Zero setup and zero downtime between players",
       "A reliable energy boost to open or close a game night"
     ],
-    "tag": "Party · dexterity"
+    "tag": "Party · dexterity",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "624",
@@ -4859,7 +6013,12 @@ const games = [
       "Plays in fifteen minutes flat, so it's easy to squeeze in a rematch",
       "A genuine classic — sharp with two, chaotic with four"
     ],
-    "tag": "Abstract"
+    "tag": "Abstract",
+    "playerRecommendations": {
+      "2": "best",
+      "3": "not_recommended",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "263360",
@@ -4883,7 +6042,10 @@ const games = [
       "Approachable enough for a non-gamer partner",
       "Charming, low-stakes theme that doesn't take itself too seriously"
     ],
-    "tag": "Two-player · light"
+    "tag": "Two-player · light",
+    "playerRecommendations": {
+      "2": "best"
+    }
   },
   {
     "bggId": "453430",
@@ -4907,7 +6069,13 @@ const games = [
       "Simple spellcasting keeps the barrier to entry low",
       "A solid pick when the group wants something punchy and competitive"
     ],
-    "tag": "Light · duel"
+    "tag": "Light · duel",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "best"
+    }
   },
   {
     "bggId": "302917",
@@ -4931,7 +6099,12 @@ const games = [
       "Small footprint makes it an easy fit on a crowded shelf",
       "Quick enough to demand an immediate rematch after a loss"
     ],
-    "tag": "Abstract strategy"
+    "tag": "Abstract strategy",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "277458",
@@ -4955,7 +6128,13 @@ const games = [
       "Rounds are over almost as fast as they start",
       "Works as a solo puzzle or a tense multiplayer standoff"
     ],
-    "tag": "Dexterity · quick"
+    "tag": "Dexterity · quick",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "279477",
@@ -4979,7 +6158,12 @@ const games = [
       "Hidden-agenda tension keeps a small table on edge",
       "Works well as a warm-up before heavier games"
     ],
-    "tag": "Bluffing · family theme"
+    "tag": "Bluffing · family theme",
+    "playerRecommendations": {
+      "2": "no_data",
+      "3": "no_data",
+      "4": "no_data"
+    }
   },
   {
     "bggId": "423792",
@@ -5003,7 +6187,18 @@ const games = [
       "No reading a rulebook — just draw a card and talk",
       "Good for breaking the ice at gatherings that skew non-gamer"
     ],
-    "tag": "Party · icebreaker"
+    "tag": "Party · icebreaker",
+    "playerRecommendations": {
+      "3": "no_data",
+      "4": "best",
+      "5": "best",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "no_data",
+      "10": "no_data",
+      "11": "no_data"
+    }
   },
   {
     "bggId": "388413",
@@ -5027,7 +6222,13 @@ const games = [
       "Fast rounds keep everyone engaged without dragging on",
       "A gentle nature theme that's a nice change of pace from combat and conquest"
     ],
-    "tag": "Family · light"
+    "tag": "Family · light",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "227072",
@@ -5051,7 +6252,15 @@ const games = [
       "Works with big groups without slowing down",
       "The chameleon's escape routes make every round different"
     ],
-    "tag": "Social deduction · party"
+    "tag": "Social deduction · party",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "best",
+      "8": "recommended"
+    }
   },
   {
     "bggId": "191895",
@@ -5075,7 +6284,14 @@ const games = [
       "Low rules overhead means minimal teaching time",
       "A casual pick for mixed-age or first-time groups"
     ],
-    "tag": "Family · light"
+    "tag": "Family · light",
+    "playerRecommendations": {
+      "2": "not_recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "best"
+    }
   },
   {
     "bggId": "3955",
@@ -5099,7 +6315,13 @@ const games = [
       "Secret roles create shifting alliances round to round",
       "Runs fast enough for two or three plays in one sitting"
     ],
-    "tag": "Hidden role · Wild West"
+    "tag": "Hidden role · Wild West",
+    "playerRecommendations": {
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "best"
+    }
   },
   {
     "bggId": "3093",
@@ -5123,7 +6345,12 @@ const games = [
       "Short playtime suits a pre-dinner round",
       "Charming frog theme that doesn't take itself seriously"
     ],
-    "tag": "Family · light"
+    "tag": "Family · light",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best"
+    }
   },
   {
     "bggId": "261262",
@@ -5147,7 +6374,13 @@ const games = [
       "Short, silly rounds make it a natural warm-up or palate cleanser",
       "Good pick for mixed-age or casual game nights"
     ],
-    "tag": "Party · filler"
+    "tag": "Party · filler",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "best"
+    }
   },
   {
     "bggId": "105593",
@@ -5171,7 +6404,12 @@ const games = [
       "Fast, loud, and over almost as soon as it starts",
       "Easy to teach in under a minute"
     ],
-    "tag": "Speed · card game"
+    "tag": "Speed · card game",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "413461",
@@ -5195,7 +6433,17 @@ const games = [
       "Alien-versus-crew premise makes the paranoia easy to buy into",
       "Plays up to ten, so it's built for a full table"
     ],
-    "tag": "Social deduction · hidden role"
+    "tag": "Social deduction · hidden role",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "not_recommended",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "best",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "bggId": "383981",
@@ -5219,7 +6467,13 @@ const games = [
       "Solo mode holds up if you just want to build in peace",
       "Rewards careful sequencing over big flashy plays"
     ],
-    "tag": "City-building"
+    "tag": "City-building",
+    "playerRecommendations": {
+      "1": "recommended",
+      "2": "recommended",
+      "3": "best",
+      "4": "recommended"
+    }
   },
   {
     "bggId": "433075",
@@ -5243,7 +6497,12 @@ const games = [
       "Short rounds keep the energy up",
       "A solid icebreaker for groups that don't already know each other well"
     ],
-    "tag": "Party · guessing"
+    "tag": "Party · guessing",
+    "playerRecommendations": {
+      "3": "recommended",
+      "4": "recommended",
+      "5": "best"
+    }
   },
   {
     "bggId": "367601",
@@ -5267,7 +6526,19 @@ const games = [
       "Sound-based guessing keeps rounds fast and a little chaotic",
       "Works as a background party activity as much as a sit-down game"
     ],
-    "tag": "Party · trivia"
+    "tag": "Party · trivia",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "best",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "no_data",
+      "10": "no_data",
+      "11": "no_data"
+    }
   },
   {
     "bggId": "386826",
@@ -5291,7 +6562,16 @@ const games = [
       "Rules light enough to explain in one breath",
       "Leans into silliness instead of taking itself seriously"
     ],
-    "tag": "Party · social"
+    "tag": "Party · social",
+    "playerRecommendations": {
+      "2": "no_data",
+      "3": "no_data",
+      "4": "no_data",
+      "5": "no_data",
+      "6": "no_data",
+      "7": "no_data",
+      "8": "no_data"
+    }
   },
   {
     "bggId": "370772",
@@ -5315,7 +6595,13 @@ const games = [
       "Easy to teach in under a minute",
       "Works well as a warm-up before heavier games"
     ],
-    "tag": "Social deduction · party"
+    "tag": "Social deduction · party",
+    "playerRecommendations": {
+      "3": "no_data",
+      "4": "no_data",
+      "5": "best",
+      "6": "best"
+    }
   },
   {
     "bggId": "184522",
@@ -5339,7 +6625,15 @@ const games = [
       "Punishing the loser makes every round matter",
       "Loud, fast, and built for big-group game nights"
     ],
-    "tag": "Party · big group"
+    "tag": "Party · big group",
+    "playerRecommendations": {
+      "6": "recommended",
+      "7": "recommended",
+      "8": "best",
+      "9": "best",
+      "10": "best",
+      "11": "recommended"
+    }
   },
   {
     "bggId": "328536",
@@ -5363,7 +6657,14 @@ const games = [
       "Simple rules make it an easy pick for a filler slot",
       "Whimsical fish-market theme with a wink of humor"
     ],
-    "tag": "Bidding · filler"
+    "tag": "Bidding · filler",
+    "playerRecommendations": {
+      "2": "no_data",
+      "3": "no_data",
+      "4": "best",
+      "5": "best",
+      "6": "no_data"
+    }
   },
   {
     "bggId": "17027",
@@ -5387,7 +6688,13 @@ const games = [
       "Great energy for a group that wants something active, not cerebral",
       "Short rounds keep everyone cycling back in for another turn"
     ],
-    "tag": "Dexterity · party"
+    "tag": "Dexterity · party",
+    "playerRecommendations": {
+      "3": "not_recommended",
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best"
+    }
   },
   {
     "bggId": "295646",
@@ -5411,7 +6718,16 @@ const games = [
       "Scales comfortably up to ten players for a party-sized group",
       "Quick rounds make it easy to reshuffle roles and go again"
     ],
-    "tag": "Social deduction · party"
+    "tag": "Social deduction · party",
+    "playerRecommendations": {
+      "4": "recommended",
+      "5": "recommended",
+      "6": "best",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended"
+    }
   },
   {
     "bggId": "406538",
@@ -5435,7 +6751,16 @@ const games = [
       "Easygoing enough for players who don't game often",
       "A good palate cleanser between heavier titles"
     ],
-    "tag": "Party · family"
+    "tag": "Party · family",
+    "playerRecommendations": {
+      "4": "no_data",
+      "5": "no_data",
+      "6": "no_data",
+      "7": "no_data",
+      "8": "no_data",
+      "9": "no_data",
+      "10": "no_data"
+    }
   },
   {
     "bggId": "386102",
@@ -5459,7 +6784,18 @@ const games = [
       "Scales to a big table without slowing down",
       "Simple enough to teach in one sentence"
     ],
-    "tag": "Party · quick filler"
+    "tag": "Party · quick filler",
+    "playerRecommendations": {
+      "3": "no_data",
+      "4": "recommended",
+      "5": "best",
+      "6": "recommended",
+      "7": "recommended",
+      "8": "recommended",
+      "9": "recommended",
+      "10": "recommended",
+      "11": "recommended"
+    }
   },
   {
     "bggId": "410185",
@@ -5483,7 +6819,14 @@ const games = [
       "Rewards spatial planning over luck",
       "A quiet change of pace from the shelf's louder party games"
     ],
-    "tag": "Puzzle · solo-friendly"
+    "tag": "Puzzle · solo-friendly",
+    "playerRecommendations": {
+      "1": "no_data",
+      "2": "no_data",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    }
   },
   {
     "bggId": "198961",
@@ -5507,10 +6850,22 @@ const games = [
       "Physical tension keeps even short attention spans locked in",
       "A reliable pick for family game night with mixed ages"
     ],
-    "tag": "Kids · dexterity"
+    "tag": "Kids · dexterity",
+    "playerRecommendations": {
+      "2": "recommended",
+      "3": "best",
+      "4": "best",
+      "5": "recommended",
+      "6": "recommended",
+      "7": "not_recommended",
+      "8": "not_recommended",
+      "9": "not_recommended",
+      "10": "not_recommended",
+      "11": "not_recommended"
+    }
   }
 ];
-const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, time:"any", weight:"any" };
+const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, time:"any", weight:"any", bestFit:false };
 const state = {
   filters: { ...DEFAULT_FILTERS },
   search: "",
@@ -5519,13 +6874,14 @@ const state = {
 let draftFilters = { ...DEFAULT_FILTERS };
 
 function isFilterActive(filters){
-  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any";
+  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any" || filters.bestFit;
 }
 function activeGroupCount(filters){
   let n = 0;
   if(filters.minPlayers !== 1 || filters.maxPlayers !== 11) n++;
   if(filters.time !== "any") n++;
   if(filters.weight !== "any") n++;
+  if(filters.bestFit) n++;
   return n;
 }
 function playersLabel(filters){
@@ -5546,9 +6902,22 @@ function playersMatch(g, filters){
     ? g.players[1] >= filters.minPlayers
     : g.players[0] <= filters.maxPlayers && g.players[1] >= filters.minPlayers;
 }
+function bestFitMatch(g, filters){
+  if(!filters.bestFit) return true;
+  const rec = g.playerRecommendations;
+  if(!rec) return false;
+  // "11" on the slider stands for "11+"; cap the check at what the game actually supports
+  const upper = filters.maxPlayers === 11 ? Math.min(11, g.players[1]) : filters.maxPlayers;
+  for(let n = filters.minPlayers; n <= upper; n++){
+    const label = rec[String(n)];
+    if(label !== "best" && label !== "recommended") return false;
+  }
+  return true;
+}
 function applyFilters(list, filters, search){
   return list.filter(g=>{
     if(!playersMatch(g, filters)) return false;
+    if(!bestFitMatch(g, filters)) return false;
     if(filters.time!=="any" && timeBucket(g.time)!==filters.time) return false;
     if(filters.weight!=="any" && g.weight!==filters.weight) return false;
     if(search && !g.title.toLowerCase().includes(search)) return false;
@@ -5704,6 +7073,9 @@ function renderChips(){
     const labels = { light:'Light', medium:'Medium', heavy:'Heavy' };
     chips.push({ key:'weight', label: labels[state.filters.weight] });
   }
+  if(state.filters.bestFit){
+    chips.push({ key:'bestFit', label: 'Recommended counts only' });
+  }
   if(chips.length===0){
     row.hidden = true;
     row.innerHTML = '';
@@ -5720,6 +7092,7 @@ function renderChips(){
     btn.addEventListener('click', ()=>{
       const key = btn.closest('.chip').dataset.key;
       if(key==='players'){ state.filters.minPlayers = 1; state.filters.maxPlayers = 11; }
+      else if(key==='bestFit'){ state.filters.bestFit = false; }
       else state.filters[key] = 'any';
       render();
     });
@@ -5736,6 +7109,7 @@ const rangeFill = document.getElementById('rangeFill');
 const numberCueRow = document.getElementById('numberCueRow');
 const playersGroupLabel = document.getElementById('playersGroupLabel');
 const applyBtn = document.getElementById('applyBtn');
+const bestFitToggle = document.getElementById('bestFitToggle');
 
 function syncSheetUI(){
   rangeMin.value = draftFilters.minPlayers;
@@ -5748,6 +7122,7 @@ function syncSheetUI(){
       p.setAttribute('aria-pressed', String(isActive));
     });
   });
+  bestFitToggle.setAttribute('aria-checked', String(draftFilters.bestFit));
   updateLiveCount();
 }
 
@@ -5778,6 +7153,12 @@ function clampRange(){
 }
 rangeMin.addEventListener('input', clampRange);
 rangeMax.addEventListener('input', clampRange);
+
+bestFitToggle.addEventListener('click', ()=>{
+  draftFilters.bestFit = !draftFilters.bestFit;
+  bestFitToggle.setAttribute('aria-checked', String(draftFilters.bestFit));
+  updateLiveCount();
+});
 
 document.querySelectorAll('.segmented').forEach(group=>{
   group.addEventListener('click', (e)=>{
