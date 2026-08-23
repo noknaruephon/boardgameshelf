@@ -355,13 +355,19 @@
     cursor:pointer;
   }
   .number-cue-row{
-    display:flex;
-    justify-content:space-between;
+    position:relative;
+    height:12px;
     font-family:'IBM Plex Mono',monospace;
     font-size:9.5px;
     color:var(--bgs-ivory-70);
     opacity:0.55;
-    padding:0 2px;
+    margin:0 2px;
+  }
+  .number-cue-row span{
+    position:absolute;
+    top:0;
+    transform:translateX(-50%);
+    white-space:nowrap;
   }
   .number-cue-row span.active{color:var(--bgs-gold);font-weight:600;opacity:1;}
 
@@ -834,7 +840,7 @@
         <input type="range" min="1" max="11" step="1" value="11" id="rangeMax" class="range-input" aria-label="Maximum players">
       </div>
       <div class="number-cue-row" id="numberCueRow">
-        <span data-n="1">1</span><span data-n="2">2</span><span data-n="3">3</span><span data-n="4">4</span><span data-n="5">5</span><span data-n="6">6</span><span data-n="7">7</span><span data-n="8">8</span><span data-n="9">9</span><span data-n="10">10</span><span data-n="11">11+</span>
+        <span data-n="1" style="left:calc(10px + (100% - 20px) * 0)">1</span><span data-n="2" style="left:calc(10px + (100% - 20px) * 0.1)">2</span><span data-n="3" style="left:calc(10px + (100% - 20px) * 0.2)">3</span><span data-n="4" style="left:calc(10px + (100% - 20px) * 0.3)">4</span><span data-n="5" style="left:calc(10px + (100% - 20px) * 0.4)">5</span><span data-n="6" style="left:calc(10px + (100% - 20px) * 0.5)">6</span><span data-n="7" style="left:calc(10px + (100% - 20px) * 0.6)">7</span><span data-n="8" style="left:calc(10px + (100% - 20px) * 0.7)">8</span><span data-n="9" style="left:calc(10px + (100% - 20px) * 0.8)">9</span><span data-n="10" style="left:calc(10px + (100% - 20px) * 0.9)">10</span><span data-n="11" style="left:calc(10px + (100% - 20px) * 1)">11+</span>
       </div>
       <button type="button" class="toggle-row" id="bestFitToggle" role="switch" aria-checked="false">
         <span class="toggle-switch" aria-hidden="true"></span>
