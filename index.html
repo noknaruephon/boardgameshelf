@@ -24,6 +24,7 @@
     --bgs-gold-rgb:227,176,75;
     /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim */
     --bgs-gold-dim:rgba(227,176,75,0.62);
+    --bgs-icon-gold:#e2b463;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -671,6 +672,7 @@
     align-items:center;
     gap:6px;
   }
+  .stat-icon{ color:var(--bgs-icon-gold); flex-shrink:0; }
   .card p.blurb{
     font-size:15px;
     line-height:1.6;
@@ -7001,9 +7003,9 @@ function openCard(g){
     ${coverHtml}
     <h2>${g.title}</h2>
     <div class="stat-row">
-      <span class="stat-chip">👥 ${g.players[0]}${g.players[1]!==g.players[0] ? '–'+g.players[1] : ''}</span>
-      <span class="stat-chip">⏱ ${timeLabel(g.time)}</span>
-      <span class="stat-chip">⚖ ${weightLabel(g.weightScore)}</span>
+      <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="8" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 15c2.5.3 4.5 2 4.5 5"/></svg> ${g.players[0]}${g.players[1]!==g.players[0] ? '–'+g.players[1] : ''}</span>
+      <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg> ${timeLabel(g.time)}</span>
+      <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 006 0z"/><path d="M19 7l-3 6a3 3 0 006 0z"/><path d="M5 7h14"/><path d="M9 21h6"/></svg> ${weightLabel(g.weightScore)}</span>
     </div>
     <p class="blurb">${g.blurb}</p>
     <p class="why-heading">Highlights</p>
