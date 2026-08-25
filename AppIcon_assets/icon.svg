@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="BoardgameShelf">
+  <defs>
+    <radialGradient id="bg" cx="0.5" cy="0" r="0.95">
+      <stop offset="0" stop-color="#241708"></stop>
+      <stop offset="0.62" stop-color="#160F0A"></stop>
+      <stop offset="1" stop-color="#160F0A"></stop>
+    </radialGradient>
+    
+  </defs>
+  <rect x="0" y="0" width="1024" height="1024" rx="229" ry="229" fill="url(#bg)"></rect>
+  <text class="mono" x="512" y="612" text-anchor="middle" font-size="471" fill="#F4EBDA">B</text>
+  <g fill="#E3B04B">
+    <rect x="404" y="668" width="33" height="77" rx="8"></rect>
+    <rect x="513" y="658" width="33" height="90" rx="8" fill="rgba(227,176,75,0.62)"></rect>
+    <rect x="559" y="682" width="33" height="66" rx="8" transform="rotate(13 575 748)"></rect>
+    <rect x="393" y="766" width="215" height="18" rx="9"></rect>
+  </g>
+  <rect x="458" y="640" width="33" height="108" rx="8" fill="#F4EBDA"></rect>
+</svg>
