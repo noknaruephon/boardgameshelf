@@ -1302,11 +1302,17 @@ function render(){
 
   countEl.textContent = `${filtered.length} of ${games.length} on the shelf`;
 
+  // Cached for the tray's "hidden by filters" tags. Only what's *filtered* can
+  // change it, and every such change comes through here — so selection toggles
+  // never need to re-run applyFilters.
+  gnFilteredIds = new Set(filtered.map(g => g.bggId));
+
   updateFilterButton();
   renderChips();
 
   if(filtered.length===0){
     shelf.innerHTML = `<p class="empty-state">Nothing fits that combo. Try loosening a filter.</p>`;
+    if(gameNightVisible && state.selectionMode) updateGnBar();
     return;
   }
 
@@ -1314,6 +1320,7 @@ function render(){
     const el = document.createElement('button');
     const isSelected = gameNightVisible && state.selectedIds.has(g.bggId);
     el.className = 'game-card' + (isSelected ? ' selected' : '');
+    el.dataset.id = g.bggId;
     el.innerHTML = `
       ${gameNightVisible ? '<span class="sel-ring"></span>' : ''}
       <div class="art">
@@ -1674,14 +1681,34 @@ function gnPool(){
   return applyFilters(games, state.filters, state.search);
 }
 
+// Kept in sync by render(); see the note there.
+let gnFilteredIds = new Set();
+
 function gnFilteredIdSet(){
-  return new Set(gnPool().map(g => g.bggId));
+  return gnFilteredIds;
 }
 
+// Null when the game is filtered out of the current view — selections persist
+// across filter changes, so every caller has to tolerate that.
+function cardNodeFor(id){
+  return document.getElementById('shelf').querySelector(`.game-card[data-id="${id}"]`);
+}
+
+function clearSelectedCards(){
+  document.getElementById('shelf')
+    .querySelectorAll('.game-card.selected')
+    .forEach(el => el.classList.remove('selected'));
+}
+
+// Deliberately does NOT call render(): selecting a game changes neither what
+// matches the filters nor the order, so rebuilding the grid would only throw
+// away the cover images and the scroll position.
 function toggleSelect(g){
-  if(state.selectedIds.has(g.bggId)) state.selectedIds.delete(g.bggId);
-  else state.selectedIds.add(g.bggId);
-  render(); // refreshes the bar/tray too, since selection mode is active
+  const nowSelected = !state.selectedIds.has(g.bggId);
+  if(nowSelected) state.selectedIds.add(g.bggId);
+  else state.selectedIds.delete(g.bggId);
+  cardNodeFor(g.bggId)?.classList.toggle('selected', nowSelected);
+  updateGnBar();
   syncStickyAction();
 }
 
@@ -1725,18 +1752,22 @@ function currentGnGameIds(){
 
 // ---- selection mode: bottom bar + tray ----
 
+// The cards carry their checkbox and info button whenever gameNightVisible is
+// true; only `body.gn-selecting` decides whether they show. So switching modes
+// is a body-class flip, not a re-render.
 function enterSelectionMode(){
   state.selectionMode = true;
   document.body.classList.add('gn-selecting');
-  render();
+  updateGnBar();
 }
 
 function exitSelectionMode(){
   state.selectionMode = false;
   state.selectedIds.clear();
+  clearSelectedCards();
   document.body.classList.remove('gn-selecting');
   closeGnTray();
-  render();
+  updateGnBar();
 }
 
 function openGnTray(){ document.body.classList.add('gn-tray-open'); }
@@ -1777,8 +1808,10 @@ function renderGnTray(){
   }).join('');
   list.querySelectorAll('[data-remove]').forEach(btn => {
     btn.addEventListener('click', ()=>{
-      state.selectedIds.delete(btn.dataset.remove);
-      render();
+      const id = btn.dataset.remove;
+      state.selectedIds.delete(id);
+      cardNodeFor(id)?.classList.remove('selected');
+      updateGnBar();
       syncStickyAction();
     });
   });
@@ -2012,7 +2045,8 @@ function initGameNight(){
   document.getElementById('gnScrim').addEventListener('click', closeGnTray);
   document.getElementById('gnTrayClear').addEventListener('click', ()=>{
     state.selectedIds.clear();
-    render();
+    clearSelectedCards();
+    updateGnBar();
     syncStickyAction();
   });
   document.getElementById('gnBarContinue').addEventListener('click', ()=>{
