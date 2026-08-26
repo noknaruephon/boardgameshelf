@@ -486,6 +486,7 @@
     text-align:left;
     font:inherit;
     color:inherit;
+    position:relative;
   }
   .game-card:hover{ transform:translateY(-2px); }
 
@@ -494,6 +495,7 @@
     width:100%;
     overflow:hidden;
     background:var(--bgs-plate);
+    position:relative;
   }
   .game-card .art img{ width:100%; height:100%; object-fit:cover; display:block; }
 
@@ -575,10 +577,13 @@
     animation:pop 0.18s ease;
     max-height:85vh;
     overflow:hidden;
+    display:flex;
+    flex-direction:column;
   }
   #card-body{
     padding:30px 30px 26px;
-    max-height:85vh;
+    flex:1 1 auto;
+    min-height:0;
     overflow-y:auto;
   }
   @keyframes pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
@@ -766,6 +771,383 @@
     line-height:1.55;
   }
 
+  /* ==== Game Night (Stage 1: session creation) ==== */
+
+  .gn-btn{
+    flex:none;
+    height:40px;
+    padding:0 14px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.18);
+    border-radius:12px;
+    color:var(--bgs-ivory-70);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:border-color 0.15s ease, color 0.15s ease;
+  }
+  .gn-btn:hover{border-color:var(--bgs-gold);color:var(--bgs-ivory);}
+
+  .gn-toast{
+    position:fixed;
+    left:50%;
+    bottom:28px;
+    transform:translateX(-50%) translateY(8px);
+    z-index:50;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.35);
+    color:var(--bgs-ivory);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:12px 18px;
+    border-radius:12px;
+    box-shadow:0 8px 24px -6px rgba(0,0,0,0.6);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s ease, transform 0.2s ease;
+  }
+  .gn-toast.open{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* generic modal shell reused by the chooser, surprise, and confirm steps */
+  .gn-backdrop{
+    position:fixed;inset:0;
+    background:rgba(var(--bgs-bg-rgb),0.66);
+    backdrop-filter:blur(3px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:40;
+  }
+  .gn-backdrop.open{display:flex;}
+  .gn-panel{
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.3);
+    border-radius:16px;
+    max-width:420px;
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    padding:26px 26px 22px;
+    animation:pop 0.18s ease;
+  }
+  .gn-panel h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:19px;
+    margin:0 0 6px;
+  }
+  .gn-panel .gn-sub{
+    font-size:13px;
+    color:var(--bgs-ivory-70);
+    margin:0 0 18px;
+    line-height:1.5;
+  }
+  .gn-option{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:rgba(var(--bgs-ivory-rgb),0.05);
+    border:1px solid rgba(var(--bgs-ivory-rgb),0.14);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    cursor:pointer;
+    font:inherit;
+    color:inherit;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .gn-option:hover{border-color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),0.08);}
+  .gn-option b{
+    display:block;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    margin-bottom:3px;
+    color:var(--bgs-ivory);
+  }
+  .gn-option span{font-size:12.5px;color:var(--bgs-ivory-70);}
+  .gn-cancel-link{
+    display:block;
+    width:100%;
+    background:none;
+    border:none;
+    color:var(--bgs-ivory-45);
+    font:inherit;
+    font-size:13px;
+    font-weight:600;
+    text-align:center;
+    padding:10px 0 0;
+    cursor:pointer;
+  }
+  .gn-cancel-link:hover{color:var(--bgs-ivory);}
+
+  .gn-surprise-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    margin:0 0 18px;
+  }
+  .gn-surprise-card{
+    border-radius:8px;
+    overflow:hidden;
+    background:var(--bgs-bg);
+  }
+  .gn-surprise-card .art{aspect-ratio:3/4;width:100%;overflow:hidden;background:var(--bgs-plate);}
+  .gn-surprise-card .art img{width:100%;height:100%;object-fit:cover;display:block;}
+  .gn-surprise-card .t{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:10.5px;
+    line-height:1.25;
+    padding:5px 5px 6px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .gn-row{display:flex;gap:10px;}
+  .gn-row .gn-secondary-btn{flex:1;}
+  .gn-row .gn-primary-btn{flex:1;}
+
+  .gn-secondary-btn{
+    background:transparent;
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.22);
+    color:var(--bgs-ivory-70);
+    font:inherit;
+    font-size:13px;
+    font-weight:600;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .gn-secondary-btn:hover{border-color:var(--bgs-gold);color:var(--bgs-ivory);}
+  .gn-primary-btn{
+    background:var(--bgs-gold);
+    color:var(--bgs-bg);
+    border:none;
+    font:inherit;
+    font-size:13px;
+    font-weight:700;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .gn-primary-btn:hover{filter:brightness(1.06);}
+  .gn-primary-btn:disabled{opacity:0.4;cursor:not-allowed;filter:none;}
+
+  .gn-field{margin-bottom:16px;}
+  .gn-field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--bgs-gold-dim);
+    margin-bottom:8px;
+  }
+  .gn-text-input{
+    width:100%;
+    background:var(--bgs-bg);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.22);
+    border-radius:10px;
+    color:var(--bgs-ivory);
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    padding:11px 13px;
+    outline:none;
+  }
+  .gn-text-input:focus{border-color:var(--bgs-gold);}
+  .gn-toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:none;
+    border:none;
+    padding:0;
+    width:100%;
+    cursor:pointer;
+    text-align:left;
+  }
+  .gn-toggle-row .toggle-label{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--bgs-ivory);
+  }
+  .gn-summary{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--bgs-gold-dim);
+    margin:2px 0 18px;
+  }
+  .gn-error{
+    font-size:12.5px;
+    color:#e07a5f;
+    margin:0 0 14px;
+    display:none;
+  }
+  .gn-error.show{display:block;}
+
+  /* ---- selection overlays on the shelf card ---- */
+  .sel-ring,.checkbox,.info-btn{display:none;}
+  body.gn-selecting .sel-ring{
+    display:block;
+    position:absolute;inset:0;z-index:3;
+    border:2px solid transparent;border-radius:10px;
+    pointer-events:none;transition:border-color 0.15s ease;
+  }
+  body.gn-selecting .game-card.selected .sel-ring{border-color:var(--bgs-gold);}
+  body.gn-selecting .checkbox{
+    display:flex;align-items:center;justify-content:center;
+    position:absolute;top:6px;left:6px;z-index:4;
+    width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,0.55);
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);backdrop-filter:blur(3px);
+    transition:background 0.15s ease, border-color 0.15s ease;
+  }
+  body.gn-selecting .checkbox svg{width:13px;height:13px;opacity:0;transition:opacity 0.12s ease;}
+  body.gn-selecting .game-card.selected .checkbox{background:var(--bgs-gold);border-color:var(--bgs-gold);}
+  body.gn-selecting .game-card.selected .checkbox svg{opacity:1;}
+  body.gn-selecting .info-btn{
+    display:flex;align-items:center;justify-content:center;
+    position:absolute;top:0;right:0;z-index:4;width:40px;height:40px;
+    border:none;background:transparent;cursor:pointer;padding:0;
+  }
+  body.gn-selecting .info-btn i{
+    display:flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.55);
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);backdrop-filter:blur(3px);
+    font-style:normal;font-size:12px;font-weight:700;color:var(--bgs-ivory-70);font-family:'Fraunces',serif;
+  }
+  body.gn-selecting .info-btn:hover i{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+  body.gn-selecting .game-card:not(.selected) .art img{opacity:0.62;transition:opacity 0.15s ease;}
+
+  /* ---- bottom bar ---- */
+  .gn-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:15;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:rgba(var(--bgs-bg-rgb),0.94);backdrop-filter:blur(10px);
+    border-top:1px solid rgba(var(--bgs-gold-rgb),0.25);
+    display:none;align-items:center;transform:translateY(100%);
+    transition:transform 0.22s cubic-bezier(.2,.8,.3,1);
+  }
+  body.gn-selecting .gn-bar{display:flex;transform:translateY(0);}
+  .gn-bar__cancel{
+    background:transparent;border:none;color:var(--bgs-ivory-45);
+    font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:10px 4px;margin-right:auto;
+  }
+  .gn-bar__count{
+    position:absolute;left:50%;transform:translateX(-50%);
+    text-align:center;font-size:13px;font-weight:600;
+    white-space:nowrap;background:transparent;border:none;
+    color:var(--bgs-ivory);font-family:inherit;
+    padding:6px 10px;border-radius:8px;cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .gn-bar__count:disabled{cursor:default;}
+  .gn-bar__count:not(:disabled):hover{background:rgba(var(--bgs-ivory-rgb),0.06);}
+  .gn-bar__count small{display:block;font-weight:400;font-size:11px;color:var(--bgs-ivory-45);margin-top:2px;}
+  .gn-bar__count .count-line{display:flex;align-items:center;justify-content:center;gap:5px;}
+  .gn-bar__count .chev{width:13px;height:13px;transition:transform 0.22s ease;flex-shrink:0;color:var(--bgs-ivory);}
+  .gn-bar__count:disabled .chev{display:none;}
+  body.gn-tray-open .gn-bar__count .chev{transform:rotate(180deg);}
+  .gn-bar__continue{
+    background:var(--bgs-gold);color:var(--bgs-bg);border:none;font:inherit;
+    font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;cursor:pointer;margin-left:auto;
+  }
+  .gn-bar__continue:disabled{opacity:0.35;cursor:not-allowed;}
+
+  /* ---- selected-games tray ---- */
+  .gn-scrim{
+    position:fixed;inset:0;z-index:13;background:rgba(0,0,0,0.45);
+    opacity:0;pointer-events:none;transition:opacity 0.22s ease;
+  }
+  body.gn-tray-open .gn-scrim{opacity:1;pointer-events:auto;}
+  .gn-tray{
+    position:fixed;left:0;right:0;bottom:0;z-index:14;
+    max-width:600px;margin:0 auto;
+    background:rgba(var(--bgs-bg-rgb),0.97);
+    backdrop-filter:blur(14px);
+    border-top:1px solid rgba(var(--bgs-gold-rgb),0.25);
+    border-radius:16px 16px 0 0;
+    transform:translateY(100%);
+    transition:transform 0.24s cubic-bezier(.2,.8,.3,1);
+    display:flex;flex-direction:column;
+    max-height:52vh;
+    padding-bottom:76px;
+  }
+  body.gn-tray-open .gn-tray{transform:translateY(0);}
+  .gn-tray__head{
+    padding:14px 16px 8px;flex:none;
+    display:flex;align-items:baseline;justify-content:space-between;
+  }
+  .gn-tray__head h4{margin:0;font-family:'Fraunces',serif;font-weight:600;font-size:14px;}
+  .gn-tray__clear{
+    background:transparent;border:none;color:var(--bgs-ivory-45);
+    font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;padding:4px;
+  }
+  .gn-tray__clear:hover{color:var(--bgs-gold);}
+  .gn-tray__list{overflow-y:auto;padding:0 16px 12px;-webkit-overflow-scrolling:touch;}
+  .gn-tray__row{
+    display:flex;align-items:center;gap:10px;padding:8px 0;
+    border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.07);
+  }
+  .gn-tray__row:last-child{border-bottom:none;}
+  .gn-tray__thumb{
+    width:34px;height:45px;border-radius:5px;background:var(--bgs-plate);
+    overflow:hidden;flex-shrink:0;
+  }
+  .gn-tray__thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .gn-tray__meta{flex:1;min-width:0;}
+  .gn-tray__meta b{
+    display:block;font-family:'Fraunces',serif;font-weight:600;font-size:12.5px;
+    line-height:1.25;margin-bottom:3px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .gn-tray__meta span{font-size:10.5px;color:var(--bgs-ivory-45);}
+  .gn-tray__offscreen{
+    font-size:10px;color:var(--bgs-gold-dim);font-weight:600;margin-left:6px;
+  }
+  .gn-tray__remove{
+    width:34px;height:34px;flex-shrink:0;border-radius:50%;
+    background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),0.2);
+    color:var(--bgs-ivory-45);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .gn-tray__remove svg{width:13px;height:13px;}
+  .gn-tray__remove:hover{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+
+  /* ---- sticky action row on the existing detail modal ---- */
+  .card-sticky{
+    flex:none;
+    padding:12px 20px calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, var(--bgs-plate) 72%, rgba(36,26,16,0));
+    display:flex;gap:10px;
+  }
+  .card-sticky .modal__add{
+    flex:1;background:var(--bgs-gold);color:var(--bgs-bg);border:none;font:inherit;
+    font-size:13.5px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:7px;
+  }
+  .card-sticky .modal__add.is-in{
+    background:transparent;color:var(--bgs-gold);border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
+  }
+  .card-sticky .modal__add svg{width:15px;height:15px;}
+  .card-sticky .modal__close{
+    background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),0.22);
+    color:var(--bgs-ivory-70);font:inherit;font-size:13px;font-weight:600;
+    padding:13px 16px;border-radius:10px;cursor:pointer;
+  }
+  body:not(.gn-selecting) .card-sticky .modal__add{display:none;}
+  body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
+
 </style>
 </head>
 <body>
@@ -886,6 +1268,13 @@ import {
   weightLabel, timeLabel, playersRangeLabel
 } from './js/filters.js';
 
+// ---- Game Night feature flag (Stage 1: session creation) ----
+// Ships dark: a normal visitor sees today's site, unchanged, with no new buttons.
+// Test with ?gamenight=1. The final PR that completes the feature flips this to true.
+const GAME_NIGHT_ENABLED = false;
+const gameNightVisible =
+  GAME_NIGHT_ENABLED || new URLSearchParams(location.search).has('gamenight');
+
 let games = [];
 
 async function loadGames(){
@@ -897,6 +1286,8 @@ const state = {
   filters: { ...DEFAULT_FILTERS },
   search: "",
   sort: "off", // 'off' (ascending, default) | 'desc'
+  selectionMode: false,
+  selectedIds: new Set(), // bggId strings, in selection order — persists across filter changes
 };
 let draftFilters = { ...DEFAULT_FILTERS };
 
@@ -921,9 +1312,12 @@ function render(){
 
   filtered.forEach(g=>{
     const el = document.createElement('button');
-    el.className = 'game-card';
+    const isSelected = gameNightVisible && state.selectedIds.has(g.bggId);
+    el.className = 'game-card' + (isSelected ? ' selected' : '');
     el.innerHTML = `
+      ${gameNightVisible ? '<span class="sel-ring"></span>' : ''}
       <div class="art">
+        ${gameNightVisible ? `<span class="checkbox">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
         <img src="${g.image}" alt="${g.title} cover" loading="lazy" decoding="async" onerror="this.closest('.art').style.background='var(--bgs-plate)';this.remove()">
       </div>
       <div class="plate-body">
@@ -934,12 +1328,27 @@ function render(){
         </div>
       </div>
     `;
-    el.addEventListener('click', ()=>openCard(g));
+    el.addEventListener('click', (ev)=>{
+      if(gameNightVisible && state.selectionMode){
+        if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
+        toggleSelect(g);
+        return;
+      }
+      openCard(g);
+    });
     shelf.appendChild(el);
   });
+
+  // Filters/search stay live while selecting; selections persist regardless,
+  // so the tray's "hidden by filters" tags need to stay in sync with every
+  // re-render, not just the ones that came from toggling a selection.
+  if(gameNightVisible && state.selectionMode) updateGnBar();
 }
 
+let gnOpenGame = null;
+
 function openCard(g){
+  gnOpenGame = g;
   const body = document.getElementById('card-body');
   const coverHtml = g.backImage ? `
     <div class="flip-scene">
@@ -1000,14 +1409,18 @@ function openCard(g){
       }
     });
   }
+  syncStickyAction();
   document.getElementById('backdrop').classList.add('open');
 }
 
-document.getElementById('close-btn').addEventListener('click', ()=>{
+function closeDetailModal(){
   document.getElementById('backdrop').classList.remove('open');
-});
+  gnOpenGame = null;
+}
+
+document.getElementById('close-btn').addEventListener('click', closeDetailModal);
 document.getElementById('backdrop').addEventListener('click', (e)=>{
-  if(e.target.id==='backdrop') e.currentTarget.classList.remove('open');
+  if(e.target.id==='backdrop') closeDetailModal();
 });
 
 // ---- Filter/sort bar: badge + chips ----
@@ -1237,6 +1650,404 @@ searchClear.addEventListener('click', ()=>{
   render();
 });
 
+// ==== Game Night (Stage 1: session creation) ====
+// Selection happens inside this shelf: same cards, same filters, same search,
+// same applyFilters — no second filter UI, no second card component.
+
+const GN_MIN_POOL = 2;
+const GN_SURPRISE_COUNT = 6;
+const GN_MIN_SELECT = 4;
+
+const GN_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#241A10" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+const GN_CHEV_SVG  = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+const GN_X_SVG      = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const GN_PLUS_SVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+const GN_TICK_SVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+
+// Ephemeral flow state that doesn't belong on `state` (selectionMode/selectedIds
+// do, per spec — this is just which path we're on and the surprise sample).
+const gnState = { mode: null, surprisePool: [], revealDeck: false };
+
+let gnSessionModPromise = null;
+
+function gnPool(){
+  return applyFilters(games, state.filters, state.search);
+}
+
+function gnFilteredIdSet(){
+  return new Set(gnPool().map(g => g.bggId));
+}
+
+function toggleSelect(g){
+  if(state.selectedIds.has(g.bggId)) state.selectedIds.delete(g.bggId);
+  else state.selectedIds.add(g.bggId);
+  render(); // refreshes the bar/tray too, since selection mode is active
+  syncStickyAction();
+}
+
+function syncStickyAction(){
+  const btn = document.getElementById('modalAddBtn');
+  if(!btn || !gnOpenGame) return;
+  const inDeck = state.selectedIds.has(gnOpenGame.bggId);
+  btn.className = 'modal__add' + (inDeck ? ' is-in' : '');
+  btn.innerHTML = inDeck ? `${GN_TICK_SVG} In tonight's deck` : `${GN_PLUS_SVG} Add to tonight`;
+}
+
+function showGnToast(msg){
+  const toast = document.getElementById('gnToast');
+  toast.textContent = msg;
+  toast.classList.add('open');
+  clearTimeout(showGnToast._t);
+  showGnToast._t = setTimeout(()=> toast.classList.remove('open'), 2600);
+}
+
+function openGnBackdrop(el){
+  el.classList.add('open');
+}
+function closeGnBackdrop(el){
+  el.classList.remove('open');
+}
+
+function sampleN(arr, n){
+  const copy = arr.slice();
+  for(let i = copy.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, n);
+}
+
+function currentGnGameIds(){
+  return gnState.mode === 'random'
+    ? gnState.surprisePool.map(g => g.bggId)
+    : Array.from(state.selectedIds);
+}
+
+// ---- selection mode: bottom bar + tray ----
+
+function enterSelectionMode(){
+  state.selectionMode = true;
+  document.body.classList.add('gn-selecting');
+  render();
+}
+
+function exitSelectionMode(){
+  state.selectionMode = false;
+  state.selectedIds.clear();
+  document.body.classList.remove('gn-selecting');
+  closeGnTray();
+  render();
+}
+
+function openGnTray(){ document.body.classList.add('gn-tray-open'); }
+function closeGnTray(){ document.body.classList.remove('gn-tray-open'); }
+
+function updateGnBar(){
+  const n = state.selectedIds.size;
+  const hint = n < GN_MIN_SELECT ? `Pick at least ${GN_MIN_SELECT - n} more` : 'Ready to go';
+  const btn = document.getElementById('gnBarCount');
+  btn.innerHTML = n === 0 ? '' : `
+    <span class="count-line">${n} selected${GN_CHEV_SVG}</span>
+    <small>${hint}</small>
+  `;
+  btn.disabled = n === 0;
+  document.getElementById('gnBarContinue').disabled = n < GN_MIN_SELECT;
+  if(n === 0) closeGnTray();
+  renderGnTray();
+}
+
+function renderGnTray(){
+  const list = document.getElementById('gnTrayList');
+  const visible = gnFilteredIdSet();
+  const ids = Array.from(state.selectedIds);
+  list.innerHTML = ids.map(id => {
+    const g = games.find(x => x.bggId === id);
+    if(!g) return '';
+    const off = visible.has(id) ? '' : '<span class="gn-tray__offscreen">hidden by filters</span>';
+    return `
+      <div class="gn-tray__row">
+        <div class="gn-tray__thumb"><img src="${g.image}" alt="" loading="lazy" onerror="this.remove()"></div>
+        <div class="gn-tray__meta">
+          <b>${g.title}</b>
+          <span>${playersRangeLabel(g.players)} · ${timeLabel(g.time)}</span>${off}
+        </div>
+        <button class="gn-tray__remove" type="button" data-remove="${id}" aria-label="Remove ${g.title}">${GN_X_SVG}</button>
+      </div>
+    `;
+  }).join('');
+  list.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      state.selectedIds.delete(btn.dataset.remove);
+      render();
+      syncStickyAction();
+    });
+  });
+}
+
+// ---- surprise-us path ----
+
+function sampleSurprise(){
+  const pool = gnPool();
+  gnState.surprisePool = sampleN(pool, Math.min(GN_SURPRISE_COUNT, pool.length));
+}
+
+function renderSurprise(){
+  const grid = document.getElementById('gnSurpriseGrid');
+  grid.innerHTML = gnState.surprisePool.map(g => `
+    <div class="gn-surprise-card">
+      <div class="art"><img src="${g.image}" alt="${g.title} cover" loading="lazy" onerror="this.remove()"></div>
+      <div class="t">${g.title}</div>
+    </div>
+  `).join('');
+  const n = gnState.surprisePool.length;
+  document.getElementById('gnSurpriseSub').textContent =
+    `${n} game${n === 1 ? '' : 's'} picked at random from your filtered shelf.`;
+}
+
+// ---- confirm step (both paths converge here) ----
+
+function syncRevealToggleUI(){
+  const toggle = document.getElementById('gnRevealToggle');
+  toggle.setAttribute('aria-checked', String(gnState.revealDeck));
+  document.getElementById('gnRevealLabel').textContent = gnState.revealDeck
+    ? 'Show the games in the waiting room'
+    : 'Keep them a surprise.';
+}
+
+function updateConfirmSummary(){
+  const n = currentGnGameIds().length;
+  const modeLabel = gnState.mode === 'random' ? 'Surprise mode' : 'You picked them';
+  document.getElementById('gnSummary').textContent = `${n} game${n === 1 ? '' : 's'} · ${modeLabel}`;
+}
+
+function openConfirm(){
+  const errorEl = document.getElementById('gnConfirmError');
+  errorEl.classList.remove('show');
+  const revealField = document.getElementById('gnRevealField');
+  if(gnState.mode === 'random'){
+    revealField.hidden = true;
+    gnState.revealDeck = false;
+  } else {
+    revealField.hidden = false;
+    syncRevealToggleUI();
+  }
+  updateConfirmSummary();
+  openGnBackdrop(document.getElementById('gnConfirmBackdrop'));
+  document.getElementById('gnHostName').focus();
+}
+
+async function handleGnStart(){
+  const nameInput = document.getElementById('gnHostName');
+  const hostName = nameInput.value.trim();
+  const errorEl = document.getElementById('gnConfirmError');
+  if(!hostName){
+    errorEl.textContent = 'Enter your name to continue.';
+    errorEl.classList.add('show');
+    nameInput.focus();
+    return;
+  }
+  const mode = gnState.mode === 'random' ? 'random' : 'manual';
+  const gameIds = currentGnGameIds();
+  const revealDeck = mode === 'random' ? false : gnState.revealDeck;
+
+  const startBtn = document.getElementById('gnConfirmStart');
+  errorEl.classList.remove('show');
+  startBtn.disabled = true;
+  startBtn.textContent = 'Starting…';
+  try {
+    const { createGameNight } = await gnSessionModPromise;
+    const code = await createGameNight({ hostName, mode, revealDeck, gameIds });
+    sessionStorage.setItem(`gamenight:${code}:name`, hostName);
+    location.href = `/night/${code}/host`;
+  } catch (err) {
+    errorEl.textContent = "Couldn't start the game night. Try again.";
+    errorEl.classList.add('show');
+    startBtn.disabled = false;
+    startBtn.textContent = 'Start Game Night';
+  }
+}
+
+// ---- wiring ----
+
+function initGameNight(){
+  gnSessionModPromise = import('./js/session.js');
+
+  // Entry point: a peer action next to search/filter/sort, not a hero CTA.
+  const gnStartBtn = document.createElement('button');
+  gnStartBtn.className = 'gn-btn';
+  gnStartBtn.type = 'button';
+  gnStartBtn.id = 'gnStartBtn';
+  gnStartBtn.textContent = 'Start Game Night';
+  document.getElementById('filterSortBar').appendChild(gnStartBtn);
+
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="gn-toast" id="gnToast"></div>
+
+    <div class="gn-backdrop" id="gnChooserBackdrop">
+      <div class="gn-panel" role="dialog" aria-modal="true" aria-labelledby="gnChooserTitle">
+        <h3 id="gnChooserTitle">Start Game Night</h3>
+        <p class="gn-sub" id="gnChooserPool"></p>
+        <button class="gn-option" id="gnOptSelect" type="button">
+          <b>Select games</b>
+          <span>Browse and pick the games yourself.</span>
+        </button>
+        <button class="gn-option" id="gnOptSurprise" type="button">
+          <b>Surprise us</b>
+          <span>We'll pick 6 at random from what's on screen.</span>
+        </button>
+        <button class="gn-cancel-link" id="gnChooserCancel" type="button">Cancel</button>
+      </div>
+    </div>
+
+    <div class="gn-backdrop" id="gnSurpriseBackdrop">
+      <div class="gn-panel" role="dialog" aria-modal="true" aria-labelledby="gnSurpriseTitle">
+        <h3 id="gnSurpriseTitle">Tonight's surprise</h3>
+        <p class="gn-sub" id="gnSurpriseSub"></p>
+        <div class="gn-surprise-grid" id="gnSurpriseGrid"></div>
+        <div class="gn-row">
+          <button class="gn-secondary-btn" id="gnShuffleBtn" type="button">Shuffle again</button>
+          <button class="gn-primary-btn" id="gnSurpriseContinue" type="button">Continue</button>
+        </div>
+        <button class="gn-cancel-link" id="gnSurpriseCancel" type="button">Cancel</button>
+      </div>
+    </div>
+
+    <div class="gn-backdrop" id="gnConfirmBackdrop">
+      <div class="gn-panel" role="dialog" aria-modal="true" aria-labelledby="gnConfirmTitle">
+        <h3 id="gnConfirmTitle">Almost ready</h3>
+        <p class="gn-error" id="gnConfirmError">Couldn't start the game night. Try again.</p>
+        <div class="gn-field">
+          <label for="gnHostName">Your name</label>
+          <input class="gn-text-input" id="gnHostName" type="text" placeholder="e.g. Nok" autocomplete="off">
+        </div>
+        <div class="gn-field" id="gnRevealField">
+          <button type="button" class="toggle-row" id="gnRevealToggle" role="switch" aria-checked="false">
+            <span class="toggle-switch" aria-hidden="true"></span>
+            <span class="toggle-label" id="gnRevealLabel">Keep them a surprise.</span>
+          </button>
+        </div>
+        <p class="gn-summary" id="gnSummary"></p>
+        <div class="gn-row">
+          <button class="gn-secondary-btn" id="gnConfirmBack" type="button">Back</button>
+          <button class="gn-primary-btn" id="gnConfirmStart" type="button">Start Game Night</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="gn-scrim" id="gnScrim"></div>
+    <div class="gn-tray" id="gnTray">
+      <div class="gn-tray__head">
+        <h4>Tonight's deck</h4>
+        <button class="gn-tray__clear" id="gnTrayClear" type="button">Clear all</button>
+      </div>
+      <div class="gn-tray__list" id="gnTrayList"></div>
+    </div>
+    <div class="gn-bar" id="gnBar">
+      <button class="gn-bar__cancel" id="gnBarCancel" type="button">Cancel</button>
+      <button class="gn-bar__count" id="gnBarCount" type="button" disabled></button>
+      <button class="gn-bar__continue" id="gnBarContinue" type="button" disabled>Continue</button>
+    </div>
+  `);
+
+  // sticky action row on the existing detail modal — only in this build, so
+  // normal browsing (flag off) never gets it
+  document.getElementById('card-body').insertAdjacentHTML('afterend', `
+    <div class="card-sticky" id="cardSticky">
+      <button class="modal__add" id="modalAddBtn" type="button"></button>
+      <button class="modal__close" id="modalCloseBtn2" type="button">Close</button>
+    </div>
+  `);
+  document.getElementById('modalCloseBtn2').addEventListener('click', closeDetailModal);
+  document.getElementById('modalAddBtn').addEventListener('click', ()=>{
+    if(!gnOpenGame) return;
+    toggleSelect(gnOpenGame);
+  });
+
+  // entry point → chooser
+  gnStartBtn.addEventListener('click', ()=>{
+    const pool = gnPool();
+    if(pool.length < GN_MIN_POOL){
+      showGnToast('Not enough games match these filters');
+      return;
+    }
+    document.getElementById('gnChooserPool').textContent = `${pool.length} games match your filters.`;
+    openGnBackdrop(document.getElementById('gnChooserBackdrop'));
+  });
+  document.getElementById('gnChooserCancel').addEventListener('click', ()=>{
+    closeGnBackdrop(document.getElementById('gnChooserBackdrop'));
+  });
+  document.getElementById('gnOptSelect').addEventListener('click', ()=>{
+    closeGnBackdrop(document.getElementById('gnChooserBackdrop'));
+    gnState.mode = 'manual';
+    enterSelectionMode();
+  });
+  document.getElementById('gnOptSurprise').addEventListener('click', ()=>{
+    closeGnBackdrop(document.getElementById('gnChooserBackdrop'));
+    gnState.mode = 'random';
+    sampleSurprise();
+    renderSurprise();
+    openGnBackdrop(document.getElementById('gnSurpriseBackdrop'));
+  });
+
+  // surprise view
+  document.getElementById('gnShuffleBtn').addEventListener('click', ()=>{
+    sampleSurprise(); // zero network requests — resamples from what's already loaded
+    renderSurprise();
+  });
+  document.getElementById('gnSurpriseContinue').addEventListener('click', ()=>{
+    closeGnBackdrop(document.getElementById('gnSurpriseBackdrop'));
+    openConfirm();
+  });
+  document.getElementById('gnSurpriseCancel').addEventListener('click', ()=>{
+    closeGnBackdrop(document.getElementById('gnSurpriseBackdrop'));
+    gnState.mode = null;
+    gnState.surprisePool = [];
+  });
+
+  // selection-mode bottom bar
+  document.getElementById('gnBarCancel').addEventListener('click', exitSelectionMode);
+  document.getElementById('gnBarCount').addEventListener('click', ()=>{
+    document.body.classList.contains('gn-tray-open') ? closeGnTray() : openGnTray();
+  });
+  document.getElementById('gnScrim').addEventListener('click', closeGnTray);
+  document.getElementById('gnTrayClear').addEventListener('click', ()=>{
+    state.selectedIds.clear();
+    render();
+    syncStickyAction();
+  });
+  document.getElementById('gnBarContinue').addEventListener('click', ()=>{
+    if(state.selectedIds.size < GN_MIN_SELECT) return;
+    closeGnTray();
+    gnState.mode = 'manual';
+    openConfirm();
+  });
+
+  // confirm step
+  document.getElementById('gnRevealToggle').addEventListener('click', ()=>{
+    gnState.revealDeck = !gnState.revealDeck;
+    syncRevealToggleUI();
+  });
+  document.getElementById('gnConfirmBack').addEventListener('click', ()=>{
+    closeGnBackdrop(document.getElementById('gnConfirmBackdrop'));
+    if(gnState.mode === 'random'){
+      openGnBackdrop(document.getElementById('gnSurpriseBackdrop'));
+    }
+    // manual: selection mode's bar/tray are still live underneath — nothing else to do
+  });
+  document.getElementById('gnConfirmStart').addEventListener('click', handleGnStart);
+
+  // click outside a panel closes that modal, matching the existing detail-card backdrop
+  [
+    document.getElementById('gnChooserBackdrop'),
+    document.getElementById('gnSurpriseBackdrop'),
+    document.getElementById('gnConfirmBackdrop'),
+  ].forEach(backdrop => {
+    backdrop.addEventListener('click', (e)=>{
+      if(e.target === backdrop) closeGnBackdrop(backdrop);
+    });
+  });
+}
+
 // ---- Sticky bar background (only while actually pinned) ----
 
 const stickySentinel = document.getElementById('stickySentinel');
@@ -1251,6 +2062,7 @@ if('IntersectionObserver' in window){
 try {
   await loadGames();
   render();
+  if(gameNightVisible) initGameNight();
 } catch {
   document.getElementById('shelf').innerHTML = `<p class="empty-state">Couldn't load the collection. Try refreshing.</p>`;
   document.getElementById('shelf-count').textContent = '';

@@ -12,5 +12,9 @@
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/night/:code/host", "destination": "/night-host.html" },
+    { "source": "/vote/:code",       "destination": "/vote.html" }
   ]
 }
