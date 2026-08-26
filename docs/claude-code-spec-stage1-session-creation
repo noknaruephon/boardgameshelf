@@ -1,0 +1,369 @@
+# Claude Code Spec — Game Night, Stage 1: Session Creation
+
+**Supersedes** any earlier session-creation spec. Earlier drafts described a separate
+`night-new.html` page with its own filter UI. That design is dropped — selection now
+happens **inside the existing shelf** so there is exactly one filter implementation
+and one card implementation, forever.
+
+**Scope:** from tapping "Start Game Night" to a session row existing in the database
+and the browser redirecting to the host page.
+
+**Out of scope:** the host waiting room, QR code, joining, swiping, results. All later
+specs. The redirect at the end will 404 — that is expected and correct.
+
+---
+
+## 0. Working rules
+
+- **Branch, PR into `main`.** Never push to `main` directly.
+- **Ship dark.** The entry point is behind a feature flag (§4). A normal visitor sees
+  today's site, unchanged, with no new buttons.
+- **The site is static.** No build step, no `package.json`, no framework. Vanilla JS,
+  ES modules, CDN imports. Do not introduce a bundler.
+- **You cannot test on a phone from the sandbox.** Verification happens on the Vercel
+  preview deployment the PR creates.
+- **The database is already set up.** Tables, RLS, realtime, and RPC functions all
+  exist. Do not write migrations.
+
+---
+
+## 1. Current structure (post-extraction)
+
+```
+index.html          shelf UI, render(), openCard(), filter sheet wiring
+games.json          the 195-game collection
+js/filters.js       DEFAULT_FILTERS, applyFilters, timeBucket, playersMatch, etc.
+vercel.json         headers + (to be added) rewrites
+covers/             cover images
+```
+
+`index.html`'s script block is `type="module"` and imports from `js/filters.js`.
+
+**Because selection happens inside the shelf, filter state needs no plumbing.** The
+host filters normally, then starts a game night; the shelf is already filtered. Do not
+add URL parameters, serialisation, or any filter-passing mechanism.
+
+---
+
+## 2. Configuration
+
+Environment variables do not work here — they are substituted at build time and this
+site has no build step. The Supabase URL and anon key go directly into a JS file.
+
+This is safe: the anon key is a public identifier, not a secret. Access is controlled
+by row-level security and the database functions, not by hiding the key.
+
+**`SUPABASE_SERVICE_ROLE_KEY` must never appear in this repo.** It is a real secret,
+and nothing in this architecture uses it.
+
+Create `js/config.js`:
+
+```js
+export const SUPABASE_URL = 'https://<project-ref>.supabase.co';
+export const SUPABASE_ANON_KEY = '<anon key>';
+```
+
+**Ask the user for both values.** Do not commit placeholders without flagging it
+prominently in the PR.
+
+---
+
+## 3. New files
+
+```
+js/config.js        Supabase URL + anon key (§2)
+js/supabase.js      client setup (§3.1)
+js/session.js       database calls (§3.2)
+```
+
+### 3.1 `js/supabase.js`
+
+```js
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  realtime: { params: { eventsPerSecond: 5 } },
+});
+```
+
+### 3.2 `js/session.js`
+
+There is no application server. Rules that would live in API routes are database
+functions instead, already created. Call them with `.rpc()`.
+
+```js
+import { supabase } from './supabase.js';
+
+/** Returns the new session code, e.g. "FOX7". */
+export async function createGameNight({ hostName, mode, revealDeck, gameIds }) {
+  const { data, error } = await supabase.rpc('create_game_night', {
+    p_host_name: hostName,
+    p_mode: mode,
+    p_reveal_deck: revealDeck,
+    p_game_ids: gameIds,
+  });
+  if (error) throw error;
+  return data;
+}
+```
+
+Game IDs are the `bggId` field from `games.json`, as strings.
+
+---
+
+## 4. Feature flag
+
+The whole feature ships dark until every stage is complete.
+
+In `index.html`:
+
+```js
+const GAME_NIGHT_ENABLED = false;
+const gameNightVisible =
+  GAME_NIGHT_ENABLED || new URLSearchParams(location.search).has('gamenight');
+```
+
+When `gameNightVisible` is false, the Start Game Night button is **not rendered at
+all** — not hidden with CSS, not present in the DOM.
+
+Test using `?gamenight=1`. The final PR flips the constant to `true`.
+
+---
+
+## 5. Entry point
+
+A **Start Game Night** button in the shelf header area, near the existing filter and
+search controls. Match their visual weight — this is a peer action, not a hero CTA.
+
+Tapping it opens the **mode chooser**: a small modal with two options.
+
+- **Select games** — "Browse and pick the games yourself."
+- **Surprise us** — "We'll pick 6 at random from what's on screen."
+
+Plus a cancel affordance.
+
+Both operate on the **currently filtered set**. If the host has filtered to 4-player
+games under 45 minutes, that's the pool. Show the pool size in the chooser: "42 games
+match your filters."
+
+**If the filtered pool has fewer than 2 games**, don't open the chooser — show
+"Not enough games match these filters" and leave the shelf as-is.
+
+---
+
+## 6. Selection mode
+
+Chosen "Select games" → the shelf enters selection mode. Same page, same cards, same
+filters, same search. A `selectionMode` flag on `state` plus a `selectedIds` Set.
+
+**A reference mockup with approved styling accompanies this spec.** Match its
+behaviour; adapt the CSS to the real card markup.
+
+### Card behaviour
+
+| Mode | Card tap | Info icon |
+|---|---|---|
+| Normal | opens detail modal | not rendered |
+| Selection | toggles selection | opens detail modal |
+
+### Visual treatment
+
+- **Selection ring:** a dedicated overlay element above the cover art, `position:absolute; inset:0; z-index:3; border:2px solid; border-radius:10px; pointer-events:none`, transparent by default, `--bgs-gold` when selected.
+
+  **Do not use CSS `outline` for this.** Outlines paint beneath child content, so the
+  cover image covers them. This was tested and rejected.
+
+- **Checkbox:** 22×22, top-left of the art, `z-index:4`. Dark translucent with an
+  ivory border when unselected; `--bgs-gold` fill with a dark tick when selected.
+
+- **Info icon:** 22×22 visible circle inside a **40×40 touch target**, top-right of
+  the art, `z-index:4`.
+
+- **Unselected cards:** art at `opacity:.62`, so selection reads at a glance across a
+  6-column grid.
+
+- The label plate is untouched in both modes.
+
+### Filtering while selecting
+
+Filters and search stay fully live. **Selections persist across filter changes** — a
+game selected then filtered out stays selected, and the count keeps including it.
+Losing selections because someone adjusted a filter would be infuriating.
+
+The consequence is that the count can exceed the number of selected cards visible on
+screen. The tray (§6.1) is what makes that legible rather than confusing, so the two
+behaviours ship together — do not implement persistence without the tray.
+
+### Bottom bar
+
+Fixed to the viewport, appears on entering selection mode:
+
+- **Cancel** on the left — exits selection mode, clears selections, closes the tray.
+- **Count centred on the bar itself**, not in the space between the two buttons.
+  Absolutely positioned at `left:50%; transform:translateX(-50%)`. With unequal button
+  widths, `flex:1` does not centre it.
+  - Primary line: "3 selected" followed by a chevron, same 13px size and same
+    `--bgs-ivory` colour as the text, so the two read as one unit.
+  - Sub-line: "Pick at least 1 more" counting down, then "Ready to go"
+  - The whole count is a **button** (§6.1). Disabled at zero selections — nothing to
+    show, so no false affordance.
+- **Continue** on the right — disabled below 4 selections. No maximum.
+
+Use `env(safe-area-inset-bottom)` in the bottom padding so it clears the iPhone home
+indicator.
+
+### 6.1 Selected-games tray
+
+Tapping the count expands a tray above the bottom bar listing everything currently
+selected. Tapping again collapses it; so does tapping the scrim behind it.
+
+This exists because selections persist across filter changes, which means the count
+can exceed what's on screen. Without the tray, the host would have to clear filters
+and hunt for a game to deselect it.
+
+- **Slides up from the bottom**, rounded top corners, `max-height:52vh` with the list
+  scrolling inside. Some shelf stays visible behind so the host doesn't lose their place.
+- **Bottom padding must clear the bar** — the bar sits at a higher `z-index` and stays
+  visible and usable while the tray is open.
+- **Chevron rotates 180°** on open.
+- **Each row:** cover thumbnail, title, a players/time line, and a remove button
+  (34×34 touch target minimum).
+- **Rows are in selection order**, not alphabetical — it reads as a running list of
+  decisions.
+- **"hidden by filters" tag** in `--bgs-gold-dim` on any row not in the current filtered
+  set. This is what makes persistence safe: the host can see at a glance that picks are
+  stashed outside the current view, rather than wondering why the count says 6 when
+  only 4 cards are visible.
+- **"Clear all"** in the tray header.
+- **Auto-close when the last game is removed.** An empty tray is just an obstruction.
+- Removing from the tray updates the grid immediately — the card's ring and checkbox
+  clear if it's currently visible.
+
+A reference implementation of all of this is in the accompanying mockup.
+
+### Detail modal in selection mode
+
+The existing detail card gains a **sticky action row** pinned to the bottom of the
+modal while its content scrolls:
+
+- Not selected → filled gold **"Add to tonight"**
+- Selected → outlined gold **"In tonight's deck"** (tapping removes it)
+- **Close** alongside it
+
+**The modal does not auto-close on add.** The host may want to flip to the box back
+after adding. In normal browsing the row shows only Close, so nothing changes about
+today's experience.
+
+---
+
+## 7. Surprise us
+
+Chosen "Surprise us" → sample **6 at random from the currently filtered set** and show
+them in a confirmation view.
+
+- **Shuffle again** re-samples in the browser. **Zero network requests** — nothing is
+  written until confirm.
+- **Fewer than 6 in the pool → take all of them.** Do not pad with off-filter games,
+  do not error.
+- **No reveal/hide toggle on this path.** The deck is always hidden; revealing your own
+  surprise defeats the point. The database enforces this regardless of what's sent.
+
+---
+
+## 8. Confirm step
+
+Both paths converge here.
+
+- **Host name** — required text input. The host is a voter, not a moderator, so they
+  need an identity like everyone else.
+- **Reveal/hide toggle** — **manual path only**, default **hidden**. Word it by outcome:
+  "Show the games in the waiting room" / "Keep them a surprise."
+- **Summary line:** "6 games · Surprise mode" or "7 games · You picked them".
+- **Start Game Night** button.
+
+On tap:
+
+1. Call `createGameNight()`.
+2. Store the host's name in `sessionStorage` keyed by the returned code —
+   `gamenight:{code}:name`. The host page reads it so the host isn't asked to identify
+   themselves twice.
+3. Navigate to `/night/{code}/host`.
+
+**Handle failure visibly.** If the call throws, show "Couldn't start the game night.
+Try again." and keep the host's selections intact. Do not navigate, and do not fail
+silently.
+
+---
+
+## 9. `vercel.json` rewrites
+
+Pretty URLs, because the code gets read aloud at a table. **Merge into the existing
+config — do not replace it.** It already has a `headers` array from the extraction work.
+
+```json
+{
+  "rewrites": [
+    { "source": "/night/:code/host", "destination": "/night-host.html" },
+    { "source": "/vote/:code",       "destination": "/vote.html" }
+  ]
+}
+```
+
+Neither destination exists yet. That's expected — they land in the next spec, and the
+redirect at the end of §8 will 404 until then.
+
+If `vercel.json` uses the older `routes` syntax rather than `rewrites`, the two cannot
+be mixed — stop and flag it rather than guessing at a migration.
+
+---
+
+## 10. Do not build
+
+- The host waiting room, QR code, or join flow — next spec.
+- Swipe, votes, results.
+- Accounts or auth. Names are per-session and disposable.
+- A second filter UI, a second card component, or a copy of `applyFilters`. If you
+  find yourself duplicating shelf logic, stop — that's the failure this design exists
+  to prevent.
+- Any change to `js/filters.js` or `games.json`.
+
+---
+
+## 11. Verification
+
+Sandbox:
+
+- [ ] Grep the repo for `service_role` — zero results.
+- [ ] With no `?gamenight=1`, the Start Game Night button is absent from the DOM.
+- [ ] `applyFilters` is imported, never redefined.
+- [ ] Shuffle triggers zero network requests.
+- [ ] `git diff --stat`: `index.html` and `vercel.json` modified; `js/config.js`,
+      `js/supabase.js`, `js/session.js` added. Nothing else.
+
+Preview deployment:
+
+- [ ] Without the flag, the site is visually identical to production.
+- [ ] With `?gamenight=1`, the button appears and opens the chooser showing the correct
+      filtered count.
+- [ ] **Surprise us:** 6 games appear; shuffle changes them; confirm creates a session.
+- [ ] **Select games:** the shelf enters selection mode; filters and search still work;
+      tapping selects; the info icon opens details; the sticky Add button works both
+      ways; Continue is disabled below 4.
+- [ ] **The gold ring renders above the cover art**, clearly visible on a bright cover.
+- [ ] Selecting a game, then filtering it out, then clearing the filter — it's still
+      selected and still counted.
+- [ ] **Tray:** tapping the count expands it; the chevron rotates; tapping the count
+      again or the scrim collapses it.
+- [ ] The tray is disabled (not tappable) at zero selections.
+- [ ] A game selected then filtered out shows a "hidden by filters" tag in the tray,
+      and can be removed from there without clearing the filter.
+- [ ] Removing the last game auto-closes the tray.
+- [ ] The bottom bar stays visible and usable while the tray is open.
+- [ ] With 12+ selections the tray list scrolls; the bar and header stay put.
+- [ ] Cancel exits cleanly and the shelf behaves normally afterward.
+- [ ] After creating: a row appears in the Supabase `sessions` table with the right
+      `game_ids`, `mode`, and `reveal_deck` — and a `participants` row for the host.
+      **This is the real acceptance test**, since the redirect 404s at this stage.
+- [ ] Random mode always stores `reveal_deck = false`, even though no toggle was shown.
+- [ ] On mobile: the bottom bar clears the home indicator; the count is visually centred.
