@@ -1051,7 +1051,7 @@
     padding:6px 10px;border-radius:8px;cursor:pointer;
     transition:background 0.15s ease;
   }
-  .gn-bar__count:disabled{cursor:default;}
+  .gn-bar__count:disabled{cursor:default;color:var(--bgs-ivory);}
   .gn-bar__count:not(:disabled):hover{background:rgba(var(--bgs-ivory-rgb),0.06);}
   .gn-bar__count small{display:block;font-weight:400;font-size:11px;color:var(--bgs-ivory-45);margin-top:2px;}
   .gn-bar__count .count-line{display:flex;align-items:center;justify-content:center;gap:5px;}
@@ -1777,7 +1777,11 @@ function updateGnBar(){
   const n = state.selectedIds.size;
   const hint = n < GN_MIN_SELECT ? `Pick at least ${GN_MIN_SELECT - n} more` : 'Ready to go';
   const btn = document.getElementById('gnBarCount');
-  btn.innerHTML = n === 0 ? '' : `
+  // Always shown, including at zero, so the bar states the target up front
+  // rather than appearing only once the host has already guessed at it. The
+  // button still disables at zero — there's no tray to open — and the CSS
+  // hides the chevron in that state so it reads as a label, not an affordance.
+  btn.innerHTML = `
     <span class="count-line">${n} selected${GN_CHEV_SVG}</span>
     <small>${hint}</small>
   `;
