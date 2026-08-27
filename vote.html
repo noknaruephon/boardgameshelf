@@ -206,9 +206,13 @@
 </div>
 
 <script type="module">
-import { fetchSession, joinGameNight, sessionErrorMessage } from './js/session.js';
-import { joinSessionChannel } from './js/presence.js';
-import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from './js/waiting-room.js';
+// Absolute paths: this page is reached via a Vercel rewrite (/vote/:code), so the
+// browser's URL — which relative imports resolve against — is the pretty path,
+// not this file's real location. A relative import here 404s silently and the
+// whole module script never runs, leaving the page stuck on "Loading…".
+import { fetchSession, joinGameNight, sessionErrorMessage } from '/js/session.js';
+import { joinSessionChannel } from '/js/presence.js';
+import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from '/js/waiting-room.js';
 
 const screen = document.getElementById('screen');
 
