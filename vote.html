@@ -11,26 +11,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/game-modal.css">
 <style>
-  :root{
-    --bgs-bg:#160F0A; --bgs-bg-radial:#241708;
-    --bgs-plate:#241A10; --bgs-ivory:#F4EBDA; --bgs-ivory-rgb:244,235,218;
-    --bgs-ivory-70:rgba(244,235,218,0.72); --bgs-ivory-45:rgba(244,235,218,0.45);
-    --bgs-gold:#E3B04B; --bgs-gold-rgb:227,176,75;
-    --bgs-gold-dim:rgba(227,176,75,0.62);
-  }
-  *{box-sizing:border-box;}
+  /* Tokens and page chrome come from css/base.css. */
   body{
-    margin:0;
-    /* Same layered background as the shelf. The solid colour underneath the
-       gradient matters: a gradient alone leaves background-color transparent,
-       so overscrolling showed the browser's white canvas. */
-    background:
-      radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%),
-      var(--bgs-bg);
-    min-height:100vh;font-family:'Inter',sans-serif;color:var(--bgs-ivory);
-    padding:24px 16px calc(40px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;
+    padding:24px 16px calc(40px + env(safe-area-inset-bottom));
   }
   .screen{max-width:420px;margin:0 auto;}
   .eyebrow{
@@ -159,7 +145,7 @@
   }
   .hosting b{color:var(--bgs-ivory);font-weight:600;}
   .form-error{
-    text-align:center;font-size:12px;color:#C2705A;margin:-6px 0 14px;
+    text-align:center;font-size:12px;color:var(--bgs-danger-hover);margin:-6px 0 14px;
   }
   .start-btn{
     display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-plate);border:none;
