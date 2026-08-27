@@ -136,7 +136,9 @@
   .join-card input{
     width:100%;background:rgba(0,0,0,.28);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
     border-radius:10px;padding:14px;color:var(--bgs-ivory);
-    font:inherit;font-size:15px;margin-bottom:14px;box-sizing:border-box;
+    /* 16px, not smaller: iOS Safari zooms the page in when you focus an input
+       whose text is under 16px, and never zooms back out. */
+    font:inherit;font-size:16px;margin-bottom:14px;box-sizing:border-box;
   }
   .join-card input:focus{outline:none;border-color:var(--bgs-gold);}
   .join-card input::placeholder{color:rgba(var(--bgs-ivory-rgb),.28);}
