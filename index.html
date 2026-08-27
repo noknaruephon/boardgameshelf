@@ -764,7 +764,9 @@
     border-radius:10px;
     color:var(--bgs-ivory);
     font-family:'Inter',sans-serif;
-    font-size:15px;
+    /* 16px, not smaller: iOS Safari zooms the page in when you focus an input
+       whose text is under 16px, and never zooms back out. Matches .search. */
+    font-size:16px;
     padding:11px 13px;
     outline:none;
   }
