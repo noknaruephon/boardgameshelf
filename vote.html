@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Night — BoardgameShelf</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#160F0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bgs-bg:#160F0A; --bgs-bg-radial:#241708;
+    --bgs-plate:#241A10; --bgs-ivory:#F4EBDA; --bgs-ivory-rgb:244,235,218;
+    --bgs-ivory-70:rgba(244,235,218,0.72); --bgs-ivory-45:rgba(244,235,218,0.45);
+    --bgs-gold:#E3B04B; --bgs-gold-rgb:227,176,75;
+    --bgs-gold-dim:rgba(227,176,75,0.62);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:radial-gradient(circle at 50% 0%, var(--bgs-bg-radial), var(--bgs-bg) 62%);
+    min-height:100vh;font-family:'Inter',sans-serif;color:var(--bgs-ivory);
+    padding:24px 16px calc(40px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;
+  }
+  .screen{max-width:420px;margin:0 auto;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:23px;
+    text-align:center;margin:0 0 20px;letter-spacing:-.01em;
+  }
+
+  /* ---- deck preview ---- */
+  .deck{margin-bottom:22px;}
+  .deck h2{
+    font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--bgs-ivory-45);font-weight:600;margin:0 0 9px;text-align:center;
+  }
+  .deck-row{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;}
+  .deck-card{
+    width:44px;aspect-ratio:3/4;border-radius:6px;flex-shrink:0;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;font-size:15px;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),.22);
+  }
+  .deck-card img{width:100%;height:100%;object-fit:cover;display:block;}
+  .deck-card.back{
+    background:
+      repeating-linear-gradient(45deg,
+        rgba(var(--bgs-gold-rgb),.07) 0 4px,
+        transparent 4px 8px),
+      var(--bgs-plate);
+    color:var(--bgs-gold-dim);font-size:15px;
+  }
+  .deck-card.clickable{cursor:pointer;transition:transform .12s ease;}
+  .deck-card.clickable:active{transform:scale(.92);}
+
+  /* ---- detail modal ---- */
+  .wr-modal{
+    position:fixed;inset:0;z-index:20;display:none;
+    align-items:center;justify-content:center;padding:20px;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(3px);
+  }
+  .wr-modal.open{display:flex;}
+  .wr-modal__panel{
+    background:var(--bgs-plate);border-radius:14px;max-width:320px;width:100%;
+    max-height:78vh;border:1px solid rgba(var(--bgs-gold-rgb),.2);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .wr-modal__scroll{overflow-y:auto;padding:20px 20px 6px;}
+  .wr-modal__cover{
+    width:100%;aspect-ratio:4/3;background:#000;border-radius:10px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+  }
+  .wr-modal__cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .wr-modal__panel h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 8px;font-size:17px;}
+  .wr-modal__meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .wr-modal__meta span{
+    font-size:10.5px;font-weight:600;padding:4px 8px;border-radius:20px;
+    background:rgba(0,0,0,.3);color:var(--bgs-ivory-70);
+  }
+  .wr-modal__panel p{font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 12px;}
+  .wr-modal__close-row{padding:12px 20px calc(14px + env(safe-area-inset-bottom));flex-shrink:0;}
+  .wr-modal__close{
+    width:100%;background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);
+    color:var(--bgs-ivory-70);font:inherit;font-size:13px;font-weight:600;
+    padding:12px;border-radius:10px;cursor:pointer;
+  }
+
+  /* ---- roster ---- */
+  .roster{margin-bottom:24px;}
+  .roster-head{
+    display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;
+  }
+  .roster-head h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:15px;margin:0;
+  }
+  .pulse{
+    width:6px;height:6px;border-radius:50%;background:var(--bgs-gold);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .names{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+  .name-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.1);
+    border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;
+    animation:pop .28s cubic-bezier(.2,1.2,.4,1);
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+  .name-chip .tag{
+    font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--bgs-gold-dim);
+  }
+  .name-chip.you{border-color:rgba(var(--bgs-gold-rgb),.4);}
+
+  /* ---- waiting panel ---- */
+  .waiting-panel{
+    padding:14px 20px 26px;margin-top:10px;
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+    position:relative;
+  }
+  .die-wrap{
+    position:relative;width:52px;height:52px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .die{
+    width:52px;height:52px;position:relative;z-index:1;
+    animation:tumble 2.4s cubic-bezier(.45,0,.2,1) infinite;
+  }
+  @keyframes tumble{
+    0%{transform:rotate(0deg) scale(1);}
+    35%{transform:rotate(200deg) scale(1.06);}
+    60%{transform:rotate(340deg) scale(.97);}
+    100%{transform:rotate(360deg) scale(1);}
+  }
+  .die rect{fill:var(--bgs-gold);}
+  .die circle{fill:var(--bgs-plate);}
+
+  .waiting-title{
+    font-family:'Fraunces',serif;font-weight:600;font-size:18px;
+    text-align:center;line-height:1.35;margin:0;position:relative;z-index:1;
+  }
+  .waiting-title b{color:var(--bgs-gold);font-weight:600;}
+  .waiting-sub{
+    font-size:12px;color:var(--bgs-ivory-45);text-align:center;
+    position:relative;z-index:1;min-height:16px;
+    transition:opacity .22s ease;
+  }
+  .waiting-dots{display:inline-flex;gap:4px;vertical-align:middle;margin-left:2px;}
+  .waiting-dots span{
+    width:4px;height:4px;border-radius:50%;background:var(--bgs-gold);
+    animation:bounce 1.2s ease-in-out infinite;
+  }
+  .waiting-dots span:nth-child(2){animation-delay:.15s;}
+  .waiting-dots span:nth-child(3){animation-delay:.3s;}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+
+  /* ---- join form ---- */
+  .join-card{
+    background:var(--bgs-plate);border-radius:16px;padding:22px;
+    border:1px solid rgba(var(--bgs-gold-rgb),.18);
+  }
+  .join-card label{
+    display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--bgs-ivory-45);font-weight:600;margin-bottom:8px;
+  }
+  .join-card input{
+    width:100%;background:rgba(0,0,0,.28);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
+    border-radius:10px;padding:14px;color:var(--bgs-ivory);
+    font:inherit;font-size:15px;margin-bottom:14px;box-sizing:border-box;
+  }
+  .join-card input:focus{outline:none;border-color:var(--bgs-gold);}
+  .join-card input::placeholder{color:rgba(var(--bgs-ivory-rgb),.28);}
+  .hosting{
+    text-align:center;font-size:12px;color:var(--bgs-ivory-45);margin-bottom:18px;
+  }
+  .hosting b{color:var(--bgs-ivory);font-weight:600;}
+  .form-error{
+    text-align:center;font-size:12px;color:#C2705A;margin:-6px 0 14px;
+  }
+  .start-btn{
+    display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-plate);border:none;
+    border-radius:12px;padding:16px;font:inherit;font-size:14.5px;font-weight:700;
+    cursor:pointer;transition:opacity .18s ease;text-align:center;text-decoration:none;
+    box-sizing:border-box;
+  }
+  .start-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+  /* ---- ended / not found ---- */
+  .ended p{
+    text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;
+  }
+</style>
+</head>
+<body>
+
+<div class="screen" id="screen">
+  <div class="eyebrow">Game Night</div>
+  <h1>Loading&hellip;</h1>
+</div>
+
+<script type="module">
+import { fetchSession, joinGameNight, sessionErrorMessage } from './js/session.js';
+import { joinSessionChannel } from './js/presence.js';
+import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from './js/waiting-room.js';
+
+const screen = document.getElementById('screen');
+
+function codeFromPath() {
+  // /vote/{code}
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  return parts[1] || null;
+}
+
+function renderEnded(message) {
+  screen.innerHTML = `
+    <div class="eyebrow">Game Night</div>
+    <h1>Game night over</h1>
+    <div class="ended"><p>${message}</p></div>
+    <a class="start-btn" href="/">Back to the shelf</a>`;
+}
+
+const code = codeFromPath();
+if (!code) {
+  renderEnded('That game night has ended, or the code is wrong.');
+} else {
+  init(code);
+}
+
+async function init(code) {
+  let session;
+  try {
+    session = await fetchSession(code);
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.');
+    return;
+  }
+
+  if (!session) {
+    renderEnded('That game night has ended, or the code is wrong.');
+    return;
+  }
+  if (session.status === 'cancelled') {
+    renderEnded(`${session.host_name} ended this game night.`);
+    return;
+  }
+
+  const storageKey = `gamenight:${code}:name`;
+  const storedName = sessionStorage.getItem(storageKey);
+
+  if (session.status === 'voting' || session.status === 'done') {
+    if (storedName) {
+      window.location.href = `/vote/${code}/swipe`;
+    } else {
+      renderEnded("Voting's already started — you'll catch the next round.");
+    }
+    return;
+  }
+
+  let games;
+  try {
+    const res = await fetch('/games.json');
+    if (!res.ok) throw new Error('failed to load games');
+    games = await res.json();
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.');
+    return;
+  }
+
+  const deck = deckFromSession(session, games);
+
+  if (storedName) {
+    runJoined({ code, session, deck, myName: storedName });
+  } else {
+    renderJoinForm({ code, session, deck });
+  }
+}
+
+function renderJoinForm({ code, session, deck }) {
+  screen.innerHTML = `
+    <div class="eyebrow">Game Night · ${code}</div>
+    <h1>You're invited</h1>
+    <p class="hosting"><b>${session.host_name}</b> is hosting tonight</p>
+    <div class="join-card">
+      <label for="nm">What should we call you?</label>
+      <input id="nm" placeholder="Your name" autocomplete="off">
+      <p class="form-error" id="nmError" hidden></p>
+      <button class="start-btn" id="joinBtn" type="button">Join the table</button>
+    </div>`;
+
+  const input = document.getElementById('nm');
+  const errEl = document.getElementById('nmError');
+  const btn = document.getElementById('joinBtn');
+
+  btn.addEventListener('click', async () => {
+    const name = input.value.trim();
+    if (!name) return;
+    btn.disabled = true;
+    try {
+      const finalName = await joinGameNight(code, name);
+      sessionStorage.setItem(`gamenight:${code}:name`, finalName);
+      runJoined({ code, session, deck, myName: finalName });
+    } catch (e) {
+      errEl.textContent = sessionErrorMessage(e, session.host_name) || 'Something went wrong. Please try again.';
+      errEl.hidden = false;
+      btn.disabled = false;
+    }
+  });
+}
+
+const hints = [
+  'Everyone swipes at once',
+  'Votes lock the moment you swipe',
+  'Results reveal to the whole table together',
+];
+let hintTimer;
+function cycleHints() {
+  clearInterval(hintTimer);
+  let i = 0;
+  hintTimer = setInterval(() => {
+    i = (i + 1) % hints.length;
+    const node = document.getElementById('waitHint');
+    if (!node) { clearInterval(hintTimer); return; }
+    node.style.opacity = 0;
+    setTimeout(() => {
+      node.innerHTML = hints[i] + '<span class="waiting-dots"><span></span><span></span><span></span></span>';
+      node.style.opacity = 1;
+    }, 220);
+  }, 2800);
+}
+
+function runJoined({ code, session, deck, myName }) {
+  let players = [];
+  let done = false;
+
+  function render() {
+    screen.innerHTML = `
+      <div class="eyebrow">Game Night · ${code}</div>
+      <h1>You're in</h1>
+      ${deckHTML(deck, session.reveal_deck)}
+      ${rosterHTML(players, myName)}
+      <div class="waiting-panel">
+        <div class="die-wrap">
+          <svg class="die" viewBox="0 0 52 52">
+            <rect x="2" y="2" width="48" height="48" rx="11"/>
+            <circle cx="17" cy="17" r="4.2"/>
+            <circle cx="35" cy="17" r="4.2"/>
+            <circle cx="17" cy="35" r="4.2"/>
+            <circle cx="35" cy="35" r="4.2"/>
+            <circle cx="26" cy="26" r="4.2"/>
+          </svg>
+        </div>
+        <p class="waiting-title">Waiting for <b>${session.host_name}</b><br>to start voting</p>
+        <p class="waiting-sub" id="waitHint">Everyone swipes at once<span class="waiting-dots"><span></span><span></span><span></span></span></p>
+      </div>`;
+    cycleHints();
+  }
+
+  render();
+  attachDeckHandlers(screen, deck);
+
+  const controller = joinSessionChannel({
+    code,
+    participantName: myName,
+    isHost: false,
+    onPresence: ({ players: p }) => {
+      if (done) return;
+      players = p;
+      render();
+    },
+    onStatus: (status) => {
+      if (done) return;
+      if (status === 'voting' || status === 'done') {
+        done = true;
+        clearInterval(hintTimer);
+        controller.leave();
+        window.location.href = `/vote/${code}/swipe`;
+      } else if (status === 'cancelled') {
+        done = true;
+        clearInterval(hintTimer);
+        controller.leave();
+        renderEnded(`${session.host_name} ended this game night.`);
+      }
+    },
+  });
+
+  window.addEventListener('pagehide', () => controller.leave());
+}
+</script>
+</body>
+</html>
