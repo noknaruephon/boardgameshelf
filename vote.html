@@ -22,7 +22,13 @@
   }
   *{box-sizing:border-box;}
   body{
-    margin:0;background:radial-gradient(circle at 50% 0%, var(--bgs-bg-radial), var(--bgs-bg) 62%);
+    margin:0;
+    /* Same layered background as the shelf. The solid colour underneath the
+       gradient matters: a gradient alone leaves background-color transparent,
+       so overscrolling showed the browser's white canvas. */
+    background:
+      radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%),
+      var(--bgs-bg);
     min-height:100vh;font-family:'Inter',sans-serif;color:var(--bgs-ivory);
     padding:24px 16px calc(40px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;
   }
