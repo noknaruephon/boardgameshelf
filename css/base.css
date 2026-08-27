@@ -1,0 +1,47 @@
+/* Shared foundation for every page: design tokens and page chrome.
+   Link this before any other stylesheet and before the page's own <style>,
+   so a page can still override what it needs to.
+
+   This exists because the shelf and the waiting-room pages each carried their
+   own copy of the palette and the body background, and the copies drifted —
+   the waiting room's background lost its solid colour layer and overscrolling
+   showed the browser's white canvas. Change a token or the page chrome here
+   and every page follows. */
+
+:root{
+  --bgs-bg:#160F0A;
+  --bgs-bg-rgb:22,15,10;
+  --bgs-bg-radial:#241708;
+  --bgs-plate:#241A10;
+  --bgs-ivory:#F4EBDA;
+  --bgs-ivory-rgb:244,235,218;
+  --bgs-ivory-70:rgba(244,235,218,0.72);
+  --bgs-ivory-45:rgba(244,235,218,0.45);
+  --bgs-gold:#E3B04B;
+  --bgs-gold-rgb:227,176,75;
+  /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim */
+  --bgs-gold-dim:rgba(227,176,75,0.62);
+  --bgs-icon-gold:#e2b463;
+  /* destructive actions — cancelling a game night */
+  --bgs-danger:#A8503A;
+  --bgs-danger-hover:#C2705A;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+
+body{
+  /* The solid colour under the gradient is load-bearing: a gradient alone
+     leaves background-color transparent, and overscrolling then shows the
+     browser's white canvas. */
+  background:
+    radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%),
+    var(--bgs-bg);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Each page sets its own body padding — the shelf is a wide grid, the
+   game-night pages are a narrow phone column with a safe-area inset. */

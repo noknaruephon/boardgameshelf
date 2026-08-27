@@ -3,22 +3,7 @@
    Consumed by index.html, night-host.html and vote.html; the markup that goes
    with it is built by js/game-modal.js. Edit here, not per page. */
 
-/* Token fallbacks so this file works on any page. Each page's own :root is
-   parsed after this stylesheet, so a page that defines a token still wins —
-   these only fill gaps. night-host.html and vote.html define neither
-   --bgs-bg-rgb nor --bgs-icon-gold. */
-:root{
-  --bgs-bg:#160F0A;
-  --bgs-bg-rgb:22,15,10;
-  --bgs-plate:#241A10;
-  --bgs-ivory:#F4EBDA;
-  --bgs-ivory-rgb:244,235,218;
-  --bgs-ivory-70:rgba(244,235,218,0.72);
-  --bgs-gold:#E3B04B;
-  --bgs-gold-rgb:227,176,75;
-  --bgs-gold-dim:rgba(227,176,75,0.62);
-  --bgs-icon-gold:#e2b463;
-}
+/* Requires css/base.css, which owns the design tokens this file uses. */
 
 /* modal */
 .backdrop{
