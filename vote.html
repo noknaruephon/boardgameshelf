@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/game-modal.css">
 <style>
   :root{
     --bgs-bg:#160F0A; --bgs-bg-radial:#241708;
@@ -60,37 +61,7 @@
   .deck-card.clickable{cursor:pointer;transition:transform .12s ease;}
   .deck-card.clickable:active{transform:scale(.92);}
 
-  /* ---- detail modal ---- */
-  .wr-modal{
-    position:fixed;inset:0;z-index:20;display:none;
-    align-items:center;justify-content:center;padding:20px;
-    background:rgba(0,0,0,.6);backdrop-filter:blur(3px);
-  }
-  .wr-modal.open{display:flex;}
-  .wr-modal__panel{
-    background:var(--bgs-plate);border-radius:14px;max-width:320px;width:100%;
-    max-height:78vh;border:1px solid rgba(var(--bgs-gold-rgb),.2);
-    display:flex;flex-direction:column;overflow:hidden;
-  }
-  .wr-modal__scroll{overflow-y:auto;padding:20px 20px 6px;}
-  .wr-modal__cover{
-    width:100%;aspect-ratio:4/3;background:#000;border-radius:10px;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;margin-bottom:14px;
-  }
-  .wr-modal__cover img{width:100%;height:100%;object-fit:cover;display:block;}
-  .wr-modal__panel h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 8px;font-size:17px;}
-  .wr-modal__meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
-  .wr-modal__meta span{
-    font-size:10.5px;font-weight:600;padding:4px 8px;border-radius:20px;
-    background:rgba(0,0,0,.3);color:var(--bgs-ivory-70);
-  }
-  .wr-modal__panel p{font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 12px;}
-  .wr-modal__close-row{padding:12px 20px calc(14px + env(safe-area-inset-bottom));flex-shrink:0;}
-  .wr-modal__close{
-    width:100%;background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);
-    color:var(--bgs-ivory-70);font:inherit;font-size:13px;font-weight:600;
-    padding:12px;border-radius:10px;cursor:pointer;
-  }
+  /* The game detail modal is styled by css/game-modal.css, shared with the shelf. */
 
   /* ---- roster ---- */
   .roster{margin-bottom:24px;}

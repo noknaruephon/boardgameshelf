@@ -1,0 +1,240 @@
+/* Game detail modal — the single source of truth for the shelf and the
+   game-night waiting room pages.
+   Consumed by index.html, night-host.html and vote.html; the markup that goes
+   with it is built by js/game-modal.js. Edit here, not per page. */
+
+/* Token fallbacks so this file works on any page. Each page's own :root is
+   parsed after this stylesheet, so a page that defines a token still wins —
+   these only fill gaps. night-host.html and vote.html define neither
+   --bgs-bg-rgb nor --bgs-icon-gold. */
+:root{
+  --bgs-bg:#160F0A;
+  --bgs-bg-rgb:22,15,10;
+  --bgs-plate:#241A10;
+  --bgs-ivory:#F4EBDA;
+  --bgs-ivory-rgb:244,235,218;
+  --bgs-ivory-70:rgba(244,235,218,0.72);
+  --bgs-gold:#E3B04B;
+  --bgs-gold-rgb:227,176,75;
+  --bgs-gold-dim:rgba(227,176,75,0.62);
+  --bgs-icon-gold:#e2b463;
+}
+
+/* modal */
+.backdrop{
+  position:fixed;inset:0;
+  background:rgba(var(--bgs-bg-rgb),0.66);
+  backdrop-filter:blur(3px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  z-index:30;
+}
+.backdrop.open{display:flex;}
+.card{
+  background:var(--bgs-plate);
+  border:1px solid rgba(var(--bgs-gold-rgb),0.3);
+  border-radius:16px;
+  max-width:440px;
+  width:100%;
+  position:relative;
+  animation:bgs-modal-pop 0.18s ease;
+  max-height:85vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+#card-body{
+  padding:30px 30px 26px;
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+}
+@keyframes bgs-modal-pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
+.card-cover-wrap{
+  width:100%;
+  min-height:80px;
+  border-radius:10px;
+  margin:-6px 0 18px;
+  box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.card-cover{
+  display:block;
+  max-width:100%;
+  max-height:360px;
+  width:auto;
+  height:auto;
+}
+.flip-scene{
+  width:100%;
+  margin:-6px 0 18px;
+  perspective:1400px;
+}
+.flip-card{
+  position:relative;
+  width:100%;
+  aspect-ratio:4 / 3;
+  max-height:360px;
+  cursor:pointer;
+  touch-action:pan-y;
+  transform-style:preserve-3d;
+  transition:transform 0.55s cubic-bezier(.4,.2,.2,1);
+}
+.flip-card.flipped{
+  transform:rotateY(180deg);
+}
+.flip-face{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
+  overflow:hidden;
+  backface-visibility:hidden;
+  background:var(--bgs-bg);
+}
+.flip-back{
+  transform:rotateY(180deg);
+}
+.flip-card:not(.flipped) .flip-back{
+  pointer-events:none;
+}
+.flip-card.flipped .flip-front{
+  pointer-events:none;
+}
+.flip-face .card-cover{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+}
+.flip-hint{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--bgs-gold-dim);
+  text-align:center;
+  margin:8px 0 0;
+}
+.card h2{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:24px;
+  margin:0 0 14px;
+  line-height:1.2;
+}
+.stat-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.stat-chip{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--bgs-ivory);
+  background:rgba(var(--bgs-ivory-rgb),0.08);
+  border:1px solid rgba(var(--bgs-ivory-rgb),0.16);
+  border-radius:6px;
+  padding:5px 10px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.stat-icon{ color:var(--bgs-icon-gold); flex-shrink:0; }
+.card p.blurb{
+  font-size:15px;
+  line-height:1.6;
+  color:var(--bgs-ivory-70);
+  margin:0 0 18px;
+}
+.card .tag{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--bgs-gold);
+}
+.why-heading{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--bgs-gold-dim);
+  margin:20px 0 10px;
+}
+.why-list{
+  list-style:none;
+  margin:0 0 20px;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.why-list li{
+  font-size:14px;
+  line-height:1.5;
+  color:var(--bgs-ivory);
+  padding-left:18px;
+  position:relative;
+}
+.why-list li::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:8px;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--bgs-gold);
+}
+.close-btn{
+  position:absolute;
+  top:16px;right:16px;
+  z-index:10;
+  background:rgba(var(--bgs-bg-rgb),0.55);
+  border:none;
+  border-radius:50%;
+  width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--bgs-ivory);
+  font-size:16px;
+  cursor:pointer;
+  line-height:1;
+  padding:0;
+}
+.close-btn:hover{color:var(--bgs-ivory);}
+
+/* ---- sticky action row on the existing detail modal ---- */
+.card-sticky{
+  flex:none;
+  padding:12px 20px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bgs-plate) 72%, rgba(36,26,16,0));
+  display:flex;gap:10px;
+}
+.card-sticky .modal__add{
+  flex:1;background:var(--bgs-gold);color:var(--bgs-bg);border:none;font:inherit;
+  font-size:13.5px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.card-sticky .modal__add.is-in{
+  background:transparent;color:var(--bgs-gold);border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
+}
+.card-sticky .modal__add svg{width:15px;height:15px;}
+.card-sticky .modal__close{
+  background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),0.22);
+  color:var(--bgs-ivory-70);font:inherit;font-size:13px;font-weight:600;
+  padding:13px 16px;border-radius:10px;cursor:pointer;
+}
+body:not(.gn-selecting) .card-sticky .modal__add{display:none;}
+body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
