@@ -1,0 +1,364 @@
+# Claude Code Spec — Game Night, Stage 2: Waiting Room
+
+**Builds on Stage 1**, which is merged and working: selection mode, the mode chooser,
+`create_game_night`, and the floating entry pill all exist. This spec picks up where
+that leaves off — the redirect to `/night/{code}/host` currently 404s, and this is
+what fills it in.
+
+**Scope:** the host waiting room (QR, roster, deck preview, Start Voting, cancel), the
+join flow, and the presence layer that drives all of it.
+
+**Out of scope:** the swipe screen, votes, results. When voting starts, every device
+navigates to `/vote/{code}/swipe`, which will 404. Expected and correct.
+
+**Run `supabase-stage2-addendum.sql` before starting.** It adds the `cancelled` status
+and the `cancel_game_night` function this spec depends on.
+
+---
+
+## 0. Working rules
+
+- **Branch, PR into `main`.** Never push to `main` directly.
+- **Ship dark.** No new entry points. The pill from Stage 1 stays behind
+  `GAME_NIGHT_ENABLED` / `?gamenight=1`. Nothing else on the shelf changes.
+- **Static site.** Vanilla JS, ES modules, CDN imports. No bundler, no `package.json`.
+- **Additive.** `index.html` should not change at all in this stage. If you think it
+  must, stop and explain in the PR.
+- Verification happens on the **Vercel preview deployment** — presence and QR scanning
+  cannot be tested in the sandbox.
+
+---
+
+## 1. What already exists
+
+```
+js/config.js      SUPABASE_URL, SUPABASE_ANON_KEY
+js/supabase.js    the client
+js/session.js     createGameNight()
+js/filters.js     shared filter logic
+games.json        the collection
+vercel.json       headers + rewrites for /night/:code/host and /vote/:code
+index.html        shelf, selection mode, tray, mode chooser, FAB
+```
+
+The rewrites already point at `night-host.html` and `vote.html`. Both files need
+creating; the routing is done.
+
+Stage 1 stores the host's name in `sessionStorage` under `gamenight:{code}:name`.
+
+**Read the existing files before writing.** Match their conventions — naming, module
+style, how the existing detail modal and card markup are built. Reuse rather than
+reimplement wherever the shelf already solves something.
+
+---
+
+## 2. New files
+
+```
+js/presence.js         session channel + presence (§4)
+js/waiting-room.js      shared rendering for both views (§6)
+night-host.html         host view (§7)
+vote.html               join + participant view (§8)
+```
+
+Plus additions to `js/session.js` (§3).
+
+QR generation: `https://esm.sh/qrcode@1.5.3`, `QRCode.toString(url, { type:'svg' })`.
+
+---
+
+## 3. Additions to `js/session.js`
+
+```js
+export async function joinGameNight(code, name) {
+  const { data, error } = await supabase.rpc('join_game_night', {
+    p_code: code, p_name: name,
+  });
+  if (error) throw error;
+  return data; // final, disambiguated name — may differ from what was typed
+}
+
+export async function startVoting(code) {
+  const { error } = await supabase.rpc('start_voting', { p_code: code });
+  if (error) throw error;
+}
+
+export async function cancelGameNight(code) {
+  const { error } = await supabase.rpc('cancel_game_night', { p_code: code });
+  if (error) throw error;
+}
+
+export async function fetchSession(code) {
+  const { data, error } = await supabase
+    .from('sessions')
+    .select('code, host_name, mode, reveal_deck, game_ids, status')
+    .eq('code', code)
+    .maybeSingle();
+  if (error) throw error;
+  return data; // null when missing or expired
+}
+```
+
+### Error copy
+
+The database raises named errors. Turn them into sentences — never surface a raw
+Postgres error.
+
+| Raised | Show |
+|---|---|
+| `SESSION_NOT_FOUND` | "That game night has ended, or the code is wrong." |
+| `SESSION_CANCELLED` | "{host} ended this game night." |
+| `VOTING_IN_PROGRESS` | "Voting's already started — you'll catch the next round." |
+| `NOT_ENOUGH_PLAYERS` | "Need at least 2 players to start." |
+| `ALREADY_STARTED` | ignore silently — another device got there first |
+
+Match on the message containing the token; Supabase wraps it in an error object.
+
+---
+
+## 4. `js/presence.js` — the delicate part
+
+**Highest-risk file in this spec.** Read this section twice.
+
+Two sources of truth, deliberately separate:
+
+- **Presence** (ephemeral, never stored) answers *who is holding a phone right now*.
+  It gates Start Voting. There is no "leave session" action by design, so a closed tab,
+  a dead battery, or lost signal must lower the count on its own. Only presence does that.
+- **The `participants` table** (stored) answers *whose votes count*. It only grows. A
+  disconnect must **not** remove anyone — someone who drops and rejoins keeps their
+  identity and their votes.
+
+```js
+import { supabase } from './supabase.js';
+
+export const MIN_PLAYERS_TO_START = 2;
+
+/**
+ * Joins the session channel and reports changes via callbacks.
+ * Returns a controller with leave().
+ */
+export function joinSessionChannel({
+  code, participantName, isHost, onPresence, onStatus,
+}) {
+  const channel = supabase.channel(`session:${code}`, {
+    config: { presence: { key: participantName } },
+  });
+
+  function sync() {
+    const state = channel.presenceState();
+
+    // presenceState() returns { [key]: metas[] }. One participant can briefly hold
+    // more than one meta — a phone reconnecting before the old socket times out.
+    // Collapse to one entry per key, or the count double-reports the same human
+    // and the two-player gate unlocks with one person in the room.
+    const players = Object.values(state)
+      .map((metas) => metas[0])
+      .filter(Boolean)
+      .sort((a, b) => a.joinedAt.localeCompare(b.joinedAt));
+
+    onPresence({ players, count: players.length });
+  }
+
+  channel
+    .on('presence', { event: 'sync' }, sync)
+    .on('presence', { event: 'join' }, sync)
+    .on('presence', { event: 'leave' }, sync)
+    // Status lives in the database, not presence: it must survive a refresh and be
+    // identical on every device. This row change is what moves the whole table from
+    // waiting to voting at the same instant.
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public', table: 'sessions',
+      filter: `code=eq.${code}`,
+    }, (payload) => {
+      if (payload.new?.status) onStatus(payload.new.status);
+    })
+    .subscribe(async (status) => {
+      if (status !== 'SUBSCRIBED') return;
+
+      // track() MUST run after SUBSCRIBED. Called earlier it fails silently: the
+      // person looks connected on their own screen but is invisible to everyone
+      // else. This is the single most common way this breaks.
+      await channel.track({
+        name: participantName,
+        isHost,
+        joinedAt: new Date().toISOString(),
+      });
+    });
+
+  return {
+    leave() {
+      // untrack() before removeChannel() so other devices see the drop promptly
+      // rather than waiting out the server-side presence timeout.
+      channel.untrack().catch(() => {});
+      supabase.removeChannel(channel);
+    },
+  };
+}
+```
+
+Also call `leave()` on `pagehide`, so a phone locking or a tab closing drops the count
+without waiting for a timeout.
+
+---
+
+## 5. Visual reference
+
+**`waiting-room-mockup.html` accompanies this spec** and is the approved design. Match
+its layout, proportions, copy, and animation. It uses emoji as cover stand-ins — use
+real covers from `covers/` via the same path pattern `games.json` and the shelf use.
+
+Use existing tokens only: `--bgs-bg`, `--bgs-bg-radial`, `--bgs-plate`, `--bgs-ivory`,
+`--bgs-ivory-70`, `--bgs-ivory-45`, `--bgs-gold`, `--bgs-gold-dim`. Fonts: Fraunces
+display, Inter UI, IBM Plex Mono for the code. The mockup introduces two reds for the
+destructive action (`#A8503A` fill, `#C2705A` hover) — add them as tokens rather than
+inline hex.
+
+---
+
+## 6. `js/waiting-room.js` — shared rendering
+
+Both views share the deck preview and roster. Keep them in one module.
+
+### Deck preview
+
+- **`reveal_deck` true:** real cover art, tappable, opening a detail modal (title, cover,
+  players/time/weight, description). **Both host and joiners get this** — reading up on
+  a game while waiting is the point. Heading: "Tonight's deck — tap a game to read more".
+- **`reveal_deck` false:** face-down card backs, one per game, **not tappable**. Heading:
+  "6 games, hidden" — the count is useful even when the titles aren't shown.
+- Reuse the shelf's existing detail modal if practical. If its markup is too entangled
+  with `index.html` to share, build a minimal one matching the mockup — but say so in
+  the PR rather than silently duplicating a large component.
+
+### Roster
+
+- Name chips, wrapping, centred. Each animates in on join.
+- Heading: "3 people here", with a pulsing dot to signal live.
+- Tag the host ("host") and the current user ("you").
+- Rendered from **presence**, not from the participants table.
+
+---
+
+## 7. `night-host.html`
+
+Read the code from `window.location.pathname`. Call `fetchSession()`.
+
+- **Null** → "That game night has ended, or the code is wrong." plus a link back to the shelf.
+- **Status `cancelled`** → same treatment.
+- **Status `voting` or `done`** → go straight to `/vote/{code}/swipe`.
+
+Host name comes from `sessionStorage['gamenight:{code}:name']`. **If it's missing** —
+the host opened the link on another device — prompt for a name and call
+`joinGameNight()` like anyone else, but keep host chrome (QR, Start Voting, Cancel) visible.
+
+### Layout
+
+Per the mockup:
+
+- **QR** encoding `${window.location.origin}/vote/${code}`, built at runtime so it works
+  on preview and production without a hardcoded domain. On an **ivory plate** — this is
+  the only light surface in the product, and it's deliberate: dark QR codes scan slowly
+  or not at all.
+- **The code, quiet** — small IBM Plex Mono in `--bgs-ivory-45` under the QR. It's the
+  spoken fallback, not the hero. **Do not make it large or gold** — that was tried and
+  rejected.
+- **Copy link** button copying the full join URL.
+- **Recap line:** "6 games · Surprise mode · Deck hidden".
+- Deck preview, then roster.
+- **Start Voting** — disabled below 2 present. Hint below: "Need 1 more player to start."
+  (singular/plural correct) or "Everyone swipes on their own phone."
+- **Cancel game night** — quiet text button, well below Start Voting, muted red on hover.
+
+### Start Voting
+
+Call `startVoting()`. **Do not navigate directly.** Every device including the host's
+moves on the realtime status change, so the whole table lands together.
+
+### Cancel
+
+- **Host alone (presence count 1):** cancel immediately, no dialog. Nothing to disrupt.
+- **Others present:** confirm first, naming the cost — "2 people have already joined.
+  They'll be sent back and the code will stop working." Buttons: "Keep going" (neutral)
+  and "End it" (red).
+- On confirm: `cancelGameNight()`, then return to `/`.
+- Joiners see the status flip and get the ended screen (§8).
+
+---
+
+## 8. `vote.html`
+
+Two states.
+
+### Not joined
+
+- Show the host's name — "Nok is hosting tonight" — so the joiner knows they scanned
+  the right thing.
+- One required name input, then `joinGameNight()`.
+- **Store the returned name**, not what was typed. The database may have disambiguated
+  it to "Alex 2".
+- Persist in `sessionStorage['gamenight:{code}:name']` so a refresh doesn't create a
+  duplicate participant. Check for it on load and skip straight to joined if present.
+- Handle `SESSION_CANCELLED` and `VOTING_IN_PROGRESS` with the copy from §3.
+
+### Joined
+
+- Deck preview and roster, same as the host.
+- **Waiting panel** per the mockup: a tumbling die (inline SVG, no icon library), then
+  "Waiting for **Nok** to start voting" in Fraunces with the host's name in gold, then a
+  rotating hint line cycling every ~2.8s with a fade:
+  - "Everyone swipes at once"
+  - "Votes lock the moment you swipe"
+  - "Results reveal to the whole table together"
+- No card background or border on this panel — it sits directly on the page.
+- No QR and no Start Voting.
+
+### Status changes
+
+- `voting` → navigate to `/vote/{code}/swipe`
+- `cancelled` → replace the screen with "{host} ended this game night" and a link back
+  to the shelf. **Leave the channel.** Do not leave someone staring at a dead waiting
+  screen indefinitely.
+
+---
+
+## 9. Do not build
+
+- Swipe, votes, results, force-results.
+- Accounts or auth. Names are per-session and disposable.
+- A "leave session" button for participants. Presence handles departures.
+- Any entry point on the shelf. Still shipping dark.
+- Changes to `index.html`, `js/filters.js`, or `games.json`.
+
+---
+
+## 10. Verification
+
+Sandbox:
+
+- [ ] `git diff --stat`: `js/session.js` modified; `js/presence.js`, `js/waiting-room.js`,
+      `night-host.html`, `vote.html` added. `index.html` **unchanged**.
+- [ ] Grep for `service_role` — zero hits outside the existing warning comment.
+- [ ] No hardcoded domain in the QR URL — built from `window.location.origin`.
+- [ ] `track()` is called only inside the `SUBSCRIBED` branch.
+
+Preview deployment — two browsers, or a laptop and a phone:
+
+- [ ] Create a night → host page loads with a scannable QR.
+- [ ] Scanning opens `/vote/{code}` (the pretty URL) and shows the host's name.
+- [ ] Joining shows the name on the host's screen within about a second.
+- [ ] **Host alone: Start Voting disabled, "Need 1 more player to start."**
+- [ ] Two present: enabled. **Close the second tab → it disables again.**
+      *If this fails, presence is wired wrong — everything else in this stage depends on it.*
+- [ ] Two people both entering "Alex" → roster shows "Alex" and "Alex 2".
+- [ ] Refreshing a joiner's tab does **not** create a duplicate participant.
+- [ ] Revealed deck: tapping a game opens details, on both host and joiner screens.
+- [ ] Hidden deck: card backs shown, count correct in the heading, not tappable.
+- [ ] Start Voting → **every device navigates at the same moment** (404 expected).
+- [ ] Cancel with nobody else present → immediate, back to the shelf.
+- [ ] Cancel with others present → confirm dialog naming the count; on confirm, joiners
+      see "{host} ended this game night".
+- [ ] Opening `/vote/{code}` on a cancelled session → the ended message, not a crash.
+- [ ] Opening `/night/{code}/host` for a nonexistent code → the not-found message.
+- [ ] Mobile: QR is large enough to scan comfortably from across a table; nothing is
+      clipped by the home indicator.
