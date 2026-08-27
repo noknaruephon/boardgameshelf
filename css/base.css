@@ -39,7 +39,14 @@ body{
     var(--bgs-bg);
   color:var(--bgs-ivory);
   font-family:'Inter',sans-serif;
+  /* svh, not vh: on a phone 100vh is the *large* viewport — the height with the
+     toolbars retracted — so it makes the body taller than what's actually visible
+     and the page scrolls even when nothing overflows. 100svh is the smallest
+     visible viewport, so a page whose content fits cannot scroll. dvh would track
+     the toolbars sliding in and out and reflow mid-scroll. The vh line stays as a
+     fallback for Safari <15.4 / Chrome <108. */
   min-height:100vh;
+  min-height:100svh;
   -webkit-font-smoothing:antialiased;
 }
 
