@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://cf.geekdo-images.com" crossorigin>
 <link rel="dns-prefetch" href="https://cf.geekdo-images.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/game-modal.css">
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root{
@@ -555,200 +556,6 @@
   }
   .game-card-skeleton .skeleton-line.short{ width:60%; }
 
-  /* modal */
-  .backdrop{
-    position:fixed;inset:0;
-    background:rgba(var(--bgs-bg-rgb),0.66);
-    backdrop-filter:blur(3px);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-    z-index:30;
-  }
-  .backdrop.open{display:flex;}
-  .card{
-    background:var(--bgs-plate);
-    border:1px solid rgba(var(--bgs-gold-rgb),0.3);
-    border-radius:16px;
-    max-width:440px;
-    width:100%;
-    position:relative;
-    animation:pop 0.18s ease;
-    max-height:85vh;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
-  #card-body{
-    padding:30px 30px 26px;
-    flex:1 1 auto;
-    min-height:0;
-    overflow-y:auto;
-  }
-  @keyframes pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
-  .card-cover-wrap{
-    width:100%;
-    min-height:80px;
-    border-radius:10px;
-    margin:-6px 0 18px;
-    box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  .card-cover{
-    display:block;
-    max-width:100%;
-    max-height:360px;
-    width:auto;
-    height:auto;
-  }
-  .flip-scene{
-    width:100%;
-    margin:-6px 0 18px;
-    perspective:1400px;
-  }
-  .flip-card{
-    position:relative;
-    width:100%;
-    aspect-ratio:4 / 3;
-    max-height:360px;
-    cursor:pointer;
-    touch-action:pan-y;
-    transform-style:preserve-3d;
-    transition:transform 0.55s cubic-bezier(.4,.2,.2,1);
-  }
-  .flip-card.flipped{
-    transform:rotateY(180deg);
-  }
-  .flip-face{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:10px;
-    box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
-    overflow:hidden;
-    backface-visibility:hidden;
-    background:var(--bgs-bg);
-  }
-  .flip-back{
-    transform:rotateY(180deg);
-  }
-  .flip-card:not(.flipped) .flip-back{
-    pointer-events:none;
-  }
-  .flip-card.flipped .flip-front{
-    pointer-events:none;
-  }
-  .flip-face .card-cover{
-    max-width:100%;
-    max-height:100%;
-    width:auto;
-    height:auto;
-    object-fit:contain;
-  }
-  .flip-hint{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    color:var(--bgs-gold-dim);
-    text-align:center;
-    margin:8px 0 0;
-  }
-  .card h2{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:24px;
-    margin:0 0 14px;
-    line-height:1.2;
-  }
-  .stat-row{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:16px;
-  }
-  .stat-chip{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    color:var(--bgs-ivory);
-    background:rgba(var(--bgs-ivory-rgb),0.08);
-    border:1px solid rgba(var(--bgs-ivory-rgb),0.16);
-    border-radius:6px;
-    padding:5px 10px;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-  .stat-icon{ color:var(--bgs-icon-gold); flex-shrink:0; }
-  .card p.blurb{
-    font-size:15px;
-    line-height:1.6;
-    color:var(--bgs-ivory-70);
-    margin:0 0 18px;
-  }
-  .card .tag{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    color:var(--bgs-gold);
-  }
-  .why-heading{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--bgs-gold-dim);
-    margin:20px 0 10px;
-  }
-  .why-list{
-    list-style:none;
-    margin:0 0 20px;
-    padding:0;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-  .why-list li{
-    font-size:14px;
-    line-height:1.5;
-    color:var(--bgs-ivory);
-    padding-left:18px;
-    position:relative;
-  }
-  .why-list li::before{
-    content:"";
-    position:absolute;
-    left:0;
-    top:8px;
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:var(--bgs-gold);
-  }
-  .close-btn{
-    position:absolute;
-    top:16px;right:16px;
-    z-index:10;
-    background:rgba(var(--bgs-bg-rgb),0.55);
-    border:none;
-    border-radius:50%;
-    width:30px;
-    height:30px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--bgs-ivory);
-    font-size:16px;
-    cursor:pointer;
-    line-height:1;
-    padding:0;
-  }
-  .close-btn:hover{color:var(--bgs-ivory);}
 
   footer{
     max-width:960px;
@@ -855,6 +662,7 @@
     padding:26px 26px 22px;
     animation:pop 0.18s ease;
   }
+  @keyframes pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
   .gn-panel h3{
     font-family:'Fraunces',serif;
     font-weight:600;
@@ -1142,29 +950,6 @@
   .gn-tray__remove svg{width:13px;height:13px;}
   .gn-tray__remove:hover{border-color:var(--bgs-gold);color:var(--bgs-gold);}
 
-  /* ---- sticky action row on the existing detail modal ---- */
-  .card-sticky{
-    flex:none;
-    padding:12px 20px calc(14px + env(safe-area-inset-bottom));
-    background:linear-gradient(to top, var(--bgs-plate) 72%, rgba(36,26,16,0));
-    display:flex;gap:10px;
-  }
-  .card-sticky .modal__add{
-    flex:1;background:var(--bgs-gold);color:var(--bgs-bg);border:none;font:inherit;
-    font-size:13.5px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;gap:7px;
-  }
-  .card-sticky .modal__add.is-in{
-    background:transparent;color:var(--bgs-gold);border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
-  }
-  .card-sticky .modal__add svg{width:15px;height:15px;}
-  .card-sticky .modal__close{
-    background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),0.22);
-    color:var(--bgs-ivory-70);font:inherit;font-size:13px;font-weight:600;
-    padding:13px 16px;border-radius:10px;cursor:pointer;
-  }
-  body:not(.gn-selecting) .card-sticky .modal__add{display:none;}
-  body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
 
 </style>
 </head>
@@ -1224,12 +1009,7 @@
 <p class="secondary">Descriptions sourced from BoardGameGeek and publisher listings</p>
 </footer>
 
-<div class="backdrop" id="backdrop">
-  <div class="card" id="card">
-    <button class="close-btn" id="close-btn">✕</button>
-    <div id="card-body"></div>
-  </div>
-</div>
+<!-- The game detail modal is created at runtime by js/game-modal.js. -->
 
 <div class="sheet-scrim" id="sheetScrim"></div>
 <div class="filter-sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
@@ -1285,6 +1065,7 @@ import {
   timeBucket, playersMatch, bestFitMatch, applyFilters,
   weightLabel, timeLabel, playersRangeLabel
 } from './js/filters.js';
+import { createGameModal } from './js/game-modal.js';
 
 // ---- Game Night feature flag (Stage 1: session creation) ----
 // Ships dark: a normal visitor sees today's site, unchanged, with no new buttons.
@@ -1370,83 +1151,24 @@ function render(){
   if(gameNightVisible && state.selectionMode) updateGnBar();
 }
 
-let gnOpenGame = null;
+// The detail modal itself lives in js/game-modal.js + css/game-modal.css, shared
+// with the game-night waiting room so an enhancement to it lands on every page.
+// The deck button is only wired up in game-night builds; CSS keeps it hidden
+// until selection mode is actually entered.
+const gameModal = createGameModal(gameNightVisible ? {
+  selection: {
+    isSelected: g => state.selectedIds.has(g.bggId),
+    toggle: toggleSelect,
+  },
+} : {});
 
 function openCard(g){
-  gnOpenGame = g;
-  const body = document.getElementById('card-body');
-  const coverHtml = g.backImage ? `
-    <div class="flip-scene">
-      <div class="flip-card" id="flip-card">
-        <div class="flip-face flip-front">
-          <img class="card-cover" src="${g.image}" alt="${g.title} box cover" loading="lazy" decoding="async" onerror="this.style.display='none'">
-        </div>
-        <div class="flip-face flip-back">
-          <img class="card-cover" src="${g.backImage}" alt="${g.title} back of box" loading="lazy" decoding="async" onerror="this.style.display='none'">
-        </div>
-      </div>
-      <p class="flip-hint">⟲ tap or swipe to see the back of the box</p>
-    </div>
-  ` : `
-    <div class="card-cover-wrap" style="background:${g.color}22">
-      <img class="card-cover" src="${g.image}" alt="${g.title} box cover" width="600" height="450" loading="lazy" decoding="async" fetchpriority="low" onerror="this.parentElement.style.background='${g.color}';this.style.display='none'">
-    </div>
-  `;
-  body.innerHTML = `
-    ${coverHtml}
-    <h2>${g.title}</h2>
-    <div class="stat-row">
-      <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="8" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 15c2.5.3 4.5 2 4.5 5"/></svg> ${g.players[0]}${g.players[1]!==g.players[0] ? '–'+g.players[1] : ''}</span>
-      <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg> ${timeLabel(g.time)}</span>
-      <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 006 0z"/><path d="M19 7l-3 6a3 3 0 006 0z"/><path d="M5 7h14"/><path d="M9 21h6"/></svg> ${weightLabel(g.weightScore)}</span>
-    </div>
-    <p class="blurb">${g.blurb}</p>
-    <p class="why-heading">Highlights</p>
-    <ul class="why-list">
-      ${g.why.map(w => `<li>${w}</li>`).join("")}
-    </ul>
-    <span class="tag">${g.tag}</span>
-  `;
-
-  if(g.backImage){
-    const flipCard = document.getElementById('flip-card');
-    const frontImg = flipCard.querySelector('.flip-front .card-cover');
-    const applyRatio = () => {
-      if(frontImg.naturalWidth && frontImg.naturalHeight){
-        flipCard.style.aspectRatio = `${frontImg.naturalWidth} / ${frontImg.naturalHeight}`;
-      }
-    };
-    if(frontImg.complete) applyRatio();
-    else frontImg.addEventListener('load', applyRatio, {once:true});
-    let startX = 0, startY = 0;
-    const toggle = () => flipCard.classList.toggle('flipped');
-    flipCard.addEventListener('click', toggle);
-    flipCard.addEventListener('touchstart', e=>{
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    }, {passive:true});
-    flipCard.addEventListener('touchend', e=>{
-      const dx = e.changedTouches[0].clientX - startX;
-      const dy = e.changedTouches[0].clientY - startY;
-      if(Math.abs(dx) > 20 && Math.abs(dx) > Math.abs(dy)){
-        toggle();
-        e.preventDefault();
-      }
-    });
-  }
-  syncStickyAction();
-  document.getElementById('backdrop').classList.add('open');
+  gameModal.open(g);
 }
 
 function closeDetailModal(){
-  document.getElementById('backdrop').classList.remove('open');
-  gnOpenGame = null;
+  gameModal.close();
 }
-
-document.getElementById('close-btn').addEventListener('click', closeDetailModal);
-document.getElementById('backdrop').addEventListener('click', (e)=>{
-  if(e.target.id==='backdrop') closeDetailModal();
-});
 
 // ---- Filter/sort bar: badge + chips ----
 
@@ -1686,8 +1408,6 @@ const GN_MIN_SELECT = 4;
 const GN_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#241A10" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
 const GN_CHEV_SVG  = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 const GN_X_SVG      = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-const GN_PLUS_SVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
-const GN_TICK_SVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
 const GN_DIE_SVG    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>';
 
 // Ephemeral flow state that doesn't belong on `state` (selectionMode/selectedIds
@@ -1728,16 +1448,9 @@ function toggleSelect(g){
   else state.selectedIds.delete(g.bggId);
   cardNodeFor(g.bggId)?.classList.toggle('selected', nowSelected);
   updateGnBar();
-  syncStickyAction();
+  gameModal.refreshFooter();
 }
 
-function syncStickyAction(){
-  const btn = document.getElementById('modalAddBtn');
-  if(!btn || !gnOpenGame) return;
-  const inDeck = state.selectedIds.has(gnOpenGame.bggId);
-  btn.className = 'modal__add' + (inDeck ? ' is-in' : '');
-  btn.innerHTML = inDeck ? `${GN_TICK_SVG} In tonight's deck` : `${GN_PLUS_SVG} Add to tonight`;
-}
 
 function showGnToast(msg){
   const toast = document.getElementById('gnToast');
@@ -1835,7 +1548,7 @@ function renderGnTray(){
       state.selectedIds.delete(id);
       cardNodeFor(id)?.classList.remove('selected');
       updateGnBar();
-      syncStickyAction();
+      gameModal.refreshFooter();
     });
   });
 }
@@ -2010,20 +1723,6 @@ function initGameNight(){
     </div>
   `);
 
-  // sticky action row on the existing detail modal — only in this build, so
-  // normal browsing (flag off) never gets it
-  document.getElementById('card-body').insertAdjacentHTML('afterend', `
-    <div class="card-sticky" id="cardSticky">
-      <button class="modal__add" id="modalAddBtn" type="button"></button>
-      <button class="modal__close" id="modalCloseBtn2" type="button">Close</button>
-    </div>
-  `);
-  document.getElementById('modalCloseBtn2').addEventListener('click', closeDetailModal);
-  document.getElementById('modalAddBtn').addEventListener('click', ()=>{
-    if(!gnOpenGame) return;
-    toggleSelect(gnOpenGame);
-  });
-
   // entry point → chooser
   gnStartBtn.addEventListener('click', ()=>{
     const pool = gnPool();
@@ -2075,7 +1774,7 @@ function initGameNight(){
     state.selectedIds.clear();
     clearSelectedCards();
     updateGnBar();
-    syncStickyAction();
+    gameModal.refreshFooter();
   });
   document.getElementById('gnBarContinue').addEventListener('click', ()=>{
     if(state.selectedIds.size < GN_MIN_SELECT) return;

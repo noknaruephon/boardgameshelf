@@ -1,47 +1,21 @@
-import { timeLabel, weightLabel, playersRangeLabel } from './filters.js';
+import { createGameModal } from './game-modal.js';
 
-// A minimal detail modal, not the shelf's — that one is wired into index.html's own
-// selection-mode state and DOM ids, too entangled to share from a standalone page.
-const MODAL_ID = 'wr-modal';
+// The same detail modal the shelf uses, in its read-only form — no deck button,
+// since nothing is being picked here. Built on first tap so pages that never
+// reveal their deck don't carry it.
+let modal = null;
 
-function ensureModal() {
-  if (document.getElementById(MODAL_ID)) return;
-  document.body.insertAdjacentHTML('beforeend', `
-    <div class="wr-modal" id="${MODAL_ID}">
-      <div class="wr-modal__panel">
-        <div class="wr-modal__scroll">
-          <div class="wr-modal__cover" id="wrModalCover"></div>
-          <h3 id="wrModalTitle"></h3>
-          <div class="wr-modal__meta" id="wrModalMeta"></div>
-          <p id="wrModalDesc"></p>
-        </div>
-        <div class="wr-modal__close-row">
-          <button class="wr-modal__close" id="wrModalClose" type="button">Close</button>
-        </div>
-      </div>
-    </div>
-  `);
-  document.getElementById('wrModalClose').addEventListener('click', closeGameModal);
-  document.getElementById(MODAL_ID).addEventListener('click', (ev) => {
-    if (ev.target.id === MODAL_ID) closeGameModal();
-  });
+function gameModal() {
+  if (!modal) modal = createGameModal();
+  return modal;
 }
 
 export function openGameModal(game) {
-  ensureModal();
-  document.getElementById('wrModalCover').innerHTML =
-    `<img src="${game.image}" alt="${game.title} cover" loading="lazy" decoding="async" onerror="this.remove()">`;
-  document.getElementById('wrModalTitle').textContent = game.title;
-  document.getElementById('wrModalMeta').innerHTML = `
-    <span>👥 ${playersRangeLabel(game.players)}</span>
-    <span>⏱ ${timeLabel(game.time)}</span>
-    <span>⚖️ ${weightLabel(game.weightScore)}</span>`;
-  document.getElementById('wrModalDesc').textContent = game.blurb;
-  document.getElementById(MODAL_ID).classList.add('open');
+  gameModal().open(game);
 }
 
 export function closeGameModal() {
-  document.getElementById(MODAL_ID)?.classList.remove('open');
+  modal?.close();
 }
 
 /** Deck preview: revealed covers (tappable) or hidden card backs (not tappable). */
