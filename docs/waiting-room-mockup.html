@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waiting Room — BoardgameShelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bgs-bg:#160F0A; --bgs-bg-rgb:22,15,10; --bgs-bg-radial:#241708;
+    --bgs-plate:#241A10; --bgs-ivory:#F4EBDA; --bgs-ivory-rgb:244,235,218;
+    --bgs-ivory-70:rgba(244,235,218,0.72); --bgs-ivory-45:rgba(244,235,218,0.45);
+    --bgs-gold:#E3B04B; --bgs-gold-rgb:227,176,75;
+    --bgs-gold-dim:rgba(227,176,75,0.62);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:radial-gradient(circle at 50% 0%, var(--bgs-bg-radial), var(--bgs-bg) 62%);
+    min-height:100vh;font-family:'Inter',sans-serif;color:var(--bgs-ivory);
+    padding:18px 16px 40px;-webkit-font-smoothing:antialiased;
+  }
+  .demo{max-width:420px;margin:0 auto 18px;}
+  .demo-toggle{
+    display:flex;gap:6px;padding:5px;border-radius:11px;
+    background:rgba(0,0,0,.3);border:1px solid rgba(var(--bgs-ivory-rgb),.08);
+  }
+  .demo-toggle button{
+    flex:1;padding:8px 4px;border-radius:7px;border:none;cursor:pointer;
+    background:transparent;color:var(--bgs-ivory-45);font:inherit;font-size:11.5px;font-weight:600;
+  }
+  .demo-toggle button.on{background:var(--bgs-plate);color:var(--bgs-ivory);}
+  .sim{
+    display:flex;gap:8px;margin-top:8px;
+  }
+  .sim button{
+    flex:1;padding:8px;border-radius:8px;cursor:pointer;font:inherit;font-size:11px;font-weight:600;
+    background:transparent;border:1px dashed rgba(var(--bgs-ivory-rgb),.25);color:var(--bgs-ivory-45);
+  }
+  .sim button:hover{border-color:var(--bgs-gold-dim);color:var(--bgs-gold);}
+
+  .screen{max-width:420px;margin:0 auto;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:23px;
+    text-align:center;margin:0 0 20px;letter-spacing:-.01em;
+  }
+
+  /* ---- QR panel ---- */
+  .qr-card{
+    background:var(--bgs-plate);border-radius:16px;padding:20px;
+    border:1px solid rgba(var(--bgs-gold-rgb),.18);
+    display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:16px;
+  }
+  .qr-frame{
+    background:var(--bgs-ivory);padding:10px;border-radius:10px;
+    width:172px;height:172px;display:flex;align-items:center;justify-content:center;
+  }
+  .qr-frame canvas, .qr-frame svg{width:100%;height:100%;display:block;}
+  .code-row{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;}
+  .code-small{
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12.5px;
+    letter-spacing:.14em;color:var(--bgs-ivory-45);padding-left:.14em;
+  }
+  .code-hint{font-size:11px;color:var(--bgs-ivory-45);text-align:center;}
+  .copy-btn{
+    background:transparent;border:1.5px solid rgba(var(--bgs-gold-rgb),.4);
+    color:var(--bgs-gold);border-radius:999px;padding:9px 18px;
+    font:inherit;font-size:12px;font-weight:600;cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .copy-btn:hover{border-color:var(--bgs-gold);}
+
+  .recap{
+    font-size:11.5px;color:var(--bgs-ivory-45);text-align:center;margin-bottom:20px;
+    display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;
+  }
+  .recap b{color:var(--bgs-ivory-70);font-weight:600;}
+  .recap .dot{opacity:.4;}
+
+  /* ---- deck preview ---- */
+  .deck{margin-bottom:22px;}
+  .deck h2{
+    font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--bgs-ivory-45);font-weight:600;margin:0 0 9px;text-align:center;
+  }
+  .deck-row{display:flex;gap:7px;justify-content:center;}
+  .deck-card{
+    width:44px;aspect-ratio:3/4;border-radius:6px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:19px;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),.22);
+  }
+  .deck-card.back{
+    background:
+      repeating-linear-gradient(45deg,
+        rgba(var(--bgs-gold-rgb),.07) 0 4px,
+        transparent 4px 8px),
+      var(--bgs-plate);
+    color:var(--bgs-gold-dim);font-size:15px;
+  }
+  .deck-card.clickable{cursor:pointer;transition:transform .12s ease;}
+  .deck-card.clickable:active{transform:scale(.92);}
+
+  /* ---- detail modal ---- */
+  .modal{
+    position:fixed;inset:0;z-index:20;display:none;
+    align-items:center;justify-content:center;padding:20px;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(3px);
+  }
+  .modal.open{display:flex;}
+  .modal__panel{
+    background:var(--bgs-plate);border-radius:14px;max-width:320px;width:100%;
+    max-height:78vh;border:1px solid rgba(var(--bgs-gold-rgb),.2);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .modal__scroll{overflow-y:auto;padding:20px 20px 6px;}
+  .modal__cover{
+    width:100%;aspect-ratio:4/3;background:#000;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;font-size:56px;margin-bottom:14px;
+  }
+  .modal__panel h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 8px;font-size:17px;}
+  .modal__meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .modal__meta span{
+    font-size:10.5px;font-weight:600;padding:4px 8px;border-radius:20px;
+    background:rgba(0,0,0,.3);color:var(--bgs-ivory-70);
+  }
+  .modal__panel p{font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 12px;}
+  .modal__close-row{padding:12px 20px calc(14px + env(safe-area-inset-bottom));flex-shrink:0;}
+  .modal__close{
+    width:100%;background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);
+    color:var(--bgs-ivory-70);font:inherit;font-size:13px;font-weight:600;
+    padding:12px;border-radius:10px;cursor:pointer;
+  }
+
+  /* ---- roster ---- */
+  .roster{margin-bottom:24px;}
+  .roster-head{
+    display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;
+  }
+  .roster-head h2{
+    font-family:'Fraunces',serif;font-weight:600;font-size:15px;margin:0;
+  }
+  .pulse{
+    width:6px;height:6px;border-radius:50%;background:var(--bgs-gold);
+    animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .names{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+  .name-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.1);
+    border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:600;
+    animation:pop .28s cubic-bezier(.2,1.2,.4,1);
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+  .name-chip .tag{
+    font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--bgs-gold-dim);
+  }
+  .name-chip.you{border-color:rgba(var(--bgs-gold-rgb),.4);}
+
+  /* ---- actions ---- */
+  .start-btn{
+    width:100%;background:var(--bgs-gold);color:var(--bgs-plate);border:none;
+    border-radius:12px;padding:16px;font:inherit;font-size:14.5px;font-weight:700;
+    cursor:pointer;transition:opacity .18s ease;
+  }
+  .start-btn:disabled{opacity:.3;cursor:not-allowed;}
+  .start-hint{
+    text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin-top:10px;
+  }
+  .cancel-btn{
+    display:block;margin:14px auto 0;background:transparent;border:none;
+    color:var(--bgs-ivory-45);font:inherit;font-size:12.5px;font-weight:600;
+    cursor:pointer;padding:10px 14px;border-radius:8px;
+    transition:color .15s ease;
+  }
+  .cancel-btn:hover{color:#C2705A;}
+
+  /* ---- confirm dialog ---- */
+  .confirm{
+    position:fixed;inset:0;z-index:30;display:none;
+    align-items:center;justify-content:center;padding:22px;
+    background:rgba(0,0,0,.66);backdrop-filter:blur(3px);
+  }
+  .confirm.open{display:flex;}
+  .confirm__panel{
+    background:var(--bgs-plate);border-radius:14px;padding:22px;
+    max-width:300px;width:100%;border:1px solid rgba(var(--bgs-ivory-rgb),.12);
+    text-align:center;
+  }
+  .confirm__panel h3{
+    font-family:'Fraunces',serif;font-weight:600;font-size:17px;margin:0 0 8px;
+  }
+  .confirm__panel p{
+    font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.55;margin:0 0 18px;
+  }
+  .confirm__row{display:flex;gap:9px;}
+  .confirm__row button{
+    flex:1;font:inherit;font-size:13px;font-weight:600;
+    padding:12px;border-radius:10px;cursor:pointer;
+  }
+  .confirm__keep{
+    background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);
+    color:var(--bgs-ivory);
+  }
+  .confirm__end{
+    background:#A8503A;border:none;color:var(--bgs-ivory);
+  }
+  .waiting-panel{
+    padding:14px 20px 26px;margin-top:10px;
+    display:flex;flex-direction:column;align-items:center;gap:16px;
+    position:relative;
+  }
+  .die-wrap{
+    position:relative;width:52px;height:52px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .die{
+    width:52px;height:52px;position:relative;z-index:1;
+    animation:tumble 2.4s cubic-bezier(.45,0,.2,1) infinite;
+  }
+  @keyframes tumble{
+    0%{transform:rotate(0deg) scale(1);}
+    35%{transform:rotate(200deg) scale(1.06);}
+    60%{transform:rotate(340deg) scale(.97);}
+    100%{transform:rotate(360deg) scale(1);}
+  }
+  .die rect{fill:var(--bgs-gold);}
+  .die circle{fill:var(--bgs-plate);}
+
+  .waiting-title{
+    font-family:'Fraunces',serif;font-weight:600;font-size:18px;
+    text-align:center;line-height:1.35;margin:0;position:relative;z-index:1;
+  }
+  .waiting-title b{color:var(--bgs-gold);font-weight:600;}
+  .waiting-sub{
+    font-size:12px;color:var(--bgs-ivory-45);text-align:center;
+    position:relative;z-index:1;min-height:16px;
+    transition:opacity .22s ease;
+  }
+  .waiting-dots{display:inline-flex;gap:4px;vertical-align:middle;margin-left:2px;}
+  .waiting-dots span{
+    width:4px;height:4px;border-radius:50%;background:var(--bgs-gold);
+    animation:bounce 1.2s ease-in-out infinite;
+  }
+  .waiting-dots span:nth-child(2){animation-delay:.15s;}
+  .waiting-dots span:nth-child(3){animation-delay:.3s;}
+  @keyframes bounce{0%,60%,100%{opacity:.25;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+
+  /* ---- join form ---- */
+  .join-card{
+    background:var(--bgs-plate);border-radius:16px;padding:22px;
+    border:1px solid rgba(var(--bgs-gold-rgb),.18);
+  }
+  .join-card label{
+    display:block;font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+    color:var(--bgs-ivory-45);font-weight:600;margin-bottom:8px;
+  }
+  .join-card input{
+    width:100%;background:rgba(0,0,0,.28);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
+    border-radius:10px;padding:14px;color:var(--bgs-ivory);
+    font:inherit;font-size:15px;margin-bottom:14px;
+  }
+  .join-card input:focus{outline:none;border-color:var(--bgs-gold);}
+  .join-card input::placeholder{color:rgba(var(--bgs-ivory-rgb),.28);}
+  .hosting{
+    text-align:center;font-size:12px;color:var(--bgs-ivory-45);margin-bottom:18px;
+  }
+  .hosting b{color:var(--bgs-ivory);font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="demo">
+  <div class="demo-toggle">
+    <button id="tHost" class="on">Host</button>
+    <button id="tJoin">Joining</button>
+    <button id="tWait">Joined</button>
+  </div>
+  <div class="sim">
+    <button id="addP">+ someone joins</button>
+    <button id="dropP">− someone drops</button>
+    <button id="toggleReveal">toggle deck reveal</button>
+  </div>
+</div>
+
+<div class="screen" id="screen"></div>
+
+<div class="confirm" id="confirm">
+  <div class="confirm__panel">
+    <h3>End this game night?</h3>
+    <p id="confirmBody"></p>
+    <div class="confirm__row">
+      <button class="confirm__keep" id="confirmKeep">Keep going</button>
+      <button class="confirm__end" id="confirmEnd">End it</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal__panel">
+    <div class="modal__scroll">
+      <div class="modal__cover" id="modalCover"></div>
+      <h3 id="modalTitle"></h3>
+      <div class="modal__meta" id="modalMeta"></div>
+      <p id="modalDesc"></p>
+    </div>
+    <div class="modal__close-row">
+      <button class="modal__close" id="modalClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import QRCode from 'https://esm.sh/qrcode@1.5.3';
+
+const state = {
+  view: 'host',
+  code: 'FOX7',
+  hostName: 'Nok',
+  reveal: false,
+  deck: [
+    {e:'🏰', t:'The Castles of Burgundy', p:'1–4', tm:'70–120m', w:'Medium',
+     d:'A dice-driven building game where you develop your estate tile by tile, racing to complete sets before your opponents.'},
+    {e:'🕊️', t:'Wingspan', p:'1–5', tm:'40–70m', w:'Medium',
+     d:'An engine-building card game about birds. Attract species to your wildlife preserves and chain their special powers together.'},
+    {e:'🕵️', t:'Codenames', p:'4–8', tm:'15m', w:'Light',
+     d:'Two teams race to identify their agents using one-word clues that point to several words at once. Fast, social, loud.'},
+    {e:'🏭', t:'Brass: Birmingham', p:'2–4', tm:'60–120m', w:'Heavy',
+     d:'Build canals and railways, develop industries, and out-manoeuvre rivals across two eras of the Industrial Revolution.'},
+    {e:'🤝', t:'Just One', p:'3–7', tm:'20m', w:'Light',
+     d:'A cooperative party game — everyone writes a one-word clue for the guesser, but duplicate clues get cancelled out.'},
+    {e:'🚀', t:'Terraforming Mars', p:'1–5', tm:'120m', w:'Heavy',
+     d:'Corporations compete to terraform Mars, raising oxygen, temperature, and oceans while building a tableau of projects.'},
+  ],
+  players: [{name:'Nok', host:true, you:true}],
+};
+
+const el = document.getElementById('screen');
+
+el.addEventListener('click', (ev) => {
+  const card = ev.target.closest('.deck-card.clickable');
+  if(card) openGameModal(Number(card.dataset.i));
+
+  if(ev.target.id === 'cancelNight'){
+    const others = state.players.length - 1;
+    if(others === 0){
+      // Nobody else is here yet — nothing to disrupt, so just end it.
+      endNight();
+      return;
+    }
+    document.getElementById('confirmBody').textContent =
+      `${others} ${others === 1 ? 'person has' : 'people have'} already joined. ` +
+      `They'll be sent back and the code will stop working.`;
+    document.getElementById('confirm').classList.add('open');
+  }
+});
+
+function endNight(){
+  document.getElementById('confirm').classList.remove('open');
+  alert('Session ended — in the real build this returns you to the shelf, and everyone else sees "the host ended this game night".');
+}
+
+document.getElementById('confirmKeep').onclick = () =>
+  document.getElementById('confirm').classList.remove('open');
+document.getElementById('confirmEnd').onclick = endNight;
+
+document.getElementById('modalClose').onclick = () =>
+  document.getElementById('modal').classList.remove('open');
+document.getElementById('modal').addEventListener('click', (ev) => {
+  if(ev.target.id === 'modal') document.getElementById('modal').classList.remove('open');
+});
+
+function rosterHTML(){
+  const n = state.players.length;
+  return `
+    <div class="roster">
+      <div class="roster-head">
+        <span class="pulse"></span>
+        <h2>${n} ${n === 1 ? 'person' : 'people'} here</h2>
+      </div>
+      <div class="names">
+        ${state.players.map(p => `
+          <span class="name-chip${p.you ? ' you' : ''}">
+            ${p.name}
+            ${p.host ? '<span class="tag">host</span>' : ''}
+            ${p.you && !p.host ? '<span class="tag">you</span>' : ''}
+          </span>`).join('')}
+      </div>
+    </div>`;
+}
+
+function deckHTML(){
+  const cards = state.reveal
+    ? state.deck.map((g,i) => `<div class="deck-card clickable" data-i="${i}">${g.e}</div>`).join('')
+    : state.deck.map(() => `<div class="deck-card back">?</div>`).join('');
+  return `
+    <div class="deck">
+      <h2>${state.reveal ? "Tonight's deck — tap a game to read more" : `${state.deck.length} games, hidden`}</h2>
+      <div class="deck-row">${cards}</div>
+    </div>`;
+}
+
+function openGameModal(i){
+  const g = state.deck[i];
+  document.getElementById('modalCover').textContent = g.e;
+  document.getElementById('modalTitle').textContent = g.t;
+  document.getElementById('modalMeta').innerHTML =
+    `<span>👥 ${g.p}</span><span>⏱ ${g.tm}</span><span>⚖️ ${g.w}</span>`;
+  document.getElementById('modalDesc').textContent = g.d;
+  document.getElementById('modal').classList.add('open');
+}
+
+function renderHost(){
+  const n = state.players.length;
+  const canStart = n >= 2;
+  const short = 2 - n;
+  el.innerHTML = `
+    <div class="eyebrow">Game Night</div>
+    <h1>Scan to join</h1>
+    <div class="qr-card">
+      <div class="qr-frame" id="qr"></div>
+      <div class="code-small">${state.code}</div>
+      <button class="copy-btn">Copy link</button>
+    </div>
+    <div class="recap">
+      <b>${state.deck.length} games</b><span class="dot">·</span>
+      <b>Surprise mode</b><span class="dot">·</span>
+      <b>${state.reveal ? 'Deck shown' : 'Deck hidden'}</b>
+    </div>
+    ${deckHTML()}
+    ${rosterHTML()}
+    <button class="start-btn" ${canStart ? '' : 'disabled'}>Start Voting</button>
+    ${canStart
+      ? '<p class="start-hint">Everyone swipes on their own phone.</p>'
+      : `<p class="start-hint">Need ${short} more ${short === 1 ? 'player' : 'players'} to start.</p>`}
+    <button class="cancel-btn" id="cancelNight">Cancel game night</button>
+  `;
+  drawQR();
+}
+
+function renderJoin(){
+  el.innerHTML = `
+    <div class="eyebrow">Game Night · ${state.code}</div>
+    <h1>You're invited</h1>
+    <p class="hosting"><b>${state.hostName}</b> is hosting tonight</p>
+    <div class="join-card">
+      <label for="nm">What should we call you?</label>
+      <input id="nm" placeholder="Your name" autocomplete="off">
+      <button class="start-btn">Join the table</button>
+    </div>`;
+}
+
+function renderWait(){
+  el.innerHTML = `
+    <div class="eyebrow">Game Night · ${state.code}</div>
+    <h1>You're in</h1>
+    ${deckHTML()}
+    ${rosterHTML()}
+    <div class="waiting-panel">
+      <div class="die-wrap">
+        <svg class="die" viewBox="0 0 52 52">
+          <rect x="2" y="2" width="48" height="48" rx="11"/>
+          <circle cx="17" cy="17" r="4.2"/>
+          <circle cx="35" cy="17" r="4.2"/>
+          <circle cx="17" cy="35" r="4.2"/>
+          <circle cx="35" cy="35" r="4.2"/>
+          <circle cx="26" cy="26" r="4.2"/>
+        </svg>
+      </div>
+      <p class="waiting-title">Waiting for <b>${state.hostName}</b><br>to start voting</p>
+      <p class="waiting-sub" id="waitHint">Everyone swipes at once<span class="waiting-dots"><span></span><span></span><span></span></span></p>
+    </div>`;
+  cycleHints();
+}
+
+const hints = [
+  'Everyone swipes at once',
+  'Votes lock the moment you swipe',
+  'Results reveal to the whole table together',
+];
+let hintTimer;
+function cycleHints(){
+  clearInterval(hintTimer);
+  let i = 0;
+  hintTimer = setInterval(() => {
+    i = (i + 1) % hints.length;
+    const node = document.getElementById('waitHint');
+    if(!node) { clearInterval(hintTimer); return; }
+    node.style.opacity = 0;
+    setTimeout(() => {
+      node.innerHTML = hints[i] + '<span class="waiting-dots"><span></span><span></span><span></span></span>';
+      node.style.opacity = 1;
+    }, 220);
+  }, 2800);
+}
+
+function render(){
+  if(state.view === 'host') renderHost();
+  else if(state.view === 'join') renderJoin();
+  else renderWait();
+}
+
+async function drawQR(){
+  const box = document.getElementById('qr');
+  if(!box) return;
+  try{
+    const svg = await QRCode.toString(
+      `https://boardgameshelf.vercel.app/vote/${state.code}`,
+      { type:'svg', margin:0, color:{ dark:'#160F0A', light:'#00000000' } }
+    );
+    box.innerHTML = svg;
+  }catch(e){ box.textContent = 'QR'; }
+}
+
+const pool = ['Mina','Theo','Alex','Bee','Alex 2','Pim'];
+document.getElementById('addP').onclick = () => {
+  const next = pool[state.players.length - 1];
+  if(!next) return;
+  state.players.push({name: next, you: state.view !== 'host' && state.players.length === 1});
+  render();
+};
+document.getElementById('dropP').onclick = () => {
+  if(state.players.length > 1) state.players.pop();
+  render();
+};
+document.getElementById('toggleReveal').onclick = () => {
+  state.reveal = !state.reveal;
+  render();
+};
+
+for(const [id, view] of [['tHost','host'],['tJoin','join'],['tWait','wait']]){
+  document.getElementById(id).onclick = () => {
+    state.view = view;
+    document.querySelectorAll('.demo-toggle button').forEach(b => b.classList.remove('on'));
+    document.getElementById(id).classList.add('on');
+    render();
+  };
+}
+
+render();
+</script>
+</body>
+</html>
