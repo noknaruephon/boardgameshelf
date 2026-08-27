@@ -812,7 +812,9 @@
   .gn-toast{
     position:fixed;
     left:50%;
-    bottom:28px;
+    /* Clears the floating pill (46px tall at a 16px offset) so the toast
+       never lands on top of the control that raises it. */
+    bottom:calc(78px + env(safe-area-inset-bottom));
     transform:translateX(-50%) translateY(8px);
     z-index:50;
     background:var(--bgs-plate);
