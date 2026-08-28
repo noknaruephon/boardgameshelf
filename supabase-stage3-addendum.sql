@@ -2,21 +2,23 @@
 --
 -- Run by hand in the Supabase SQL editor before deploying vote-swipe.html.
 -- Everything here is callable with the anon key — no service role key reaches
--- the browser, ever.
+-- the browser, ever. Safe to run more than once.
 --
--- Assumption flagged for review: `sessions` and `participants` already exist
--- from Stage 1/2 (created by hand, not committed to this repo), so their exact
--- column names aren't visible here. This file assumes:
---   sessions(code text primary key, host_name text, status text, ...)
+-- Note on the existing schema: this project's database was set up up-front,
+-- before this spec was written, so `votes` may ALREADY exist with a
+-- `liked boolean` column where this stage expects `vote text`. The spec
+-- assumed it would be creating the table fresh. Section 1 below reconciles
+-- the two in place instead of dropping anything.
+--
+-- Confirmed shape of the tables this depends on:
+--   sessions(code text pk, host_name text, status text, ...)
 --   participants(session_code text, name text, finished_at timestamptz, ...)
--- If `participants`' name column is actually called something else, rename it
--- below before running.
 
--- This whole file is safe to run more than once: `if not exists` / `create or
--- replace` throughout, so re-running after a partial failure (or just to be
--- sure) is a no-op rather than an error.
+-- ---------------------------------------------------------------------------
+-- 1. votes
+-- ---------------------------------------------------------------------------
 
--- one row per player per game
+-- Fresh installs only — a no-op where the table already exists.
 create table if not exists votes (
   session_code text not null references sessions(code) on delete cascade,
   participant_name text not null,
@@ -26,13 +28,48 @@ create table if not exists votes (
   primary key (session_code, participant_name, game_id)
 );
 
+-- Where the table pre-exists with `liked boolean`, migrate the column in
+-- place rather than dropping and recreating the table: that preserves the
+-- primary key and both foreign keys — including the composite FK to
+-- participants(session_code, name), which is stricter than the create above
+-- and worth keeping. Existing rows carry across, so this is safe whether the
+-- table is empty or not.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'votes' and column_name = 'liked'
+  ) and not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'votes' and column_name = 'vote'
+  ) then
+    alter table votes add column vote text;
+    update votes set vote = case when liked then 'play' else 'pass' end;
+    alter table votes alter column vote set not null;
+    alter table votes add constraint votes_vote_check check (vote in ('play','pass'));
+    alter table votes drop column liked;
+  end if;
+end $$;
+
+-- ---------------------------------------------------------------------------
+-- 2. participants.finished_at
+-- ---------------------------------------------------------------------------
+
+-- The spec calls for a timestamp here. Note that participants may already
+-- carry a `finished_voting boolean` from the original setup; finished_at
+-- supersedes it (a timestamp answers "when", which the boolean cannot) and is
+-- what finish_voting() below reads. Nothing writes finished_voting any more —
+-- see the optional cleanup at the bottom of this file.
 alter table participants add column if not exists finished_at timestamptz;
 
--- RLS: same shape as the existing policies on sessions/participants — reads
--- and writes are scoped by session code, not by any per-user identity, since
--- there is no auth in this architecture. The real invariants (session must be
--- 'voting', idempotent insert, host-only force) are enforced inside the
--- SECURITY DEFINER functions below, not by RLS.
+-- ---------------------------------------------------------------------------
+-- 3. RLS + grants
+-- ---------------------------------------------------------------------------
+
+-- Reads and writes are scoped by session code, not by any per-user identity,
+-- since there is no auth in this architecture. The real invariants (session
+-- must be 'voting', idempotent insert, host-only force) are enforced inside
+-- the SECURITY DEFINER functions below, not by RLS.
 alter table votes enable row level security;
 
 drop policy if exists "votes are readable by anyone with the code" on votes;
@@ -45,30 +82,26 @@ create policy "votes are inserted only through submit_vote"
   on votes for insert
   with check (true);
 
--- RLS policies are only evaluated after the base GRANT allows the query at
--- all. sessions/participants already have this (set up through the Table
--- Editor in Stage 1/2, which grants automatically) — votes was created here
--- via raw SQL, which does not. Without this, js/session.js's fetchVotes()
--- (a direct anon-key read, not routed through a SECURITY DEFINER function)
--- fails with a permission-denied error before RLS even runs, surfacing in
--- vote-swipe.html as "Something went wrong loading your votes."
+-- No update/delete policy: votes lock on swipe. Nothing here goes through a
+-- raw table write for votes — always submit_vote().
+
+-- RLS is only evaluated after the base GRANT allows the query at all.
+-- js/session.js's fetchVotes() reads this table directly with the anon key
+-- (not through a SECURITY DEFINER function), so it needs this.
 grant select, insert on votes to anon, authenticated;
 
--- PostgREST caches the schema and only sees a new table once that cache
--- reloads. Supabase normally reloads it automatically on DDL, but when it
--- doesn't, reads fail with PGRST205 ("Could not find the table
--- 'public.votes' in the schema cache") no matter how the grants look.
--- Harmless to run when the cache is already current.
+-- PostgREST only sees schema changes once its cache reloads. Supabase
+-- normally does this automatically on DDL; harmless when already current.
 notify pgrst, 'reload schema';
 
--- No update/delete policy: votes lock on swipe. Nothing built here goes
--- through a raw table write for votes — always submit_vote().
+-- votes is deliberately NOT added to the realtime publication. "Who's done
+-- right now" is answered by presence (js/presence.js's `finished` meta);
+-- finished_at is only the durable record finish_voting() checks. Nothing
+-- listens for votes rows changing live.
 
--- votes is not added to the realtime publication. "Who's done right now"
--- is answered by presence (see js/presence.js's `finished` meta), not by a
--- realtime subscription on this table — finished_at is only the durable
--- record finish_voting() checks. Nothing in this spec listens for votes rows
--- changing live, so publishing them would just be unused traffic.
+-- ---------------------------------------------------------------------------
+-- 4. Functions
+-- ---------------------------------------------------------------------------
 
 create or replace function submit_vote(p_code text, p_name text, p_game_id text, p_vote text)
 returns void
@@ -83,6 +116,8 @@ begin
     raise exception 'NOT_VOTING';
   end if;
 
+  -- First vote wins: votes lock on swipe, so a double-fire from a flaky
+  -- network writes nothing the second time and raises no error.
   insert into votes (session_code, participant_name, game_id, vote)
   values (p_code, p_name, p_game_id, p_vote)
   on conflict (session_code, participant_name, game_id) do nothing;
@@ -118,9 +153,7 @@ $$;
 -- raising NOT_HOST for a non-host caller requires an identity to check
 -- against, and this architecture has no server-side auth or session — so the
 -- caller's own name is passed and compared to sessions.host_name, the same
--- way every other "who is this" check in this codebase works. Flagged here
--- and in the PR description rather than silently building something the spec
--- didn't literally ask for.
+-- way every other "who is this" check in this codebase works.
 create or replace function force_results(p_code text, p_name text)
 returns void
 language plpgsql
@@ -139,3 +172,12 @@ begin
   where code = p_code and status = 'voting';
 end;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- 5. Optional cleanup
+-- ---------------------------------------------------------------------------
+
+-- participants.finished_voting is superseded by finished_at and is no longer
+-- written by anything. Left in place by default rather than dropped without
+-- asking — uncomment to remove the redundancy.
+-- alter table participants drop column if exists finished_voting;
