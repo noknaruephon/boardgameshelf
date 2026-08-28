@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swipe to Vote — BoardgameShelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bgs-bg:#160F0A; --bgs-bg-rgb:22,15,10; --bgs-bg-radial:#241708;
+    --bgs-plate:#241A10; --bgs-ivory:#F4EBDA; --bgs-ivory-rgb:244,235,218;
+    --bgs-ivory-70:rgba(244,235,218,0.72); --bgs-ivory-45:rgba(244,235,218,0.45);
+    --bgs-gold:#E3B04B; --bgs-gold-rgb:227,176,75; --bgs-gold-dim:rgba(227,176,75,0.62);
+    /* semantic vote colours — warm sage + warm clay, tuned to sit inside the
+       existing gold/ivory/plate palette rather than a generic green/red.
+       Kept distinct from --bgs-danger (#A8503A), which stays reserved for
+       cancelling a game night. */
+    --bgs-vote-play:#8FA75A; --bgs-vote-play-rgb:143,167,90;
+    --bgs-vote-pass:#C2604A; --bgs-vote-pass-rgb:194,96,74;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%), var(--bgs-bg);
+    min-height:100vh;font-family:'Inter',sans-serif;color:var(--bgs-ivory);
+    padding:18px 16px 40px;-webkit-font-smoothing:antialiased;
+  }
+
+  /* ---- review controls (mockup only, not shipped) ---- */
+  .demo{max-width:400px;margin:0 auto 18px;}
+  .demo-toggle{display:flex;gap:6px;padding:5px;border-radius:11px;background:rgba(0,0,0,.3);border:1px solid rgba(var(--bgs-ivory-rgb),.08);}
+  .demo-toggle button{flex:1;padding:8px 4px;border-radius:7px;border:none;cursor:pointer;background:transparent;color:var(--bgs-ivory-45);font:inherit;font-size:11.5px;font-weight:600;}
+  .demo-toggle button.on{background:var(--bgs-plate);color:var(--bgs-ivory);}
+  .stamp-toggle{margin-top:8px;}
+  .sim{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .sim button{flex:1;min-width:120px;padding:8px;border-radius:8px;cursor:pointer;font:inherit;font-size:11px;font-weight:600;background:transparent;border:1px dashed rgba(var(--bgs-ivory-rgb),.25);color:var(--bgs-ivory-45);}
+  .sim button:hover{border-color:var(--bgs-gold-dim);color:var(--bgs-gold);}
+  .note{max-width:400px;margin:0 auto 14px;font-size:11px;color:var(--bgs-ivory-45);text-align:center;line-height:1.5;}
+  .note b{color:var(--bgs-gold-dim);}
+
+  .screen{max-width:400px;margin:0 auto;position:relative;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:22px;text-align:center;margin:0 0 18px;letter-spacing:-.01em;}
+
+  /* ---- progress ---- */
+  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .progress-track{flex:1;height:4px;border-radius:99px;background:rgba(var(--bgs-ivory-rgb),.1);overflow:hidden;}
+  .progress-fill{height:100%;background:var(--bgs-gold);border-radius:99px;transition:width .35s ease;}
+  .progress-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-ivory-45);white-space:nowrap;min-width:38px;text-align:right;}
+
+  /* ---- card stack ---- */
+  .stack{position:relative;height:400px;margin-bottom:26px;}
+  .card{
+    position:absolute;inset:0;border-radius:20px;overflow:hidden;background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),.18);box-shadow:0 24px 44px -12px rgba(0,0,0,.5);
+    display:flex;flex-direction:column;touch-action:none;user-select:none;
+  }
+  .card .art{flex:1;position:relative;overflow:hidden;background:var(--bgs-bg-radial);}
+  .card .art img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+  .card .label-band{padding:13px 15px 15px;position:relative;z-index:1;}
+  .card .title{font-family:'Fraunces',serif;font-weight:600;font-size:16.5px;line-height:1.26;margin:0 0 8px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .card .meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .rating-pill{display:inline-flex;align-items:center;gap:3px;background:rgba(0,0,0,.3);border:1px solid rgba(var(--bgs-gold-rgb),.35);
+    border-radius:20px;padding:3px 8px 3px 7px;font-size:11px;font-weight:700;color:var(--bgs-gold);white-space:nowrap;}
+  .meta-tag{font-size:11px;color:var(--bgs-ivory-45);font-weight:500;white-space:nowrap;}
+  .meta-dot{color:rgba(var(--bgs-ivory-rgb),.25);}
+
+  .info-btn{
+    position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;z-index:6;
+    background:rgba(0,0,0,.42);backdrop-filter:blur(3px);color:var(--bgs-ivory);
+    display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--bgs-ivory-rgb),.2);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:14px;cursor:pointer;
+  }
+
+  /* wash — full-card color signal (variant B) */
+  .wash{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:3;display:none;}
+  [data-stamp="wash"] .wash{display:block;}
+
+  /* stamp — corner/centered text badge (variants A + B) */
+  .stamp{
+    position:absolute;z-index:4;opacity:0;pointer-events:none;
+    font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .stamp.play{top:22px;left:16px;}
+  .stamp.pass{top:22px;right:16px;}
+
+  [data-stamp="badge"] .stamp{padding:10px 18px;border-radius:10px;font-size:19px;box-shadow:0 10px 22px rgba(0,0,0,.35);}
+  [data-stamp="badge"] .stamp.play{background:var(--bgs-vote-play);color:var(--bgs-plate);}
+  [data-stamp="badge"] .stamp.pass{background:var(--bgs-vote-pass);color:var(--bgs-ivory);}
+
+  [data-stamp="wash"] .stamp{
+    left:14px;right:14px;top:auto;bottom:38%;
+    display:flex;align-items:center;justify-content:center;
+    padding:16px;font-size:28px;border-radius:14px;border:3px solid;
+    background:rgba(var(--bgs-bg-rgb),.3);backdrop-filter:blur(1px);
+  }
+  [data-stamp="wash"] .stamp.play{color:var(--bgs-vote-play);border-color:var(--bgs-vote-play);}
+  [data-stamp="wash"] .stamp.pass{color:var(--bgs-vote-pass);border-color:var(--bgs-vote-pass);}
+
+  [data-stamp="ribbon"] .stamp{display:none;}
+
+  /* ribbon — diagonal banner across the corner (variant C) */
+  .ribbon{
+    display:none;position:absolute;width:180px;padding:9px 0;text-align:center;
+    font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;letter-spacing:.13em;text-transform:uppercase;
+    z-index:4;opacity:0;box-shadow:0 8px 18px rgba(0,0,0,.4);
+  }
+  [data-stamp="ribbon"] .ribbon{display:block;}
+  [data-stamp="ribbon"] .ribbon.play{top:24px;left:-50px;transform:rotate(-38deg);background:var(--bgs-vote-play);color:var(--bgs-plate);}
+  [data-stamp="ribbon"] .ribbon.pass{top:24px;right:-50px;transform:rotate(38deg);background:var(--bgs-vote-pass);color:var(--bgs-ivory);}
+
+  .stack-empty{
+    position:absolute;inset:0;border-radius:20px;border:1.5px dashed rgba(var(--bgs-gold-rgb),.25);
+    display:flex;align-items:center;justify-content:center;color:var(--bgs-ivory-45);font-size:12.5px;
+  }
+
+  /* ---- vote buttons ---- */
+  .vote-actions{display:flex;justify-content:center;align-items:center;gap:26px;margin-bottom:6px;}
+  .vote-btn{
+    width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;border:1.5px solid;background:var(--bgs-plate);transition:transform .12s ease,opacity .2s ease;
+  }
+  .vote-btn:active{transform:scale(.88);}
+  .vote-btn[disabled]{opacity:.25;cursor:not-allowed;}
+  .vote-btn.pass{border-color:rgba(var(--bgs-vote-pass-rgb),.55);color:var(--bgs-vote-pass);background:rgba(var(--bgs-vote-pass-rgb),.10);}
+  .vote-btn.play{border-color:rgba(var(--bgs-vote-play-rgb),.55);color:var(--bgs-vote-play);background:rgba(var(--bgs-vote-play-rgb),.10);}
+  .vote-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin-top:16px;}
+
+  /* ---- info sheet ---- */
+  .sheet-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;opacity:0;pointer-events:none;
+    transition:opacity .2s ease;display:flex;align-items:flex-end;justify-content:center;
+  }
+  .sheet-overlay.open{opacity:1;pointer-events:auto;}
+  .sheet{
+    width:100%;max-width:400px;background:var(--bgs-plate);border-radius:20px 20px 0 0;
+    border:1px solid rgba(var(--bgs-gold-rgb),.2);border-bottom:none;padding:20px 20px calc(22px + env(safe-area-inset-bottom));
+    transform:translateY(100%);transition:transform .28s cubic-bezier(.2,.9,.3,1);
+  }
+  .sheet-overlay.open .sheet{transform:translateY(0);}
+  .sheet-head{display:flex;gap:14px;margin-bottom:14px;}
+  .sheet-cover{width:64px;height:85px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--bgs-bg-radial);}
+  .sheet-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .sheet-title{font-family:'Fraunces',serif;font-weight:600;font-size:16.5px;line-height:1.3;margin:0 0 8px;}
+  .sheet-meta{display:flex;flex-wrap:wrap;gap:7px;}
+  .sheet-close{
+    position:absolute;top:14px;right:16px;width:28px;height:28px;border-radius:50%;
+    background:rgba(var(--bgs-ivory-rgb),.08);color:var(--bgs-ivory-70);border:none;cursor:pointer;font-size:15px;
+  }
+  .sheet-note{font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.6;margin:0;}
+  .sheet-real-note{margin-top:14px;padding-top:14px;border-top:1px solid rgba(var(--bgs-ivory-rgb),.08);
+    font-size:11px;color:var(--bgs-gold-dim);line-height:1.5;}
+
+  /* ---- waiting state ---- */
+  .waiting-panel{padding:6px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative;}
+  .die-wrap{position:relative;width:52px;height:52px;display:flex;align-items:center;justify-content:center;}
+  .die{width:52px;height:52px;position:relative;z-index:1;animation:tumble 2.4s cubic-bezier(.45,0,.2,1) infinite;}
+  @keyframes tumble{0%{transform:rotate(0) scale(1);}35%{transform:rotate(200deg) scale(1.06);}60%{transform:rotate(340deg) scale(.97);}100%{transform:rotate(360deg) scale(1);}}
+  .die rect{fill:var(--bgs-gold);} .die circle{fill:var(--bgs-plate);}
+  .waiting-title{font-family:'Fraunces',serif;font-weight:600;font-size:18px;text-align:center;line-height:1.35;margin:0;}
+  .waiting-title b{color:var(--bgs-gold);font-weight:600;}
+  .waiting-sub{font-size:12px;color:var(--bgs-ivory-45);text-align:center;min-height:16px;}
+
+  /* ---- tallying state: face-down cards shuffling ----
+     The card back is the existing .deck-card.back from the waiting room
+     (js/waiting-room.js renders it, vote.html / night-host.html style it):
+     45deg gold hatch over the plate, dimmed gold '?'. Same component, only
+     scaled up — nothing here should be a second way of drawing a hidden game. */
+  .loader-wrap{height:66px;display:flex;align-items:center;justify-content:center;}
+  .shuffle{position:relative;width:104px;height:64px;}
+  .deck-card{
+    border-radius:6px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),.22);
+  }
+  .deck-card.back{
+    background:
+      repeating-linear-gradient(45deg,
+        rgba(var(--bgs-gold-rgb),.07) 0 4px,
+        transparent 4px 8px),
+      var(--bgs-plate);
+    color:var(--bgs-gold-dim);font-size:15px;
+  }
+  .shuffle .deck-card{
+    position:absolute;top:0;left:30px;width:46px;height:62px;
+    box-shadow:0 7px 15px rgba(0,0,0,.5);
+    animation:deal 1.9s cubic-bezier(.45,0,.3,1) infinite;
+  }
+  @keyframes deal{
+    0%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+    28%{transform:translateX(-36px) rotate(-13deg) scale(.97);opacity:1;}
+    62%{transform:translateX(36px) rotate(10deg) scale(.94);opacity:.7;}
+    100%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+  }
+  .shuffle .deck-card:nth-child(1){z-index:3;}
+  .shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
+  .shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
+
+  /* ---- 'results are on their way' line ---- */
+  .waiting-sub.strong{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    font-size:14px;font-weight:600;color:var(--bgs-ivory-70);
+  }
+  .spinner{
+    width:14px;height:14px;border-radius:50%;flex-shrink:0;
+    border:2px solid rgba(var(--bgs-gold-rgb),.25);border-top-color:var(--bgs-gold);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media (prefers-reduced-motion:reduce){
+    .shuffle .deck-card,.spinner{animation:none;}
+  }
+
+  .roster{width:100%;margin-top:4px;}
+  .roster-head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}
+  .roster-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:14px;margin:0;color:var(--bgs-ivory-70);}
+  .names{display:flex;flex-direction:column;gap:7px;}
+  .name-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.08);
+    border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;transition:border-color .25s ease;
+  }
+  .name-row.done{border-color:rgba(var(--bgs-gold-rgb),.35);}
+  .name-row .who{display:flex;align-items:center;gap:8px;}
+  .name-row .tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--bgs-gold-dim);}
+  .status{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--bgs-ivory-45);}
+  .status.done{color:var(--bgs-gold);}
+  .status svg{width:13px;height:13px;flex-shrink:0;}
+  .dot-pulse{width:6px;height:6px;border-radius:50%;background:var(--bgs-ivory-45);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+</style>
+</head>
+<body>
+
+<div class="demo">
+  <div class="demo-toggle">
+    <button id="tabVoting" class="on">Voting</button>
+    <button id="tabWaiting">Waiting on the table</button>
+  </div>
+  <div class="sim" id="simVoting">
+    <button id="simPlay">Vote next card → PLAY</button>
+    <button id="simPass">Vote next card → PASS</button>
+    <button id="simReset">Reset deck</button>
+  </div>
+  <div class="sim" id="simWaiting" style="display:none;">
+    <button id="simPlayerDone">Mark next player done</button>
+    <button id="simPlayerReset">Reset players</button>
+  </div>
+</div>
+<p class="note">Swipe overlay is locked to <b>black wash</b>. On the waiting tab, mark every player done to see the tallying state — face-down cards, so nothing about the result leaks early.</p>
+
+<div class="screen" id="screen"></div>
+
+<div class="sheet-overlay" id="sheetOverlay">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const DECK = [
+  { id:'363622', title:'The Castles of Burgundy: Special Edition', players:[1,4], time:[70,120], weight:'medium', rating:9.14, image:'https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg' },
+  { id:'397598', title:'Dune: Imperium – Uprising', players:[1,6], time:[60,120], weight:'medium', rating:8.7, image:'https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg' },
+  { id:'356238', title:'Terra Mystica: Big Box', players:[1,5], time:[30,150], weight:'heavy', rating:8.7, image:'https://cf.geekdo-images.com/aSwGrv9uvfRyBymlHJ-B8w__original/img/cHP3bhVFkJepWSfjWKBR-talnDc=/0x0/filters:format(jpeg)/pic6731109.jpg' },
+  { id:'224517', title:'Brass: Birmingham', players:[2,4], time:[60,120], weight:'heavy', rating:8.56, image:'https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__itemrep@2x/img/2FLfeGWkuKb1KEkjl1fO9MFsdHQ=/fit-in/492x600/filters:strip_icc()/pic3490053.jpg' },
+  { id:'342942', title:'Ark Nova', players:[1,4], time:[90,150], weight:'heavy', rating:8.54, image:'https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg' },
+  { id:'468508', title:'Lairs (Kickstarter Edition)', players:[2,2], time:[40,40], weight:'medium', rating:8.51, image:'https://cf.geekdo-images.com/W8EPJfC44jq1ODa02UyMwg__original/img/5SyO-7_YlLy5XjQ34r3EhiYkCDU=/0x0/filters:format(jpeg)/pic9522732.jpg' },
+];
+
+const ROSTER = [
+  { name:'Mina', isHost:true },
+  { name:'You',  isMe:true },
+  { name:'Theo' },
+  { name:'Priya' },
+];
+
+const screen = document.getElementById('screen');
+const CODE = 'FOX7';
+
+function timeLabel(t){ return t[0]===t[1] ? `${t[0]}m` : `${t[0]}–${t[1]}m`; }
+function playersLabel(p){ return p[0]===p[1] ? `${p[0]}p` : `${p[0]}–${p[1]}p`; }
+function weightLabel(w){ return w[0].toUpperCase()+w.slice(1); }
+
+/* ============ swipe overlay ============ */
+/* Locked to the black wash: the card darkens whichever way you drag and the
+   stamp colour carries the meaning, so the treatment reads the same over every
+   cover in the collection instead of fighting the art. */
+document.body.dataset.stamp = 'wash';
+
+function applyWash(wash, strength){
+  wash.style.background = '#000';
+  wash.style.opacity = strength * 0.58;
+}
+
+/* ============ VOTING STATE ============ */
+let deck, index, votes;
+
+function resetDeck(){ deck = DECK; index = 0; votes = []; renderVoting(); }
+
+function renderVoting(){
+  const total = deck.length;
+  const remaining = deck.slice(index, index+3);
+  const pct = Math.round((index/total)*100);
+
+  screen.innerHTML = `
+    <div class="eyebrow">Game Night · ${CODE}</div>
+    <h1>${index >= total ? 'You\u2019re all set' : 'Swipe to vote'}</h1>
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="progress-label">${Math.min(index+1,total)} / ${total}</div>
+    </div>
+    <div class="stack" id="stack">
+      ${remaining.length ? remaining.map((g,i)=>cardHTML(g,i)).reverse().join('') : `<div class="stack-empty">Deck's empty</div>`}
+    </div>
+    <div class="vote-actions">
+      <button class="vote-btn pass" id="btnPass" ${remaining.length?'':'disabled'} aria-label="Pass">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 4L16 16M16 4L4 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+      <button class="vote-btn play" id="btnPlay" ${remaining.length?'':'disabled'} aria-label="Play">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 15L16 5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <p class="vote-hint">${remaining.length ? 'Drag right to play, left to pass \u2014 votes lock the moment you swipe' : 'Waiting for the rest of the table to finish\u2026'}</p>
+  `;
+
+  if (!remaining.length){
+    setTimeout(()=>{ if (document.getElementById('tabWaiting')) switchTab('waiting'); }, 900);
+    return;
+  }
+
+  const front = document.querySelector('.card[data-pos="0"]');
+  attachDrag(front, deck[index]);
+  document.getElementById('btnPass').addEventListener('click', ()=>commit('pass'));
+  document.getElementById('btnPlay').addEventListener('click', ()=>commit('play'));
+  document.querySelectorAll('.info-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); openSheet(deck[Number(btn.dataset.i)]); });
+  });
+}
+
+function cardHTML(g, pos){
+  const scale = 1 - pos*0.045;
+  const ty = pos*14;
+  return `
+    <div class="card" data-pos="${pos}" data-i="${DECK.indexOf(g)}"
+         style="transform:scale(${scale}) translateY(${ty}px);z-index:${10-pos};${pos>0?'pointer-events:none;':''}">
+      <button class="info-btn" data-i="${DECK.indexOf(g)}">i</button>
+      <div class="wash"></div>
+      <div class="stamp play">Play</div>
+      <div class="stamp pass">Pass</div>
+      <div class="ribbon play">Play</div>
+      <div class="ribbon pass">Pass</div>
+      <div class="art"><img src="${g.image}" alt="${g.title} cover" loading="lazy"></div>
+      <div class="label-band">
+        <p class="title">${g.title}</p>
+        <div class="meta-row">
+          <span class="rating-pill">\u2605 ${g.rating.toFixed(1)}</span>
+          <span class="meta-tag">${playersLabel(g.players)}</span>
+          <span class="meta-dot">\u00b7</span>
+          <span class="meta-tag">${timeLabel(g.time)}</span>
+          <span class="meta-dot">\u00b7</span>
+          <span class="meta-tag">${weightLabel(g.weight)}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function attachDrag(card, game){
+  if (!card) return;
+  const playStamp = card.querySelector('.stamp.play');
+  const passStamp = card.querySelector('.stamp.pass');
+  const wash = card.querySelector('.wash');
+  const ribPlay = card.querySelector('.ribbon.play');
+  const ribPass = card.querySelector('.ribbon.pass');
+  let startX=0, startY=0, dx=0, dy=0, dragging=false;
+
+  card.addEventListener('pointerdown', (e)=>{
+    if (e.target.closest('.info-btn')) return;
+    dragging = true; startX = e.clientX; startY = e.clientY;
+    card.setPointerCapture(e.pointerId);
+    card.style.transition = 'none';
+  });
+  card.addEventListener('pointermove', (e)=>{
+    if (!dragging) return;
+    dx = e.clientX - startX; dy = e.clientY - startY;
+    const rot = dx/18;
+    card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+    const pos = Math.min(Math.max(dx/90, 0), 1);
+    const neg = Math.min(Math.max(-dx/90, 0), 1);
+    playStamp.style.opacity = pos;
+    playStamp.style.transform = `rotate(-10deg) scale(${0.75+0.35*pos})`;
+    passStamp.style.opacity = neg;
+    passStamp.style.transform = `rotate(10deg) scale(${0.75+0.35*neg})`;
+    applyWash(wash, Math.max(pos,neg));
+    ribPlay.style.opacity = pos;
+    ribPass.style.opacity = neg;
+  });
+  const release = (e)=>{
+    if (!dragging) return;
+    dragging = false;
+    const threshold = 100;
+    if (dx > threshold) { commit('play', dy); }
+    else if (dx < -threshold) { commit('pass', dy); }
+    else {
+      card.style.transition = 'transform .3s cubic-bezier(.2,.9,.3,1)';
+      card.style.transform = 'translate(0,0) rotate(0)';
+      playStamp.style.opacity = 0; passStamp.style.opacity = 0;
+      wash.style.opacity = 0; ribPlay.style.opacity = 0; ribPass.style.opacity = 0;
+    }
+    dx = 0; dy = 0;
+  };
+  card.addEventListener('pointerup', release);
+  card.addEventListener('pointercancel', release);
+}
+
+function flashVoteMarks(front, vote){
+  const playStamp = front.querySelector('.stamp.play');
+  const passStamp = front.querySelector('.stamp.pass');
+  const wash = front.querySelector('.wash');
+  const ribPlay = front.querySelector('.ribbon.play');
+  const ribPass = front.querySelector('.ribbon.pass');
+  if (vote==='play'){
+    playStamp.style.opacity=1; playStamp.style.transform='rotate(-10deg) scale(1.08)';
+    passStamp.style.opacity=0;
+    applyWash(wash, 1);
+    ribPlay.style.opacity=1; ribPass.style.opacity=0;
+  } else {
+    passStamp.style.opacity=1; passStamp.style.transform='rotate(10deg) scale(1.08)';
+    playStamp.style.opacity=0;
+    applyWash(wash, 1);
+    ribPass.style.opacity=1; ribPlay.style.opacity=0;
+  }
+}
+
+function commit(vote, dyStart){
+  if (index >= deck.length) return;
+  const front = document.querySelector('.card[data-pos="0"]');
+  if (front){
+    flashVoteMarks(front, vote);
+    const dy = dyStart || 0;
+    front.style.transition = 'transform .32s ease, opacity .32s ease';
+    front.style.transform = `translate(${vote==='play'?620:-620}px, ${dy}px) rotate(${vote==='play'?26:-26}deg)`;
+    front.style.opacity = '0';
+  }
+  votes.push({ id: deck[index].id, vote });
+  index += 1;
+  setTimeout(renderVoting, 220);
+}
+
+/* ---- info sheet ---- */
+function openSheet(g){
+  const overlay = document.getElementById('sheetOverlay');
+  document.getElementById('sheet').innerHTML = `
+    <button class="sheet-close" id="sheetClose">\u2715</button>
+    <div class="sheet-head">
+      <div class="sheet-cover"><img src="${g.image}" alt="${g.title} cover"></div>
+      <div>
+        <p class="sheet-title">${g.title}</p>
+        <div class="sheet-meta">
+          <span class="rating-pill">\u2605 ${g.rating.toFixed(1)}</span>
+          <span class="meta-tag">${playersLabel(g.players)}</span>
+          <span class="meta-tag">${timeLabel(g.time)}</span>
+          <span class="meta-tag">${weightLabel(g.weight)}</span>
+        </div>
+      </div>
+    </div>
+    <p class="sheet-note">This is a placeholder for the full detail view \u2014 box back, description, plays-well-at notes.</p>
+    <p class="sheet-real-note">In production this opens the same shared game-detail modal already used on the shelf and in the waiting room (js/game-modal.js), not a new component.</p>
+  `;
+  overlay.classList.add('open');
+  document.getElementById('sheetClose').addEventListener('click', closeSheet);
+  overlay.addEventListener('click', (e)=>{ if (e.target === overlay) closeSheet(); }, { once:true });
+}
+function closeSheet(){ document.getElementById('sheetOverlay').classList.remove('open'); }
+
+/* ============ WAITING STATE ============ */
+let doneSet;
+const hints = [
+  'Everyone swipes at once',
+  'Votes lock the moment you swipe',
+  'Results reveal to the whole table together',
+];
+let hintTimer;
+
+function resetPlayers(){ doneSet = new Set(['You']); renderWaiting(); }
+
+function cycleHints(){
+  clearInterval(hintTimer);
+  let i = 0;
+  hintTimer = setInterval(()=>{
+    i = (i+1) % hints.length;
+    const node = document.getElementById('waitHint');
+    if (!node){ clearInterval(hintTimer); return; }
+    node.style.opacity = 0;
+    setTimeout(()=>{ node.textContent = hints[i]; node.style.opacity = 1; }, 200);
+  }, 2600);
+}
+
+/* ---- tallying state: three face-down cards shuffling ---- */
+function loaderHTML(){
+  return `<div class="loader-wrap"><div class="shuffle">
+    <div class="deck-card back">?</div>
+    <div class="deck-card back">?</div>
+    <div class="deck-card back">?</div>
+  </div></div>`;
+}
+
+function renderWaiting(){
+  const allDone = ROSTER.every(p => doneSet.has(p.name));
+  screen.innerHTML = `
+    <div class="eyebrow">Game Night · ${CODE}</div>
+    <h1>Votes locked</h1>
+    <div class="waiting-panel">
+      ${allDone ? loaderHTML() : `
+      <div class="die-wrap">
+        <svg class="die" viewBox="0 0 52 52">
+          <rect x="2" y="2" width="48" height="48" rx="11"/>
+          <circle cx="17" cy="17" r="4.2"/><circle cx="35" cy="17" r="4.2"/>
+          <circle cx="17" cy="35" r="4.2"/><circle cx="35" cy="35" r="4.2"/><circle cx="26" cy="26" r="4.2"/>
+        </svg>
+      </div>`}
+      <p class="waiting-title">${allDone ? 'All votes are in' : 'Waiting on the <b>table</b>'}</p>
+      ${allDone
+        ? `<p class="waiting-sub strong">Results are on their way<span class="spinner"></span></p>`
+        : `<p class="waiting-sub" id="waitHint" style="transition:opacity .2s ease;">${hints[0]}</p>`}
+    </div>
+    <div class="roster">
+      <div class="roster-head"><h2>${ROSTER.length} at the table</h2></div>
+      <div class="names">
+        ${ROSTER.map(p=>{
+          const done = doneSet.has(p.name);
+          return `
+          <div class="name-row ${done?'done':''}">
+            <div class="who">${p.name}${p.isHost?'<span class="tag">host</span>':(p.isMe?'<span class="tag">you</span>':'')}</div>
+            <div class="status ${done?'done':''}">
+              ${done
+                ? `<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 15L16 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Done`
+                : `<span class="dot-pulse"></span> Voting\u2026`}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  if (!allDone) cycleHints(); else clearInterval(hintTimer);
+}
+
+/* ============ tabs ============ */
+function switchTab(which){
+  document.getElementById('tabVoting').classList.toggle('on', which==='voting');
+  document.getElementById('tabWaiting').classList.toggle('on', which==='waiting');
+  document.getElementById('simVoting').style.display = which==='voting' ? 'flex' : 'none';
+  document.getElementById('simWaiting').style.display = which==='waiting' ? 'flex' : 'none';
+  if (which==='voting') resetDeck(); else resetPlayers();
+}
+document.getElementById('tabVoting').addEventListener('click', ()=>switchTab('voting'));
+document.getElementById('tabWaiting').addEventListener('click', ()=>switchTab('waiting'));
+
+document.getElementById('simPlay').addEventListener('click', ()=>{ if (index<deck.length) commit('play'); });
+document.getElementById('simPass').addEventListener('click', ()=>{ if (index<deck.length) commit('pass'); });
+document.getElementById('simReset').addEventListener('click', resetDeck);
+
+document.getElementById('simPlayerDone').addEventListener('click', ()=>{
+  const next = ROSTER.find(p => !doneSet.has(p.name));
+  if (next) doneSet.add(next.name);
+  renderWaiting();
+});
+document.getElementById('simPlayerReset').addEventListener('click', resetPlayers);
+
+resetDeck();
+</script>
+</body>
+</html>
