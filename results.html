@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Results — BoardgameShelf</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#160F0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/game-modal.css">
+<style>
+  /* Tokens, page chrome and .deck-card / .deck-card.back come from
+     css/base.css. The face-down card below is that same component scaled up —
+     the one the table watched shuffle on the tallying screen. */
+  body{
+    padding:18px 16px calc(46px + env(safe-area-inset-bottom));
+  }
+  .screen{max-width:400px;margin:0 auto;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:22px;text-align:center;
+    margin:0 0 20px;letter-spacing:-.01em;min-height:28px;transition:opacity .3s ease;
+  }
+
+  /* ---- the reveal ----
+     The wiggle sits on .flip and the rotation transition on .flip-inner, and
+     they must stay on separate elements: an animation and a transition on the
+     same property of the same element makes WebKit silently drop the
+     transition, so the card snaps instead of turning — correct in Chrome,
+     broken on every iPhone at the table. */
+  .reveal{display:flex;justify-content:center;gap:16px;margin-bottom:18px;}
+  .flip{perspective:1100px;}
+  .flip.solo{width:196px;}
+  .flip.duo{width:150px;}
+  .flip-inner{
+    position:relative;width:100%;aspect-ratio:3/4;
+    transform-style:preserve-3d;transition:transform .75s cubic-bezier(.3,0,.25,1);
+  }
+  .flip:not(.revealed){animation:tease 1.1s ease-in-out infinite;}
+  @keyframes tease{0%,100%{transform:rotate(-1.6deg);}50%{transform:rotate(1.6deg);}}
+  .flip.revealed{animation:none;}
+  .flip.revealed .flip-inner{transform:rotateY(180deg);}
+  .face{
+    position:absolute;inset:0;border-radius:14px;overflow:hidden;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border:1px solid rgba(var(--bgs-gold-rgb),.3);
+  }
+  /* The two faces are `.facedown` / `.cover`, deliberately NOT `.front` /
+     `.back`: the face-down side reuses the shared `.deck-card.back` component,
+     so a face class named `.back` would also match it — silently overriding
+     its hatch and rotating it out of view, leaving the reveal to start from an
+     empty screen. */
+
+  /* The shared card back, resized for the reveal — same override pattern the
+     tallying shuffle uses in vote-swipe.html, not a second card back. */
+  .face.facedown.deck-card{
+    width:auto;aspect-ratio:auto;border-radius:14px;font-size:34px;
+    box-shadow:0 18px 34px -10px rgba(0,0,0,.55);
+  }
+  .face.cover{
+    transform:rotateY(180deg);background:var(--bgs-plate);
+    transition:box-shadow .6s ease .25s;
+  }
+  .face.cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .flip.revealed .face.cover{
+    box-shadow:0 0 44px rgba(var(--bgs-gold-rgb),.28), 0 18px 34px -10px rgba(0,0,0,.55);
+  }
+  /* Nobody won: the card never turns — no game earned the reveal. */
+  .flip.nobody{animation:none;opacity:.55;transition:opacity .6s ease;}
+
+  /* ---- winner meta ---- */
+  .winner-meta{
+    text-align:center;margin-bottom:26px;opacity:0;transform:translateY(6px);
+    transition:opacity .4s ease,transform .4s ease;
+  }
+  .winner-meta.show{opacity:1;transform:none;}
+  .winner-title{font-family:'Fraunces',serif;font-weight:600;font-size:19px;line-height:1.3;margin:0 0 4px;}
+  .winner-title .amp{color:var(--bgs-ivory-45);font-style:italic;padding:0 2px;}
+  .count-pill{
+    display:inline-flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;
+    background:rgba(var(--bgs-gold-rgb),.12);border:1px solid rgba(var(--bgs-gold-rgb),.42);
+    color:var(--bgs-gold);border-radius:99px;padding:6px 13px;font-size:12px;font-weight:700;
+    font-family:inherit;transition:background .15s ease;
+  }
+  .count-pill .chev{font-size:10px;transition:transform .2s ease;}
+  .count-pill[aria-expanded="true"] .chev{transform:rotate(90deg);}
+  .winner-names{margin-top:10px;}
+
+  /* ---- vote name chips ----
+     Gold, not sage: --bgs-vote-play belongs to the act of swiping right, and
+     by this screen that's history — what's on display is a winner. */
+  .vchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+  .vchip{font-size:11px;font-weight:600;border-radius:99px;padding:4px 11px;}
+  .vchip.play{background:rgba(var(--bgs-gold-rgb),.12);color:var(--bgs-gold);border:1px solid rgba(var(--bgs-gold-rgb),.4);}
+  .vchip.pass{background:transparent;color:var(--bgs-ivory-45);border:1px solid rgba(var(--bgs-ivory-rgb),.15);}
+  .vchip.novote{background:transparent;color:var(--bgs-ivory-45);border:1px dashed rgba(var(--bgs-ivory-rgb),.28);font-style:italic;}
+
+  /* ---- the rest of the ranking ---- */
+  .rest{opacity:0;transform:translateY(8px);transition:opacity .45s ease,transform .45s ease;}
+  .rest.show{opacity:1;transform:none;}
+  .rest h2{font-family:'Fraunces',serif;font-weight:600;font-size:14px;color:var(--bgs-ivory-70);text-align:center;margin:0 0 12px;}
+  .result-row{
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.08);
+    border-radius:12px;margin-bottom:7px;overflow:hidden;
+    opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease;
+  }
+  .rest.show .result-row{opacity:1;transform:none;}
+  .row-main{
+    display:flex;align-items:center;gap:11px;width:100%;padding:10px 13px;
+    background:none;border:none;color:inherit;font:inherit;cursor:pointer;text-align:left;
+  }
+  .rank{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-ivory-45);min-width:18px;}
+  .row-thumb{
+    width:34px;aspect-ratio:3/4;border-radius:5px;overflow:hidden;flex-shrink:0;
+    background:var(--bgs-bg-radial);border:1px solid rgba(var(--bgs-gold-rgb),.18);
+  }
+  .row-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .row-info{flex:1;min-width:0;}
+  .row-title{font-size:12.5px;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .row-sub{display:flex;align-items:center;gap:7px;margin-top:4px;}
+  .row-count{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--bgs-ivory-45);white-space:nowrap;}
+  .row-names{padding:0 13px 12px 42px;}
+  .row-names .vchips{justify-content:flex-start;}
+  .row-names[hidden]{display:none;}
+
+  /* ---- footer actions ---- */
+  .actions{margin-top:22px;opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease;}
+  .actions.show{opacity:1;transform:none;}
+  .btn-primary{
+    display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-plate);border:none;
+    border-radius:12px;padding:16px;font:inherit;font-size:14.5px;font-weight:700;
+    cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box;
+  }
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .actions-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin:9px 0 0;}
+  .req-line{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    font-size:12px;font-weight:600;color:var(--bgs-gold);margin:0 0 10px;
+  }
+  .req-dot{width:6px;height:6px;border-radius:50%;background:var(--bgs-gold);animation:reqpulse 1.6s ease-in-out infinite;}
+  @keyframes reqpulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .btn-primary.requested{
+    background:rgba(var(--bgs-gold-rgb),.12);color:var(--bgs-gold);
+    border:1px solid rgba(var(--bgs-gold-rgb),.45);cursor:default;
+  }
+  .btn-ghost{
+    display:block;width:100%;margin-top:12px;background:transparent;color:var(--bgs-gold-dim);
+    border:1px solid rgba(var(--bgs-gold-rgb),.35);border-radius:12px;padding:14px;
+    font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-align:center;
+    text-decoration:none;box-sizing:border-box;transition:color .15s ease,border-color .15s ease;
+  }
+  .btn-ghost:hover{color:var(--bgs-gold);border-color:rgba(var(--bgs-gold-rgb),.6);}
+
+  /* ---- info buttons: same affordance as the swipe screen ---- */
+  .info-btn{
+    position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;z-index:2;
+    background:rgba(0,0,0,.42);backdrop-filter:blur(3px);color:var(--bgs-ivory);
+    display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--bgs-ivory-rgb),.2);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:14px;cursor:pointer;
+  }
+  .row-head{display:flex;align-items:center;}
+  .row-head .row-main{flex:1;min-width:0;}
+  .row-ibtn{
+    width:28px;height:28px;border-radius:50%;flex-shrink:0;margin-right:11px;
+    background:rgba(var(--bgs-ivory-rgb),.06);color:var(--bgs-ivory-45);
+    display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--bgs-ivory-rgb),.14);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:12.5px;cursor:pointer;
+    transition:color .15s ease,border-color .15s ease;
+  }
+  .row-ibtn:hover{color:var(--bgs-gold);border-color:rgba(var(--bgs-gold-rgb),.4);}
+
+  /* ---- ended / not found ---- */
+  .ended p{text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;}
+  .ended-detail{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.5;
+    color:var(--bgs-ivory-45);text-align:center;margin:-10px 0 22px;word-break:break-word;
+  }
+
+  /* Reduced motion: everything lands at its resting state instantly. Nothing
+     here depends on animation-fill-mode, so a dropped animation can never
+     leave a blank hole where the winner should be. */
+  @media (prefers-reduced-motion:reduce){
+    .flip{animation:none;}
+    .flip-inner{transition:none;}
+    .face.cover{transition:none;}
+    .winner-meta,.rest,.actions,.result-row{transition:none;}
+    .req-dot{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="screen" id="screen">
+  <div class="eyebrow">Game Night</div>
+  <h1>Loading&hellip;</h1>
+</div>
+
+<script type="module">
+// Absolute paths: this page is reached via a Vercel rewrite (/results/:code),
+// so the browser's URL — which relative imports resolve against — is the
+// pretty path, not this file's real location. A relative import here 404s
+// silently and the whole module script never runs.
+import {
+  fetchSession, fetchSessionVotes, fetchParticipants, startRematch, sessionErrorMessage,
+} from '/js/session.js';
+import { joinSessionChannel } from '/js/presence.js';
+import { deckFromSession, openGameModal } from '/js/waiting-room.js';
+
+const screen = document.getElementById('screen');
+
+function codeFromPath() {
+  // /results/{code}
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  return parts[1] || null;
+}
+
+// Raw database errors are never shown to players — they get the sentence.
+// The underlying error is always logged, and shown on the page only behind
+// ?debug=1, matching vote-swipe.html.
+const SHOW_ERROR_DETAIL = new URLSearchParams(location.search).has('debug');
+
+function renderEnded(message, detail) {
+  if (detail) console.error('[game night]', detail);
+  screen.innerHTML = `
+    <div class="eyebrow">Game Night</div>
+    <h1>Game night over</h1>
+    <div class="ended"><p>${message}</p></div>
+    ${detail && SHOW_ERROR_DETAIL ? `<p class="ended-detail">${detail}</p>` : ''}
+    <a class="btn-primary" href="/">Back to the shelf</a>`;
+}
+
+function errorDetail(e) {
+  return [e?.code, e?.message || String(e), e?.hint].filter(Boolean).join(' · ');
+}
+
+/** "Theo", "Theo and Priya", "Theo, Priya, and Sam" */
+function joinNames(names) {
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+}
+
+const code = codeFromPath();
+if (!code) {
+  renderEnded('That game night has ended, or the code is wrong.');
+} else {
+  init(code);
+}
+
+async function init(code) {
+  const myName = sessionStorage.getItem(`gamenight:${code}:name`);
+  if (!myName) {
+    // Deep-linked without joining — send them through the real join flow.
+    window.location.href = `/vote/${code}`;
+    return;
+  }
+
+  let session;
+  try {
+    session = await fetchSession(code);
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.', errorDetail(e));
+    return;
+  }
+
+  if (!session) {
+    renderEnded('That game night has ended, or the code is wrong.');
+    return;
+  }
+  if (session.status === 'cancelled') {
+    renderEnded(`${session.host_name} ended this game night.`);
+    return;
+  }
+  // A stale tab, or someone who refreshed mid-rematch.
+  if (session.status === 'waiting') {
+    window.location.href = `/vote/${code}`;
+    return;
+  }
+  if (session.status === 'voting') {
+    window.location.href = `/vote/${code}/swipe`;
+    return;
+  }
+
+  let games, participants, votes;
+  try {
+    const res = await fetch('/games.json');
+    if (!res.ok) throw new Error('failed to load games');
+    games = await res.json();
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.', errorDetail(e));
+    return;
+  }
+
+  try {
+    // Scoped to the current round: earlier rounds stay on disk so a rematch
+    // cannot destroy the first result, and counting them would mix the two.
+    [participants, votes] = await Promise.all([
+      fetchParticipants(code),
+      fetchSessionVotes(code, session.round),
+    ]);
+  } catch (e) {
+    renderEnded('Something went wrong loading the results.', errorDetail(e));
+    return;
+  }
+
+  const deck = deckFromSession(session, games);
+  runResults({ code, session, deck, myName, participants, votes });
+}
+
+/**
+ * Per game: who played it, who passed, and who never voted at all — the host's
+ * "Show results now" can end voting before everyone finishes, so a missing row
+ * is a real state and must never be quietly counted as a pass.
+ */
+function tally(deck, participants, votes) {
+  const byGame = new Map(deck.map((g) => [g.bggId, { play: [], pass: [] }]));
+  for (const v of votes) {
+    const entry = byGame.get(v.game_id);
+    if (!entry) continue; // a vote for a game not in this round's deck
+    if (v.vote === 'play') entry.play.push(v.participant_name);
+    else entry.pass.push(v.participant_name);
+  }
+
+  const rows = deck.map((g) => {
+    const { play, pass } = byGame.get(g.bggId);
+    const voted = new Set([...play, ...pass]);
+    return {
+      game: g,
+      play: participants.filter((n) => play.includes(n)),
+      pass: participants.filter((n) => pass.includes(n)),
+      noVote: participants.filter((n) => !voted.has(n)),
+    };
+  });
+
+  // Dense ranking: 1, 2, 2, 3 — ties share a number and the next game takes
+  // the very next one. Never skip; a gap reads like a missing row.
+  const sorted = [...rows].sort((a, b) => b.play.length - a.play.length);
+  let rank = 0, prev = -1;
+  return sorted.map((r) => {
+    if (r.play.length !== prev) { rank += 1; prev = r.play.length; }
+    return { ...r, rank };
+  });
+}
+
+function runResults({ code, session, deck, myName, participants, votes }) {
+  const isHost = myName === session.host_name;
+  const total = participants.length;
+  const rows = tally(deck, participants, votes);
+
+  // No game earned a single play vote — there is no winner and nothing
+  // reveals. Checked before ranking drives anything else.
+  const nobody = rows.length === 0 || rows[0].play.length === 0;
+  const winners = nobody ? [] : rows.filter((r) => r.rank === 1);
+  const rest = nobody ? rows : rows.filter((r) => r.rank !== 1);
+  const tie = winners.length > 1;
+
+  let players = [];
+  let requestSent = false;
+  let navigated = false;
+  let timers = [];
+
+  function chipsHTML(r) {
+    return `<div class="vchips">
+      ${r.play.map((n) => `<span class="vchip play">${n}</span>`).join('')}
+      ${r.pass.map((n) => `<span class="vchip pass">${n}</span>`).join('')}
+      ${r.noVote.map((n) => `<span class="vchip novote">${n} · no vote</span>`).join('')}
+    </div>`;
+  }
+
+  function countText(r) {
+    const nv = r.noVote.length;
+    return `${r.play.length} of ${total}${nv ? ` · ${nv} no vote` : ''}`;
+  }
+
+  /** Names of anyone other than me who has asked the host for a rematch. */
+  function requesters() {
+    return players.filter((p) => p.rematchRequested && p.name !== myName).map((p) => p.name);
+  }
+
+  function actionsHTML() {
+    const shelf = '<a class="btn-ghost" href="/">Back to the shelf</a>';
+    // A clear winner (or nobody at all) gets one action — nothing competes
+    // with the result, and re-voting a deck everyone rejected helps nobody.
+    if (!tie) return '<a class="btn-primary" href="/">Back to the shelf</a>';
+
+    if (isHost) {
+      const names = requesters();
+      const line = names.length
+        ? `<p class="req-line"><span class="req-dot"></span>${joinNames(names)} ${names.length === 1 ? 'wants' : 'want'} a rematch</p>`
+        : '';
+      return `${line}
+        <button class="btn-primary" id="rematchBtn" type="button">Rematch</button>
+        <p class="actions-hint">Everyone votes again — just the ${winners.length} tied games.</p>
+        ${shelf}`;
+    }
+    return requestSent
+      ? `<button class="btn-primary requested" type="button" disabled>Rematch requested ✓</button>
+         <p class="actions-hint">${session.host_name} can start it — a rematch votes on just the tied games.</p>
+         ${shelf}`
+      : `<button class="btn-primary" id="requestBtn" type="button">Request a rematch</button>
+         <p class="actions-hint">A rematch votes on just the tied games.</p>
+         ${shelf}`;
+  }
+
+  function wireActions() {
+    const rematchBtn = document.getElementById('rematchBtn');
+    if (rematchBtn) {
+      rematchBtn.addEventListener('click', async () => {
+        rematchBtn.disabled = true;
+        try {
+          await startRematch(code, myName, winners.map((w) => w.game.bggId));
+          // Every device navigates on the realtime status change, including
+          // this one — not here, so the whole table lands together.
+        } catch (e) {
+          const message = sessionErrorMessage(e, session.host_name);
+          if (message) alert(message);
+          rematchBtn.disabled = false;
+        }
+      });
+    }
+
+    const requestBtn = document.getElementById('requestBtn');
+    if (requestBtn) {
+      requestBtn.addEventListener('click', () => {
+        requestSent = true;
+        controller.markRematchRequested().catch(() => {});
+        refreshActions();
+      });
+    }
+  }
+
+  /** Re-renders just the actions block, so a live request can't restart the reveal. */
+  function refreshActions() {
+    const actions = document.getElementById('actions');
+    if (!actions) return;
+    actions.innerHTML = actionsHTML();
+    wireActions();
+  }
+
+  function render() {
+    timers.forEach(clearTimeout);
+    timers = [];
+
+    const revealCards = nobody ? [rows[0]] : winners;
+
+    screen.innerHTML = `
+      <div class="eyebrow">Game Night · ${code}</div>
+      <h1 id="headline">And the table says…</h1>
+      <div class="reveal" id="reveal">
+        ${revealCards.map((r) => `
+          <div class="flip ${tie ? 'duo' : 'solo'}">
+            <div class="flip-inner">
+              <div class="face facedown deck-card back">?</div>
+              <div class="face cover">
+                <button class="info-btn" data-info="${r.game.bggId}" aria-label="About ${r.game.title}">i</button>
+                <img src="${r.game.image}" alt="${r.game.title} cover">
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="winner-meta" id="winnerMeta">
+        ${nobody ? `
+          <p class="winner-title">Everyone passed on everything.</p>
+          <p class="actions-hint" style="margin-top:6px;">The shelf awaits — maybe a different deck.</p>`
+        : `
+          <p class="winner-title">${winners.map((w) => w.game.title).join(' <span class="amp">&</span> ')}</p>
+          <button class="count-pill" id="winnerPill" aria-expanded="false">
+            ${tie
+              ? `Tied — ${winners[0].play.length} of ${total} would play both`
+              : `${winners[0].play.length} of ${total} would play`}
+            <span class="chev">›</span>
+          </button>
+          <div class="winner-names" id="winnerNames" hidden>${chipsHTML(winners[0])}</div>`}
+      </div>
+      <div class="rest" id="rest">
+        <h2>${nobody ? 'How the votes fell' : 'How the rest stacked up'}</h2>
+        ${rest.map((r, i) => `
+          <div class="result-row" style="transition-delay:${(0.08 * i).toFixed(2)}s">
+            <div class="row-head">
+              <button class="row-main" aria-expanded="false">
+                <span class="rank">${nobody ? '–' : r.rank}</span>
+                <span class="row-thumb"><img src="${r.game.image}" alt="" loading="lazy"></span>
+                <span class="row-info">
+                  <span class="row-title">${r.game.title}</span>
+                  <span class="row-sub"><span class="row-count">${countText(r)}</span></span>
+                </span>
+              </button>
+              <button class="row-ibtn" data-info="${r.game.bggId}" aria-label="About ${r.game.title}">i</button>
+            </div>
+            <div class="row-names" hidden>${chipsHTML(r)}</div>
+          </div>`).join('')}
+      </div>
+      <div class="actions" id="actions">${actionsHTML()}</div>`;
+
+    wireActions();
+
+    const pill = document.getElementById('winnerPill');
+    if (pill) {
+      pill.addEventListener('click', () => {
+        const names = document.getElementById('winnerNames');
+        const opening = names.hidden;
+        names.hidden = !opening;
+        pill.setAttribute('aria-expanded', String(opening));
+      });
+    }
+
+    // The info buttons are siblings of the row body, not nested inside it, so
+    // the two adjacent targets keep their separate jobs.
+    screen.querySelectorAll('[data-info]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const game = deck.find((g) => g.bggId === btn.dataset.info);
+        if (game) openGameModal(game);
+      });
+    });
+
+    screen.querySelectorAll('.row-main').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const names = btn.closest('.result-row').querySelector('.row-names');
+        const opening = names.hidden;
+        names.hidden = !opening;
+        btn.setAttribute('aria-expanded', String(opening));
+      });
+    });
+
+    // tease → flip → title + count → ranking → actions
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t = reduced ? [0, 0, 0, 0] : [1100, 1750, 2350, 2750];
+    timers.push(setTimeout(() => {
+      screen.querySelectorAll('.flip').forEach((f) => f.classList.add(nobody ? 'nobody' : 'revealed'));
+      document.getElementById('headline').textContent =
+        nobody ? "Nobody's feeling it tonight" : (tie ? "It's a tie" : "Tonight's game");
+    }, t[0]));
+    timers.push(setTimeout(() => document.getElementById('winnerMeta').classList.add('show'), t[1]));
+    timers.push(setTimeout(() => document.getElementById('rest').classList.add('show'), t[2]));
+    timers.push(setTimeout(() => document.getElementById('actions').classList.add('show'), t[3]));
+  }
+
+  render();
+
+  const controller = joinSessionChannel({
+    code,
+    participantName: myName,
+    isHost,
+    finished: true,
+    onPresence: ({ players: p }) => {
+      players = p;
+      // Only the actions block depends on presence, and re-rendering the whole
+      // screen would restart the reveal every time someone's tab reconnects.
+      refreshActions();
+    },
+    onStatus: (status) => {
+      if (navigated) return;
+      if (status === 'voting') {
+        // A rematch started — everyone lands on the swipe screen together.
+        navigated = true;
+        timers.forEach(clearTimeout);
+        controller.leave();
+        window.location.href = `/vote/${code}/swipe`;
+      } else if (status === 'cancelled') {
+        navigated = true;
+        timers.forEach(clearTimeout);
+        controller.leave();
+        renderEnded(`${session.host_name} ended this game night.`);
+      }
+    },
+  });
+
+  window.addEventListener('pagehide', () => controller.leave());
+}
+</script>
+</body>
+</html>

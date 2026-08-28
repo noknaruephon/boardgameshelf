@@ -68,5 +68,12 @@ export function joinSessionChannel({
       meta = { ...meta, finished: true };
       await channel.track(meta);
     },
+    // Asks the host for a rematch. Deliberately presence and not a table: a
+    // request is a nudge that stops mattering the moment the host acts, so it
+    // should not outlive the tab that made it.
+    async markRematchRequested() {
+      meta = { ...meta, rematchRequested: true };
+      await channel.track(meta);
+    },
   };
 }

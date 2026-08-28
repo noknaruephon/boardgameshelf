@@ -331,7 +331,10 @@ async function init(code) {
 
   let myVotes;
   try {
-    myVotes = await fetchVotes(code, myName);
+    // Scoped to this round: a rematch re-votes games this player already
+    // voted on in round 1, and counting those would drop them straight into
+    // the waiting panel without swiping a single card.
+    myVotes = await fetchVotes(code, myName, session.round);
   } catch (e) {
     renderEnded('Something went wrong loading your votes.', errorDetail(e));
     return;
