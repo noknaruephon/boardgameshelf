@@ -250,20 +250,26 @@ function joinNames(names) {
   return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
 }
 
-// `detail` carries the underlying error on the failure paths where the copy
-// alone can't tell you what to fix — a dead end that won't say why is one you
-// have to debug from a phone with no console.
+// Raw database errors are never shown to players — they get the sentence.
+// But a dead-end screen that won't say why is one you have to debug from a
+// phone with no console, which cost a long round of guesswork on the swipe
+// screen's first outing. So the underlying error is always logged, and shown
+// on the page only when ?debug=1 is in the URL.
+const SHOW_ERROR_DETAIL = new URLSearchParams(location.search).has('debug');
+
 function renderEnded(message, detail) {
+  if (detail) console.error('[game night]', detail);
+  const showDetail = detail && SHOW_ERROR_DETAIL;
   screen.innerHTML = `
     <div class="eyebrow">Game Night</div>
     <h1>Game night over</h1>
     <div class="ended"><p>${message}</p></div>
-    ${detail ? `<p class="ended-detail">${detail}</p>` : ''}
+    ${showDetail ? `<p class="ended-detail">${detail}</p>` : ''}
     <a class="start-btn" href="/">Back to the shelf</a>`;
 }
 
 // Supabase errors carry the useful part in `message`, with `code`/`hint`
-// naming the fix (a missing grant, a stale schema cache).
+// naming the fix (a missing column, a missing grant, a stale schema cache).
 function errorDetail(e) {
   const parts = [e?.code, e?.message || String(e), e?.hint].filter(Boolean);
   return parts.join(' · ');
