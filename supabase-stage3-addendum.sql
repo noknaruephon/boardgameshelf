@@ -54,6 +54,13 @@ create policy "votes are inserted only through submit_vote"
 -- vote-swipe.html as "Something went wrong loading your votes."
 grant select, insert on votes to anon, authenticated;
 
+-- PostgREST caches the schema and only sees a new table once that cache
+-- reloads. Supabase normally reloads it automatically on DDL, but when it
+-- doesn't, reads fail with PGRST205 ("Could not find the table
+-- 'public.votes' in the schema cache") no matter how the grants look.
+-- Harmless to run when the cache is already current.
+notify pgrst, 'reload schema';
+
 -- No update/delete policy: votes lock on swipe. Nothing built here goes
 -- through a raw table write for votes — always submit_vote().
 

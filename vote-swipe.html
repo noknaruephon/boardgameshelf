@@ -186,6 +186,11 @@
 
   /* ---- ended / not found ---- */
   .ended p{text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;}
+  .ended-detail{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.5;
+    color:var(--bgs-ivory-45);text-align:center;margin:-10px 0 22px;
+    word-break:break-word;
+  }
   .start-btn{
     display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-plate);border:none;
     border-radius:12px;padding:16px;font:inherit;font-size:14.5px;font-weight:700;
@@ -245,12 +250,23 @@ function joinNames(names) {
   return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
 }
 
-function renderEnded(message) {
+// `detail` carries the underlying error on the failure paths where the copy
+// alone can't tell you what to fix — a dead end that won't say why is one you
+// have to debug from a phone with no console.
+function renderEnded(message, detail) {
   screen.innerHTML = `
     <div class="eyebrow">Game Night</div>
     <h1>Game night over</h1>
     <div class="ended"><p>${message}</p></div>
+    ${detail ? `<p class="ended-detail">${detail}</p>` : ''}
     <a class="start-btn" href="/">Back to the shelf</a>`;
+}
+
+// Supabase errors carry the useful part in `message`, with `code`/`hint`
+// naming the fix (a missing grant, a stale schema cache).
+function errorDetail(e) {
+  const parts = [e?.code, e?.message || String(e), e?.hint].filter(Boolean);
+  return parts.join(' · ');
 }
 
 const code = codeFromPath();
@@ -273,7 +289,7 @@ async function init(code) {
   try {
     session = await fetchSession(code);
   } catch (e) {
-    renderEnded('Something went wrong loading this game night.');
+    renderEnded('Something went wrong loading this game night.', errorDetail(e));
     return;
   }
 
@@ -311,7 +327,7 @@ async function init(code) {
   try {
     myVotes = await fetchVotes(code, myName);
   } catch (e) {
-    renderEnded('Something went wrong loading your votes.');
+    renderEnded('Something went wrong loading your votes.', errorDetail(e));
     return;
   }
 
