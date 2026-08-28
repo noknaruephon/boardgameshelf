@@ -129,6 +129,30 @@ $$;
 -- a nudge that only matters until the host acts — it should not survive a
 -- refresh, so the database is the wrong home for it.
 
+-- ---------------------------------------------------------------------------
+-- 5. participants must be readable by the results screen
+-- ---------------------------------------------------------------------------
+
+-- Appended while implementing this spec; none of the logic above is changed.
+--
+-- §5 requires the tally's denominator to be the full participant count, so
+-- results.html reads `participants` directly with the anon key. Nothing in
+-- Stage 1-3 ever did — every earlier surface got its player list from
+-- presence — so this table's anon access has never actually been exercised.
+-- Stage 3 lost a debugging round to exactly this on `votes`, so it is granted
+-- here rather than discovered on a phone at a table.
+--
+-- Deliberately does NOT run `alter table participants enable row level
+-- security`: if RLS is currently off, switching it on would newly restrict
+-- access that works today. A permissive policy is inert while RLS is off and
+-- additive when it is on, so this is safe either way.
+grant select on participants to anon, authenticated;
+
+drop policy if exists "participants are readable by anyone with the code" on participants;
+create policy "participants are readable by anyone with the code"
+  on participants for select
+  using (true);
+
 -- PostgREST only sees schema changes once its cache reloads. Supabase
 -- normally does this automatically on DDL; harmless when already current.
 notify pgrst, 'reload schema';

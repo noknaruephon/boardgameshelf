@@ -52,7 +52,7 @@ export async function cancelGameNight(code) {
 export async function fetchSession(code) {
   const { data, error } = await supabase
     .from('sessions')
-    .select('code, host_name, mode, reveal_deck, game_ids, status')
+    .select('code, host_name, mode, reveal_deck, game_ids, status, round')
     .eq('code', code)
     .maybeSingle();
   if (error) throw error;
@@ -88,15 +88,70 @@ export async function forceResults(code, name) {
   if (error) throw error;
 }
 
-/** @returns {Promise<Array<{game_id: string, vote: string}>>} this participant's votes so far */
-export async function fetchVotes(code, name) {
+/**
+ * This participant's votes in one round.
+ *
+ * `round` is not optional by accident: votes from earlier rounds stay on disk
+ * so a rematch can't destroy the first result, which means an unfiltered read
+ * would see round 1's votes for the tied games and conclude this player has
+ * already finished the rematch before they have swiped anything.
+ *
+ * @returns {Promise<Array<{game_id: string, vote: string}>>}
+ */
+export async function fetchVotes(code, name, round) {
   const { data, error } = await supabase
     .from('votes')
     .select('game_id, vote')
     .eq('session_code', code)
-    .eq('participant_name', name);
+    .eq('participant_name', name)
+    .eq('round', round);
   if (error) throw error;
   return data;
+}
+
+/**
+ * Every participant's votes in one round — what the results screen tallies.
+ * @returns {Promise<Array<{participant_name: string, game_id: string, vote: string}>>}
+ */
+export async function fetchSessionVotes(code, round) {
+  const { data, error } = await supabase
+    .from('votes')
+    .select('participant_name, game_id, vote')
+    .eq('session_code', code)
+    .eq('round', round);
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Everyone who joined this game night, from the durable record rather than
+ * presence. The results screen counts votes out of this: presence only knows
+ * who still has a tab open, so someone who voted and then closed theirs would
+ * silently shrink the denominator and turn an honest "2 of 4" into "2 of 3".
+ *
+ * @returns {Promise<string[]>} participant names, in join order
+ */
+export async function fetchParticipants(code) {
+  const { data, error } = await supabase
+    .from('participants')
+    .select('name, joined_at')
+    .eq('session_code', code)
+    .order('joined_at', { ascending: true });
+  if (error) throw error;
+  return data.map((p) => p.name);
+}
+
+/**
+ * Host only, tie only: starts another round on just the tied games.
+ * The database bumps the round, narrows the deck and flips the status back to
+ * `voting` in one transaction — every device navigates on that status change,
+ * so nothing here redirects.
+ */
+export async function startRematch(code, name, gameIds) {
+  const { error } = await supabase.rpc('start_rematch', {
+    p_code: code, p_name: name, p_game_ids: gameIds,
+  });
+  if (error) throw error;
 }
 
 // The database raises named errors as part of the Postgres exception message.
@@ -107,6 +162,7 @@ const ERROR_COPY = {
   VOTING_IN_PROGRESS: () => "Voting's already started — you'll catch the next round.",
   NOT_ENOUGH_PLAYERS: () => 'Need at least 2 players to start.',
   NOT_VOTING: () => "Voting's already finished for this game night.",
+  NOT_TIED: () => 'This game night has already moved on.',
 };
 
 /**
