@@ -1049,10 +1049,13 @@ import {
 import { createGameModal } from './js/game-modal.js';
 import { registerOverlay, syncScrollLock } from './js/scroll-lock.js';
 
-// ---- Game Night feature flag (Stage 1: session creation) ----
-// Ships dark: a normal visitor sees today's site, unchanged, with no new buttons.
-// Test with ?gamenight=1. The final PR that completes the feature flips this to true.
-const GAME_NIGHT_ENABLED = false;
+// ---- Game Night feature flag ----
+// Live: every visitor gets the Game Night pill. All four stages — session
+// creation, waiting room, swipe voting, results — are merged and working, so
+// the flag is now a kill switch rather than a curtain. Set it back to false to
+// pull the feature without reverting anything; ?gamenight=1 still reveals it
+// while it is off.
+const GAME_NIGHT_ENABLED = true;
 const gameNightVisible =
   GAME_NIGHT_ENABLED || new URLSearchParams(location.search).has('gamenight');
 
