@@ -16,6 +16,13 @@
 <style>
   /* Tokens and page chrome (including .deck-card / .deck-card.back, used by
      the tallying shuffle below) come from css/base.css. */
+  html,body{
+    /* Keeps an overscroll from turning into pull-to-refresh or a horizontal
+       navigation gesture — either one reloads the deck mid-vote. Handles the
+       browsers that honour it; the history guard in the script covers iOS,
+       which does not. */
+    overscroll-behavior:none;
+  }
   body{
     padding:20px 16px calc(40px + env(safe-area-inset-bottom));
   }
@@ -364,6 +371,25 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     'Votes lock the moment you swipe',
     'Results reveal to the whole table together',
   ];
+
+  // iOS Safari's edge-swipe-back walks straight out of the middle of a deck.
+  // Back lands on /vote/{code}, which sees status 'voting' and bounces here
+  // again — so the screen reloads mid-vote and any drag in progress is lost.
+  //
+  // The system gesture can't be suppressed from script: it is not a scroll, so
+  // touch-action doesn't govern it, and preventDefault on the touch does not
+  // reliably cancel it either. So the navigation is absorbed rather than
+  // fought — a sentinel entry sits on top of the history stack and is pushed
+  // again whenever one is popped, leaving back with nowhere to go.
+  //
+  // Nothing is lost by this: the only entry behind us bounces forward again
+  // anyway, so back was never a way off this screen. Our own navigations use
+  // location.href, which is unaffected.
+  history.pushState({ swipeGuard: true }, '');
+  window.addEventListener('popstate', () => {
+    if (navigated) return;
+    history.pushState({ swipeGuard: true }, '');
+  });
 
   // ---- background vote submission: never block the gesture on the network.
   // On failure, retry once inline; if that also fails, queue the vote and
