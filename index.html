@@ -402,6 +402,14 @@
     font-size:13px;
     font-weight:500;
     color:var(--bgs-ivory);
+    transition:color 0.15s ease;
+  }
+  /* Active state: the label goes gold with the switch, so a toggle reads as on
+     from the text as well as the track. Labels stay a fixed phrase — swapping
+     the wording to describe the state made the label do the switch's job and
+     read as a button. */
+  .toggle-row[aria-checked="true"] .toggle-label{
+    color:var(--bgs-gold);
   }
 
   .sheet-footer{
@@ -1572,10 +1580,9 @@ function renderSurprise(){
 
 function syncRevealToggleUI(){
   const toggle = document.getElementById('gnRevealToggle');
+  // The label is a fixed phrase; aria-checked carries the state, which is what
+  // both the gold active styling and screen readers read it from.
   toggle.setAttribute('aria-checked', String(gnState.revealDeck));
-  document.getElementById('gnRevealLabel').textContent = gnState.revealDeck
-    ? 'Show the games in the waiting room'
-    : 'Keep them a surprise.';
 }
 
 function updateConfirmSummary(){
@@ -1692,7 +1699,7 @@ function initGameNight(){
         <div class="gn-field" id="gnRevealField">
           <button type="button" class="toggle-row" id="gnRevealToggle" role="switch" aria-checked="false">
             <span class="toggle-switch" aria-hidden="true"></span>
-            <span class="toggle-label" id="gnRevealLabel">Keep them a surprise.</span>
+            <span class="toggle-label">Reveal selection</span>
           </button>
         </div>
         <p class="gn-summary" id="gnSummary"></p>
