@@ -7,11 +7,15 @@ export const MIN_PLAYERS_TO_START = 2;
  * Returns a controller with leave().
  */
 export function joinSessionChannel({
-  code, participantName, isHost, onPresence, onStatus,
+  code, participantName, isHost, finished = false, onPresence, onStatus,
 }) {
   const channel = supabase.channel(`session:${code}`, {
     config: { presence: { key: participantName } },
   });
+
+  // Mutable so markFinished() below can re-track with an updated flag without
+  // clobbering the rest of the meta (isHost, joinedAt).
+  let meta = { name: participantName, isHost, joinedAt: new Date().toISOString(), finished };
 
   function sync() {
     const state = channel.presenceState();
@@ -47,11 +51,7 @@ export function joinSessionChannel({
       // track() MUST run after SUBSCRIBED. Called earlier it fails silently: the
       // person looks connected on their own screen but is invisible to everyone
       // else. This is the single most common way this breaks.
-      await channel.track({
-        name: participantName,
-        isHost,
-        joinedAt: new Date().toISOString(),
-      });
+      await channel.track(meta);
     });
 
   return {
@@ -60,6 +60,13 @@ export function joinSessionChannel({
       // rather than waiting out the server-side presence timeout.
       channel.untrack().catch(() => {});
       supabase.removeChannel(channel);
+    },
+    // Updates this participant's presence meta to finished, so every other
+    // device's roster flips their row live — no database round trip. Safe to
+    // call more than once.
+    async markFinished() {
+      meta = { ...meta, finished: true };
+      await channel.track(meta);
     },
   };
 }
