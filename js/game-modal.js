@@ -1,4 +1,5 @@
 import { timeLabel, weightLabel, playersRangeLabel } from './filters.js';
+import { registerOverlay, syncScrollLock } from './scroll-lock.js';
 
 // The game detail modal, shared by the shelf and the game-night waiting room.
 // Markup lives here and styling in css/game-modal.css, so an enhancement to
@@ -107,12 +108,16 @@ export function createGameModal({ selection } = {}) {
   `);
 
   const backdrop = document.getElementById('backdrop');
+  // Every page gets this modal, so registering here locks the background on
+  // all of them without each page repeating itself.
+  registerOverlay(() => backdrop.classList.contains('open'));
   const body = document.getElementById('card-body');
   const addBtn = document.getElementById('modalAddBtn');
 
   function close() {
     backdrop.classList.remove('open');
     openGame = null;
+    syncScrollLock();
   }
 
   function refreshFooter() {
@@ -131,6 +136,7 @@ export function createGameModal({ selection } = {}) {
     wireFlip(body);
     refreshFooter();
     backdrop.classList.add('open');
+    syncScrollLock();
   }
 
   document.getElementById('close-btn').addEventListener('click', close);

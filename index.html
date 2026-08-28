@@ -1047,6 +1047,7 @@ import {
   weightLabel, timeLabel, playersRangeLabel
 } from './js/filters.js';
 import { createGameModal } from './js/game-modal.js';
+import { registerOverlay, syncScrollLock } from './js/scroll-lock.js';
 
 // ---- Game Night feature flag (Stage 1: session creation) ----
 // Ships dark: a normal visitor sees today's site, unchanged, with no new buttons.
@@ -1296,6 +1297,7 @@ function openSheet(){
   sheetScrim.classList.add('open');
   filterSheet.classList.add('open');
   document.getElementById('filterBtn').setAttribute('aria-expanded','true');
+  syncScrollLock();
   const focusable = getFocusable();
   if(focusable.length) focusable[0].focus();
 }
@@ -1303,11 +1305,13 @@ function closeSheet(){
   sheetScrim.classList.remove('open');
   filterSheet.classList.remove('open');
   document.getElementById('filterBtn').setAttribute('aria-expanded','false');
+  syncScrollLock();
   if(sheetLastFocused) sheetLastFocused.focus();
 }
 function isSheetOpen(){
   return filterSheet.classList.contains('open');
 }
+registerOverlay(isSheetOpen);
 
 document.getElementById('filterBtn').addEventListener('click', openSheet);
 sheetScrim.addEventListener('click', closeSheet);
@@ -1443,9 +1447,11 @@ function showGnToast(msg){
 
 function openGnBackdrop(el){
   el.classList.add('open');
+  syncScrollLock();
 }
 function closeGnBackdrop(el){
   el.classList.remove('open');
+  syncScrollLock();
 }
 
 function sampleN(arr, n){
@@ -1483,8 +1489,13 @@ function exitSelectionMode(){
   updateGnBar();
 }
 
-function openGnTray(){ document.body.classList.add('gn-tray-open'); }
-function closeGnTray(){ document.body.classList.remove('gn-tray-open'); }
+function openGnTray(){ document.body.classList.add('gn-tray-open'); syncScrollLock(); }
+function closeGnTray(){ document.body.classList.remove('gn-tray-open'); syncScrollLock(); }
+
+// The chooser, surprise, and confirm dialogs share one predicate — only ever
+// one is open, and which of them it is makes no difference to the lock.
+registerOverlay(() => document.querySelector('.gn-backdrop.open') !== null);
+registerOverlay(() => document.body.classList.contains('gn-tray-open'));
 
 function updateGnBar(){
   const n = state.selectedIds.size;

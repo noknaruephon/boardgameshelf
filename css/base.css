@@ -50,5 +50,17 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
+/* Set by js/scroll-lock.js while any overlay is open, so the page behind it
+   cannot scroll. `overflow:hidden` alone is ignored by iOS Safari, so the body
+   is taken out of flow and offset by the scroll position it was locked at —
+   the offset cancels the scroll, leaving the view unchanged with nothing left
+   to scroll. The offset and the scrollbar-gutter padding are set inline. */
+body.scroll-locked{
+  position:fixed;
+  left:0;
+  right:0;
+  overflow:hidden;
+}
+
 /* Each page sets its own body padding — the shelf is a wide grid, the
    game-night pages are a narrow phone column with a safe-area inset. */

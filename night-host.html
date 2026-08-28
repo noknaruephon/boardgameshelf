@@ -218,6 +218,7 @@ import QRCode from 'https://esm.sh/qrcode@1.5.3';
 import { fetchSession, joinGameNight, startVoting, cancelGameNight, sessionErrorMessage } from '/js/session.js';
 import { joinSessionChannel, MIN_PLAYERS_TO_START } from '/js/presence.js';
 import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from '/js/waiting-room.js';
+import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 
 const screen = document.getElementById('screen');
 const confirmDialog = document.getElementById('confirm');
@@ -408,10 +409,12 @@ function runHost({ code, session, deck, hostName }) {
       `${others} ${others === 1 ? 'person has' : 'people have'} already joined. ` +
       `They'll be sent back and the code will stop working.`;
     confirmDialog.classList.add('open');
+    syncScrollLock();
   }
 
   async function doCancel() {
     confirmDialog.classList.remove('open');
+    syncScrollLock();
     cancelled = true;
     try {
       await cancelGameNight(code);
@@ -422,7 +425,11 @@ function runHost({ code, session, deck, hostName }) {
     window.location.href = '/';
   }
 
-  document.getElementById('confirmKeep').onclick = () => confirmDialog.classList.remove('open');
+  registerOverlay(() => confirmDialog.classList.contains('open'));
+  document.getElementById('confirmKeep').onclick = () => {
+    confirmDialog.classList.remove('open');
+    syncScrollLock();
+  };
   document.getElementById('confirmEnd').onclick = doCancel;
 
   render();
