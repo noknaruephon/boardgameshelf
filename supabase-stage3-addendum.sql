@@ -45,6 +45,15 @@ create policy "votes are inserted only through submit_vote"
   on votes for insert
   with check (true);
 
+-- RLS policies are only evaluated after the base GRANT allows the query at
+-- all. sessions/participants already have this (set up through the Table
+-- Editor in Stage 1/2, which grants automatically) — votes was created here
+-- via raw SQL, which does not. Without this, js/session.js's fetchVotes()
+-- (a direct anon-key read, not routed through a SECURITY DEFINER function)
+-- fails with a permission-denied error before RLS even runs, surfacing in
+-- vote-swipe.html as "Something went wrong loading your votes."
+grant select, insert on votes to anon, authenticated;
+
 -- No update/delete policy: votes lock on swipe. Nothing built here goes
 -- through a raw table write for votes — always submit_vote().
 
