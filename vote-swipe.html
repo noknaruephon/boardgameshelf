@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swipe to Vote — BoardgameShelf</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#160F0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/game-modal.css">
+<style>
+  /* Tokens and page chrome (including .deck-card / .deck-card.back, used by
+     the tallying shuffle below) come from css/base.css. */
+  body{
+    padding:20px 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  .screen{max-width:400px;margin:0 auto;position:relative;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:22px;
+    text-align:center;margin:0 0 18px;letter-spacing:-.01em;
+  }
+
+  /* ---- progress ---- */
+  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .progress-track{flex:1;height:4px;border-radius:99px;background:rgba(var(--bgs-ivory-rgb),.1);overflow:hidden;}
+  .progress-fill{height:100%;background:var(--bgs-gold);border-radius:99px;transition:width .35s ease;}
+  .progress-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-ivory-45);white-space:nowrap;min-width:38px;text-align:right;}
+
+  /* ---- card stack ---- */
+  .stack{position:relative;height:400px;margin-bottom:26px;}
+  .card{
+    position:absolute;inset:0;border-radius:20px;overflow:hidden;background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),.18);box-shadow:0 24px 44px -12px rgba(0,0,0,.5);
+    display:flex;flex-direction:column;touch-action:none;user-select:none;
+  }
+  .card .art{flex:1;position:relative;overflow:hidden;background:var(--bgs-bg-radial);}
+  .card .art img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+  .card .label-band{padding:13px 15px 15px;position:relative;z-index:1;}
+  .card .title{font-family:'Fraunces',serif;font-weight:600;font-size:16.5px;line-height:1.26;margin:0 0 8px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .card .meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .rating-pill{display:inline-flex;align-items:center;gap:3px;background:rgba(0,0,0,.3);border:1px solid rgba(var(--bgs-gold-rgb),.35);
+    border-radius:20px;padding:3px 8px 3px 7px;font-size:11px;font-weight:700;color:var(--bgs-gold);white-space:nowrap;}
+  .meta-tag{font-size:11px;color:var(--bgs-ivory-45);font-weight:500;white-space:nowrap;}
+  .meta-dot{color:rgba(var(--bgs-ivory-rgb),.25);}
+
+  .info-btn{
+    position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;z-index:6;
+    background:rgba(0,0,0,.42);backdrop-filter:blur(3px);color:var(--bgs-ivory);
+    display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--bgs-ivory-rgb),.2);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:14px;cursor:pointer;
+  }
+
+  /* full-card black wash — darkens the same way in both directions; the
+     stamp colour below is what carries play/pass meaning. */
+  .wash{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:3;background:#000;}
+
+  .stamp{
+    position:absolute;z-index:4;opacity:0;pointer-events:none;
+    font-family:'IBM Plex Mono',monospace;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    left:14px;right:14px;top:auto;bottom:38%;
+    display:flex;align-items:center;justify-content:center;
+    padding:16px;font-size:28px;border-radius:14px;border:3px solid;
+    background:rgba(var(--bgs-bg-rgb),.3);backdrop-filter:blur(1px);
+  }
+  .stamp.play{color:var(--bgs-vote-play);border-color:var(--bgs-vote-play);}
+  .stamp.pass{color:var(--bgs-vote-pass);border-color:var(--bgs-vote-pass);}
+
+  .stack-empty{
+    position:absolute;inset:0;border-radius:20px;border:1.5px dashed rgba(var(--bgs-gold-rgb),.25);
+    display:flex;align-items:center;justify-content:center;color:var(--bgs-ivory-45);font-size:12.5px;
+  }
+
+  /* ---- vote buttons ---- */
+  .vote-actions{display:flex;justify-content:center;align-items:center;gap:26px;margin-bottom:6px;}
+  .vote-btn{
+    width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;border:1.5px solid;background:var(--bgs-plate);transition:transform .12s ease,opacity .2s ease;
+  }
+  .vote-btn:active{transform:scale(.88);}
+  .vote-btn[disabled]{opacity:.25;cursor:not-allowed;}
+  .vote-btn.pass{border-color:rgba(var(--bgs-vote-pass-rgb),.55);color:var(--bgs-vote-pass);background:rgba(var(--bgs-vote-pass-rgb),.10);}
+  .vote-btn.play{border-color:rgba(var(--bgs-vote-play-rgb),.55);color:var(--bgs-vote-play);background:rgba(var(--bgs-vote-play-rgb),.10);}
+  .vote-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin-top:16px;}
+
+  /* ---- waiting state ---- */
+  .waiting-panel{padding:6px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative;}
+  .die-wrap{position:relative;width:52px;height:52px;display:flex;align-items:center;justify-content:center;}
+  .die{width:52px;height:52px;position:relative;z-index:1;animation:tumble 2.4s cubic-bezier(.45,0,.2,1) infinite;}
+  @keyframes tumble{0%{transform:rotate(0) scale(1);}35%{transform:rotate(200deg) scale(1.06);}60%{transform:rotate(340deg) scale(.97);}100%{transform:rotate(360deg) scale(1);}}
+  .die rect{fill:var(--bgs-gold);} .die circle{fill:var(--bgs-plate);}
+  .waiting-title{font-family:'Fraunces',serif;font-weight:600;font-size:18px;text-align:center;line-height:1.35;margin:0;}
+  .waiting-title b{color:var(--bgs-gold);font-weight:600;}
+  .waiting-sub{font-size:12px;color:var(--bgs-ivory-45);text-align:center;min-height:16px;transition:opacity .2s ease;}
+
+  /* ---- tallying state: three face-down cards shuffling ----
+     Draws the same .deck-card.back from css/base.css that the waiting room
+     uses, scaled up — same component, not a second way of drawing a hidden
+     game. Face-down deliberately: nothing about the outcome may leak. */
+  .loader-wrap{height:66px;display:flex;align-items:center;justify-content:center;}
+  .shuffle{position:relative;width:104px;height:64px;}
+  .shuffle .deck-card{
+    position:absolute;top:0;left:30px;width:46px;height:62px;
+    box-shadow:0 7px 15px rgba(0,0,0,.5);
+    animation:deal 1.9s cubic-bezier(.45,0,.3,1) infinite;
+  }
+  @keyframes deal{
+    0%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+    28%{transform:translateX(-36px) rotate(-13deg) scale(.97);opacity:1;}
+    62%{transform:translateX(36px) rotate(10deg) scale(.94);opacity:.7;}
+    100%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+  }
+  .shuffle .deck-card:nth-child(1){z-index:3;}
+  .shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
+  .shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
+
+  .waiting-sub.strong{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    font-size:14px;font-weight:600;color:var(--bgs-ivory-70);
+  }
+  .spinner{
+    width:14px;height:14px;border-radius:50%;flex-shrink:0;
+    border:2px solid rgba(var(--bgs-gold-rgb),.25);border-top-color:var(--bgs-gold);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media (prefers-reduced-motion:reduce){
+    .shuffle .deck-card,.spinner{animation:none;}
+  }
+
+  /* ---- roster ---- */
+  .roster{width:100%;margin-top:4px;}
+  .roster-head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;}
+  .roster-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:14px;margin:0;color:var(--bgs-ivory-70);}
+  .names{display:flex;flex-direction:column;gap:7px;}
+  .name-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.08);
+    border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;transition:border-color .25s ease;
+  }
+  .name-row.done{border-color:rgba(var(--bgs-gold-rgb),.35);}
+  .name-row .who{display:flex;align-items:center;gap:8px;}
+  .name-row .tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--bgs-gold-dim);}
+  .status{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--bgs-ivory-45);}
+  .status.done{color:var(--bgs-gold);}
+  .status svg{width:13px;height:13px;flex-shrink:0;}
+  .dot-pulse{width:6px;height:6px;border-radius:50%;background:var(--bgs-ivory-45);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+  /* ---- host override ---- */
+  .force-btn{
+    display:block;margin:16px auto 0;background:transparent;border:none;
+    color:var(--bgs-ivory-45);font:inherit;font-size:12.5px;font-weight:600;
+    cursor:pointer;padding:10px 14px;border-radius:8px;transition:color .15s ease;
+  }
+  .force-btn:hover{color:var(--bgs-gold);}
+
+  /* ---- confirm dialog ---- */
+  .confirm{
+    position:fixed;inset:0;z-index:30;display:none;
+    align-items:center;justify-content:center;padding:22px;
+    background:rgba(0,0,0,.66);backdrop-filter:blur(3px);
+  }
+  .confirm.open{display:flex;}
+  .confirm__panel{
+    background:var(--bgs-plate);border-radius:14px;padding:22px;
+    max-width:300px;width:100%;border:1px solid rgba(var(--bgs-ivory-rgb),.12);
+    text-align:center;
+  }
+  .confirm__panel h3{font-family:'Fraunces',serif;font-weight:600;font-size:17px;margin:0 0 8px;}
+  .confirm__panel p{font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.55;margin:0 0 18px;}
+  .confirm__row{display:flex;gap:9px;}
+  .confirm__row button{flex:1;font:inherit;font-size:13px;font-weight:600;padding:12px;border-radius:10px;cursor:pointer;}
+  .confirm__keep{background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);color:var(--bgs-ivory);}
+  .confirm__force{background:var(--bgs-gold);border:none;color:var(--bgs-plate);}
+
+  /* ---- ended / not found ---- */
+  .ended p{text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;}
+  .start-btn{
+    display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-plate);border:none;
+    border-radius:12px;padding:16px;font:inherit;font-size:14.5px;font-weight:700;
+    cursor:pointer;transition:opacity .18s ease;text-align:center;text-decoration:none;
+    box-sizing:border-box;
+  }
+</style>
+</head>
+<body>
+
+<div class="screen" id="screen">
+  <div class="eyebrow">Game Night</div>
+  <h1>Loading&hellip;</h1>
+</div>
+
+<div class="confirm" id="confirm">
+  <div class="confirm__panel">
+    <h3>Show results now?</h3>
+    <p id="confirmBody"></p>
+    <div class="confirm__row">
+      <button class="confirm__keep" id="confirmKeep" type="button">Keep waiting</button>
+      <button class="confirm__force" id="confirmForce" type="button">Show results</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// Absolute paths: this page is reached via a Vercel rewrite (/vote/:code/swipe),
+// so the browser's URL — which relative imports resolve against — is the pretty
+// path, not this file's real location. A relative import here 404s silently and
+// the whole module script never runs, leaving the page stuck on "Loading…".
+import { fetchSession, submitVote, finishVoting, forceResults, fetchVotes, sessionErrorMessage } from '/js/session.js';
+import { joinSessionChannel } from '/js/presence.js';
+import { deckFromSession, openGameModal } from '/js/waiting-room.js';
+import { attachSwipe, flashVoteMarks, flyOffCard } from '/js/swipe.js';
+import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
+
+const screen = document.getElementById('screen');
+const confirmDialog = document.getElementById('confirm');
+const confirmBody = document.getElementById('confirmBody');
+registerOverlay(() => confirmDialog.classList.contains('open'));
+
+function codeFromPath() {
+  // /vote/{code}/swipe
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  return parts[1] || null;
+}
+
+function timeLabel(t) { return t[0] === t[1] ? `${t[0]}m` : `${t[0]}–${t[1]}m`; }
+function playersLabel(p) { return p[0] === p[1] ? `${p[0]}p` : `${p[0]}–${p[1]}p`; }
+function weightLabel(w) { return w[0].toUpperCase() + w.slice(1); }
+
+function joinNames(names) {
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+}
+
+function renderEnded(message) {
+  screen.innerHTML = `
+    <div class="eyebrow">Game Night</div>
+    <h1>Game night over</h1>
+    <div class="ended"><p>${message}</p></div>
+    <a class="start-btn" href="/">Back to the shelf</a>`;
+}
+
+const code = codeFromPath();
+if (!code) {
+  renderEnded('That game night has ended, or the code is wrong.');
+} else {
+  init(code);
+}
+
+async function init(code) {
+  const storageKey = `gamenight:${code}:name`;
+  const myName = sessionStorage.getItem(storageKey);
+  if (!myName) {
+    // Deep-linked without joining — send them through the real join flow.
+    window.location.href = `/vote/${code}`;
+    return;
+  }
+
+  let session;
+  try {
+    session = await fetchSession(code);
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.');
+    return;
+  }
+
+  if (!session) {
+    renderEnded('That game night has ended, or the code is wrong.');
+    return;
+  }
+  if (session.status === 'cancelled') {
+    renderEnded(`${session.host_name} ended this game night.`);
+    return;
+  }
+  if (session.status === 'waiting') {
+    // Voting hasn't started yet on this session — nothing to swipe.
+    window.location.href = `/vote/${code}`;
+    return;
+  }
+  if (session.status === 'done') {
+    window.location.href = `/results/${code}`;
+    return;
+  }
+
+  let games;
+  try {
+    const res = await fetch('/games.json');
+    if (!res.ok) throw new Error('failed to load games');
+    games = await res.json();
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.');
+    return;
+  }
+
+  const deck = deckFromSession(session, games);
+
+  let myVotes;
+  try {
+    myVotes = await fetchVotes(code, myName);
+  } catch (e) {
+    renderEnded('Something went wrong loading your votes.');
+    return;
+  }
+
+  // Resume at the first game not yet voted on. If every game already has a
+  // vote (e.g. a refresh right after the last card), skip straight to the
+  // waiting panel — findIndex returns -1 and startIndex lands on deck.length.
+  const votedIds = new Set(myVotes.map((v) => v.game_id));
+  let startIndex = deck.findIndex((g) => !votedIds.has(g.bggId));
+  if (startIndex === -1) startIndex = deck.length;
+
+  runSwipe({ code, session, deck, myName, startIndex });
+}
+
+function runSwipe({ code, session, deck, myName, startIndex }) {
+  const isHost = myName === session.host_name;
+  let index = startIndex;
+  let screenState = index >= deck.length ? 'waiting' : 'voting';
+  let finishedCalled = false;
+  let players = [];
+  let navigated = false;
+  let hintTimer;
+
+  const hints = [
+    'Everyone swipes at once',
+    'Votes lock the moment you swipe',
+    'Results reveal to the whole table together',
+  ];
+
+  // ---- background vote submission: never block the gesture on the network.
+  // On failure, retry once inline; if that also fails, queue the vote and
+  // retry it once the *next* vote succeeds, rather than showing an error
+  // mid-deck or rolling the card back.
+  let pendingQueue = [];
+
+  async function trySubmitOnce(gameId, vote) {
+    try {
+      await submitVote(code, myName, gameId, vote);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function submitWithRetry(gameId, vote) {
+    const ok = (await trySubmitOnce(gameId, vote)) || (await trySubmitOnce(gameId, vote));
+    if (!ok) {
+      pendingQueue.push({ gameId, vote });
+      return;
+    }
+    if (pendingQueue.length) {
+      const queue = pendingQueue;
+      pendingQueue = [];
+      for (const item of queue) {
+        const success = await trySubmitOnce(item.gameId, item.vote);
+        if (!success) pendingQueue.push(item);
+      }
+    }
+  }
+
+  async function ensureFinished() {
+    if (finishedCalled) return;
+    finishedCalled = true;
+    try {
+      await finishVoting(code, myName);
+    } catch (e) {
+      // best-effort — the realtime status change still drives navigation
+      // once the database actually flips to done.
+    }
+    controller.markFinished().catch(() => {});
+  }
+
+  function cardHTML(g, pos, absoluteIndex) {
+    const scale = 1 - pos * 0.045;
+    const ty = pos * 14;
+    return `
+      <div class="card" data-pos="${pos}"
+           style="transform:scale(${scale}) translateY(${ty}px);z-index:${10 - pos};${pos > 0 ? 'pointer-events:none;' : ''}">
+        <button class="info-btn" data-i="${absoluteIndex}" aria-label="Game details">i</button>
+        <div class="wash"></div>
+        <div class="stamp play">Play</div>
+        <div class="stamp pass">Pass</div>
+        <div class="art"><img src="${g.image}" alt="${g.title} cover" loading="lazy"></div>
+        <div class="label-band">
+          <p class="title">${g.title}</p>
+          <div class="meta-row">
+            <span class="rating-pill">★ ${g.bggRating.toFixed(1)}</span>
+            <span class="meta-tag">${playersLabel(g.players)}</span>
+            <span class="meta-dot">·</span>
+            <span class="meta-tag">${timeLabel(g.time)}</span>
+            <span class="meta-dot">·</span>
+            <span class="meta-tag">${weightLabel(g.weight)}</span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderVoting() {
+    const total = deck.length;
+    const remaining = deck.slice(index, index + 3);
+    const pct = Math.round((index / total) * 100);
+
+    screen.innerHTML = `
+      <div class="eyebrow">Game Night · ${code}</div>
+      <h1>${remaining.length ? 'Swipe to vote' : 'You’re all set'}</h1>
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="progress-label">${Math.min(index + 1, total)} / ${total}</div>
+      </div>
+      <div class="stack" id="stack">
+        ${remaining.length
+          ? remaining.map((g, i) => cardHTML(g, i, index + i)).reverse().join('')
+          : `<div class="stack-empty">Deck's empty</div>`}
+      </div>
+      <div class="vote-actions">
+        <button class="vote-btn pass" id="btnPass" ${remaining.length ? '' : 'disabled'} aria-label="Pass">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 4L16 16M16 4L4 16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
+        <button class="vote-btn play" id="btnPlay" ${remaining.length ? '' : 'disabled'} aria-label="Play">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 15L16 5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <p class="vote-hint">${remaining.length ? 'Drag right to play, left to pass — votes lock the moment you swipe' : 'Waiting for the rest of the table to finish…'}</p>
+    `;
+
+    if (!remaining.length) {
+      ensureFinished();
+      setTimeout(() => {
+        screenState = 'waiting';
+        renderWaiting();
+      }, 320);
+      return;
+    }
+
+    const front = screen.querySelector('.card[data-pos="0"]');
+    attachSwipe(front, {
+      onCommit: (vote, dy) => commit(vote, dy, front),
+    });
+    document.getElementById('btnPass').addEventListener('click', () => {
+      const card = screen.querySelector('.card[data-pos="0"]');
+      flashVoteMarks(card, 'pass');
+      commit('pass', 0, card);
+    });
+    document.getElementById('btnPlay').addEventListener('click', () => {
+      const card = screen.querySelector('.card[data-pos="0"]');
+      flashVoteMarks(card, 'play');
+      commit('play', 0, card);
+    });
+    screen.querySelectorAll('.info-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openGameModal(deck[Number(btn.dataset.i)]);
+      });
+    });
+  }
+
+  function commit(vote, dy, card) {
+    if (index >= deck.length) return;
+    const game = deck[index];
+    if (card) flyOffCard(card, vote, dy);
+    // Never block the gesture on the network: advance locally now, submit
+    // in the background.
+    submitWithRetry(game.bggId, vote);
+    index += 1;
+    setTimeout(renderVoting, 220);
+  }
+
+  function loaderHTML() {
+    return `<div class="loader-wrap"><div class="shuffle">
+      <div class="deck-card back">?</div>
+      <div class="deck-card back">?</div>
+      <div class="deck-card back">?</div>
+    </div></div>`;
+  }
+
+  function cycleHints() {
+    clearInterval(hintTimer);
+    let i = 0;
+    hintTimer = setInterval(() => {
+      i = (i + 1) % hints.length;
+      const node = document.getElementById('waitHint');
+      if (!node) { clearInterval(hintTimer); return; }
+      node.style.opacity = 0;
+      setTimeout(() => { node.textContent = hints[i]; node.style.opacity = 1; }, 200);
+    }, 2600);
+  }
+
+  function openForceConfirm(names) {
+    const who = joinNames(names);
+    confirmBody.textContent = `${who} ${names.length === 1 ? "hasn't" : "haven't"} finished. Their votes so far will still count.`;
+    confirmDialog.classList.add('open');
+    syncScrollLock();
+  }
+
+  function renderWaiting() {
+    const allDone = players.length > 0 && players.every((p) => p.finished);
+    const unfinishedOthers = players.filter((p) => p.name !== myName && !p.finished);
+    const showOverride = isHost && finishedCalled && unfinishedOthers.length > 0;
+
+    screen.innerHTML = `
+      <div class="eyebrow">Game Night · ${code}</div>
+      <h1>Votes locked</h1>
+      <div class="waiting-panel">
+        ${allDone ? loaderHTML() : `
+        <div class="die-wrap">
+          <svg class="die" viewBox="0 0 52 52">
+            <rect x="2" y="2" width="48" height="48" rx="11"/>
+            <circle cx="17" cy="17" r="4.2"/><circle cx="35" cy="17" r="4.2"/>
+            <circle cx="17" cy="35" r="4.2"/><circle cx="35" cy="35" r="4.2"/><circle cx="26" cy="26" r="4.2"/>
+          </svg>
+        </div>`}
+        <p class="waiting-title">${allDone ? 'All votes are in' : 'Waiting on the <b>table</b>'}</p>
+        ${allDone
+          ? `<p class="waiting-sub strong">Results are on their way<span class="spinner"></span></p>`
+          : `<p class="waiting-sub" id="waitHint">${hints[0]}</p>`}
+      </div>
+      <div class="roster">
+        <div class="roster-head"><h2>${players.length} at the table</h2></div>
+        <div class="names">
+          ${players.map((p) => {
+            const done = !!p.finished;
+            return `
+            <div class="name-row ${done ? 'done' : ''}">
+              <div class="who">${p.name}${p.isHost ? '<span class="tag">host</span>' : (p.name === myName ? '<span class="tag">you</span>' : '')}</div>
+              <div class="status ${done ? 'done' : ''}">
+                ${done
+                  ? `<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5L8 15L16 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Done`
+                  : `<span class="dot-pulse"></span> Voting…`}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        ${showOverride ? `<button class="force-btn" id="forceBtn" type="button">Show results now</button>` : ''}
+      </div>
+    `;
+
+    if (!allDone) cycleHints(); else clearInterval(hintTimer);
+
+    const forceBtn = document.getElementById('forceBtn');
+    if (forceBtn) {
+      forceBtn.addEventListener('click', () => openForceConfirm(unfinishedOthers.map((p) => p.name)));
+    }
+  }
+
+  document.getElementById('confirmKeep').addEventListener('click', () => {
+    confirmDialog.classList.remove('open');
+    syncScrollLock();
+  });
+  document.getElementById('confirmForce').addEventListener('click', async () => {
+    confirmDialog.classList.remove('open');
+    syncScrollLock();
+    try {
+      await forceResults(code, myName);
+      // Navigation happens for every device via the realtime status change
+      // below, including this one — not here, so the whole table lands together.
+    } catch (e) {
+      const message = sessionErrorMessage(e, session.host_name);
+      if (message) alert(message);
+    }
+  });
+
+  const controller = joinSessionChannel({
+    code,
+    participantName: myName,
+    isHost,
+    finished: index >= deck.length,
+    onPresence: ({ players: p }) => {
+      players = p;
+      if (screenState === 'waiting') renderWaiting();
+    },
+    onStatus: (status) => {
+      if (navigated) return;
+      if (status === 'done') {
+        navigated = true;
+        clearInterval(hintTimer);
+        controller.leave();
+        window.location.href = `/results/${code}`;
+      }
+    },
+  });
+
+  window.addEventListener('pagehide', () => controller.leave());
+
+  if (screenState === 'voting') {
+    renderVoting();
+  } else {
+    ensureFinished();
+    renderWaiting();
+  }
+}
+</script>
+</body>
+</html>

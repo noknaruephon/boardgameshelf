@@ -59,6 +59,46 @@ export async function fetchSession(code) {
   return data;
 }
 
+/** Casts one vote. Locks on swipe — the composite primary key on `votes` makes this idempotent. */
+export async function submitVote(code, name, gameId, vote) {
+  const { error } = await supabase.rpc('submit_vote', {
+    p_code: code, p_name: name, p_game_id: gameId, p_vote: vote,
+  });
+  if (error) throw error;
+}
+
+/** Marks this participant done. Flips the session to `done` if they were the last. */
+export async function finishVoting(code, name) {
+  const { error } = await supabase.rpc('finish_voting', {
+    p_code: code, p_name: name,
+  });
+  if (error) throw error;
+}
+
+/**
+ * Host escape hatch: moves the table on without waiting for everyone.
+ * Passes `name` so the database can check it against the session's host —
+ * this architecture has no server-side auth, so that's the only identity
+ * available to enforce NOT_HOST with.
+ */
+export async function forceResults(code, name) {
+  const { error } = await supabase.rpc('force_results', {
+    p_code: code, p_name: name,
+  });
+  if (error) throw error;
+}
+
+/** @returns {Promise<Array<{game_id: string, vote: string}>>} this participant's votes so far */
+export async function fetchVotes(code, name) {
+  const { data, error } = await supabase
+    .from('votes')
+    .select('game_id, vote')
+    .eq('session_code', code)
+    .eq('participant_name', name);
+  if (error) throw error;
+  return data;
+}
+
 // The database raises named errors as part of the Postgres exception message.
 // Never surface those raw — turn them into sentences instead.
 const ERROR_COPY = {
@@ -66,16 +106,19 @@ const ERROR_COPY = {
   SESSION_CANCELLED: (hostName) => `${hostName || 'The host'} ended this game night.`,
   VOTING_IN_PROGRESS: () => "Voting's already started — you'll catch the next round.",
   NOT_ENOUGH_PLAYERS: () => 'Need at least 2 players to start.',
+  NOT_VOTING: () => "Voting's already finished for this game night.",
 };
 
 /**
  * Turns a thrown Supabase RPC error into user-facing copy.
- * @returns {string|null} null for ALREADY_STARTED — ignore it silently, another
- *   device got there first
+ * @returns {string|null} null for ALREADY_STARTED and NOT_HOST — ignore both
+ *   silently: another device got there first, or only the host's own UI shows
+ *   the button that could raise NOT_HOST in the first place
  */
 export function sessionErrorMessage(error, hostName) {
   const message = error?.message || '';
   if (message.includes('ALREADY_STARTED')) return null;
+  if (message.includes('NOT_HOST')) return null;
   for (const [token, copy] of Object.entries(ERROR_COPY)) {
     if (message.includes(token)) return copy(hostName);
   }

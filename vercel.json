@@ -14,7 +14,8 @@
     }
   ],
   "rewrites": [
-    { "source": "/night/:code/host", "destination": "/night-host.html" },
-    { "source": "/vote/:code",       "destination": "/vote.html" }
+    { "source": "/night/:code/host",  "destination": "/night-host.html" },
+    { "source": "/vote/:code",        "destination": "/vote.html" },
+    { "source": "/vote/:code/swipe",  "destination": "/vote-swipe.html" }
   ]
 }

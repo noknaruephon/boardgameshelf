@@ -25,6 +25,13 @@
   /* destructive actions — cancelling a game night */
   --bgs-danger:#A8503A;
   --bgs-danger-hover:#C2705A;
+  /* swipe-vote colours — warm sage + warm clay, deliberately distinct from
+     --bgs-danger above: passing on a game isn't destructive and must not
+     borrow the cancel-a-game-night colour. */
+  --bgs-vote-play:#8FA75A;
+  --bgs-vote-play-rgb:143,167,90;
+  --bgs-vote-pass:#C2604A;
+  --bgs-vote-pass-rgb:194,96,74;
 }
 
 *{box-sizing:border-box;}
@@ -64,3 +71,25 @@ body.scroll-locked{
 
 /* Each page sets its own body padding — the shelf is a wide grid, the
    game-night pages are a narrow phone column with a safe-area inset. */
+
+/* The face-down/face-up deck-preview card, shared by night-host.html,
+   vote.html and vote-swipe.html (the waiting room's deck preview and the
+   swipe screen's tallying shuffle both draw the same card back — one
+   component, not a third copy). */
+.deck-card{
+  width:44px;aspect-ratio:3/4;border-radius:6px;flex-shrink:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  background:var(--bgs-plate);
+  border:1px solid rgba(var(--bgs-gold-rgb),.22);
+}
+.deck-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.deck-card.back{
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(var(--bgs-gold-rgb),.07) 0 4px,
+      transparent 4px 8px),
+    var(--bgs-plate);
+  color:var(--bgs-gold-dim);font-size:15px;
+}
+.deck-card.clickable{cursor:pointer;transition:transform .12s ease;}
+.deck-card.clickable:active{transform:scale(.92);}
