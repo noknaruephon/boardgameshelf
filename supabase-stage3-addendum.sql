@@ -12,8 +12,12 @@
 -- If `participants`' name column is actually called something else, rename it
 -- below before running.
 
+-- This whole file is safe to run more than once: `if not exists` / `create or
+-- replace` throughout, so re-running after a partial failure (or just to be
+-- sure) is a no-op rather than an error.
+
 -- one row per player per game
-create table votes (
+create table if not exists votes (
   session_code text not null references sessions(code) on delete cascade,
   participant_name text not null,
   game_id text not null,
@@ -22,7 +26,7 @@ create table votes (
   primary key (session_code, participant_name, game_id)
 );
 
-alter table participants add column finished_at timestamptz;
+alter table participants add column if not exists finished_at timestamptz;
 
 -- RLS: same shape as the existing policies on sessions/participants — reads
 -- and writes are scoped by session code, not by any per-user identity, since
@@ -31,10 +35,12 @@ alter table participants add column finished_at timestamptz;
 -- SECURITY DEFINER functions below, not by RLS.
 alter table votes enable row level security;
 
+drop policy if exists "votes are readable by anyone with the code" on votes;
 create policy "votes are readable by anyone with the code"
   on votes for select
   using (true);
 
+drop policy if exists "votes are inserted only through submit_vote" on votes;
 create policy "votes are inserted only through submit_vote"
   on votes for insert
   with check (true);
