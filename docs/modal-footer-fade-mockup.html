@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game modal — footer fade + glass Close</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---- tokens: verbatim from css/base.css ---- */
+  :root{
+    --bgs-bg:#160F0A; --bgs-bg-rgb:22,15,10; --bgs-bg-radial:#241708;
+    --bgs-plate:#241A10; --bgs-plate-rgb:36,26,16;
+    --bgs-ivory:#F4EBDA; --bgs-ivory-rgb:244,235,218;
+    --bgs-ivory-70:rgba(244,235,218,0.72); --bgs-ivory-45:rgba(244,235,218,0.45);
+    --bgs-gold:#E3B04B; --bgs-gold-rgb:227,176,75; --bgs-gold-dim:rgba(227,176,75,0.62);
+    --bgs-icon-gold:#e2b463;
+    --bar-h:92px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bgs-bg);color:var(--bgs-ivory);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit}
+
+  /* ---- demo toggle bar ---- */
+  .demo{position:fixed;inset:0 0 auto 0;z-index:50;height:var(--bar-h);padding:10px 12px 8px;background:rgba(22,15,10,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(244,235,218,.12)}
+  .demo-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--bgs-ivory-45);margin-bottom:8px}
+  .demo-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+  .demo-row::-webkit-scrollbar{display:none}
+  .demo-row button{flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 11px;border-radius:999px;border:1px solid rgba(244,235,218,.12);background:none;color:var(--bgs-ivory-70);white-space:nowrap;cursor:pointer}
+  .demo-row button.on{background:var(--bgs-plate);border-color:var(--bgs-gold-dim);color:var(--bgs-ivory)}
+  .demo-note{font-size:11.5px;color:var(--bgs-ivory-45);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* ---- fake shelf behind ---- */
+  .stage{position:fixed;inset:var(--bar-h) 0 0 0;background:radial-gradient(120% 80% at 50% 0%,var(--bgs-bg-radial),var(--bgs-bg) 70%)}
+  .shelf{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:18px 14px}
+  .shelf div{aspect-ratio:3/4;border-radius:10px;background:var(--c)}
+
+  /* =========================================================
+     Everything below mirrors css/game-modal.css on production.
+     Proposed changes are marked  ✎ PROPOSED  and scoped to .proposed
+     ========================================================= */
+  .backdrop{position:absolute;inset:0;background:rgba(var(--bgs-bg-rgb),0.66);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:24px;z-index:30}
+  .card{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),0.3);border-radius:16px;max-width:440px;width:100%;position:relative;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+  #card-body{padding:30px 30px 26px;flex:1 1 auto;min-height:0;overflow-y:auto}
+  .card-cover-wrap{width:100%;min-height:80px;border-radius:10px;margin:-6px 0 18px;box-shadow:0 6px 16px -6px rgba(0,0,0,.5);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .card-cover{display:block;max-width:100%;max-height:360px;width:auto;height:auto}
+  .card h2{font-family:'Fraunces',serif;font-weight:600;font-size:24px;margin:0 0 14px;line-height:1.2}
+  .stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .stat-chip{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-ivory);background:rgba(var(--bgs-ivory-rgb),.08);border:1px solid rgba(var(--bgs-ivory-rgb),.16);border-radius:6px;padding:5px 10px;display:flex;align-items:center;gap:6px}
+  .stat-icon{color:var(--bgs-icon-gold);flex-shrink:0}
+  .card p.blurb{font-size:15px;line-height:1.6;color:var(--bgs-ivory-70);margin:0 0 18px}
+  .card .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--bgs-gold)}
+  .why-heading{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--bgs-gold-dim);margin:20px 0 10px}
+  .why-list{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-direction:column;gap:8px}
+  .why-list li{font-size:14px;line-height:1.5;color:var(--bgs-ivory);padding-left:18px;position:relative}
+  .why-list li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--bgs-gold)}
+  .close-btn{position:absolute;top:16px;right:16px;z-index:10;background:rgba(var(--bgs-bg-rgb),.55);border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;color:var(--bgs-ivory);font-size:16px;cursor:pointer;line-height:1;padding:0}
+
+  .card-sticky{flex:none;padding:12px 20px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bgs-plate) 72%,rgba(36,26,16,0));display:flex;gap:10px}
+  .card-sticky .modal__add{flex:1;background:var(--bgs-gold);color:var(--bgs-bg);border:none;font-size:13.5px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+  .card-sticky .modal__close{background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);color:var(--bgs-ivory-70);font-size:13px;font-weight:600;padding:13px 16px;border-radius:10px;cursor:pointer}
+  body:not(.gn-selecting) .card-sticky .modal__add{display:none}
+  body:not(.gn-selecting) .card-sticky .modal__close{flex:1}
+
+  /* ================= ✎ PROPOSED ================= */
+  /* 1. Footer floats over the scroll area instead of sitting below it,
+        and the gradient runs fully transparent → plate. */
+  .proposed .card-sticky{
+    position:absolute;left:0;right:0;bottom:0;z-index:5;
+    padding-top:28px;                                    /* the fade zone */
+    background:linear-gradient(to top,
+      var(--bgs-plate) 0%,
+      var(--bgs-plate) 62%,                              /* solid behind the button */
+      rgba(var(--bgs-plate-rgb),0) 100%);                /* fade over the top 28px */
+  }
+  /* 2. Body gets bottom padding = distance to the button's top edge (+20px),
+        so the last item clears the button but not the whole footer. */
+  .proposed #card-body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}  /* button top + 20px breathing room */
+  /* 3. Close becomes glass: tinted plate + blur, with the tint strong
+        enough that ivory text still passes AA over a white cover. */
+  .proposed .card-sticky .modal__close{
+    color:var(--bgs-ivory);                              /* was ivory-70 */
+    background:rgba(var(--bgs-plate-rgb),.72);
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),.45);   /* was .22 */
+    backdrop-filter:blur(14px) saturate(1.2);
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);
+    box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),.10) inset, 0 8px 24px -10px rgba(0,0,0,.6);
+  }
+  /* 4. Fallbacks: no backdrop-filter support, or the user has asked the OS
+        to reduce transparency → solid plate, same border. */
+  @supports not (backdrop-filter:blur(1px)){
+    .proposed .card-sticky .modal__close{background:var(--bgs-plate)}
+  }
+  @media (prefers-reduced-transparency:reduce){
+    .proposed .card-sticky .modal__close{background:var(--bgs-plate);backdrop-filter:none;-webkit-backdrop-filter:none}
+  }
+  .proposed.fallback .card-sticky .modal__close{background:var(--bgs-plate);backdrop-filter:none;-webkit-backdrop-filter:none}
+  /* 5. Visible keyboard focus on the dark plate. */
+  .proposed .card-sticky button:focus-visible,
+  .proposed .close-btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px}
+
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="demo" role="toolbar" aria-label="Mockup options">
+  <div class="demo-label">Game modal · footer fade</div>
+  <div class="demo-row" id="tabs">
+    <button data-v="current" class="on">Current (production)</button>
+    <button data-v="proposed">Proposed</button>
+    <button data-v="fallback">Proposed · reduced transparency</button>
+    <button data-v="select" id="selToggle">+ selection mode</button>
+  </div>
+  <div class="demo-note" id="note"></div>
+</div>
+
+<div class="stage" id="stage">
+  <div class="shelf">
+    <div style="--c:#5a3a2a"></div><div style="--c:#2f4a3e"></div><div style="--c:#6b4f24"></div>
+    <div style="--c:#3b3a5c"></div><div style="--c:#7a3b2e"></div><div style="--c:#2c4d5c"></div>
+    <div style="--c:#5c5030"></div><div style="--c:#4a2c3e"></div><div style="--c:#33512f"></div>
+    <div style="--c:#4b3b2a"></div><div style="--c:#26404d"></div><div style="--c:#6a3f2f"></div>
+  </div>
+
+  <div class="backdrop">
+    <div class="card" id="card">
+      <button class="close-btn" type="button" aria-label="Close">✕</button>
+      <div id="card-body">
+        <div class="card-cover-wrap" style="background:#7A3B2E22">
+          <img class="card-cover" src="https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg" alt="Dune: Imperium – Uprising box cover">
+        </div>
+        <h2>Dune: Imperium – Uprising</h2>
+        <div class="stat-row">
+          <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="8" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 15c2.5.3 4.5 2 4.5 5"/></svg> 1–6</span>
+          <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg> 60–120m</span>
+          <span class="stat-chip"><svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 006 0z"/><path d="M19 7l-3 6a3 3 0 006 0z"/><path d="M5 7h14"/><path d="M9 21h6"/></svg> 3.4 / 5</span>
+        </div>
+        <p class="blurb">The standalone follow-up to Dune: Imperium, adding sandworms, a Fremen faction, and support for up to six players. Everything that made the original great, with more moving parts.</p>
+        <p class="why-heading">Highlights</p>
+        <ul class="why-list">
+          <li>Combines with the base game for even bigger tables</li>
+          <li>New asymmetric factions add fresh opening strategies</li>
+          <li>Sandworm mechanic adds a real threat to sprawl across the board</li>
+        </ul>
+        <span class="tag">Worker placement · deckbuilding</span>
+      </div>
+      <div class="card-sticky">
+        <button class="modal__add" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Add to tonight</button>
+        <button class="modal__close" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const card=document.getElementById('card'), note=document.getElementById('note'), tabs=document.getElementById('tabs');
+const notes={
+  current:'As shipped: footer is a flex sibling, gradient is 72% solid, so the last item stops dead above it.',
+  proposed:'Footer floats over the body; content scrolls under a true fade. Close is tinted glass (plate @ .72 + blur).',
+  fallback:'Same layout with backdrop-filter off — what iOS “Reduce Transparency” and older browsers get.'
+};
+let view='current';
+function apply(){
+  card.classList.toggle('proposed', view!=='current');
+  card.classList.toggle('fallback', view==='fallback');
+  note.textContent=notes[view];
+  tabs.querySelectorAll('button[data-v]:not(#selToggle)').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
+  document.getElementById('card-body').scrollTop=0;
+}
+tabs.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.id==='selToggle'){document.body.classList.toggle('gn-selecting');b.classList.toggle('on');return;}
+  view=b.dataset.v; apply();
+});
+apply();
+</script>
+</body>
+</html>
