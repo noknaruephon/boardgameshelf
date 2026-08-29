@@ -567,20 +567,27 @@
 
   /* ==== Game Night (Stage 1: session creation) ==== */
 
-  /* Floating entry point, bottom-left. z-index 12 keeps it under the selection
+  /* Floating entry point, bottom-centre. z-index 12 keeps it under the selection
      bar (15), tray (14), and scrim (13), and well under the filter sheet (21)
      and detail modal (30) — it can never sit on top of a sheet or modal. */
   .gn-fab{
     position:fixed;
-    left:16px;
+    left:50%;
     bottom:calc(16px + env(safe-area-inset-bottom));
+    /* Centered. translateX lives here as the base transform; every other
+       transform on this element must include it or the pill jumps left. */
+    transform:translateX(-50%);
     z-index:12;
     display:inline-flex;
     align-items:center;
     gap:8px;
     height:46px;
     padding:0 18px 0 15px;
-    background:var(--bgs-plate);
+    /* Tinted glass. Tint stays >= .82: gold text is lower-contrast than ivory,
+       and .82 is where it clears 4.5:1 over a white cover (4.87:1). */
+    background:rgba(var(--bgs-plate-rgb),0.82);
+    -webkit-backdrop-filter:blur(16px) saturate(1.2);
+    backdrop-filter:blur(16px) saturate(1.2);
     border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
     border-radius:999px;
     color:var(--bgs-gold);
@@ -590,16 +597,28 @@
     letter-spacing:0.01em;
     cursor:pointer;
     white-space:nowrap;
-    box-shadow:0 6px 20px rgba(0,0,0,0.5);
+    box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.08) inset,
+               0 8px 24px -10px rgba(0,0,0,0.7);
     transition:transform 0.18s cubic-bezier(.2,.8,.3,1), opacity 0.18s ease, border-color 0.18s ease;
   }
   .gn-fab:hover{border-color:var(--bgs-gold);}
-  .gn-fab:active{transform:scale(0.95);}
+  .gn-fab:active{transform:translateX(-50%) scale(0.95);}
   .gn-fab svg{width:17px;height:17px;flex:none;}
+  /* Solid plate when blur isn't available or the OS asks for less transparency. */
+  @supports not (backdrop-filter:blur(1px)){
+    .gn-fab{background:var(--bgs-plate);}
+  }
+  @media (prefers-reduced-transparency:reduce){
+    .gn-fab{
+      background:var(--bgs-plate);
+      -webkit-backdrop-filter:none;backdrop-filter:none;
+    }
+  }
+  .gn-fab:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;}
   /* Selection mode hands off to the bottom bar — the pill animates down and out. */
   body.gn-selecting .gn-fab{
     opacity:0;
-    transform:translateY(14px) scale(0.9);
+    transform:translateX(-50%) translateY(14px) scale(0.9);
     pointer-events:none;
   }
 
