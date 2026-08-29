@@ -622,6 +622,36 @@
     pointer-events:none;
   }
 
+  /* Random: icon FAB that lives above the bar while selecting. Same glass
+     recipe as .gn-fab. z-index 14 = the tray's layer, under the bar (15). */
+  .gn-random-fab{
+    position:fixed;right:16px;
+    bottom:calc(64px + 14px + env(safe-area-inset-bottom)); /* bar min-height + gap */
+    z-index:14;
+    display:inline-flex;align-items:center;gap:0;height:46px;padding:0 14px;
+    background:rgba(var(--bgs-plate-rgb),0.82);
+    -webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);
+    border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);border-radius:999px;
+    color:var(--bgs-gold);font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;
+    white-space:nowrap;cursor:pointer;
+    box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.08) inset,0 8px 24px -10px rgba(0,0,0,0.7);
+    opacity:0;transform:translateY(14px) scale(0.9);pointer-events:none;
+    transition:opacity 0.2s ease,transform 0.24s cubic-bezier(.2,.8,.3,1),gap 0.3s ease,padding 0.3s ease;
+  }
+  .gn-random-fab svg{width:18px;height:18px;flex:none;}
+  .gn-random-fab .lbl{max-width:0;overflow:hidden;opacity:0;transition:max-width 0.3s ease,opacity 0.2s ease;}
+  /* Arrives as the wave settles, not with it. */
+  body.gn-selecting .gn-random-fab{opacity:1;transform:none;pointer-events:auto;transition-delay:0.42s,0.42s,0s,0s;}
+  /* On entry the label is written out for ~2s, then collapses to the icon. */
+  .gn-random-fab.labelled{gap:8px;padding:0 18px 0 14px;}
+  .gn-random-fab.labelled .lbl{max-width:70px;opacity:1;}
+  .gn-random-fab:active{transform:scale(0.95);}
+  .gn-random-fab:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;}
+  @supports not (backdrop-filter:blur(1px)){.gn-random-fab{background:var(--bgs-plate);}}
+  @media (prefers-reduced-transparency:reduce){
+    .gn-random-fab{background:var(--bgs-plate);-webkit-backdrop-filter:none;backdrop-filter:none;}
+  }
+
   .gn-toast{
     position:fixed;
     left:50%;
@@ -681,30 +711,6 @@
     margin:0 0 18px;
     line-height:1.5;
   }
-  .gn-option{
-    display:block;
-    width:100%;
-    text-align:left;
-    background:rgba(var(--bgs-ivory-rgb),0.05);
-    border:1px solid rgba(var(--bgs-ivory-rgb),0.14);
-    border-radius:12px;
-    padding:14px 16px;
-    margin-bottom:10px;
-    cursor:pointer;
-    font:inherit;
-    color:inherit;
-    transition:border-color 0.15s ease, background 0.15s ease;
-  }
-  .gn-option:hover{border-color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),0.08);}
-  .gn-option b{
-    display:block;
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:15px;
-    margin-bottom:3px;
-    color:var(--bgs-ivory);
-  }
-  .gn-option span{font-size:12.5px;color:var(--bgs-ivory-70);}
   .gn-cancel-link{
     display:block;
     width:100%;
@@ -897,6 +903,38 @@
     font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;cursor:pointer;margin-left:auto;
   }
   .gn-bar__continue:disabled{opacity:0.35;cursor:not-allowed;}
+
+  /* ---- gold wave: selection-mode entrance. Origin = pill centre (46px tall at 16px → 39px). ---- */
+  .gn-wave{
+    position:fixed;left:50%;bottom:calc(39px + env(safe-area-inset-bottom));
+    width:12px;height:12px;margin:0 0 -6px -6px;border-radius:50%;
+    z-index:11;pointer-events:none;opacity:0;
+    border:2px solid rgba(var(--bgs-gold-rgb),0.7);
+    box-shadow:0 0 24px 6px rgba(var(--bgs-gold-rgb),0.18);
+  }
+  .gn-wave.go{animation:gn-wave 0.72s cubic-bezier(.1,.6,.3,1) both;}
+  @keyframes gn-wave{0%{transform:scale(1);opacity:1;}100%{transform:scale(260);opacity:0;border-width:0.5px;}}
+
+  /* Each card gets --gn-d (seconds) from JS = distance from the pill. */
+  body.gn-selecting.gn-waving .checkbox,
+  body.gn-selecting.gn-waving .info-btn{
+    animation:gn-pop 0.36s cubic-bezier(.2,.8,.2,1.25) both;animation-delay:var(--gn-d,0s);
+  }
+  body.gn-selecting.gn-waving .game-card:not(.selected) .sel-ring{
+    animation:gn-ring-pass 0.5s ease-out both;animation-delay:var(--gn-d,0s);
+  }
+  body.gn-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:var(--gn-d,0s);}
+  @keyframes gn-pop{0%{opacity:0;transform:scale(0.4);}100%{opacity:1;transform:scale(1);}}
+  @keyframes gn-ring-pass{0%{border-color:transparent;}35%{border-color:rgba(var(--bgs-gold-rgb),0.9);}100%{border-color:transparent;}}
+
+  @media (prefers-reduced-motion:reduce){
+    .gn-wave.go,
+    body.gn-selecting.gn-waving .checkbox,
+    body.gn-selecting.gn-waving .info-btn,
+    body.gn-selecting.gn-waving .sel-ring{animation:none;}
+    body.gn-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:0s;}
+    .gn-random-fab,.gn-random-fab .lbl{transition:none;}
+  }
 
   /* ---- selected-games tray ---- */
   .gn-scrim{
@@ -1424,10 +1462,17 @@ const GN_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#241A10" stro
 const GN_CHEV_SVG  = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 const GN_X_SVG      = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 const GN_DIE_SVG    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>';
+// Tilted five-face with motion arcs, so it reads as "roll" rather than repeating
+// the Game Night mark.
+const GN_ROLL_SVG   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(-18 13 13)"><rect x="6" y="6" width="14" height="14" rx="3.2"/><circle cx="9.6" cy="9.6" r="1.2" fill="currentColor" stroke="none"/><circle cx="16.4" cy="9.6" r="1.2" fill="currentColor" stroke="none"/><circle cx="13" cy="13" r="1.2" fill="currentColor" stroke="none"/><circle cx="9.6" cy="16.4" r="1.2" fill="currentColor" stroke="none"/><circle cx="16.4" cy="16.4" r="1.2" fill="currentColor" stroke="none"/></g><path d="M3 9.5a9 9 0 0 1 1.6-3.2" opacity=".7"/><path d="M2.2 13.5a10 10 0 0 1 .2-2.2" opacity=".45"/></svg>';
 
 // Ephemeral flow state that doesn't belong on `state` (selectionMode/selectedIds
 // do, per spec — this is just which path we're on and the surprise sample).
 const gnState = { mode: null, surprisePool: [], revealDeck: false };
+
+// Built in initGameNight(), but enter/exitSelectionMode need them from here.
+let gnWave = null;
+let gnRandomBtn = null;
 
 let gnSessionModPromise = null;
 
@@ -1504,9 +1549,36 @@ function currentGnGameIds(){
 // The cards carry their checkbox and info button whenever gameNightVisible is
 // true; only `body.gn-selecting` decides whether they show. So switching modes
 // is a body-class flip, not a re-render.
+// Wavefront speed, px/s. 1400 lands the top corners of a phone viewport at ~0.5s.
+const GN_WAVE_SPEED = 1400;
+const GN_RANDOM_LABEL_MS = 2200;
+
+function primeGnWave(){
+  const origin = document.getElementById('gnStartBtn');
+  if(!origin) return;
+  const r = origin.getBoundingClientRect();
+  const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+  document.querySelectorAll('.game-card').forEach(card => {
+    const b = card.getBoundingClientRect();
+    // Offscreen cards snap in so scrolling never reveals a half-finished animation.
+    if(b.bottom < 0 || b.top > window.innerHeight){ card.style.setProperty('--gn-d', '0s'); return; }
+    const d = Math.hypot(b.left + b.width / 2 - ox, b.top + b.height / 2 - oy);
+    card.style.setProperty('--gn-d', (d / GN_WAVE_SPEED).toFixed(3) + 's');
+  });
+}
+
 function enterSelectionMode(){
   state.selectionMode = true;
-  document.body.classList.add('gn-selecting');
+  primeGnWave();                       // measure before the class flip
+  document.body.classList.add('gn-selecting', 'gn-waving');
+  if(gnWave){ gnWave.classList.remove('go'); void gnWave.offsetWidth; gnWave.classList.add('go'); }
+  clearTimeout(enterSelectionMode._wave);
+  enterSelectionMode._wave = setTimeout(()=>document.body.classList.remove('gn-waving'), 800);
+  if(gnRandomBtn){
+    gnRandomBtn.classList.add('labelled');
+    clearTimeout(enterSelectionMode._label);
+    enterSelectionMode._label = setTimeout(()=>gnRandomBtn.classList.remove('labelled'), GN_RANDOM_LABEL_MS);
+  }
   updateGnBar();
 }
 
@@ -1514,7 +1586,12 @@ function exitSelectionMode(){
   state.selectionMode = false;
   state.selectedIds.clear();
   clearSelectedCards();
-  document.body.classList.remove('gn-selecting');
+  clearTimeout(enterSelectionMode._wave);
+  clearTimeout(enterSelectionMode._label);
+  document.body.classList.remove('gn-selecting', 'gn-waving');
+  if(gnWave) gnWave.classList.remove('go');
+  if(gnRandomBtn) gnRandomBtn.classList.remove('labelled');
+  gnState.mode = null;
   closeGnTray();
   updateGnBar();
 }
@@ -1606,7 +1683,7 @@ function syncRevealToggleUI(){
 
 function updateConfirmSummary(){
   const n = currentGnGameIds().length;
-  const modeLabel = gnState.mode === 'random' ? 'Surprise mode' : 'You picked them';
+  const modeLabel = gnState.mode === 'random' ? 'Random picks' : 'You picked them';
   document.getElementById('gnSummary').textContent = `${n} game${n === 1 ? '' : 's'} · ${modeLabel}`;
 }
 
@@ -1662,7 +1739,7 @@ async function handleGnStart(){
 function initGameNight(){
   gnSessionModPromise = import('./js/session.js');
 
-  // Entry point: a floating pill fixed bottom-left, above the grid but below
+  // Entry point: a floating pill fixed bottom-centre, above the grid but below
   // every bar, sheet, and modal. Labelled, because an icon alone would give no
   // clue what it does. Still built only when the flag is on, so with the flag
   // off it is absent from the DOM rather than merely hidden.
@@ -1675,24 +1752,23 @@ function initGameNight(){
   gnStartBtn.innerHTML = `${GN_DIE_SVG}Game Night`;
   document.body.appendChild(gnStartBtn);
 
+  // Random: the surprise path, now an icon FAB inside selection mode rather
+  // than an option on a chooser panel. Label shows briefly on entry.
+  gnRandomBtn = document.createElement('button');
+  gnRandomBtn.className = 'gn-random-fab';
+  gnRandomBtn.type = 'button';
+  gnRandomBtn.id = 'gnRandomBtn';
+  gnRandomBtn.setAttribute('aria-label', 'Random — pick 6 games for us');
+  gnRandomBtn.innerHTML = `${GN_ROLL_SVG}<span class="lbl">Random</span>`;
+  document.body.appendChild(gnRandomBtn);
+
+  gnWave = document.createElement('div');
+  gnWave.className = 'gn-wave';
+  gnWave.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(gnWave);
+
   document.body.insertAdjacentHTML('beforeend', `
     <div class="gn-toast" id="gnToast"></div>
-
-    <div class="gn-backdrop" id="gnChooserBackdrop">
-      <div class="gn-panel" role="dialog" aria-modal="true" aria-labelledby="gnChooserTitle">
-        <h3 id="gnChooserTitle">Start Game Night</h3>
-        <p class="gn-sub" id="gnChooserPool"></p>
-        <button class="gn-option" id="gnOptSelect" type="button">
-          <b>Select games</b>
-          <span>Browse and pick the games yourself.</span>
-        </button>
-        <button class="gn-option" id="gnOptSurprise" type="button">
-          <b>Surprise us</b>
-          <span>We'll pick 6 at random from what's on screen.</span>
-        </button>
-        <button class="gn-cancel-link" id="gnChooserCancel" type="button">Cancel</button>
-      </div>
-    </div>
 
     <div class="gn-backdrop" id="gnSurpriseBackdrop">
       <div class="gn-panel" role="dialog" aria-modal="true" aria-labelledby="gnSurpriseTitle">
@@ -1744,26 +1820,18 @@ function initGameNight(){
     </div>
   `);
 
-  // entry point → chooser
+  // entry point → selection mode, directly
   gnStartBtn.addEventListener('click', ()=>{
     const pool = gnPool();
     if(pool.length < GN_MIN_POOL){
       showGnToast('Not enough games match these filters');
       return;
     }
-    document.getElementById('gnChooserPool').textContent = `${pool.length} games match your filters.`;
-    openGnBackdrop(document.getElementById('gnChooserBackdrop'));
-  });
-  document.getElementById('gnChooserCancel').addEventListener('click', ()=>{
-    closeGnBackdrop(document.getElementById('gnChooserBackdrop'));
-  });
-  document.getElementById('gnOptSelect').addEventListener('click', ()=>{
-    closeGnBackdrop(document.getElementById('gnChooserBackdrop'));
     gnState.mode = 'manual';
     enterSelectionMode();
   });
-  document.getElementById('gnOptSurprise').addEventListener('click', ()=>{
-    closeGnBackdrop(document.getElementById('gnChooserBackdrop'));
+  gnRandomBtn.addEventListener('click', ()=>{
+    gnRandomBtn.classList.remove('labelled');
     gnState.mode = 'random';
     sampleSurprise();
     renderSurprise();
@@ -1781,7 +1849,8 @@ function initGameNight(){
   });
   document.getElementById('gnSurpriseCancel').addEventListener('click', ()=>{
     closeGnBackdrop(document.getElementById('gnSurpriseBackdrop'));
-    gnState.mode = null;
+    // Back to selection mode, which is still live underneath — not out of the flow.
+    gnState.mode = 'manual';
     gnState.surprisePool = [];
   });
 
@@ -1820,12 +1889,18 @@ function initGameNight(){
 
   // click outside a panel closes that modal, matching the existing detail-card backdrop
   [
-    document.getElementById('gnChooserBackdrop'),
     document.getElementById('gnSurpriseBackdrop'),
     document.getElementById('gnConfirmBackdrop'),
   ].forEach(backdrop => {
     backdrop.addEventListener('click', (e)=>{
-      if(e.target === backdrop) closeGnBackdrop(backdrop);
+      if(e.target !== backdrop) return;
+      closeGnBackdrop(backdrop);
+      // Dismissing the surprise panel drops back into selection mode, which is
+      // still live underneath — same fallback as its Cancel button.
+      if(backdrop.id === 'gnSurpriseBackdrop'){
+        gnState.mode = 'manual';
+        gnState.surprisePool = [];
+      }
     });
   });
 }
