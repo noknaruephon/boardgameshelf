@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Game Night — direct to selection, Surprise as icon FAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bgs-bg:#160F0A; --bgs-bg-rgb:22,15,10; --bgs-bg-radial:#241708;
+    --bgs-plate:#241A10; --bgs-plate-rgb:36,26,16;
+    --bgs-ivory:#F4EBDA; --bgs-ivory-rgb:244,235,218; --bgs-ivory-45:rgba(244,235,218,.45); --bgs-ivory-70:rgba(244,235,218,.72);
+    --bgs-gold:#E3B04B; --bgs-gold-rgb:227,176,75; --bgs-gold-dim:rgba(227,176,75,.62);
+    --bar-h:92px; --sab:env(safe-area-inset-bottom);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bgs-bg);color:var(--bgs-ivory);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+  body{background:radial-gradient(120% 60% at 50% 0%,var(--bgs-bg-radial),var(--bgs-bg) 70%) fixed}
+  button{font:inherit;color:inherit;cursor:pointer}
+
+  .demo{position:fixed;inset:0 0 auto 0;z-index:50;height:var(--bar-h);padding:10px 12px 8px;background:rgba(22,15,10,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(244,235,218,.12)}
+  .demo-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--bgs-ivory-45);margin-bottom:8px}
+  .demo-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+  .demo-row::-webkit-scrollbar{display:none}
+  .demo-row button{flex:0 0 auto;font:500 12px 'IBM Plex Mono',monospace;padding:8px 11px;border-radius:999px;border:1px solid rgba(244,235,218,.12);background:none;color:var(--bgs-ivory-70);white-space:nowrap}
+  .demo-row button.on{background:var(--bgs-plate);border-color:var(--bgs-gold-dim);color:var(--bgs-ivory)}
+  .demo-note{font-size:11.5px;color:var(--bgs-ivory-45);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  main{padding:calc(var(--bar-h) + 18px) 16px 150px}
+  .hint{font:400 12px 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45);margin:0 0 14px}
+  .shelf{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  @media (min-width:560px){.shelf{grid-template-columns:repeat(4,1fr);gap:14px}}
+  @media (min-width:800px){.shelf{grid-template-columns:repeat(6,1fr);gap:16px}}
+  .game-card{position:relative;border-radius:10px;overflow:hidden;background:var(--c);aspect-ratio:1;box-shadow:0 6px 16px -8px rgba(0,0,0,.6)}
+  .game-card img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .15s ease}
+  body.gn-selecting .game-card:not(.selected) img{opacity:.62;transition-delay:var(--gn-d,0s)}
+
+  .sel-ring,.checkbox{display:none}
+  body.gn-selecting .sel-ring{display:block;position:absolute;inset:0;z-index:3;border:2px solid transparent;border-radius:10px;pointer-events:none}
+  body.gn-selecting .game-card.selected .sel-ring{border-color:var(--bgs-gold)}
+  body.gn-selecting .checkbox{display:flex;align-items:center;justify-content:center;position:absolute;top:6px;left:6px;z-index:4;width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.55);border:1.5px solid rgba(var(--bgs-ivory-rgb),.5);backdrop-filter:blur(3px)}
+  body.gn-selecting .checkbox svg{width:13px;height:13px;opacity:0}
+  body.gn-selecting .game-card.selected .checkbox{background:var(--bgs-gold);border-color:var(--bgs-gold)}
+  body.gn-selecting .game-card.selected .checkbox svg{opacity:1}
+
+  .gn-bar{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:12px 16px calc(12px + var(--sab));background:rgba(var(--bgs-bg-rgb),.94);backdrop-filter:blur(10px);border-top:1px solid rgba(var(--bgs-gold-rgb),.25);display:flex;align-items:center;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.3,1);min-height:64px}
+  body.gn-selecting .gn-bar{transform:translateY(0)}
+  .gn-bar__cancel{background:none;border:none;color:var(--bgs-ivory-45);font-size:12.5px;font-weight:600;padding:10px 4px;margin-right:auto}
+  .gn-bar__count{position:absolute;left:50%;transform:translateX(-50%);text-align:center;font-size:13px;font-weight:600;white-space:nowrap;color:var(--bgs-ivory)}
+  .gn-bar__count small{display:block;font-weight:400;font-size:11px;color:var(--bgs-ivory-45);margin-top:2px}
+  .gn-bar__next{background:var(--bgs-gold);color:var(--bgs-bg);border:none;font-size:13px;font-weight:700;padding:10px 16px;border-radius:9px;opacity:.4;transition:opacity .15s}
+  .gn-bar__next.ready{opacity:1}
+
+  /* ---- centered plate-glass FAB (approved) ---- */
+  .gn-fab{position:fixed;left:50%;bottom:calc(16px + var(--sab));transform:translateX(-50%);z-index:12;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px 0 15px;background:rgba(var(--bgs-plate-rgb),.82);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);border:1.5px solid rgba(var(--bgs-gold-rgb),.55);border-radius:999px;color:var(--bgs-gold);font-size:13.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),.08) inset,0 8px 24px -10px rgba(0,0,0,.7);transition:transform .18s cubic-bezier(.2,.8,.3,1),opacity .18s ease}
+  .gn-fab:active{transform:translateX(-50%) scale(.95)}
+  .gn-fab svg{width:17px;height:17px;flex:none}
+  body.gn-selecting .gn-fab{opacity:0;transform:translateX(-50%) translateY(14px) scale(.9);pointer-events:none}
+
+  /* ================= ✎ NEW · Surprise icon FAB (selection mode only) ================= */
+  /* Same glass recipe. Sits above the bar, bottom-right, clear of the Continue button. */
+  .gn-surprise-fab{
+    position:fixed;right:16px;bottom:calc(64px + 14px + var(--sab));z-index:14;
+    display:inline-flex;align-items:center;gap:0;height:46px;padding:0 14px;
+    background:rgba(var(--bgs-plate-rgb),.82);-webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);
+    border:1.5px solid rgba(var(--bgs-gold-rgb),.55);border-radius:999px;color:var(--bgs-gold);
+    font-size:13.5px;font-weight:700;white-space:nowrap;
+    box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),.08) inset,0 8px 24px -10px rgba(0,0,0,.7);
+    opacity:0;transform:translateY(14px) scale(.9);pointer-events:none;
+    transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.3,1),gap .3s ease,padding .3s ease;
+  }
+  .gn-surprise-fab svg{width:18px;height:18px;flex:none}
+  .gn-surprise-fab .lbl{max-width:0;overflow:hidden;opacity:0;transition:max-width .3s ease,opacity .2s ease}
+  body.gn-selecting .gn-surprise-fab{opacity:1;transform:none;pointer-events:auto;transition-delay:.42s,.42s,0s,0s}
+  /* On entry the label is shown for a beat, then collapses to the icon. */
+  .gn-surprise-fab.labelled{gap:8px;padding:0 18px 0 14px}
+  .gn-surprise-fab.labelled .lbl{max-width:70px;opacity:1}
+  .gn-surprise-fab:active{transform:scale(.95)}
+  .gn-surprise-fab:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px}
+
+  /* ---- gold wave (approved) ---- */
+  .gn-wave{position:fixed;left:50%;bottom:calc(39px + var(--sab));width:12px;height:12px;margin:0 0 -6px -6px;border-radius:50%;z-index:11;pointer-events:none;opacity:0;border:2px solid rgba(var(--bgs-gold-rgb),.7);box-shadow:0 0 24px 6px rgba(var(--bgs-gold-rgb),.18)}
+  .gn-wave.go{animation:gn-wave .72s cubic-bezier(.1,.6,.3,1) both}
+  @keyframes gn-wave{0%{transform:scale(1);opacity:1}100%{transform:scale(260);opacity:0;border-width:.5px}}
+  body.gn-selecting.gn-waving .checkbox{animation:gn-pop .36s cubic-bezier(.2,.8,.2,1.25) both;animation-delay:var(--gn-d,0s)}
+  body.gn-selecting.gn-waving .game-card:not(.selected) .sel-ring{animation:gn-ring-pass .5s ease-out both;animation-delay:var(--gn-d,0s)}
+  @keyframes gn-pop{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:scale(1)}}
+  @keyframes gn-ring-pass{0%{border-color:transparent}35%{border-color:rgba(var(--bgs-gold-rgb),.9)}100%{border-color:transparent}}
+
+  /* ---- surprise panel (existing gn-panel look, approximated) ---- */
+  .gn-backdrop{position:fixed;inset:0;z-index:30;background:rgba(var(--bgs-bg-rgb),.66);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s}
+  .gn-backdrop.open{opacity:1;pointer-events:auto}
+  .gn-panel{width:100%;max-width:440px;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.3);border-radius:16px;padding:22px 20px calc(16px + var(--sab));transform:translateY(24px);transition:transform .26s cubic-bezier(.2,.8,.3,1)}
+  .gn-backdrop.open .gn-panel{transform:none}
+  .gn-panel h3{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:0 0 6px}
+  .gn-sub{font-size:13px;color:var(--bgs-ivory-45);margin:0 0 16px}
+  .gn-surprise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+  .gn-surprise-card .art{aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--c)}
+  .gn-surprise-card img{width:100%;height:100%;object-fit:cover;display:block}
+  .gn-surprise-card .t{font-size:11px;color:var(--bgs-ivory-70);margin-top:6px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gn-row{display:flex;gap:10px}
+  .gn-secondary-btn{flex:1;background:none;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);color:var(--bgs-ivory-70);font-size:13px;font-weight:600;padding:13px;border-radius:10px}
+  .gn-primary-btn{flex:1;background:var(--bgs-gold);color:var(--bgs-bg);border:none;font-size:13.5px;font-weight:700;padding:13px;border-radius:10px}
+  .gn-cancel-link{display:block;width:100%;background:none;border:none;color:var(--bgs-ivory-45);font-size:12.5px;font-weight:600;padding:14px 0 0}
+
+  .toast{position:fixed;left:50%;bottom:calc(140px + var(--sab));transform:translateX(-50%) translateY(8px);z-index:40;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.3);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--bgs-ivory);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+
+  @media (prefers-reduced-motion:reduce){.gn-wave.go,.checkbox,.sel-ring{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="demo" role="toolbar" aria-label="Mockup options">
+  <div class="demo-label">Game Night · direct-to-select entry</div>
+  <div class="demo-row" id="tabs">
+    <button id="optLabel" class="on">Label reveal on entry</button>
+    <button id="reset">↺ Reset</button>
+  </div>
+  <div class="demo-note" id="note">Tap Game Night → straight into selection. Random lives bottom-right.</div>
+</div>
+
+<main>
+  <p class="hint">Tap the pill. Tap cards to select. Tap the die for Random.</p>
+  <div class="shelf" id="shelf"></div>
+</main>
+
+<div class="gn-wave" id="wave"></div>
+
+<button class="gn-fab" id="fab" type="button" aria-label="Start Game Night">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>Game Night
+</button>
+
+<button class="gn-surprise-fab" id="surpriseFab" type="button" aria-label="Random — pick 6 games for us">
+  <!-- rolling die: tilted 5-face with two motion arcs so it reads as "roll", not the Game Night mark -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <g transform="rotate(-18 13 13)">
+      <rect x="6" y="6" width="14" height="14" rx="3.2"/>
+      <circle cx="9.6" cy="9.6" r="1.2" fill="currentColor" stroke="none"/><circle cx="16.4" cy="9.6" r="1.2" fill="currentColor" stroke="none"/>
+      <circle cx="13" cy="13" r="1.2" fill="currentColor" stroke="none"/>
+      <circle cx="9.6" cy="16.4" r="1.2" fill="currentColor" stroke="none"/><circle cx="16.4" cy="16.4" r="1.2" fill="currentColor" stroke="none"/>
+    </g>
+    <path d="M3 9.5a9 9 0 0 1 1.6-3.2" opacity=".7"/><path d="M2.2 13.5a10 10 0 0 1 .2-2.2" opacity=".45"/>
+  </svg>
+  <span class="lbl">Random</span>
+</button>
+
+<div class="gn-bar" id="bar">
+  <button class="gn-bar__cancel" id="cancel" type="button">Cancel</button>
+  <div class="gn-bar__count" id="count">0 selected<small>Pick games for tonight</small></div>
+  <button class="gn-bar__next" id="next" type="button">Continue</button>
+</div>
+
+<div class="gn-backdrop" id="surpriseBackdrop">
+  <div class="gn-panel" role="dialog" aria-modal="true" aria-labelledby="st">
+    <h3 id="st">Tonight's surprise</h3>
+    <p class="gn-sub" id="ssub"></p>
+    <div class="gn-surprise-grid" id="sgrid"></div>
+    <div class="gn-row"><button class="gn-secondary-btn" id="shuffle" type="button">Shuffle again</button><button class="gn-primary-btn" type="button">Continue</button></div>
+    <button class="gn-cancel-link" id="scancel" type="button">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const games=[
+ ['Dune: Imperium – Uprising','#7A3B2E','https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg'],
+ ['Things in Rings','#C4A23C','https://cf.geekdo-images.com/oNmUB9qyfDYwUlzwrl9hZQ__original/img/7ELk1Jd51l9UMPuv_QC8huhZ_8Q=/0x0/filters:format(jpeg)/pic8037086.jpg'],
+ ['Cascadia','#3E5C3E','https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg'],
+ ['A Fake Artist Goes to New York','#B8933A','https://cf.geekdo-images.com/5Q5YHxJeVp6PAhfv5Ct0-g__original/img/yRNioltDOtjrTRXa0HHoTTCWNf8=/0x0/filters:format(png)/pic3678404.png'],
+ ['Ark Nova','#3B4F76','https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg'],
+ ['Happy Salmon','#C77B5E','https://cf.geekdo-images.com/22gbMRtHEEVDBL7E2L1Qfw__original/img/HMi4BlxHod1F93jhQWAeS5XtCaw=/0x0/filters:format(jpeg)/pic6613101.jpg'],
+ ['Brass: Birmingham','#4A6C6F','https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__itemrep@2x/img/2FLfeGWkuKb1KEkjl1fO9MFsdHQ=/fit-in/492x600/filters:strip_icc()/pic3490053.jpg'],
+ ['Bohnanza','#B08A2E','https://cf.geekdo-images.com/TCWH1FOU7PWnv66_gzrR2A__original/img/3Yvdfj9S1Wi6Wy_IpoP6mHxcJ3w=/0x0/filters:format(jpeg)/pic8621122.jpg'],
+ ['Spirit Island','#3B4F76','https://cf.geekdo-images.com/kjCm4ZvPjIZxS-mYgSPy1g__itemrep@2x/img/-avAay86cuC29LAZVlTE84r5SSA=/fit-in/492x600/filters:strip_icc()/pic7013651.jpg'],
+];
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="#241A10" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+document.getElementById('shelf').innerHTML=Array.from({length:30},(_,i)=>{const [t,c,src]=games[i%games.length];
+  return `<div class="game-card" data-i="${i}" style="--c:${c}"><img src="${src}" alt="${t}" loading="lazy"><span class="sel-ring"></span><span class="checkbox">${CHECK}</span></div>`}).join('');
+
+const body=document.body, fab=document.getElementById('fab'), wave=document.getElementById('wave'), sfab=document.getElementById('surpriseFab');
+let labelOnEntry=true, selected=new Set(), labelT;
+
+function prime(){
+  const r=fab.getBoundingClientRect(), ox=r.left+r.width/2, oy=r.top+r.height/2;
+  document.querySelectorAll('.game-card').forEach(c=>{const b=c.getBoundingClientRect();
+    if(b.bottom<0||b.top>innerHeight){c.style.setProperty('--gn-d','0s');return;}
+    c.style.setProperty('--gn-d',(Math.hypot(b.left+b.width/2-ox,b.top+b.height/2-oy)/1400).toFixed(3)+'s');});
+}
+function enter(){
+  prime(); body.classList.add('gn-selecting','gn-waving');
+  wave.classList.remove('go'); void wave.offsetWidth; wave.classList.add('go');
+  setTimeout(()=>body.classList.remove('gn-waving'),800);
+  clearTimeout(labelT);
+  if(labelOnEntry){ sfab.classList.add('labelled'); labelT=setTimeout(()=>sfab.classList.remove('labelled'),2200); }
+  else sfab.classList.remove('labelled');
+  updateBar();
+}
+function exit(){
+  body.classList.remove('gn-selecting','gn-waving'); wave.classList.remove('go');
+  selected.clear(); document.querySelectorAll('.game-card.selected').forEach(c=>c.classList.remove('selected'));
+  clearTimeout(labelT); sfab.classList.remove('labelled'); updateBar();
+}
+function updateBar(){
+  const n=selected.size; document.getElementById('count').innerHTML=`${n} selected<small>${n?'Tap Continue when ready':'Pick games for tonight'}</small>`;
+  document.getElementById('next').classList.toggle('ready',n>=2);
+}
+fab.addEventListener('click',()=>{ if(!body.classList.contains('gn-selecting')) enter(); });
+document.getElementById('cancel').addEventListener('click',exit);
+document.getElementById('shelf').addEventListener('click',e=>{
+  if(!body.classList.contains('gn-selecting')) return;
+  const c=e.target.closest('.game-card'); if(!c) return;
+  const i=c.dataset.i; c.classList.toggle('selected'); selected.has(i)?selected.delete(i):selected.add(i); updateBar();
+});
+
+/* Surprise us */
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1600);}
+function renderSurprise(){
+  const pick=[...games].sort(()=>Math.random()-.5).slice(0,6);
+  document.getElementById('sgrid').innerHTML=pick.map(([t,c,src])=>`<div class="gn-surprise-card"><div class="art" style="--c:${c}"><img src="${src}" alt=""></div><div class="t">${t}</div></div>`).join('');
+  document.getElementById('ssub').textContent='6 games picked at random from your filtered shelf.';
+}
+sfab.addEventListener('click',()=>{ sfab.classList.remove('labelled'); renderSurprise(); document.getElementById('surpriseBackdrop').classList.add('open'); });
+document.getElementById('shuffle').addEventListener('click',renderSurprise);
+document.getElementById('scancel').addEventListener('click',()=>document.getElementById('surpriseBackdrop').classList.remove('open'));
+document.getElementById('surpriseBackdrop').addEventListener('click',e=>{ if(e.target.id==='surpriseBackdrop') e.currentTarget.classList.remove('open'); });
+
+document.getElementById('reset').addEventListener('click',()=>{exit();document.getElementById('surpriseBackdrop').classList.remove('open');});
+document.getElementById('optLabel').addEventListener('click',e=>{labelOnEntry=!labelOnEntry;e.currentTarget.classList.toggle('on',labelOnEntry);
+  document.getElementById('note').textContent=labelOnEntry?'Icon FAB shows “Random” for ~2s on entry, then collapses.':'Icon only, no label reveal.';});
+</script>
+</body>
+</html>
