@@ -1550,8 +1550,10 @@ function currentGnGameIds(){
 // The cards carry their checkbox and info button whenever gameNightVisible is
 // true; only `body.gn-selecting` decides whether they show. So switching modes
 // is a body-class flip, not a re-render.
-// Wavefront speed, px/s. 1400 lands the top corners of a phone viewport at ~0.5s.
-const GN_WAVE_SPEED = 1400;
+// Wavefront speed, px/s — the one knob for the entrance. It sets both how fast the
+// ring travels and how far apart the card pops are staggered, which is what keeps
+// the two in step. 1900 lands the top corners of a phone viewport at ~0.44s.
+const GN_WAVE_SPEED = 1900;
 const GN_RANDOM_LABEL_MS = 2200;
 
 // Half the wave dot's 12px, i.e. its radius at scale 1.
