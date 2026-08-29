@@ -42,19 +42,23 @@
   .progress-fill{height:100%;background:var(--bgs-gold);border-radius:99px;transition:width .35s ease;}
   .progress-label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-ivory-45);white-space:nowrap;min-width:38px;text-align:right;}
 
-  /* ---- card stack ---- */
+  /* ---- card stack ----
+     Every rule here stays scoped under .stack: css/game-modal.css also owns a
+     .card (the shared game detail modal, which this page opens from the info
+     button), and an unscoped .card here would win on source order and stretch
+     that modal to fill the backdrop. */
   .stack{position:relative;height:400px;margin-bottom:26px;}
-  .card{
+  .stack .card{
     position:absolute;inset:0;border-radius:20px;overflow:hidden;background:var(--bgs-plate);
     border:1px solid rgba(var(--bgs-gold-rgb),.18);box-shadow:0 24px 44px -12px rgba(0,0,0,.5);
     display:flex;flex-direction:column;touch-action:none;user-select:none;
   }
-  .card .art{flex:1;position:relative;overflow:hidden;background:var(--bgs-bg-radial);}
-  .card .art img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
-  .card .label-band{padding:13px 15px 15px;position:relative;z-index:1;}
-  .card .title{font-family:'Fraunces',serif;font-weight:600;font-size:16.5px;line-height:1.26;margin:0 0 8px;
+  .stack .card .art{flex:1;position:relative;overflow:hidden;background:var(--bgs-bg-radial);}
+  .stack .card .art img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}
+  .stack .card .label-band{padding:13px 15px 15px;position:relative;z-index:1;}
+  .stack .card .title{font-family:'Fraunces',serif;font-weight:600;font-size:16.5px;line-height:1.26;margin:0 0 8px;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-  .card .meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .stack .card .meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .rating-pill{display:inline-flex;align-items:center;gap:3px;background:rgba(0,0,0,.3);border:1px solid rgba(var(--bgs-gold-rgb),.35);
     border-radius:20px;padding:3px 8px 3px 7px;font-size:11px;font-weight:700;color:var(--bgs-gold);white-space:nowrap;}
   .meta-tag{font-size:11px;color:var(--bgs-ivory-45);font-weight:500;white-space:nowrap;}
