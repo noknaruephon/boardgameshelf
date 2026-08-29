@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/game-modal.css">
+<link rel="stylesheet" href="/css/confirm-dialog.css">
 <style>
   /* Tokens and page chrome (including .deck-card / .deck-card.back, used by
      the tallying shuffle below) come from css/base.css. */
@@ -175,25 +176,6 @@
     cursor:pointer;padding:10px 14px;border-radius:8px;transition:color .15s ease;
   }
   .force-btn:hover{color:var(--bgs-gold);}
-
-  /* ---- confirm dialog ---- */
-  .confirm{
-    position:fixed;inset:0;z-index:30;display:none;
-    align-items:center;justify-content:center;padding:22px;
-    background:rgba(0,0,0,.66);backdrop-filter:blur(3px);
-  }
-  .confirm.open{display:flex;}
-  .confirm__panel{
-    background:var(--bgs-plate);border-radius:14px;padding:22px;
-    max-width:300px;width:100%;border:1px solid rgba(var(--bgs-ivory-rgb),.12);
-    text-align:center;
-  }
-  .confirm__panel h3{font-family:'Fraunces',serif;font-weight:600;font-size:17px;margin:0 0 8px;}
-  .confirm__panel p{font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.55;margin:0 0 18px;}
-  .confirm__row{display:flex;gap:9px;}
-  .confirm__row button{flex:1;font:inherit;font-size:13px;font-weight:600;padding:12px;border-radius:10px;cursor:pointer;}
-  .confirm__keep{background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);color:var(--bgs-ivory);}
-  .confirm__force{background:var(--bgs-gold);border:none;color:var(--bgs-plate);}
 
   /* ---- ended / not found ---- */
   .ended p{text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;}

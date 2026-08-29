@@ -1,0 +1,52 @@
+/* Small confirm dialog — the single source of truth for the game-night
+   pages that ask before an irreversible jump.
+   Consumed by vote-swipe.html ("Show results now?") and night-host.html
+   ("End this game night?"); both pages carried their own identical copy
+   before this file existed. Edit here, not per page.
+
+   Deliberately not the same component as css/game-modal.css: that one is a
+   tall scrolling detail panel, this is a short centred question. What they
+   do share is the 24px screen margin below, so neither sits closer to the
+   edge of the phone than the other. */
+
+/* Requires css/base.css, which owns the design tokens this file uses. */
+
+.confirm{
+  position:fixed;inset:0;z-index:30;display:none;
+  align-items:center;justify-content:center;
+  /* Matches the .backdrop of the game detail modal and the Game Night
+     dialogs on the shelf, so every overlay in the app keeps the same
+     distance from the screen edge. */
+  padding:24px;
+  background:rgba(0,0,0,.66);backdrop-filter:blur(3px);
+}
+.confirm.open{display:flex;}
+.confirm__panel{
+  background:var(--bgs-plate);border-radius:14px;padding:22px;
+  max-width:300px;width:100%;border:1px solid rgba(var(--bgs-ivory-rgb),.12);
+  text-align:center;
+}
+.confirm__panel h3{
+  font-family:'Fraunces',serif;font-weight:600;font-size:17px;margin:0 0 8px;
+}
+.confirm__panel p{
+  font-size:12.5px;color:var(--bgs-ivory-70);line-height:1.55;margin:0 0 18px;
+}
+.confirm__row{display:flex;gap:9px;}
+.confirm__row button{
+  flex:1;font:inherit;font-size:13px;font-weight:600;
+  padding:12px;border-radius:10px;cursor:pointer;
+}
+/* Back out — always the quiet option, whatever the other button does. */
+.confirm__keep{
+  background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),.22);
+  color:var(--bgs-ivory);
+}
+/* Go ahead, nothing is lost: skip the remaining voters and show results. */
+.confirm__force{
+  background:var(--bgs-gold);border:none;color:var(--bgs-plate);
+}
+/* Go ahead, and it cannot be undone: end the game night. */
+.confirm__end{
+  background:var(--bgs-danger);border:none;color:var(--bgs-ivory);
+}
