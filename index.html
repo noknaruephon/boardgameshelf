@@ -912,8 +912,10 @@
     border:2px solid rgba(var(--bgs-gold-rgb),0.7);
     box-shadow:0 0 24px 6px rgba(var(--bgs-gold-rgb),0.18);
   }
-  .gn-wave.go{animation:gn-wave 0.72s cubic-bezier(.1,.6,.3,1) both;}
-  @keyframes gn-wave{0%{transform:scale(1);opacity:1;}100%{transform:scale(260);opacity:0;border-width:0.5px;}}
+  /* The ring itself is animated from JS (startGnWave). How far it has to travel
+     depends on the viewport, and a CSS keyframe can't read that: driving scale and
+     duration through custom properties re-resolves the keyframes and restarts the
+     animation every time, so it never advances past its first frame. */
 
   /* Each card gets --gn-d (seconds) from JS = distance from the pill. */
   body.gn-selecting.gn-waving .checkbox,
@@ -928,7 +930,6 @@
   @keyframes gn-ring-pass{0%{border-color:transparent;}35%{border-color:rgba(var(--bgs-gold-rgb),0.9);}100%{border-color:transparent;}}
 
   @media (prefers-reduced-motion:reduce){
-    .gn-wave.go,
     body.gn-selecting.gn-waving .checkbox,
     body.gn-selecting.gn-waving .info-btn,
     body.gn-selecting.gn-waving .sel-ring{animation:none;}
@@ -1549,15 +1550,21 @@ function currentGnGameIds(){
 // The cards carry their checkbox and info button whenever gameNightVisible is
 // true; only `body.gn-selecting` decides whether they show. So switching modes
 // is a body-class flip, not a re-render.
-// Wavefront speed, px/s. 1400 lands the top corners of a phone viewport at ~0.5s.
-const GN_WAVE_SPEED = 1400;
+// Wavefront speed, px/s — the one knob for the entrance. It sets both how fast the
+// ring travels and how far apart the card pops are staggered, which is what keeps
+// the two in step. 1900 lands the top corners of a phone viewport at ~0.44s.
+const GN_WAVE_SPEED = 1900;
 const GN_RANDOM_LABEL_MS = 2200;
+
+// Half the wave dot's 12px, i.e. its radius at scale 1.
+const GN_WAVE_DOT_R = 6;
 
 function primeGnWave(){
   const origin = document.getElementById('gnStartBtn');
   if(!origin) return;
   const r = origin.getBoundingClientRect();
   const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+
   document.querySelectorAll('.game-card').forEach(card => {
     const b = card.getBoundingClientRect();
     // Offscreen cards snap in so scrolling never reveals a half-finished animation.
@@ -1567,11 +1574,40 @@ function primeGnWave(){
   });
 }
 
+// The ring expands at GN_WAVE_SPEED — the same px/s the card stagger uses — so the
+// wavefront and the pops it sets off stay in step. It stops at the furthest
+// viewport corner: going further only stretches the border into a smear. A fixed
+// scale and duration cleared a phone screen in about 100ms, three times ahead of
+// the ripple and gone before it registered.
+function startGnWave(){
+  if(!gnWave) return;
+  gnWave.getAnimations().forEach(a => a.cancel());
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+  const origin = document.getElementById('gnStartBtn');
+  if(!origin) return;
+  const r = origin.getBoundingClientRect();
+  const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
+  const reach = Math.max(
+    Math.hypot(ox, oy), Math.hypot(window.innerWidth - ox, oy),
+    Math.hypot(ox, window.innerHeight - oy), Math.hypot(window.innerWidth - ox, window.innerHeight - oy)
+  );
+
+  gnWave.animate(
+    [
+      { transform: 'scale(1)', opacity: 0.9, borderWidth: '2px' },
+      { opacity: 0.5, offset: 0.55 },
+      { transform: `scale(${(reach / GN_WAVE_DOT_R).toFixed(1)})`, opacity: 0, borderWidth: '0.5px' },
+    ],
+    { duration: (reach / GN_WAVE_SPEED) * 1000, easing: 'linear', fill: 'forwards' }
+  );
+}
+
 function enterSelectionMode(){
   state.selectionMode = true;
   primeGnWave();                       // measure before the class flip
   document.body.classList.add('gn-selecting', 'gn-waving');
-  if(gnWave){ gnWave.classList.remove('go'); void gnWave.offsetWidth; gnWave.classList.add('go'); }
+  startGnWave();
   clearTimeout(enterSelectionMode._wave);
   enterSelectionMode._wave = setTimeout(()=>document.body.classList.remove('gn-waving'), 800);
   if(gnRandomBtn){
@@ -1589,7 +1625,7 @@ function exitSelectionMode(){
   clearTimeout(enterSelectionMode._wave);
   clearTimeout(enterSelectionMode._label);
   document.body.classList.remove('gn-selecting', 'gn-waving');
-  if(gnWave) gnWave.classList.remove('go');
+  if(gnWave) gnWave.getAnimations().forEach(a => a.cancel());
   if(gnRandomBtn) gnRandomBtn.classList.remove('labelled');
   gnState.mode = null;
   closeGnTray();
