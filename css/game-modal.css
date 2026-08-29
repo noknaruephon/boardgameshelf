@@ -31,7 +31,9 @@
   flex-direction:column;
 }
 #card-body{
-  padding:30px 30px 26px;
+  /* Bottom padding = Close button's top edge + 20px, so the last item can
+     scroll clear of the button without leaving a dead gap. */
+  padding:30px 30px calc(78px + env(safe-area-inset-bottom));
   flex:1 1 auto;
   min-height:0;
   overflow-y:auto;
@@ -202,9 +204,18 @@
 
 /* ---- sticky action row on the existing detail modal ---- */
 .card-sticky{
-  flex:none;
-  padding:12px 20px calc(14px + env(safe-area-inset-bottom));
-  background:linear-gradient(to top, var(--bgs-plate) 72%, rgba(36,26,16,0));
+  /* Floats over #card-body rather than sitting below it, so content scrolls
+     under the fade and the below-fold Highlights are discoverable.
+     .card is position:relative, so this resolves against the modal; the
+     corner .close-btn is z-index:10 and stays on top. */
+  position:absolute;left:0;right:0;bottom:0;z-index:5;
+  padding:28px 20px calc(14px + env(safe-area-inset-bottom));
+  /* Solid behind the button, then a 28px fade at the top edge so content
+     visibly slides under it. */
+  background:linear-gradient(to top,
+    var(--bgs-plate) 0%,
+    var(--bgs-plate) 62%,
+    rgba(var(--bgs-plate-rgb),0) 100%);
   display:flex;gap:10px;
 }
 .card-sticky .modal__add{
@@ -217,9 +228,32 @@
 }
 .card-sticky .modal__add svg{width:15px;height:15px;}
 .card-sticky .modal__close{
-  background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),0.22);
-  color:var(--bgs-ivory-70);font:inherit;font-size:13px;font-weight:600;
+  /* Tinted glass. Tint must stay >= .65 so full-ivory text keeps 4.5:1
+     against a near-white cover scrolling behind it (.72 gives 5.7:1). */
+  background:rgba(var(--bgs-plate-rgb),0.72);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  backdrop-filter:blur(14px) saturate(1.2);
+  border:1.5px solid rgba(var(--bgs-ivory-rgb),0.45);
+  box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.10) inset,
+             0 8px 24px -10px rgba(0,0,0,0.6);
+  color:var(--bgs-ivory);font:inherit;font-size:13px;font-weight:600;
   padding:13px 16px;border-radius:10px;cursor:pointer;
 }
 body:not(.gn-selecting) .card-sticky .modal__add{display:none;}
 body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
+
+/* Solid plate when blur isn't available or the OS asks for less transparency. */
+@supports not (backdrop-filter:blur(1px)){
+  .card-sticky .modal__close{background:var(--bgs-plate);}
+}
+@media (prefers-reduced-transparency:reduce){
+  .card-sticky .modal__close{
+    background:var(--bgs-plate);
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+}
+/* Visible keyboard focus on the dark plate. */
+.close-btn:focus-visible,
+.card-sticky button:focus-visible{
+  outline:2px solid var(--bgs-gold);outline-offset:2px;
+}
