@@ -190,6 +190,87 @@ const MECHANIC = new Map([
 /** Never empty: the line every game falls back to when nothing maps. */
 const GENERIC = 'Compete for points across a few rounds.';
 
+// ---------------------------------------------------------------------------
+// Preferred source: the curated description
+// ---------------------------------------------------------------------------
+// Tags alone produce captions that are technically accurate and useless —
+// "Engine-building." says the same thing about forty games, and the card's own
+// meta row already shows players, time and weight, so a generated
+// "Heavy; a long session." was repeating what was six pixels above it. The
+// collection's `blurb` field is hand-written, concrete and unique per game
+// ("Roll dice, then spend them to place hexagonal tiles across your estate"),
+// which is what actually helps someone decide. It is just too long, so the
+// job here is to cut it to one clean clause rather than to compose from parts.
+
+const MIN_CAPTION = 45;
+
+/** Words that mean the sentence was going somewhere; never end on one. */
+const DANGLING = /\b(and|or|but|the|an?|to|of|in|on|at|with|while|from|for|as|by|into|onto|than|that|which|who|whom|where|when|your|their|his|her|its|our|my|you|they|before|after|over|under|through|about|across|against|between|during|plus|then|so|if|is|are|was|were|be|been|up|down|out|off|per|via|each|every|both|either|neither)$/i;
+
+const firstSentence = (text) =>
+  (String(text || '').trim().match(/^(.+?[.!?])(\s|$)/) || [null, String(text || '').trim()])[1];
+
+function trimDangling(s) {
+  let out = s.trim().replace(/[,;:—–-]+$/, '').trim();
+  for (;;) {
+    if (!DANGLING.test(out)) return out;
+    const next = out.replace(/\s+\S+$/, '').replace(/[,;:—–-]+$/, '').trim();
+    if (!next || next === out) return out;
+    out = next;
+  }
+}
+
+/**
+ * Drops a short trailing item left hanging off a list.
+ *
+ * Cutting "name the murder weapon, location, and cause of death" before its
+ * "and" leaves "name the murder weapon, location" — which reads as a list the
+ * sentence forgot to finish. When the final item is short, ending on the one
+ * before it is cleaner. Also tidies trailing asides like ", say".
+ */
+function repairTrailingItem(s) {
+  const lastComma = s.lastIndexOf(',');
+  if (lastComma < MIN_CAPTION || s.length - lastComma > 25) return s;
+  const shorter = trimDangling(s.slice(0, lastComma));
+  return shorter.length >= MIN_CAPTION ? shorter : s;
+}
+
+/**
+ * Cuts a sentence down to one clause that still reads as a whole thought.
+ * Prefers a strong break, then a conjunction, then a comma; only falls back to
+ * a word boundary, and gives up rather than return a stub.
+ */
+function condense(text, max) {
+  const s = String(text).trim().replace(/\s+/g, ' ');
+  if (s.length <= max) return s;
+  const body = s.replace(/[.!?]$/, '');
+
+  const breaks = [/ — | – |—|–|;|:/g, / (?=and |while |before |but |so )/g, /,/g];
+  for (const re of breaks) {
+    re.lastIndex = 0;
+    let best = '';
+    let m;
+    while ((m = re.exec(body))) {
+      const cut = trimDangling(body.slice(0, m.index));
+      if (cut.length <= max - 1 && cut.length >= MIN_CAPTION) best = cut;
+    }
+    if (best) return repairTrailingItem(best);
+  }
+
+  const words = body.slice(0, max - 1).split(' ');
+  words.pop();
+  const cut = trimDangling(words.join(' '));
+  return cut.length >= MIN_CAPTION ? cut : '';
+}
+
+const endPunct = (s) => (/[.!?]$/.test(s) ? s : `${s}.`);
+
+/** The caption drawn from the curated description, or '' if none is usable. */
+function fromDescription(game) {
+  const condensed = condense(firstSentence(game.blurb), MAX_CAPTION);
+  return condensed ? endPunct(condensed) : '';
+}
+
 const phraseFor = (term) => MECHANIC.get(term) || term;
 
 /**
@@ -250,10 +331,17 @@ function feelAndCommitment(game) {
 // ---------------------------------------------------------------------------
 
 /**
- * The whole caption for one game: two short sentences, plain text, within
- * MAX_CAPTION. Exported so a future BGG sync can call it directly.
+ * The caption for one game: plain text, within MAX_CAPTION. Exported so a
+ * future BGG sync can call it directly.
+ *
+ * Prefers the curated description, which is unique and concrete. Falls back to
+ * composing from tags and the weight/time buckets, which is always available
+ * but says much the same thing about many games — a safety net, not the plan.
  */
 export function buildCaption(game) {
+  const described = fromDescription(game);
+  if (described) return described;
+
   const terms = sourceTerms(game);
   const tail = feelAndCommitment(game);
   let head = whatYouDo(terms);
