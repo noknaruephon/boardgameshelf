@@ -28,7 +28,14 @@
       "3": "recommended",
       "4": "recommended"
     },
-    "caption": "Roll dice, then spend them to place hexagonal tiles across your estate."
+    "caption": "Roll dice, then spend them to place hexagonal tiles across your estate.",
+    "fingerprint": {
+      "complexity": 2.9,
+      "luck": 2.8,
+      "interaction": 1.8,
+      "length": 4,
+      "strategy": 4
+    }
   },
   {
     "bggId": "397598",
@@ -61,7 +68,14 @@
       "5": "not_recommended",
       "6": "recommended"
     },
-    "caption": "The standalone follow-up to Dune: Imperium, adding sandworms."
+    "caption": "The standalone follow-up to Dune: Imperium, adding sandworms.",
+    "fingerprint": {
+      "complexity": 3.4,
+      "luck": 2.6,
+      "interaction": 3.7,
+      "length": 4,
+      "strategy": 4.1
+    }
   },
   {
     "bggId": "356238",
@@ -93,7 +107,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Guide one of fourteen wildly asymmetric factions across a shared map."
+    "caption": "Guide one of fourteen wildly asymmetric factions across a shared map.",
+    "fingerprint": {
+      "complexity": 4,
+      "luck": 0.8,
+      "interaction": 3.2,
+      "length": 5,
+      "strategy": 4.8
+    }
   },
   {
     "title": "Brass: Birmingham",
@@ -123,7 +144,14 @@
       "3": "best",
       "4": "best"
     },
-    "caption": "Build canals then railways across Industrial Revolution Birmingham."
+    "caption": "Build canals then railways across Industrial Revolution Birmingham.",
+    "fingerprint": {
+      "complexity": 3.9,
+      "luck": 1.2,
+      "interaction": 4.2,
+      "length": 4,
+      "strategy": 4.9
+    }
   },
   {
     "title": "Ark Nova",
@@ -156,7 +184,14 @@
       "3": "recommended",
       "4": "not_recommended"
     },
-    "caption": "Build a modern, ethical zoo and juggle visitor appeal against conservation funding."
+    "caption": "Build a modern, ethical zoo and juggle visitor appeal against conservation funding.",
+    "fingerprint": {
+      "complexity": 3.8,
+      "luck": 2.6,
+      "interaction": 2.2,
+      "length": 5,
+      "strategy": 4.7
+    }
   },
   {
     "bggId": "468508",
@@ -215,7 +250,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Run a sprawling industrial conglomerate through Japan's era of rapid modernization."
+    "caption": "Run a sprawling industrial conglomerate through Japan's era of rapid modernization.",
+    "fingerprint": {
+      "complexity": 3.8,
+      "luck": 1.2,
+      "interaction": 3.4,
+      "length": 4,
+      "strategy": 4.4
+    }
   },
   {
     "bggId": "367150",
@@ -276,7 +318,14 @@
       "3": "not_recommended",
       "4": "not_recommended"
     },
-    "caption": "Command the Empire's hunt for the hidden Rebel base or run the Rebellion's desperate guerrilla war."
+    "caption": "Command the Empire's hunt for the hidden Rebel base or run the Rebellion's desperate guerrilla war.",
+    "fingerprint": {
+      "complexity": 4,
+      "luck": 2.6,
+      "interaction": 4.9,
+      "length": 5,
+      "strategy": 4.4
+    }
   },
   {
     "bggId": "316554",
@@ -307,7 +356,14 @@
       "3": "best",
       "4": "best"
     },
-    "caption": "Send agents to secure resources and influence."
+    "caption": "Send agents to secure resources and influence.",
+    "fingerprint": {
+      "complexity": 3.2,
+      "luck": 2.6,
+      "interaction": 3.6,
+      "length": 4,
+      "strategy": 4
+    }
   },
   {
     "bggId": "321608",
@@ -337,7 +393,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Play as government, capitalists, or the working class and steer a nation's economy."
+    "caption": "Play as government, capitalists, or the working class and steer a nation's economy.",
+    "fingerprint": {
+      "complexity": 4.1,
+      "luck": 1.4,
+      "interaction": 4.8,
+      "length": 5,
+      "strategy": 4.6
+    }
   },
   {
     "bggId": "421006",
@@ -365,7 +428,14 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "A head-to-head card duel pitting the forces of good against Sauron's armies across Middle-earth."
+    "caption": "A head-to-head card duel pitting the forces of good against Sauron's armies across Middle-earth.",
+    "fingerprint": {
+      "complexity": 2.3,
+      "luck": 1.8,
+      "interaction": 4.2,
+      "length": 2,
+      "strategy": 3.6
+    }
   },
   {
     "title": "Blood on the Clocktower",
@@ -400,7 +470,14 @@
       "10": "best",
       "11": "best"
     },
-    "caption": "A storyteller-run social deduction game where everyone gets a secret role and the dead keep voting."
+    "caption": "A storyteller-run social deduction game where everyone gets a secret role and the dead keep voting.",
+    "fingerprint": {
+      "complexity": 3,
+      "luck": 1.8,
+      "interaction": 5,
+      "length": 4,
+      "strategy": 3
+    }
   },
   {
     "title": "The Million Dollar Doodle",
@@ -462,7 +539,14 @@
       "3": "recommended",
       "4": "recommended"
     },
-    "caption": "Play elemental spirits defending an island from colonizing invaders."
+    "caption": "Play elemental spirits defending an island from colonizing invaders.",
+    "fingerprint": {
+      "complexity": 4.1,
+      "luck": 2.4,
+      "interaction": 4.2,
+      "length": 4,
+      "strategy": 4.8
+    }
   },
   {
     "bggId": "167791",
@@ -494,7 +578,14 @@
       "4": "recommended",
       "5": "not_recommended"
     },
-    "caption": "Play project cards to raise Mars's oxygen, heat, and oceans while building out your own engine of production."
+    "caption": "Play project cards to raise Mars's oxygen, heat, and oceans while building out your own engine of production.",
+    "fingerprint": {
+      "complexity": 3.2,
+      "luck": 3.2,
+      "interaction": 2.3,
+      "length": 4,
+      "strategy": 4.2
+    }
   },
   {
     "bggId": "383469",
@@ -555,7 +646,14 @@
       "4": "best",
       "5": "best"
     },
-    "caption": "Collect train cards, claim routes across the map, and complete your secret destination tickets."
+    "caption": "Collect train cards, claim routes across the map, and complete your secret destination tickets.",
+    "fingerprint": {
+      "complexity": 1.9,
+      "luck": 2.8,
+      "interaction": 3,
+      "length": 3,
+      "strategy": 2.4
+    }
   },
   {
     "bggId": "310100",
@@ -587,7 +685,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Trapped in a facility crawling with something that hunts by sound, everyone has a secret objective."
+    "caption": "Trapped in a facility crawling with something that hunts by sound, everyone has a secret objective.",
+    "fingerprint": {
+      "complexity": 3.9,
+      "luck": 3.6,
+      "interaction": 4.4,
+      "length": 5,
+      "strategy": 3.2
+    }
   },
   {
     "bggId": "446893",
@@ -709,7 +814,14 @@
       "4": "recommended",
       "5": "best"
     },
-    "caption": "Every player commands a wildly different alien power and negotiates."
+    "caption": "Every player commands a wildly different alien power and negotiates.",
+    "fingerprint": {
+      "complexity": 2.6,
+      "luck": 3.4,
+      "interaction": 5,
+      "length": 4,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "256960",
@@ -741,7 +853,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Maneuver shifting alliances between empires in 19th-century Afghanistan as your influence rises."
+    "caption": "Maneuver shifting alliances between empires in 19th-century Afghanistan as your influence rises.",
+    "fingerprint": {
+      "complexity": 3.8,
+      "luck": 2.2,
+      "interaction": 4.7,
+      "length": 4,
+      "strategy": 4.5
+    }
   },
   {
     "bggId": "367498",
@@ -771,7 +890,14 @@
       "2": "best",
       "3": "recommended"
     },
-    "caption": "A streamlined, standalone entry point into Spirit Island's cooperative fight against colonizing invaders."
+    "caption": "A streamlined, standalone entry point into Spirit Island's cooperative fight against colonizing invaders.",
+    "fingerprint": {
+      "complexity": 3.3,
+      "luck": 2.4,
+      "interaction": 4,
+      "length": 4,
+      "strategy": 4.2
+    }
   },
   {
     "bggId": "407570",
@@ -801,7 +927,14 @@
       "3": "not_recommended",
       "4": "recommended"
     },
-    "caption": "A dense, card-driven simulation of divided Germany during the Cold War, one player steering the East."
+    "caption": "A dense, card-driven simulation of divided Germany during the Cold War, one player steering the East.",
+    "fingerprint": {
+      "complexity": 4.2,
+      "luck": 1,
+      "interaction": 4.8,
+      "length": 5,
+      "strategy": 4.7
+    }
   },
   {
     "title": "Root",
@@ -831,7 +964,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Four wildly different factions — militant cats, feudal birds, guerrilla woodland critters."
+    "caption": "Four wildly different factions — militant cats, feudal birds, guerrilla woodland critters.",
+    "fingerprint": {
+      "complexity": 3.8,
+      "luck": 2,
+      "interaction": 4.8,
+      "length": 4,
+      "strategy": 4.4
+    }
   },
   {
     "bggId": "325635",
@@ -890,7 +1030,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Build a fast food empire from the ground up, hiring staff, training them into better roles."
+    "caption": "Build a fast food empire from the ground up, hiring staff, training them into better roles.",
+    "fingerprint": {
+      "complexity": 4.4,
+      "luck": 0.6,
+      "interaction": 4.5,
+      "length": 5,
+      "strategy": 5
+    }
   },
   {
     "bggId": "400366",
@@ -954,7 +1101,14 @@
       "9": "recommended",
       "10": "recommended"
     },
-    "caption": "The Resistance's Arthurian cousin — good and evil secretly duke it out over a series of quests."
+    "caption": "The Resistance's Arthurian cousin — good and evil secretly duke it out over a series of quests.",
+    "fingerprint": {
+      "complexity": 1.6,
+      "luck": 2,
+      "interaction": 5,
+      "length": 2,
+      "strategy": 2.4
+    }
   },
   {
     "title": "盤上ダンジョン (Banjo-Dungeon)",
@@ -1011,7 +1165,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Trade resources, build settlements and roads, and try to keep the robber off your good tiles."
+    "caption": "Trade resources, build settlements and roads, and try to keep the robber off your good tiles.",
+    "fingerprint": {
+      "complexity": 1.8,
+      "luck": 3.4,
+      "interaction": 4,
+      "length": 4,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "23540",
@@ -1078,7 +1239,14 @@
       "5": "recommended",
       "6": "not_recommended"
     },
-    "caption": "Run a Tuscan vineyard — plant vines, harvest grapes, and fill wine orders through the seasons."
+    "caption": "Run a Tuscan vineyard — plant vines, harvest grapes, and fill wine orders through the seasons.",
+    "fingerprint": {
+      "complexity": 2.9,
+      "luck": 2.4,
+      "interaction": 2.6,
+      "length": 4,
+      "strategy": 3.6
+    }
   },
   {
     "bggId": "381297",
@@ -1173,7 +1341,14 @@
       "4": "best",
       "5": "best"
     },
-    "caption": "Buy and sell stocks with a bit of insider knowledge tucked in your hand, then try to read the table."
+    "caption": "Buy and sell stocks with a bit of insider knowledge tucked in your hand, then try to read the table.",
+    "fingerprint": {
+      "complexity": 2.4,
+      "luck": 2.6,
+      "interaction": 3.8,
+      "length": 2,
+      "strategy": 2.8
+    }
   },
   {
     "bggId": "205059",
@@ -1205,7 +1380,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "A companion app runs the monsters, the clock, and the scares."
+    "caption": "A companion app runs the monsters, the clock, and the scares.",
+    "fingerprint": {
+      "complexity": 3,
+      "luck": 3,
+      "interaction": 3.4,
+      "length": 5,
+      "strategy": 2.6
+    }
   },
   {
     "title": "Agricola 15",
@@ -1238,7 +1420,14 @@
       "3": "best",
       "4": "best"
     },
-    "caption": "Grow a farm from a two-person shack into a proper homestead."
+    "caption": "Grow a farm from a two-person shack into a proper homestead.",
+    "fingerprint": {
+      "complexity": 3.4,
+      "luck": 2,
+      "interaction": 2.8,
+      "length": 4,
+      "strategy": 4.3
+    }
   },
   {
     "bggId": "274638",
@@ -1298,7 +1487,14 @@
       "4": "recommended",
       "5": "not_recommended"
     },
-    "caption": "An app-driven cooperative campaign where your party explores Middle-earth."
+    "caption": "An app-driven cooperative campaign where your party explores Middle-earth.",
+    "fingerprint": {
+      "complexity": 3,
+      "luck": 2.8,
+      "interaction": 3.4,
+      "length": 4,
+      "strategy": 2.8
+    }
   },
   {
     "bggId": "295947",
@@ -1329,7 +1525,14 @@
       "3": "best",
       "4": "recommended"
     },
-    "caption": "Place hexagonal habitat tiles and wildlife tokens to build the most harmonious slice of Pacific Northwest."
+    "caption": "Place hexagonal habitat tiles and wildlife tokens to build the most harmonious slice of Pacific Northwest.",
+    "fingerprint": {
+      "complexity": 1.9,
+      "luck": 2.2,
+      "interaction": 1.6,
+      "length": 2,
+      "strategy": 3.2
+    }
   },
   {
     "title": "Age of Steam",
@@ -1364,7 +1567,14 @@
       "5": "best",
       "6": "recommended"
     },
-    "caption": "Lay track, run trains, and go into debt doing it."
+    "caption": "Lay track, run trains, and go into debt doing it.",
+    "fingerprint": {
+      "complexity": 3.8,
+      "luck": 1.4,
+      "interaction": 4.5,
+      "length": 4,
+      "strategy": 4.7
+    }
   },
   {
     "title": "Rebel Princess: Deluxe Edition",
@@ -1426,7 +1636,14 @@
       "3": "best",
       "4": "not_recommended"
     },
-    "caption": "Place dice to trigger polyomino-style tile placement, build up a medieval trade empire."
+    "caption": "Place dice to trigger polyomino-style tile placement, build up a medieval trade empire.",
+    "fingerprint": {
+      "complexity": 3.7,
+      "luck": 2.2,
+      "interaction": 2.6,
+      "length": 4,
+      "strategy": 3.9
+    }
   },
   {
     "bggId": "372571",
@@ -1489,7 +1706,14 @@
       "4": "recommended",
       "5": "not_recommended"
     },
-    "caption": "Manage a growing harbor town, converting raw resources into goods and feeding your workers along the way."
+    "caption": "Manage a growing harbor town, converting raw resources into goods and feeding your workers along the way.",
+    "fingerprint": {
+      "complexity": 3.7,
+      "luck": 1,
+      "interaction": 2.8,
+      "length": 5,
+      "strategy": 4.4
+    }
   },
   {
     "bggId": "316377",
@@ -1521,7 +1745,14 @@
       "6": "recommended",
       "7": "recommended"
     },
-    "caption": "Draft cards each round to build up a civilization's military."
+    "caption": "Draft cards each round to build up a civilization's military.",
+    "fingerprint": {
+      "complexity": 2.3,
+      "luck": 1.8,
+      "interaction": 2.8,
+      "length": 2,
+      "strategy": 3.2
+    }
   },
   {
     "bggId": "446497",
@@ -1615,7 +1846,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Play runs of cards you can never reorder, racing to empty your hand."
+    "caption": "Play runs of cards you can never reorder, racing to empty your hand.",
+    "fingerprint": {
+      "complexity": 1.7,
+      "luck": 2.2,
+      "interaction": 3.2,
+      "length": 1,
+      "strategy": 2.8
+    }
   },
   {
     "title": "Feed the Kraken",
@@ -1649,7 +1887,14 @@
       "10": "best",
       "11": "best"
     },
-    "caption": "Everyone's stuck on the same ship, but sailors."
+    "caption": "Everyone's stuck on the same ship, but sailors.",
+    "fingerprint": {
+      "complexity": 2.2,
+      "luck": 1.8,
+      "interaction": 4.8,
+      "length": 4,
+      "strategy": 2.4
+    }
   },
   {
     "title": "Rebirth",
@@ -1712,7 +1957,14 @@
       "7": "recommended",
       "8": "recommended"
     },
-    "caption": "Give cryptic clues to help your team crack a numeric code — while eavesdropping to crack the other team's."
+    "caption": "Give cryptic clues to help your team crack a numeric code — while eavesdropping to crack the other team's.",
+    "fingerprint": {
+      "complexity": 1.9,
+      "luck": 1.8,
+      "interaction": 4.4,
+      "length": 2,
+      "strategy": 2.2
+    }
   },
   {
     "bggId": "153016",
@@ -1747,7 +1999,14 @@
       "10": "recommended",
       "11": "recommended"
     },
-    "caption": "Draw a word, pass your sketchpad, the next player guesses what you drew and passes it."
+    "caption": "Draw a word, pass your sketchpad, the next player guesses what you drew and passes it.",
+    "fingerprint": {
+      "complexity": 1.1,
+      "luck": 2.2,
+      "interaction": 4,
+      "length": 2,
+      "strategy": 0.8
+    }
   },
   {
     "title": "The Quest for El Dorado",
@@ -1777,7 +2036,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Race through jungle, desert, and river tiles toward the city of gold."
+    "caption": "Race through jungle, desert, and river tiles toward the city of gold.",
+    "fingerprint": {
+      "complexity": 1.9,
+      "luck": 2.4,
+      "interaction": 2.6,
+      "length": 3,
+      "strategy": 2.8
+    }
   },
   {
     "bggId": "440941",
@@ -1836,7 +2102,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Bid sun tokens against your rivals to win auctions for tiles — monuments, floods."
+    "caption": "Bid sun tokens against your rivals to win auctions for tiles — monuments, floods.",
+    "fingerprint": {
+      "complexity": 2.5,
+      "luck": 3,
+      "interaction": 3.8,
+      "length": 3,
+      "strategy": 3.2
+    }
   },
   {
     "bggId": "552",
@@ -1866,7 +2139,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "A brutal, old-school economic game about running competing bus companies."
+    "caption": "A brutal, old-school economic game about running competing bus companies.",
+    "fingerprint": {
+      "complexity": 3.9,
+      "luck": 0.8,
+      "interaction": 4.6,
+      "length": 4,
+      "strategy": 4.6
+    }
   },
   {
     "bggId": "350205",
@@ -1964,7 +2244,14 @@
       "10": "not_recommended",
       "11": "not_recommended"
     },
-    "caption": "Dwarves dig for gold while secret saboteurs quietly sabotage the tunnel from within."
+    "caption": "Dwarves dig for gold while secret saboteurs quietly sabotage the tunnel from within.",
+    "fingerprint": {
+      "complexity": 1.3,
+      "luck": 2.8,
+      "interaction": 4.4,
+      "length": 2,
+      "strategy": 1.6
+    }
   },
   {
     "title": "Skyrise",
@@ -1994,7 +2281,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Bid to build in a magnificent sky city, racing rivals across islands and factions."
+    "caption": "Bid to build in a magnificent sky city, racing rivals across islands and factions.",
+    "fingerprint": {
+      "complexity": 2.2,
+      "luck": 1.4,
+      "interaction": 3.6,
+      "length": 4,
+      "strategy": 3.8
+    }
   },
   {
     "bggId": "436126",
@@ -2113,7 +2407,14 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "A magnetic tabletop duel where you steer a handle under the board to knock a ball into your opponent's goal."
+    "caption": "A magnetic tabletop duel where you steer a handle under the board to knock a ball into your opponent's goal.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 1.4,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.4
+    }
   },
   {
     "bggId": "351605",
@@ -2146,7 +2447,14 @@
       "6": "recommended",
       "7": "recommended"
     },
-    "caption": "Trade and plant bean cards to build the most valuable harvests."
+    "caption": "Trade and plant bean cards to build the most valuable harvests.",
+    "fingerprint": {
+      "complexity": 1.7,
+      "luck": 2.2,
+      "interaction": 4.4,
+      "length": 2,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "254640",
@@ -2178,7 +2486,14 @@
       "6": "best",
       "7": "best"
     },
-    "caption": "Everyone secretly writes a one-word clue to help a guesser land the mystery word."
+    "caption": "Everyone secretly writes a one-word clue to help a guesser land the mystery word.",
+    "fingerprint": {
+      "complexity": 1.1,
+      "luck": 2,
+      "interaction": 4.6,
+      "length": 3,
+      "strategy": 1.2
+    }
   },
   {
     "bggId": "163412",
@@ -2206,7 +2521,14 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "Two players race to buy fabric pieces and tile their quilt board without leaving ugly gaps."
+    "caption": "Two players race to buy fabric pieces and tile their quilt board without leaving ugly gaps.",
+    "fingerprint": {
+      "complexity": 1.6,
+      "luck": 1.6,
+      "interaction": 2.6,
+      "length": 2,
+      "strategy": 3.4
+    }
   },
   {
     "bggId": "415078",
@@ -2275,7 +2597,14 @@
       "10": "not_recommended",
       "11": "not_recommended"
     },
-    "caption": "Draw terrain onto your own map as cards reveal what shape comes next, scoring for filling regions."
+    "caption": "Draw terrain onto your own map as cards reveal what shape comes next, scoring for filling regions.",
+    "fingerprint": {
+      "complexity": 1.9,
+      "luck": 2.4,
+      "interaction": 1.4,
+      "length": 2,
+      "strategy": 2.8
+    }
   },
   {
     "bggId": "246684",
@@ -2307,7 +2636,14 @@
       "4": "recommended",
       "5": "best"
     },
-    "caption": "Design, manufacture, and market competing smartphones."
+    "caption": "Design, manufacture, and market competing smartphones.",
+    "fingerprint": {
+      "complexity": 3.6,
+      "luck": 1.2,
+      "interaction": 3.8,
+      "length": 4,
+      "strategy": 4.3
+    }
   },
   {
     "bggId": "407445",
@@ -2396,7 +2732,14 @@
       "5": "recommended",
       "6": "best"
     },
-    "caption": "Command a Great House across Westeros, mixing area control."
+    "caption": "Command a Great House across Westeros, mixing area control.",
+    "fingerprint": {
+      "complexity": 3.8,
+      "luck": 1.6,
+      "interaction": 5,
+      "length": 5,
+      "strategy": 4.3
+    }
   },
   {
     "title": "Modern Art",
@@ -2426,7 +2769,14 @@
       "4": "best",
       "5": "best"
     },
-    "caption": "Buy and sell paintings from five fictional artists across five auction formats."
+    "caption": "Buy and sell paintings from five fictional artists across five auction formats.",
+    "fingerprint": {
+      "complexity": 2.3,
+      "luck": 1.4,
+      "interaction": 4.6,
+      "length": 2,
+      "strategy": 3.4
+    }
   },
   {
     "bggId": "188866",
@@ -2495,7 +2845,14 @@
       "7": "recommended",
       "8": "best"
     },
-    "caption": "Give one-word clues to guide your team to your agents' words on the table."
+    "caption": "Give one-word clues to guide your team to your agents' words on the table.",
+    "fingerprint": {
+      "complexity": 1.3,
+      "luck": 2.2,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.8
+    }
   },
   {
     "bggId": "303057",
@@ -2525,7 +2882,14 @@
       "3": "best",
       "4": "best"
     },
-    "caption": "Build out the historic Pan Am route network, ferry passengers and cargo between cities."
+    "caption": "Build out the historic Pan Am route network, ferry passengers and cargo between cities.",
+    "fingerprint": {
+      "complexity": 2.3,
+      "luck": 2,
+      "interaction": 3.2,
+      "length": 3,
+      "strategy": 2.8
+    }
   },
   {
     "bggId": "14996",
@@ -2556,7 +2920,14 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Claim train routes across a map of Europe, complete secret destination tickets."
+    "caption": "Claim train routes across a map of Europe, complete secret destination tickets.",
+    "fingerprint": {
+      "complexity": 1.9,
+      "luck": 2.6,
+      "interaction": 3,
+      "length": 3,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "315695",
@@ -2655,7 +3026,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Four specialists race the clock to cure four diseases before outbreaks cascade out of control."
+    "caption": "Four specialists race the clock to cure four diseases before outbreaks cascade out of control.",
+    "fingerprint": {
+      "complexity": 2.4,
+      "luck": 2.8,
+      "interaction": 4,
+      "length": 2,
+      "strategy": 3
+    }
   },
   {
     "bggId": "171131",
@@ -2689,7 +3067,14 @@
       "7": "recommended",
       "8": "best"
     },
-    "caption": "Two submarine crews race in real time — captains plot courses."
+    "caption": "Two submarine crews race in real time — captains plot courses.",
+    "fingerprint": {
+      "complexity": 2.6,
+      "luck": 1.6,
+      "interaction": 4.6,
+      "length": 3,
+      "strategy": 2.8
+    }
   },
   {
     "bggId": "455337",
@@ -2789,7 +3174,14 @@
       "9": "recommended",
       "10": "recommended"
     },
-    "caption": "Merlin secretly knows who the servants of Mordred are, but saying so out loud gets him killed."
+    "caption": "Merlin secretly knows who the servants of Mordred are, but saying so out loud gets him killed.",
+    "fingerprint": {
+      "complexity": 1.7,
+      "luck": 2,
+      "interaction": 5,
+      "length": 2,
+      "strategy": 2.4
+    }
   },
   {
     "title": "Catch Sketch",
@@ -2917,7 +3309,14 @@
       "9": "recommended",
       "10": "best"
     },
-    "caption": "Liberals and fascists secretly vie for control of a fracturing government, with policies."
+    "caption": "Liberals and fascists secretly vie for control of a fracturing government, with policies.",
+    "fingerprint": {
+      "complexity": 2,
+      "luck": 2.2,
+      "interaction": 5,
+      "length": 2,
+      "strategy": 2.4
+    }
   },
   {
     "bggId": "402111",
@@ -2978,7 +3377,14 @@
       "3": "best",
       "4": "recommended"
     },
-    "caption": "Rebuild London after the Great Fire, playing cards from your hand to develop the city."
+    "caption": "Rebuild London after the Great Fire, playing cards from your hand to develop the city.",
+    "fingerprint": {
+      "complexity": 3,
+      "luck": 1.8,
+      "interaction": 2.4,
+      "length": 4,
+      "strategy": 3.9
+    }
   },
   {
     "bggId": "123260",
@@ -3009,7 +3415,14 @@
       "3": "best",
       "4": "recommended"
     },
-    "caption": "Tile by tile, zone your own town — build up industry, housing."
+    "caption": "Tile by tile, zone your own town — build up industry, housing.",
+    "fingerprint": {
+      "complexity": 2.8,
+      "luck": 1.8,
+      "interaction": 2.6,
+      "length": 4,
+      "strategy": 3.8
+    }
   },
   {
     "bggId": "340466",
@@ -3040,7 +3453,14 @@
       "5": "best",
       "6": "recommended"
     },
-    "caption": "A doomed ocean liner, a Cthulhu Mythos horror circling below."
+    "caption": "A doomed ocean liner, a Cthulhu Mythos horror circling below.",
+    "fingerprint": {
+      "complexity": 3.3,
+      "luck": 2.6,
+      "interaction": 4.7,
+      "length": 5,
+      "strategy": 3
+    }
   },
   {
     "title": "Chinatown",
@@ -3070,7 +3490,14 @@
       "4": "recommended",
       "5": "best"
     },
-    "caption": "Trade and haggle over city blocks and shop tiles in 1960s New York."
+    "caption": "Trade and haggle over city blocks and shop tiles in 1960s New York.",
+    "fingerprint": {
+      "complexity": 2.2,
+      "luck": 1.6,
+      "interaction": 5,
+      "length": 3,
+      "strategy": 3.4
+    }
   },
   {
     "title": "Zoo Vadis",
@@ -3102,7 +3529,14 @@
       "6": "recommended",
       "7": "recommended"
     },
-    "caption": "Animals campaign and bribe their way up the enclosure hierarchy toward the zoo's star exhibit."
+    "caption": "Animals campaign and bribe their way up the enclosure hierarchy toward the zoo's star exhibit.",
+    "fingerprint": {
+      "complexity": 2.1,
+      "luck": 1.4,
+      "interaction": 4.8,
+      "length": 2,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "260180",
@@ -3133,7 +3567,14 @@
       "3": "best",
       "4": "recommended"
     },
-    "caption": "Snap together colorful puzzle pieces to complete shape cards."
+    "caption": "Snap together colorful puzzle pieces to complete shape cards.",
+    "fingerprint": {
+      "complexity": 2.1,
+      "luck": 1.6,
+      "interaction": 1.6,
+      "length": 2,
+      "strategy": 2.8
+    }
   },
   {
     "bggId": "381278",
@@ -3191,7 +3632,14 @@
       "3": "best",
       "4": "recommended"
     },
-    "caption": "Collect gem tokens, buy development cards, and build an engine of permanent discounts on your way."
+    "caption": "Collect gem tokens, buy development cards, and build an engine of permanent discounts on your way.",
+    "fingerprint": {
+      "complexity": 1.8,
+      "luck": 1.8,
+      "interaction": 2.2,
+      "length": 2,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "391752",
@@ -3258,7 +3706,14 @@
       "10": "recommended",
       "11": "recommended"
     },
-    "caption": "A silent Forensic Scientist lays out clue tiles while everyone else races to name the murder weapon."
+    "caption": "A silent Forensic Scientist lays out clue tiles while everyone else races to name the murder weapon.",
+    "fingerprint": {
+      "complexity": 2.1,
+      "luck": 2,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.8
+    }
   },
   {
     "bggId": "352515",
@@ -3353,7 +3808,14 @@
       "10": "recommended",
       "11": "recommended"
     },
-    "caption": "Tell a story with a single word or phrase, then watch everyone else try to guess which dreamlike card."
+    "caption": "Tell a story with a single word or phrase, then watch everyone else try to guess which dreamlike card.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 2.4,
+      "interaction": 4,
+      "length": 2,
+      "strategy": 1.2
+    }
   },
   {
     "title": "Detective Club",
@@ -3476,7 +3938,14 @@
       "4": "recommended",
       "5": "best"
     },
-    "caption": "Bid unlimited fake money to bail out companies as a central bank."
+    "caption": "Bid unlimited fake money to bail out companies as a central bank.",
+    "fingerprint": {
+      "complexity": 1.5,
+      "luck": 1.2,
+      "interaction": 4.4,
+      "length": 2,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "327778",
@@ -3512,7 +3981,14 @@
       "9": "recommended",
       "10": "not_recommended"
     },
-    "caption": "Everyone gets a secret number from 1 to 100 and must line themselves up using only vague clues tied."
+    "caption": "Everyone gets a secret number from 1 to 100 and must line themselves up using only vague clues tied.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 2.2,
+      "interaction": 4.4,
+      "length": 1,
+      "strategy": 1
+    }
   },
   {
     "bggId": "434172",
@@ -3766,7 +4242,14 @@
       "5": "best",
       "6": "recommended"
     },
-    "caption": "Declare your goods, bribe the sheriff, and hope your bag of \"chickens\" doesn't get searched."
+    "caption": "Declare your goods, bribe the sheriff, and hope your bag of \"chickens\" doesn't get searched.",
+    "fingerprint": {
+      "complexity": 2.1,
+      "luck": 1.6,
+      "interaction": 4.8,
+      "length": 3,
+      "strategy": 2.2
+    }
   },
   {
     "bggId": "307997",
@@ -3831,7 +4314,14 @@
       "6": "best",
       "7": "recommended"
     },
-    "caption": "One player is a mute ghost feeding everyone else surreal dream-vision cards."
+    "caption": "One player is a mute ghost feeding everyone else surreal dream-vision cards.",
+    "fingerprint": {
+      "complexity": 1.9,
+      "luck": 2.4,
+      "interaction": 4.2,
+      "length": 2,
+      "strategy": 1.6
+    }
   },
   {
     "bggId": "262543",
@@ -3868,7 +4358,14 @@
       "10": "recommended",
       "11": "recommended"
     },
-    "caption": "One player sees a hidden target on a spectrum — spicy to mild."
+    "caption": "One player sees a hidden target on a spectrum — spicy to mild.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 2.4,
+      "interaction": 4.4,
+      "length": 2,
+      "strategy": 1.4
+    }
   },
   {
     "bggId": "223770",
@@ -3900,7 +4397,14 @@
       "6": "not_recommended",
       "7": "not_recommended"
     },
-    "caption": "Draft employees, ride out market trends, and cash out your company before the market turns on you."
+    "caption": "Draft employees, ride out market trends, and cash out your company before the market turns on you.",
+    "fingerprint": {
+      "complexity": 1.6,
+      "luck": 2.6,
+      "interaction": 3.6,
+      "length": 1,
+      "strategy": 2.4
+    }
   },
   {
     "bggId": "313",
@@ -3932,7 +4436,14 @@
       "5": "best",
       "6": "recommended"
     },
-    "caption": "Muscle your way into the mob's turf war, bidding and bluffing over rackets and territory."
+    "caption": "Muscle your way into the mob's turf war, bidding and bluffing over rackets and territory.",
+    "fingerprint": {
+      "complexity": 2.7,
+      "luck": 1.8,
+      "interaction": 4.4,
+      "length": 4,
+      "strategy": 3.2
+    }
   },
   {
     "bggId": "198773",
@@ -3966,7 +4477,14 @@
       "7": "recommended",
       "8": "recommended"
     },
-    "caption": "The same tense one-word-clue spymaster game, but with surreal illustrated tiles instead of words."
+    "caption": "The same tense one-word-clue spymaster game, but with surreal illustrated tiles instead of words.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 2.2,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.7
+    }
   },
   {
     "title": "Wolf Street",
@@ -4221,7 +4739,14 @@
       "9": "recommended",
       "10": "recommended"
     },
-    "caption": "One secret impostor doesn't know what everyone else is drawing."
+    "caption": "One secret impostor doesn't know what everyone else is drawing.",
+    "fingerprint": {
+      "complexity": 1.3,
+      "luck": 2,
+      "interaction": 4.8,
+      "length": 1,
+      "strategy": 1.6
+    }
   },
   {
     "bggId": "12942",
@@ -4253,7 +4778,14 @@
       "6": "recommended",
       "7": "recommended"
     },
-    "caption": "Take a card and its point value, or pay a chip to push it onto the next player instead."
+    "caption": "Take a card and its point value, or pay a chip to push it onto the next player instead.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 2,
+      "interaction": 3.4,
+      "length": 1,
+      "strategy": 2.4
+    }
   },
   {
     "bggId": "408547",
@@ -4315,7 +4847,14 @@
       "4": "recommended",
       "5": "best"
     },
-    "caption": "Ride the 17th-century Dutch tulip market as prices climb absurdly high, then collapse."
+    "caption": "Ride the 17th-century Dutch tulip market as prices climb absurdly high, then collapse.",
+    "fingerprint": {
+      "complexity": 2.3,
+      "luck": 2.4,
+      "interaction": 4.2,
+      "length": 3,
+      "strategy": 2.6
+    }
   },
   {
     "bggId": "256804",
@@ -4413,7 +4952,14 @@
       "7": "recommended",
       "8": "recommended"
     },
-    "caption": "One player secretly knows the answer to a word puzzle."
+    "caption": "One player secretly knows the answer to a word puzzle.",
+    "fingerprint": {
+      "complexity": 1.6,
+      "luck": 2,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.8
+    }
   },
   {
     "bggId": "277670",
@@ -4511,7 +5057,14 @@
       "10": "recommended",
       "11": "best"
     },
-    "caption": "The classic hidden-role party game blown out to enormous scale."
+    "caption": "The classic hidden-role party game blown out to enormous scale.",
+    "fingerprint": {
+      "complexity": 1.5,
+      "luck": 2.4,
+      "interaction": 5,
+      "length": 2,
+      "strategy": 1.6
+    }
   },
   {
     "title": "Two Rooms and a Boom",
@@ -4544,7 +5097,14 @@
       "10": "recommended",
       "11": "recommended"
     },
-    "caption": "Split into two rooms, trade hostages each round."
+    "caption": "Split into two rooms, trade hostages each round.",
+    "fingerprint": {
+      "complexity": 1.5,
+      "luck": 2,
+      "interaction": 5,
+      "length": 1,
+      "strategy": 1.8
+    }
   },
   {
     "title": "In Front of the Elevators",
@@ -4606,7 +5166,14 @@
       "5": "best",
       "6": "recommended"
     },
-    "caption": "Bluff your way to eliminating everyone else's influence, claiming powers you may or may not actually have."
+    "caption": "Bluff your way to eliminating everyone else's influence, claiming powers you may or may not actually have.",
+    "fingerprint": {
+      "complexity": 1.4,
+      "luck": 2.2,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.8
+    }
   },
   {
     "bggId": "377983",
@@ -4673,7 +5240,14 @@
       "9": "not_recommended",
       "10": "not_recommended"
     },
-    "caption": "Liar's Dice by another name — everyone hides their dice under a cup."
+    "caption": "Liar's Dice by another name — everyone hides their dice under a cup.",
+    "fingerprint": {
+      "complexity": 1.3,
+      "luck": 3.6,
+      "interaction": 3.8,
+      "length": 2,
+      "strategy": 1.6
+    }
   },
   {
     "bggId": "238935",
@@ -4737,7 +5311,14 @@
       "6": "best",
       "7": "best"
     },
-    "caption": "Guess the number, then bet on whose guess is closest — you don't need to actually know the trivia to win."
+    "caption": "Guess the number, then bet on whose guess is closest — you don't need to actually know the trivia to win.",
+    "fingerprint": {
+      "complexity": 1.3,
+      "luck": 2.8,
+      "interaction": 3.6,
+      "length": 2,
+      "strategy": 1.4
+    }
   },
   {
     "bggId": "410382",
@@ -4864,7 +5445,14 @@
       "3": "not_recommended",
       "4": "best"
     },
-    "caption": "Place your colored pieces so each new one only touches its own color at the corners."
+    "caption": "Place your colored pieces so each new one only touches its own color at the corners.",
+    "fingerprint": {
+      "complexity": 1.6,
+      "luck": 0.4,
+      "interaction": 4.2,
+      "length": 2,
+      "strategy": 3.2
+    }
   },
   {
     "bggId": "215371",
@@ -4991,7 +5579,14 @@
       "5": "best",
       "6": "recommended"
     },
-    "caption": "Pass a card face-down and claim it's a cockroach (or a rat."
+    "caption": "Pass a card face-down and claim it's a cockroach (or a rat.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 2.6,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.4
+    }
   },
   {
     "bggId": "193308",
@@ -5027,7 +5622,14 @@
       "10": "recommended",
       "11": "recommended"
     },
-    "caption": "One player is secretly the spy with no idea where everyone else."
+    "caption": "One player is secretly the spy with no idea where everyone else.",
+    "fingerprint": {
+      "complexity": 1.3,
+      "luck": 2.4,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.6
+    }
   },
   {
     "bggId": "115",
@@ -5058,7 +5660,14 @@
       "5": "recommended",
       "6": "best"
     },
-    "caption": "A social party game about jockeying for authority at the table, with the title role up for grabs each round."
+    "caption": "A social party game about jockeying for authority at the table, with the title role up for grabs each round.",
+    "fingerprint": {
+      "complexity": 1.8,
+      "luck": 2,
+      "interaction": 5,
+      "length": 3,
+      "strategy": 2.4
+    }
   },
   {
     "bggId": "257067",
@@ -5152,7 +5761,14 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "No talking, no signaling — just a room full of people trying to play cards in ascending order purely by feel."
+    "caption": "No talking, no signaling — just a room full of people trying to play cards in ascending order purely by feel.",
+    "fingerprint": {
+      "complexity": 1.1,
+      "luck": 2.6,
+      "interaction": 4.2,
+      "length": 1,
+      "strategy": 1
+    }
   },
   {
     "bggId": "356907",
@@ -5187,7 +5803,14 @@
       "10": "recommended",
       "11": "not_recommended"
     },
-    "caption": "Everyone gets a secret role, roles get swapped in the dark, and by the end nobody — including."
+    "caption": "Everyone gets a secret role, roles get swapped in the dark, and by the end nobody — including.",
+    "fingerprint": {
+      "complexity": 1.3,
+      "luck": 2.6,
+      "interaction": 4.8,
+      "length": 2,
+      "strategy": 1.8
+    }
   },
   {
     "bggId": "230765",
@@ -5288,7 +5911,14 @@
       "7": "recommended",
       "8": "recommended"
     },
-    "caption": "Match your card with someone else's, then do whatever it says — high five, trade."
+    "caption": "Match your card with someone else's, then do whatever it says — high five, trade.",
+    "fingerprint": {
+      "complexity": 1.1,
+      "luck": 2,
+      "interaction": 4,
+      "length": 1,
+      "strategy": 0.4
+    }
   },
   {
     "bggId": "624",
@@ -5318,7 +5948,14 @@
       "3": "not_recommended",
       "4": "recommended"
     },
-    "caption": "Race your pawn to the other side of the board while dropping walls to slow everyone else down."
+    "caption": "Race your pawn to the other side of the board while dropping walls to slow everyone else down.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 0.2,
+      "interaction": 4.4,
+      "length": 1,
+      "strategy": 3.2
+    }
   },
   {
     "bggId": "263360",
@@ -5568,7 +6205,14 @@
       "7": "best",
       "8": "recommended"
     },
-    "caption": "One player is secretly bluffing about a topic everyone else already knows."
+    "caption": "One player is secretly bluffing about a topic everyone else already knows.",
+    "fingerprint": {
+      "complexity": 1.2,
+      "luck": 2.4,
+      "interaction": 4.6,
+      "length": 1,
+      "strategy": 1.6
+    }
   },
   {
     "bggId": "191895",
@@ -5631,7 +6275,14 @@
       "6": "recommended",
       "7": "best"
     },
-    "caption": "Sheriffs, outlaws, deputies, and a renegade shoot it out with a deck of Wild West cards."
+    "caption": "Sheriffs, outlaws, deputies, and a renegade shoot it out with a deck of Wild West cards.",
+    "fingerprint": {
+      "complexity": 1.7,
+      "luck": 3.2,
+      "interaction": 4.4,
+      "length": 2,
+      "strategy": 1.6
+    }
   },
   {
     "bggId": "3093",
