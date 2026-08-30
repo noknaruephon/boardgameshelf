@@ -740,7 +740,9 @@
   .gn-surprise-card{
     border-radius:8px;
     overflow:hidden;
-    background:var(--bgs-bg);
+    /* Same plate as .game-card on the shelf, so a game reads the same in the
+       sheet as it does in the grid behind it. */
+    background:var(--bgs-plate);
   }
   .gn-surprise-card .art{aspect-ratio:3/4;width:100%;overflow:hidden;background:var(--bgs-plate);}
   .gn-surprise-card .art img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -802,6 +804,11 @@
     animation:gn-rise 0.34s cubic-bezier(0.2,0.8,0.2,1);
   }
   @keyframes gn-rise{from{transform:translateY(24px);opacity:0;}to{transform:none;opacity:1;}}
+  /* The shelf pairs --bgs-plate cards with a --bgs-bg page. Matching the card
+     to the shelf means the sheet has to take the darker ground too — a plate
+     card on a plate sheet has no visible edge at all. .gn-panel keeps its plate
+     background for the confirm dialog. */
+  .gn-sheet{background:var(--bgs-bg);}
   .gn-sheet__grab{
     width:40px;height:4px;border-radius:2px;
     background:rgba(var(--bgs-ivory-rgb),0.22);
