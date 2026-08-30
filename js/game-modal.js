@@ -12,6 +12,9 @@ const PLAYERS_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0
 const TIME_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg>`;
 const WEIGHT_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 006 0z"/><path d="M19 7l-3 6a3 3 0 006 0z"/><path d="M5 7h14"/><path d="M9 21h6"/></svg>`;
 
+const VIEW_COVER_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 8h14"/></svg>`;
+const VIEW_TABLE_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="9" rx="9" ry="4"/><path d="M5 12v6M19 12v6M12 13v7"/></svg>`;
+
 function coverHTML(g) {
   if (g.backImage) {
     return `
@@ -33,9 +36,133 @@ function coverHTML(g) {
     </div>`;
 }
 
+// A game with a table shot gets the cover overlaid by the photo and a toggle to
+// crossfade between them. Without one the cover is returned untouched, so the
+// 189 games that have no photo render exactly the markup they do today.
+//
+// The cover layer stays in normal flow and keeps sizing the block to the box
+// art's own aspect ratio, as it does today; only the photo is absolutely
+// positioned over it. That keeps both images uncropped-by-the-container and
+// leaves nothing to reflow mid-crossfade.
+//
+// Flip games: the photo overlays the whole scene, so it also covers the "tap or
+// swipe" hint under the card and stands ~13% taller than the box art did. That
+// reads fine — the photo simply fills the block — but it is the one place the
+// two cover treatments interact, and no game carries both fields today (6 have
+// backImage, none have tableShot). Worth a look if that ever changes.
+function mediaHTML(g) {
+  const cover = coverHTML(g);
+  if (!g.tableShot) return cover;
+
+  return `
+    <div class="media-stack">
+      <div class="media-layer media-cover on">${cover}</div>
+      <img class="media-layer media-table" src="${g.tableShot}" alt="${g.title} set up on a table" loading="lazy" decoding="async" aria-hidden="true">
+    </div>
+    <div class="media-toggle-row">
+      <div class="media-toggle" role="group" aria-label="Game image view">
+        <button class="media-toggle__btn" type="button" data-view="cover" aria-pressed="true">${VIEW_COVER_ICON} Cover</button>
+        <button class="media-toggle__btn" type="button" data-view="table" aria-pressed="false">${VIEW_TABLE_ICON} On the table</button>
+      </div>
+    </div>`;
+}
+
+// ---- Stats fingerprint ----
+// Display order, 12 o'clock first, clockwise.
+const FP_AXES = [
+  ['complexity', 'Complexity'],
+  ['luck', 'Luck'],
+  ['interaction', 'Interaction'],
+  ['length', 'Length'],
+  ['strategy', 'Strategy'],
+];
+const FP_MAX = 5;
+const FP_R = 88;                // radar radius
+const FP_LABEL_GAP = 1.23;      // labels sit at FP_R * FP_LABEL_GAP from centre
+const FP_LABEL_CLEARANCE = 85;  // horizontal px reserved per side for label text
+const FP_LABEL_FONT = 10;       // keep in step with .radar-label font-size
+const FP_BASELINE_NUDGE = 3.5;  // labels are drawn this far below their point
+
+// The viewBox is derived rather than hardcoded, so renaming an axis or resizing
+// the label font still fits. FP_LABEL_CLEARANCE has to cover the longest axis
+// name at the final font size — "Interaction" is the constraint. If a label ever
+// clips, that constant is the fix, not the radius.
+const FP_RING = FP_R * FP_LABEL_GAP;
+const FP_CX = Math.round(FP_RING + FP_LABEL_CLEARANCE);
+const FP_W = FP_CX * 2;
+// Vertically the 12 o'clock label sits a full ring above centre and the two
+// bottom labels sin(54deg) below it, each needing a line box around its baseline.
+const FP_CY = Math.round(FP_RING + FP_LABEL_FONT);
+const FP_H = Math.round(
+  FP_CY + FP_RING * Math.sin((54 * Math.PI) / 180) + FP_BASELINE_NUDGE + FP_LABEL_FONT
+);
+
+// All-or-nothing: a partial fingerprint hides the section rather than drawing a
+// shape that would read as real data. Bad input returns null, never throws.
+function fingerprintAxes(g) {
+  const fp = g.fingerprint;
+  if (!fp || typeof fp !== 'object') return null;
+
+  const axes = [];
+  for (const [key, label] of FP_AXES) {
+    const v = fp[key];
+    if (typeof v !== 'number' || !Number.isFinite(v)) return null;
+    const clamped = Math.min(FP_MAX, Math.max(0, v));
+    axes.push({ label, value: Math.round(clamped * 10) / 10 });
+  }
+  return axes;
+}
+
+function fpPoint(i, value, n) {
+  const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+  const r = (FP_R * value) / FP_MAX;
+  return [FP_CX + r * Math.cos(a), FP_CY + r * Math.sin(a)];
+}
+
+function fingerprintHTML(g) {
+  const axes = fingerprintAxes(g);
+  if (!axes) return '';
+
+  const n = axes.length;
+  const at = (i, v) => fpPoint(i, v, n).map((x) => x.toFixed(1)).join(',');
+
+  const rings = [FP_MAX / 3, (FP_MAX * 2) / 3, FP_MAX]
+    .map((v) => `<polygon class="radar-grid" points="${axes.map((_, i) => at(i, v)).join(' ')}"/>`)
+    .join('');
+
+  const spokes = axes.map((axis, i) => {
+    const [x, y] = fpPoint(i, FP_MAX, n);
+    const [lx, ly] = fpPoint(i, FP_MAX * FP_LABEL_GAP, n);
+    const anchor = Math.abs(lx - FP_CX) < 8 ? 'middle' : lx > FP_CX ? 'start' : 'end';
+    return `<line class="radar-axis" x1="${FP_CX}" y1="${FP_CY}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`
+      + `<text class="radar-label" x="${lx.toFixed(1)}" y="${(ly + FP_BASELINE_NUDGE).toFixed(1)}" text-anchor="${anchor}">${axis.label}</text>`;
+  }).join('');
+
+  const dots = axes.map((axis, i) => {
+    const [x, y] = fpPoint(i, axis.value, n);
+    return `<circle class="radar-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3"/>`;
+  }).join('');
+
+  // The exact numbers are not drawn anywhere, so this label is the only channel
+  // a screen reader has for them.
+  const readout = axes.map((a) => `${a.label} ${a.value} out of ${FP_MAX}`).join(', ');
+
+  return `
+    <section class="fp-section">
+      <p class="why-heading">Stats</p>
+      <div class="fp-chart">
+        <svg viewBox="0 0 ${FP_W} ${FP_H}" role="img" aria-label="Stats: ${readout}">
+          ${rings}${spokes}
+          <polygon class="radar-shape" points="${axes.map((axis, i) => at(i, axis.value)).join(' ')}" style="transform-origin:${FP_CX}px ${FP_CY}px"/>
+          ${dots}
+        </svg>
+      </div>
+    </section>`;
+}
+
 function bodyHTML(g) {
   return `
-    ${coverHTML(g)}
+    ${mediaHTML(g)}
     <h2>${g.title}</h2>
     <div class="stat-row">
       <span class="stat-chip">${PLAYERS_ICON} ${playersRangeLabel(g.players)}</span>
@@ -47,7 +174,8 @@ function bodyHTML(g) {
     <ul class="why-list">
       ${g.why.map((w) => `<li>${w}</li>`).join('')}
     </ul>
-    <span class="tag">${g.tag}</span>`;
+    <span class="tag">${g.tag}</span>
+    ${fingerprintHTML(g)}`;
 }
 
 // The back-of-box flip: tap, or swipe horizontally. Re-wired on every open
@@ -80,6 +208,48 @@ function wireFlip(root) {
       e.preventDefault();
     }
   });
+}
+
+// Cover <-> table-shot crossfade. Like the flip, re-wired on every open because
+// the media markup is rebuilt each time — which is also what resets the view to
+// Cover, per spec.
+function wireMediaToggle(root) {
+  const stack = root.querySelector('.media-stack');
+  if (!stack) return;
+
+  const cover = stack.querySelector('.media-cover');
+  const table = stack.querySelector('.media-table');
+  const row = root.querySelector('.media-toggle-row');
+  const btns = row ? Array.from(row.querySelectorAll('[data-view]')) : [];
+
+  // A photo that never arrives degrades to today's modal rather than leaving a
+  // broken frame behind a toggle that promises one. Restoring `on` matters: the
+  // error can land while the table view is showing, and the cover would
+  // otherwise stay faded out with nothing over it.
+  const degrade = () => {
+    table.remove();
+    if (row) row.remove();
+    cover.classList.add('on');
+    cover.setAttribute('aria-hidden', 'false');
+  };
+  table.addEventListener('error', degrade);
+  if (table.complete && table.naturalWidth === 0) degrade();
+
+  // Swapped in place, never re-rendered: rebuilding the markup would drop the
+  // transition's starting value and the crossfade would snap.
+  const show = (view) => {
+    const wantCover = view === 'cover';
+    cover.classList.toggle('on', wantCover);
+    cover.setAttribute('aria-hidden', String(!wantCover));
+    table.classList.toggle('on', !wantCover);
+    table.setAttribute('aria-hidden', String(wantCover));
+    btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+  };
+
+  btns.forEach((b) => b.addEventListener('click', () => {
+    if (b.getAttribute('aria-pressed') === 'true') return;
+    show(b.dataset.view);
+  }));
 }
 
 /**
@@ -134,6 +304,7 @@ export function createGameModal({ selection } = {}) {
     body.innerHTML = bodyHTML(game);
     body.scrollTop = 0;
     wireFlip(body);
+    wireMediaToggle(body);
     refreshFooter();
     backdrop.classList.add('open');
     syncScrollLock();
