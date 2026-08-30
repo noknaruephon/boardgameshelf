@@ -117,6 +117,56 @@ body.scroll-locked{
 .shuffle .deck-card:nth-child(1){z-index:3;}
 .shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
 .shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
+
+/* Four face-down cards dealt into a neat deck, then a gold ring pulse — the
+   loading animation for every game-night screen's static shell, the stretch
+   between page load and the first render. Built from .deck-card.back above,
+   like the shuffle, and distinct from it on purpose: the shuffle holds the
+   table, this one gathers the games.
+   Pure CSS, so it runs before a page's module script resolves — an import
+   that 404s leaves the shell on screen, and it should still look alive.
+   Cards animate transform+opacity only; the ring animates box-shadow only, on
+   its own element. One animation per element and no transition on an animated
+   property: WebKit silently drops a transition that fights an animation, which
+   is also why these cards never take .clickable. */
+.deal-wrap{height:120px;display:flex;align-items:center;justify-content:center;margin:26px 0 0;}
+.deal{position:relative;width:64px;height:85px;}
+.deal .deck-card{
+  position:absolute;inset:0;width:64px;height:85px;
+  border-radius:8px;font-size:18px;
+  box-shadow:0 8px 18px rgba(0,0,0,.45);
+  opacity:0;
+  animation:bgs-deal-in 3.4s cubic-bezier(.3,.7,.3,1) infinite;
+}
+.deal .deck-card:nth-child(1){--rest:rotate(-5deg);}
+.deal .deck-card:nth-child(2){--rest:rotate(4deg);animation-delay:.22s;}
+.deal .deck-card:nth-child(3){--rest:rotate(-2deg);animation-delay:.44s;}
+.deal .deck-card:nth-child(4){--rest:rotate(0deg);animation-delay:.66s;}
+@keyframes bgs-deal-in{
+  0%   {opacity:0;transform:translate(110px,-90px) rotate(28deg);}
+  12%  {opacity:1;transform:translate(0,0) var(--rest);}   /* lands, tilted */
+  16%  {transform:translate(0,0) var(--rest);}
+  30%  {transform:translate(0,0) rotate(0deg);}            /* squares up */
+  84%  {opacity:1;transform:translate(0,0) rotate(0deg);}
+  94%,100%{opacity:0;transform:translate(0,0) rotate(0deg);}
+}
+/* Gold ring: inset box-shadow, never outline. */
+.deal-ring{
+  position:absolute;inset:-7px;border-radius:13px;pointer-events:none;
+  box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);
+  animation:bgs-ring-pulse 3.4s infinite;
+}
+@keyframes bgs-ring-pulse{
+  0%,30%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+  40%   {box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.7);}
+  58%,100%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+}
+
+/* Reduced motion: a static assembled deck under a steady half-strength ring
+   says the same thing the motion did. Nothing here needs an animation to
+   become visible, so dropping it can never leave the shell blank. */
 @media (prefers-reduced-motion:reduce){
   .shuffle .deck-card{animation:none;}
+  .deal .deck-card{animation:none;opacity:1;transform:translate(0,0) rotate(0deg);}
+  .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
 }
