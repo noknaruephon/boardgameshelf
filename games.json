@@ -27,7 +27,8 @@
       "2": "best",
       "3": "recommended",
       "4": "recommended"
-    }
+    },
+    "caption": "Dice placement and classic euro strategy. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "397598",
@@ -59,7 +60,8 @@
       "4": "best",
       "5": "not_recommended",
       "6": "recommended"
-    }
+    },
+    "caption": "Worker placement and deck-building. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "356238",
@@ -90,7 +92,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Euro strategy and area control. Heavy, tense, and rewarding; a long session."
   },
   {
     "title": "Brass: Birmingham",
@@ -119,7 +122,8 @@
       "2": "recommended",
       "3": "best",
       "4": "best"
-    }
+    },
+    "caption": "Deep strategy. Heavy, tense, and rewarding; a long session."
   },
   {
     "title": "Ark Nova",
@@ -151,7 +155,8 @@
       "2": "best",
       "3": "recommended",
       "4": "not_recommended"
-    }
+    },
+    "caption": "Engine-building. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "468508",
@@ -178,7 +183,8 @@
     "tag": "Two-player · hidden information",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of hidden information. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "434367",
@@ -208,7 +214,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Economic play and engine-building. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "367150",
@@ -238,7 +245,8 @@
       "2": "best",
       "3": "not_recommended",
       "4": "recommended"
-    }
+    },
+    "caption": "Area control and wargaming. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "187645",
@@ -267,7 +275,8 @@
       "2": "best",
       "3": "not_recommended",
       "4": "not_recommended"
-    }
+    },
+    "caption": "Asymmetric powers. Very heavy; expect a long night."
   },
   {
     "bggId": "316554",
@@ -297,7 +306,8 @@
       "2": "recommended",
       "3": "best",
       "4": "best"
-    }
+    },
+    "caption": "Worker placement and deck-building. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "321608",
@@ -326,7 +336,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Political and economic play. Very heavy; expect a long night."
   },
   {
     "bggId": "421006",
@@ -353,7 +364,8 @@
     "tag": "Two-player · dueling",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game. Mid-weight, easy to get into; about an hour."
   },
   {
     "title": "Blood on the Clocktower",
@@ -387,7 +399,8 @@
       "9": "best",
       "10": "best",
       "11": "best"
-    }
+    },
+    "caption": "A big-group game of social deduction. Heavy, tense, and rewarding; a long session."
   },
   {
     "title": "The Million Dollar Doodle",
@@ -417,7 +430,8 @@
       "5": "no_data",
       "6": "no_data",
       "7": "no_data"
-    }
+    },
+    "caption": "A party game of drawing. Light and quick to teach; about an hour."
   },
   {
     "title": "Spirit Island",
@@ -447,7 +461,8 @@
       "2": "best",
       "3": "recommended",
       "4": "recommended"
-    }
+    },
+    "caption": "Co-operative play. Very heavy; expect a long night."
   },
   {
     "bggId": "167791",
@@ -478,7 +493,8 @@
       "3": "best",
       "4": "recommended",
       "5": "not_recommended"
-    }
+    },
+    "caption": "Engine-building and science fiction. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "383469",
@@ -505,7 +521,8 @@
     "tag": "Unmatched · duel",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of asymmetric duels. Mid-weight, easy to get into; about an hour."
   },
   {
     "title": "Ticket to Ride: 10th Anniversary",
@@ -537,7 +554,8 @@
       "3": "recommended",
       "4": "best",
       "5": "best"
-    }
+    },
+    "caption": "Route-building. Light and quick to teach; about an hour."
   },
   {
     "bggId": "310100",
@@ -568,7 +586,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Semi-co-operative play and survival horror. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "446893",
@@ -598,7 +617,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Area control. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "420033",
@@ -630,7 +650,8 @@
       "4": "not_recommended",
       "5": "not_recommended",
       "6": "not_recommended"
-    }
+    },
+    "caption": "Science fiction and exploration. Very heavy; expect a long night."
   },
   {
     "bggId": "437356",
@@ -657,7 +678,8 @@
     "tag": "Two-player · dueling",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "313010",
@@ -686,7 +708,8 @@
       "3": "not_recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Negotiation and science fiction. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "256960",
@@ -717,7 +740,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Area control and political manoeuvring. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "367498",
@@ -746,7 +770,8 @@
       "1": "recommended",
       "2": "best",
       "3": "recommended"
-    }
+    },
+    "caption": "Co-operative play and asymmetric powers. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "407570",
@@ -775,7 +800,8 @@
       "2": "best",
       "3": "not_recommended",
       "4": "recommended"
-    }
+    },
+    "caption": "Wargaming and cold-war brinkmanship. Very heavy; expect a long night."
   },
   {
     "title": "Root",
@@ -804,7 +830,8 @@
       "2": "not_recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Asymmetric wargaming. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "325635",
@@ -831,7 +858,8 @@
     "tag": "Unmatched · duel",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of asymmetric duels. Mid-weight, easy to get into; under 30 min."
   },
   {
     "bggId": "175914",
@@ -861,7 +889,8 @@
       "3": "best",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Economic play and deep euro strategy. Very heavy; expect a long night."
   },
   {
     "bggId": "400366",
@@ -891,7 +920,8 @@
       "2": "best",
       "3": "best",
       "4": "not_recommended"
-    }
+    },
+    "caption": "Drafting. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "367396",
@@ -923,7 +953,8 @@
       "8": "best",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "A big-group game of hidden roles. Light and quick to teach; about an hour."
   },
   {
     "title": "盤上ダンジョン (Banjo-Dungeon)",
@@ -950,7 +981,8 @@
     "bggId": "449718",
     "playerRecommendations": {
       "2": "no_data"
-    }
+    },
+    "caption": "A two-player game. Mid-weight, easy to get into; about an hour."
   },
   {
     "title": "Catan: 3D Edition",
@@ -978,7 +1010,8 @@
     "playerRecommendations": {
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Trading. Light and quick to teach; a long session."
   },
   {
     "bggId": "23540",
@@ -1009,7 +1042,8 @@
       "4": "best",
       "5": "recommended",
       "6": "not_recommended"
-    }
+    },
+    "caption": "Railway building. Heavy, tense, and rewarding; a long session."
   },
   {
     "title": "Viticulture Essential Edition",
@@ -1043,7 +1077,8 @@
       "4": "best",
       "5": "recommended",
       "6": "not_recommended"
-    }
+    },
+    "caption": "Worker placement. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "381297",
@@ -1073,7 +1108,8 @@
       "2": "best",
       "3": "recommended",
       "4": "recommended"
-    }
+    },
+    "caption": "Asymmetric duels and a co-operative campaign. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "351817",
@@ -1105,7 +1141,8 @@
       "4": "best",
       "5": "recommended",
       "6": "recommended"
-    }
+    },
+    "caption": "Co-operative play and miniatures combat. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "282391",
@@ -1135,7 +1172,8 @@
       "3": "recommended",
       "4": "best",
       "5": "best"
-    }
+    },
+    "caption": "Playing the market and bluffing. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "205059",
@@ -1166,7 +1204,8 @@
       "3": "best",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Co-operative play and horror. Mid-weight, easy to get into; a long session."
   },
   {
     "title": "Agricola 15",
@@ -1198,7 +1237,8 @@
       "2": "recommended",
       "3": "best",
       "4": "best"
-    }
+    },
+    "caption": "Worker placement and farming. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "274638",
@@ -1225,7 +1265,8 @@
     "tag": "Unmatched · duel",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of asymmetric duels. Mid-weight, easy to get into; under 30 min."
   },
   {
     "bggId": "269385",
@@ -1256,7 +1297,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "not_recommended"
-    }
+    },
+    "caption": "Co-operative play and a campaign. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "295947",
@@ -1286,7 +1328,8 @@
       "2": "best",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "Tile-laying and nature. Light and quick to teach; about an hour."
   },
   {
     "title": "Age of Steam",
@@ -1320,7 +1363,8 @@
       "4": "best",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Railway economics. Heavy, tense, and rewarding; a long session."
   },
   {
     "title": "Rebel Princess: Deluxe Edition",
@@ -1350,7 +1394,8 @@
       "4": "best",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Trick-taking. Light and quick to teach; about an hour."
   },
   {
     "bggId": "351913",
@@ -1380,7 +1425,8 @@
       "2": "best",
       "3": "best",
       "4": "not_recommended"
-    }
+    },
+    "caption": "Euro strategy and dice placement. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "372571",
@@ -1410,7 +1456,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Economic play and empire-building. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "35677",
@@ -1441,7 +1488,8 @@
       "3": "best",
       "4": "recommended",
       "5": "not_recommended"
-    }
+    },
+    "caption": "Resource management and deep euro strategy. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "316377",
@@ -1472,7 +1520,8 @@
       "5": "best",
       "6": "recommended",
       "7": "recommended"
-    }
+    },
+    "caption": "Card drafting and building a civilization. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "446497",
@@ -1505,7 +1554,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "A party game of dice rolling. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "407343",
@@ -1533,7 +1583,8 @@
     "playerRecommendations": {
       "1": "recommended",
       "2": "best"
-    }
+    },
+    "caption": "A solo-friendly game of engine-building. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "291453",
@@ -1563,7 +1614,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Card play and climbing card play. Light and quick to teach; under 30 min."
   },
   {
     "title": "Feed the Kraken",
@@ -1596,7 +1648,8 @@
       "9": "best",
       "10": "best",
       "11": "best"
-    }
+    },
+    "caption": "A big-group game of social deduction. Mid-weight, easy to get into; a long session."
   },
   {
     "title": "Rebirth",
@@ -1625,7 +1678,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "Tile-laying. Light and quick to teach; about an hour."
   },
   {
     "bggId": "225694",
@@ -1657,7 +1711,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "A team game of word play. Light and quick to teach; about an hour."
   },
   {
     "bggId": "153016",
@@ -1691,7 +1746,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game of drawing. Light and quick to teach; about an hour."
   },
   {
     "title": "The Quest for El Dorado",
@@ -1720,7 +1776,8 @@
       "2": "best",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Deck-building. Light and quick to teach; about an hour."
   },
   {
     "bggId": "440941",
@@ -1747,7 +1804,8 @@
     "tag": "Two-player · dueling",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "12",
@@ -1777,7 +1835,8 @@
       "3": "best",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Bidding and set collection. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "552",
@@ -1806,7 +1865,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Deep euro strategy and economic play. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "350205",
@@ -1835,7 +1895,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Economic play. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "416851",
@@ -1865,7 +1926,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "not_recommended"
-    }
+    },
+    "caption": "Card drafting and combo-building. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "406322",
@@ -1901,7 +1963,8 @@
       "9": "recommended",
       "10": "not_recommended",
       "11": "not_recommended"
-    }
+    },
+    "caption": "A big-group game of hidden roles. Light and quick to teach; about an hour."
   },
   {
     "title": "Skyrise",
@@ -1930,7 +1993,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Spatial bidding. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "436126",
@@ -1961,7 +2025,8 @@
       "3": "best",
       "4": "recommended",
       "5": "not_recommended"
-    }
+    },
+    "caption": "Engine-building. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "263895",
@@ -1991,7 +2056,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Storytelling and exploration. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "420914",
@@ -2018,7 +2084,8 @@
     "tag": "Two-player · dueling",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game. Light and quick to teach; about an hour."
   },
   {
     "bggId": "165722",
@@ -2045,7 +2112,8 @@
     "tag": "Dexterity · two-player",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of dexterity. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "351605",
@@ -2077,7 +2145,8 @@
       "5": "best",
       "6": "recommended",
       "7": "recommended"
-    }
+    },
+    "caption": "Trading and negotiation. Light and quick to teach; about an hour."
   },
   {
     "bggId": "254640",
@@ -2108,7 +2177,8 @@
       "5": "recommended",
       "6": "best",
       "7": "best"
-    }
+    },
+    "caption": "A party game of co-operative play. Light and quick to teach; about an hour."
   },
   {
     "bggId": "163412",
@@ -2135,7 +2205,8 @@
     "tag": "Two-player · tile-laying",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of tile-laying. Light and quick to teach; about an hour."
   },
   {
     "bggId": "415078",
@@ -2165,7 +2236,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Compete for points across a few rounds. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "263918",
@@ -2202,7 +2274,8 @@
       "9": "not_recommended",
       "10": "not_recommended",
       "11": "not_recommended"
-    }
+    },
+    "caption": "Flip-and-write and map drawing. Light and quick to teach; about an hour."
   },
   {
     "bggId": "246684",
@@ -2233,7 +2306,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Economic play and engine-building. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "407445",
@@ -2260,7 +2334,8 @@
     "tag": "2-player · deduction",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of deduction. Light and quick to teach; under 30 min."
   },
   {
     "title": "Intent to Kill",
@@ -2289,7 +2364,8 @@
       "2": "best",
       "3": "recommended",
       "4": "not_recommended"
-    }
+    },
+    "caption": "Deduction. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "103343",
@@ -2319,7 +2395,8 @@
       "4": "recommended",
       "5": "recommended",
       "6": "best"
-    }
+    },
+    "caption": "Area control and negotiation. Heavy, tense, and rewarding; a long session."
   },
   {
     "title": "Modern Art",
@@ -2348,7 +2425,8 @@
       "3": "recommended",
       "4": "best",
       "5": "best"
-    }
+    },
+    "caption": "Bidding. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "188866",
@@ -2382,7 +2460,8 @@
       "6": "recommended",
       "7": "not_recommended",
       "8": "not_recommended"
-    }
+    },
+    "caption": "Mystery and deduction. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "178900",
@@ -2415,7 +2494,8 @@
       "6": "best",
       "7": "recommended",
       "8": "best"
-    }
+    },
+    "caption": "A team game of word play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "303057",
@@ -2444,7 +2524,8 @@
       "2": "recommended",
       "3": "best",
       "4": "best"
-    }
+    },
+    "caption": "Route-building and moving goods. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "14996",
@@ -2474,7 +2555,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Route-building. Light and quick to teach; about an hour."
   },
   {
     "bggId": "315695",
@@ -2507,7 +2589,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "Social deduction and mystery. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "295374",
@@ -2541,7 +2624,8 @@
       "6": "recommended",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "Dice rolling and racing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "30549",
@@ -2570,7 +2654,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Co-operative play. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "171131",
@@ -2603,7 +2688,8 @@
       "6": "recommended",
       "7": "recommended",
       "8": "best"
-    }
+    },
+    "caption": "A team game of real-time play. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "455337",
@@ -2637,7 +2723,8 @@
       "8": "no_data",
       "9": "no_data",
       "10": "no_data"
-    }
+    },
+    "caption": "A party game of word play. Light and quick to teach; about an hour."
   },
   {
     "bggId": "449719",
@@ -2668,7 +2755,8 @@
       "6": "no_data",
       "7": "no_data",
       "8": "no_data"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; about an hour."
   },
   {
     "title": "The Resistance: Avalon",
@@ -2700,7 +2788,8 @@
       "8": "best",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "Hidden roles. Light and quick to teach; about an hour."
   },
   {
     "title": "Catch Sketch",
@@ -2730,7 +2819,8 @@
       "4": "recommended",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "A party game of drawing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "338957",
@@ -2758,7 +2848,8 @@
     "playerRecommendations": {
       "1": "recommended",
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of area control. Light and quick to teach; under 30 min."
   },
   {
     "title": "Ready Set Bet",
@@ -2792,7 +2883,8 @@
       "7": "best",
       "8": "best",
       "9": "recommended"
-    }
+    },
+    "caption": "A party game of betting. Light and quick to teach; about an hour."
   },
   {
     "bggId": "188834",
@@ -2824,7 +2916,8 @@
       "8": "best",
       "9": "recommended",
       "10": "best"
-    }
+    },
+    "caption": "A big-group game of social deduction. Light and quick to teach; about an hour."
   },
   {
     "bggId": "402111",
@@ -2854,7 +2947,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "Deduction and mystery. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "236191",
@@ -2883,7 +2977,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "City-building and hand management. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "123260",
@@ -2913,7 +3008,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "Tile-laying and city-building. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "340466",
@@ -2943,7 +3039,8 @@
       "4": "recommended",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Semi-co-operative play and a hidden traitor. Heavy, tense, and rewarding; a long session."
   },
   {
     "title": "Chinatown",
@@ -2972,7 +3069,8 @@
       "3": "not_recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Negotiation. Mid-weight, easy to get into; about an hour."
   },
   {
     "title": "Zoo Vadis",
@@ -3003,7 +3101,8 @@
       "5": "best",
       "6": "recommended",
       "7": "recommended"
-    }
+    },
+    "caption": "Negotiation. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "260180",
@@ -3033,7 +3132,8 @@
       "2": "best",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "Puzzling and engine-building. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "381278",
@@ -3060,7 +3160,8 @@
     "tag": "2-player · hidden movement",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game of hidden movement. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "148228",
@@ -3089,7 +3190,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "A gateway game of engine-building. Light and quick to teach; about an hour."
   },
   {
     "bggId": "391752",
@@ -3120,7 +3222,8 @@
       "3": "best",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Economic play and network-building. Heavy, tense, and rewarding; a long session."
   },
   {
     "bggId": "156129",
@@ -3154,7 +3257,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "Social deduction and deduction. Mid-weight, easy to get into; under 30 min."
   },
   {
     "bggId": "352515",
@@ -3184,7 +3288,8 @@
       "4": "best",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Card play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "470218",
@@ -3211,7 +3316,8 @@
     "tag": "2-player · duel",
     "playerRecommendations": {
       "2": "no_data"
-    }
+    },
+    "caption": "A two-player game. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "92828",
@@ -3246,7 +3352,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game of storytelling. Light and quick to teach; about an hour."
   },
   {
     "title": "Detective Club",
@@ -3277,7 +3384,8 @@
       "6": "best",
       "7": "best",
       "8": "recommended"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; about an hour."
   },
   {
     "bggId": "422668",
@@ -3307,7 +3415,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Co-operative play and dexterity. Light and quick to teach; about an hour."
   },
   {
     "bggId": "257305",
@@ -3336,7 +3445,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Political manoeuvring. Mid-weight, easy to get into; a long session."
   },
   {
     "title": "QE",
@@ -3365,7 +3475,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Bidding. Light and quick to teach; about an hour."
   },
   {
     "bggId": "327778",
@@ -3400,7 +3511,8 @@
       "8": "recommended",
       "9": "recommended",
       "10": "not_recommended"
-    }
+    },
+    "caption": "A party game of co-operative play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "434172",
@@ -3433,7 +3545,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "A party game. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "400566",
@@ -3465,7 +3578,8 @@
       "8": "recommended",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "A party game of hidden roles. Light and quick to teach; under 30 min."
   },
   {
     "title": "Ichor",
@@ -3492,7 +3606,8 @@
     "bggId": "420915",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game. Light and quick to teach; about an hour."
   },
   {
     "bggId": "329845",
@@ -3522,7 +3637,8 @@
       "4": "recommended",
       "5": "best",
       "6": "best"
-    }
+    },
+    "caption": "A party game of storytelling. Light and quick to teach; about an hour."
   },
   {
     "bggId": "15390",
@@ -3554,7 +3670,8 @@
       "4": "best",
       "5": "recommended",
       "6": "recommended"
-    }
+    },
+    "caption": "Farming and straightforward strategy. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "439561",
@@ -3581,7 +3698,8 @@
     "tag": "Two-player · duel",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game. Light and quick to teach; about an hour."
   },
   {
     "bggId": "420087",
@@ -3616,7 +3734,8 @@
       "9": "not_recommended",
       "10": "not_recommended",
       "11": "not_recommended"
-    }
+    },
+    "caption": "A party game of push-your-luck. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "298638",
@@ -3646,7 +3765,8 @@
       "4": "recommended",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Bluffing and negotiation. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "307997",
@@ -3677,7 +3797,8 @@
       "6": "best",
       "7": "best",
       "8": "best"
-    }
+    },
+    "caption": "Social deduction. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "181304",
@@ -3709,7 +3830,8 @@
       "5": "best",
       "6": "best",
       "7": "recommended"
-    }
+    },
+    "caption": "Co-operative play and deduction. Light and quick to teach; about an hour."
   },
   {
     "bggId": "262543",
@@ -3745,7 +3867,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game of guessing. Light and quick to teach; about an hour."
   },
   {
     "bggId": "223770",
@@ -3776,7 +3899,8 @@
       "5": "recommended",
       "6": "not_recommended",
       "7": "not_recommended"
-    }
+    },
+    "caption": "Card play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "313",
@@ -3807,7 +3931,8 @@
       "4": "best",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Bidding and negotiation. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "198773",
@@ -3840,7 +3965,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "A team game of word play. Light and quick to teach; under 30 min."
   },
   {
     "title": "Wolf Street",
@@ -3875,7 +4001,8 @@
       "9": "recommended",
       "10": "best",
       "11": "recommended"
-    }
+    },
+    "caption": "Real-time negotiation. Light and quick to teach; about an hour."
   },
   {
     "bggId": "445423",
@@ -3904,7 +4031,8 @@
       "3": "best",
       "4": "best",
       "5": "best"
-    }
+    },
+    "caption": "Compete for points across a few rounds. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "306321",
@@ -3938,7 +4066,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game of hidden movement. Light and quick to teach; about an hour."
   },
   {
     "bggId": "445424",
@@ -3968,7 +4097,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Push-your-luck. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "464675",
@@ -3996,7 +4126,8 @@
     "playerRecommendations": {
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Trading and travel. Light and quick to teach; about an hour."
   },
   {
     "bggId": "344768",
@@ -4026,7 +4157,8 @@
       "2": "best",
       "3": "recommended",
       "4": "recommended"
-    }
+    },
+    "caption": "Economic play and playing the market. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "393456",
@@ -4055,7 +4187,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "Engine-building and movie-making. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "135779",
@@ -4087,7 +4220,8 @@
       "8": "recommended",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "Social deduction and drawing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "12942",
@@ -4118,7 +4252,8 @@
       "5": "best",
       "6": "recommended",
       "7": "recommended"
-    }
+    },
+    "caption": "Push-your-luck. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "408547",
@@ -4149,7 +4284,8 @@
       "4": "best",
       "5": "recommended",
       "6": "recommended"
-    }
+    },
+    "caption": "A party game of word play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "229414",
@@ -4178,7 +4314,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Playing the market. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "256804",
@@ -4213,7 +4350,8 @@
       "8": "recommended",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "A party game of card play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "396618",
@@ -4242,7 +4380,8 @@
       "3": "not_recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Tile-laying and nature. Light and quick to teach; about an hour."
   },
   {
     "bggId": "206051",
@@ -4273,7 +4412,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "Social deduction. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "277670",
@@ -4304,7 +4444,8 @@
       "6": "best",
       "7": "best",
       "8": "best"
-    }
+    },
+    "caption": "A big-group game of social deduction. Light and quick to teach; a long session."
   },
   {
     "bggId": "412230",
@@ -4335,7 +4476,8 @@
       "5": "best",
       "6": "best",
       "7": "recommended"
-    }
+    },
+    "caption": "Negotiation and social play. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "152242",
@@ -4368,7 +4510,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "best"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; about an hour."
   },
   {
     "title": "Two Rooms and a Boom",
@@ -4400,7 +4543,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; under 30 min."
   },
   {
     "title": "In Front of the Elevators",
@@ -4429,7 +4573,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Compete for points across a few rounds. Light and quick to teach; about an hour."
   },
   {
     "bggId": "131357",
@@ -4460,7 +4605,8 @@
       "4": "recommended",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Bluffing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "377983",
@@ -4490,7 +4636,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Card play and tableau-building. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "45",
@@ -4525,7 +4672,8 @@
       "8": "not_recommended",
       "9": "not_recommended",
       "10": "not_recommended"
-    }
+    },
+    "caption": "Bluffing and dice rolling. Light and quick to teach; about an hour."
   },
   {
     "bggId": "238935",
@@ -4556,7 +4704,8 @@
       "4": "best",
       "5": "no_data",
       "6": "no_data"
-    }
+    },
+    "caption": "Bluffing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "20100",
@@ -4587,7 +4736,8 @@
       "5": "recommended",
       "6": "best",
       "7": "best"
-    }
+    },
+    "caption": "A party game of trivia. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "410382",
@@ -4620,7 +4770,8 @@
       "6": "best",
       "7": "best",
       "8": "recommended"
-    }
+    },
+    "caption": "A party game of guessing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "254681",
@@ -4652,7 +4803,8 @@
       "6": "best",
       "7": "best",
       "8": "best"
-    }
+    },
+    "caption": "Bluffing and negotiation. Light and quick to teach; about an hour."
   },
   {
     "bggId": "417224",
@@ -4681,7 +4833,8 @@
       "3": "recommended",
       "4": "best",
       "5": "not_recommended"
-    }
+    },
+    "caption": "A party game of performing. Light and quick to teach; about an hour."
   },
   {
     "bggId": "2453",
@@ -4710,7 +4863,8 @@
       "2": "recommended",
       "3": "not_recommended",
       "4": "best"
-    }
+    },
+    "caption": "Abstract play and spatial strategy. Light and quick to teach; about an hour."
   },
   {
     "bggId": "215371",
@@ -4741,7 +4895,8 @@
       "6": "best",
       "7": "recommended",
       "8": "best"
-    }
+    },
+    "caption": "A party game of communication. Light and quick to teach; about an hour."
   },
   {
     "bggId": "169654",
@@ -4772,7 +4927,8 @@
       "4": "best",
       "5": "recommended",
       "6": "recommended"
-    }
+    },
+    "caption": "Push-your-luck. Light and quick to teach; about an hour."
   },
   {
     "bggId": "415780",
@@ -4802,7 +4958,8 @@
       "3": "best",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "Fishing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "11971",
@@ -4833,7 +4990,8 @@
       "4": "recommended",
       "5": "best",
       "6": "recommended"
-    }
+    },
+    "caption": "Bluffing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "193308",
@@ -4868,7 +5026,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "115",
@@ -4898,7 +5057,8 @@
       "4": "recommended",
       "5": "recommended",
       "6": "best"
-    }
+    },
+    "caption": "A party game of social play. Light and quick to teach; about an hour."
   },
   {
     "bggId": "257067",
@@ -4927,7 +5087,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "A two-player game of arena combat. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "359893",
@@ -4960,7 +5121,8 @@
       "8": "best",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "A party game of bluffing. Light and quick to teach; about an hour."
   },
   {
     "bggId": "244992",
@@ -4989,7 +5151,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Co-operative play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "356907",
@@ -5023,7 +5186,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "not_recommended"
-    }
+    },
+    "caption": "A big-group game of bluffing. Light and quick to teach; about an hour."
   },
   {
     "bggId": "230765",
@@ -5056,7 +5220,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "A party game of trivia. Light and quick to teach; about an hour."
   },
   {
     "bggId": "302595",
@@ -5089,7 +5254,8 @@
       "9": "no_data",
       "10": "no_data",
       "11": "no_data"
-    }
+    },
+    "caption": "Social deduction. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "194626",
@@ -5121,7 +5287,8 @@
       "6": "best",
       "7": "recommended",
       "8": "recommended"
-    }
+    },
+    "caption": "A party game of dexterity. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "624",
@@ -5150,7 +5317,8 @@
       "2": "best",
       "3": "not_recommended",
       "4": "recommended"
-    }
+    },
+    "caption": "Abstract play. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "263360",
@@ -5177,7 +5345,8 @@
     "tag": "Two-player · light",
     "playerRecommendations": {
       "2": "best"
-    }
+    },
+    "caption": "A two-player game. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "453430",
@@ -5207,7 +5376,8 @@
       "4": "best",
       "5": "best",
       "6": "best"
-    }
+    },
+    "caption": "A two-player game. Light and quick to teach; about an hour."
   },
   {
     "bggId": "302917",
@@ -5236,7 +5406,8 @@
       "2": "not_recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "Abstract strategy. Mid-weight, easy to get into; about an hour."
   },
   {
     "bggId": "277458",
@@ -5266,7 +5437,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "Dexterity. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "279477",
@@ -5295,7 +5467,8 @@
       "2": "no_data",
       "3": "no_data",
       "4": "no_data"
-    }
+    },
+    "caption": "A family game of bluffing. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "423792",
@@ -5330,7 +5503,8 @@
       "9": "no_data",
       "10": "no_data",
       "11": "no_data"
-    }
+    },
+    "caption": "A party game. Light and quick to teach; about an hour."
   },
   {
     "bggId": "388413",
@@ -5360,7 +5534,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "A family game. Light and quick to teach; about an hour."
   },
   {
     "bggId": "227072",
@@ -5392,7 +5567,8 @@
       "6": "best",
       "7": "best",
       "8": "recommended"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "191895",
@@ -5423,7 +5599,8 @@
       "4": "best",
       "5": "best",
       "6": "best"
-    }
+    },
+    "caption": "A family game. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "3955",
@@ -5453,7 +5630,8 @@
       "5": "recommended",
       "6": "recommended",
       "7": "best"
-    }
+    },
+    "caption": "Hidden roles and the old west. Light and quick to teach; about an hour."
   },
   {
     "bggId": "3093",
@@ -5482,7 +5660,8 @@
       "2": "recommended",
       "3": "recommended",
       "4": "best"
-    }
+    },
+    "caption": "A family game. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "261262",
@@ -5512,7 +5691,8 @@
       "4": "best",
       "5": "best",
       "6": "best"
-    }
+    },
+    "caption": "A party game. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "105593",
@@ -5541,7 +5721,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "Card play. Light and quick to teach; about an hour."
   },
   {
     "bggId": "413461",
@@ -5575,7 +5756,8 @@
       "8": "best",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "Social deduction and hidden roles. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "383981",
@@ -5605,7 +5787,8 @@
       "2": "recommended",
       "3": "best",
       "4": "recommended"
-    }
+    },
+    "caption": "City-building. Mid-weight, easy to get into; a long session."
   },
   {
     "bggId": "433075",
@@ -5634,7 +5817,8 @@
       "3": "recommended",
       "4": "recommended",
       "5": "best"
-    }
+    },
+    "caption": "A party game of guessing. Light and quick to teach; about an hour."
   },
   {
     "bggId": "367601",
@@ -5670,7 +5854,8 @@
       "9": "no_data",
       "10": "no_data",
       "11": "no_data"
-    }
+    },
+    "caption": "A party game of trivia. Light and quick to teach; a long session."
   },
   {
     "bggId": "386826",
@@ -5703,7 +5888,8 @@
       "6": "no_data",
       "7": "no_data",
       "8": "no_data"
-    }
+    },
+    "caption": "A party game of social play. Light and quick to teach; about an hour."
   },
   {
     "bggId": "370772",
@@ -5733,7 +5919,8 @@
       "4": "no_data",
       "5": "best",
       "6": "best"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "184522",
@@ -5765,7 +5952,8 @@
       "9": "best",
       "10": "best",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game. Light and quick to teach; about an hour."
   },
   {
     "bggId": "328536",
@@ -5796,7 +5984,8 @@
       "4": "best",
       "5": "best",
       "6": "no_data"
-    }
+    },
+    "caption": "Bidding. Light and quick to teach; about an hour."
   },
   {
     "bggId": "17027",
@@ -5826,7 +6015,8 @@
       "4": "recommended",
       "5": "recommended",
       "6": "best"
-    }
+    },
+    "caption": "A party game of dexterity. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "295646",
@@ -5859,7 +6049,8 @@
       "8": "recommended",
       "9": "recommended",
       "10": "recommended"
-    }
+    },
+    "caption": "A party game of social deduction. Light and quick to teach; about an hour."
   },
   {
     "bggId": "406538",
@@ -5892,7 +6083,8 @@
       "8": "no_data",
       "9": "no_data",
       "10": "no_data"
-    }
+    },
+    "caption": "A party game. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "386102",
@@ -5927,7 +6119,8 @@
       "9": "recommended",
       "10": "recommended",
       "11": "recommended"
-    }
+    },
+    "caption": "A party game. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "410185",
@@ -5958,7 +6151,8 @@
       "3": "recommended",
       "4": "best",
       "5": "recommended"
-    }
+    },
+    "caption": "A solo-friendly game of puzzling. Light and quick to teach; under 30 min."
   },
   {
     "bggId": "198961",
@@ -5994,6 +6188,7 @@
       "9": "not_recommended",
       "10": "not_recommended",
       "11": "not_recommended"
-    }
+    },
+    "caption": "A kids game of dexterity. Light and quick to teach; under 30 min."
   }
 ]
