@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swipe motion v2 — BoardgameShelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bgs-bg:#14120F; --bgs-bg-radial:#221E18; --bgs-plate:#2A2620;
+    --bgs-gold:#D9B45A; --bgs-ivory:#F2EBDD;
+    --bgs-ivory-70:rgba(242,235,221,.7); --bgs-ivory-45:rgba(242,235,221,.45);
+    --bgs-vote-play:#8FA75A; --bgs-vote-pass:#C2604A;
+    --dur:.32s;
+  }
+  *{box-sizing:border-box}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  html,body{margin:0;height:100%}
+  body{
+    background:radial-gradient(120% 80% at 50% 0%,var(--bgs-bg-radial),var(--bgs-bg) 70%);
+    color:var(--bgs-ivory); font-family:Inter,system-ui,sans-serif;
+    display:flex;flex-direction:column;align-items:center;gap:20px;padding:20px 16px 40px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- demo toggle bar ---------- */
+  .demo{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+    padding:8px;border-radius:999px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+    font-size:13px;
+  }
+  .demo button{
+    font:inherit;font-weight:500;color:var(--bgs-ivory-70);
+    background:transparent;border:1px solid transparent;border-radius:999px;
+    padding:8px 14px;cursor:pointer;
+  }
+  .demo button[aria-pressed="true"]{color:var(--bgs-bg);background:var(--bgs-gold)}
+  .demo button:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px}
+  .demo label{display:flex;align-items:center;gap:6px;color:var(--bgs-ivory-45);padding:0 8px;cursor:pointer}
+  .demo .sep{width:1px;height:18px;background:rgba(255,255,255,.12)}
+  .opt-note{font-size:13px;color:var(--bgs-ivory-45);max-width:420px;text-align:center;line-height:1.45;min-height:2.9em}
+
+  /* ---------- phone ---------- */
+  .phone{
+    position:relative;width:min(390px,100%);height:760px;border-radius:44px;
+    background:var(--bgs-bg);border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:54px 24px 0;
+  }
+  .top h1{font-family:Fraunces,serif;font-weight:600;font-size:20px;margin:0;letter-spacing:-.01em}
+  .tally{
+    font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;
+    padding:6px 12px;border-radius:999px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    color:var(--bgs-ivory-70);display:flex;gap:2px;align-items:center;
+    transition:background var(--dur),border-color var(--dur),color var(--dur);
+  }
+  .tally .roll{display:inline-block;height:1.2em;line-height:1.2em;overflow:hidden;vertical-align:top}
+  .tally .roll span{display:block;transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+  .tally.pulse{background:rgba(217,180,90,.18);border-color:var(--bgs-gold);color:var(--bgs-gold)}
+
+  /* ---------- deck ---------- */
+  .stage{position:relative;flex:1;display:flex;align-items:center;justify-content:center;padding:20px 0}
+  .deck{position:relative;width:290px;height:440px;touch-action:none}
+  .deck-card{
+    position:absolute;inset:0;
+    transform:translateY(calc(var(--d)*12px)) scale(calc(1 - var(--d)*.08));
+    transition:transform var(--dur) cubic-bezier(.2,.8,.2,1),filter var(--dur) ease-out;
+    z-index:calc(10 - var(--d));
+    will-change:transform;
+  }
+  .deck-card[data-depth="3"]{opacity:0}
+  .card-body{
+    position:absolute;inset:0;border-radius:22px;overflow:hidden;
+    background:var(--bgs-plate);
+    box-shadow:0 20px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+    cursor:grab;user-select:none;
+  }
+  .card-body:active{cursor:grabbing}
+  .cover{position:absolute;inset:0;background:var(--art)}
+  .cover::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(20,18,15,.92) 100%)}
+  .meta{position:absolute;left:20px;right:20px;bottom:20px}
+  .meta h2{font-family:Fraunces,serif;font-weight:600;font-size:26px;margin:0 0 6px;line-height:1.05;letter-spacing:-.01em}
+  .meta ul{margin:0;padding:0;list-style:none;display:flex;gap:14px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--bgs-ivory-70)}
+  .meta li{display:inline-flex;align-items:center;gap:5px}
+  .meta svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+  .dragging .deck-card[data-depth="0"]{transition:none}
+
+
+  /* ---------- blackwash + stamp (matches production behaviour) ---------- */
+  .wash{position:absolute;inset:0;background:rgba(20,18,15,.55);opacity:0;pointer-events:none}
+  .stamp{
+    position:absolute;top:26px;
+    font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:20px;line-height:1;letter-spacing:.12em;
+    padding:6px 10px 6px 12px;              /* right pad trimmed to offset tracking */
+    border:2px solid currentColor;border-radius:6px;
+    background:rgba(20,18,15,.6);           /* lifts stamp contrast over light art */
+    opacity:0;pointer-events:none;transform-origin:center;
+  }
+  .stamp.play{left:22px;color:var(--bgs-vote-play);transform:rotate(-12deg) scale(1.4)}
+  .stamp.pass{right:22px;color:var(--bgs-vote-pass);transform:rotate(12deg) scale(1.4)}
+  .stamp.commit{animation:stampIn .22s cubic-bezier(.2,1.4,.4,1) forwards}
+  @keyframes stampIn{to{transform:rotate(var(--r)) scale(1);opacity:1}}
+
+  /* ---------- promotion: rise + come into focus ---------- */
+  .deck-card[data-depth="1"] .cover{filter:blur(3px)}
+  .deck-card[data-depth="2"] .cover{filter:blur(6px)}
+  .deck-card:not([data-depth="0"]) .meta{opacity:.0}
+  .deck-card[data-depth="0"] .meta{opacity:1;transition:opacity .18s ease-out .1s}
+  .cover{transition:filter var(--dur) ease-out}
+
+  /* ---------- text legibility on card ---------- */
+  .meta h2,.meta li{text-shadow:0 1px 2px rgba(0,0,0,.6)}
+  .particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+
+  /* ---------- actions ---------- */
+  .actions{display:flex;justify-content:center;gap:18px;padding:0 0 40px}
+  .actions button{
+    width:64px;height:64px;border-radius:50%;cursor:pointer;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+    color:var(--bgs-ivory);display:grid;place-items:center;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    transition:transform .15s,background .15s;
+  }
+  .actions button:active{transform:scale(.92)}
+  .actions button:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px}
+  .actions .pass{color:var(--bgs-vote-pass)} .actions .play{color:var(--bgs-vote-play)}
+  .actions svg{width:26px;height:26px}
+
+  /* ---------- empty ---------- */
+  .done{
+    position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:30px
+  }
+  .done.show{display:flex}
+  .done h3{font-family:Fraunces,serif;font-weight:600;font-size:28px;margin:0}
+  .done p{color:var(--bgs-ivory-70);margin:0;font-size:14px}
+  .done button{
+    margin-top:12px;font:inherit;font-weight:600;color:var(--bgs-bg);background:var(--bgs-gold);
+    border:0;border-radius:999px;padding:12px 22px;cursor:pointer
+  }
+
+  /* ---------- reduced motion ---------- */
+  .rm .deck-card,.rm .cover,.rm .tally .roll span{transition:none!important}
+  .rm .stamp.commit{animation-duration:.01s!important}
+  @media (prefers-reduced-motion:reduce){
+    .deck-card,.cover,.tally .roll span{transition:none!important}
+    .stamp.commit{animation-duration:.01s!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="demo" role="group" aria-label="Demo controls">
+  <span style="padding:0 10px;color:var(--bgs-ivory-70)">Focus promote · gold tally · blackwash + stamp</span>
+  <span class="sep"></span>
+  <label><input type="checkbox" id="rm"> Reduced motion</label>
+</div>
+
+<div class="phone" id="phone">
+  <div class="top">
+    <h1>Game night</h1>
+    <div class="tally" id="tally" aria-live="polite" aria-atomic="true"><span class="roll"><span id="rollNum">1</span></span><span>&nbsp;/ 6</span></div>
+  </div>
+  <div class="stage">
+    <div class="deck" id="deck"></div>
+    <div class="done" id="done">
+      <h3>All voted</h3>
+      <p>Waiting for the others to finish.</p>
+      <button id="reset">Run it again</button>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="pass" id="btnPass" aria-label="Pass">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <button class="play" id="btnPlay" aria-label="Play">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+    </button>
+  </div>
+  <div class="particles" id="particles"></div>
+</div>
+
+<script>
+const GAMES = [
+  {t:"Brass: Birmingham", p:"2–4", min:"120", w:"3.9", art:"linear-gradient(160deg,#5A3A22,#1F1712 60%,#B8802F)"},
+  {t:"Cascadia", p:"1–4", min:"45", w:"1.9", art:"linear-gradient(160deg,#2F5F5A,#17322F 55%,#8FA75A)"},
+  {t:"Dune: Imperium", p:"1–4", min:"90", w:"3.1", art:"linear-gradient(160deg,#8C5A2A,#3A2513 55%,#D9B45A)"},
+  {t:"Wingspan", p:"1–5", min:"60", w:"2.4", art:"linear-gradient(160deg,#5B7FA6,#243447 55%,#C7D4E2)"},
+  {t:"The Crew", p:"2–5", min:"20", w:"2.0", art:"linear-gradient(160deg,#1E2A55,#0F1530 55%,#6D7FCF)"},
+  {t:"Ark Nova", p:"1–4", min:"150", w:"3.7", art:"linear-gradient(160deg,#3E5A3A,#1A2418 55%,#C2604A)"},
+];
+const phone=document.getElementById('phone'), deck=document.getElementById('deck'),
+      tally=document.getElementById('tally'), rollNum=document.getElementById('rollNum'),
+      done=document.getElementById('done'), particles=document.getElementById('particles');
+let queue=[], index=0, busy=false;
+
+document.getElementById('rm').addEventListener('change',e=>phone.classList.toggle('rm',e.target.checked));
+
+function makeCard(g){
+  const c=document.createElement('div'); c.className='deck-card';
+  c.innerHTML=`<div class="card-body">
+      <div class="cover" style="--art:${g.art}"></div>
+      <div class="wash"></div>
+      <div class="stamp play" style="--r:-12deg">PLAY</div>
+      <div class="stamp pass" style="--r:12deg">PASS</div>
+      <div class="meta"><h2>${g.t}</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.6"/><path d="M16 15.5a4.5 4.5 0 0 1 4.5 4"/></svg><span class="sr">Players</span>${g.p}</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span class="sr">Play time</span>${g.min} min</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v3M4.5 8h15M12 7l-5 8h10l-5-8z"/><path d="M4 16a3 3 0 0 0 6 0M14 16a3 3 0 0 0 6 0M4 16l3-8M10 16l-3-8M14 16l3-8M20 16l-3-8"/><path d="M9 20h6"/></svg><span class="sr">Weight</span>${g.w}</li>
+        </ul></div>
+    </div>`;
+  return c;
+}
+function layout(){
+  [...deck.children].forEach((c,i)=>{c.dataset.depth=i;c.style.setProperty('--d',Math.min(i,3));});
+}
+function build(){
+  deck.innerHTML=''; index=0; done.classList.remove('show');
+  queue=GAMES.map(makeCard); queue.forEach(c=>deck.appendChild(c)); layout();
+  rollNum.textContent='1'; bind();
+}
+function front(){return deck.querySelector('[data-depth="0"]');}
+
+/* ---------- drag ---------- */
+let drag=null;
+function bind(){
+  const f=front(); if(!f) return;
+  const body=f.querySelector('.card-body');
+  body.onpointerdown=e=>{
+    if(busy) return;
+    body.setPointerCapture(e.pointerId);
+    drag={x0:e.clientX,y0:e.clientY,dx:0,dy:0,vx:0,t:performance.now(),body,card:f};
+    phone.classList.add('dragging');
+  };
+  body.onpointermove=e=>{
+    if(!drag) return;
+    const now=performance.now(), ndx=e.clientX-drag.x0;
+    drag.vx=(ndx-drag.dx)/Math.max(now-drag.t,1); drag.t=now;   // px per ms, release velocity
+    drag.dx=ndx; drag.dy=(e.clientY-drag.y0)*.4;
+    body.style.transform=`translate(${drag.dx}px,${drag.dy}px) rotate(${drag.dx*.06}deg)`;
+    const p=Math.min(Math.abs(drag.dx)/110,1);
+    body.querySelector('.wash').style.opacity=p;
+    const s=body.querySelector(drag.dx>0?'.stamp.play':'.stamp.pass'), o=body.querySelector(drag.dx>0?'.stamp.pass':'.stamp.play');
+    o.style.opacity=0;
+    s.style.opacity=p; s.style.transform=`rotate(${drag.dx>0?-12:12}deg) scale(${1.4-.4*p})`;
+  };
+  body.onpointerup=body.onpointercancel=e=>{
+    if(!drag) return; const d=drag; drag=null; phone.classList.remove('dragging');
+    if(Math.abs(d.dx)>90||Math.abs(d.vx)>.8) vote(d.dx>0?'play':'pass',d);
+    else{
+      body.style.transition='transform .35s cubic-bezier(.34,1.56,.64,1)';
+      body.style.transform=''; body.querySelector('.wash').style.opacity=0;
+      body.querySelectorAll('.stamp').forEach(s=>{s.style.opacity=0;s.style.transform='';});
+      body.addEventListener('transitionend',()=>body.style.transition='',{once:true});
+    }
+  };
+}
+document.getElementById('btnPlay').onclick=()=>vote('play');
+document.getElementById('btnPass').onclick=()=>vote('pass');
+
+/* ---------- vote ---------- */
+function vote(kind,d){
+  const f=front(); if(!f||busy) return; busy=true;
+  const body=f.querySelector('.card-body'), dir=kind==='play'?1:-1;
+  const rm=phone.classList.contains('rm')||matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  body.querySelector('.wash').style.opacity=1;
+  const st=body.querySelector('.stamp.'+kind); st.style.transform=''; st.classList.add('commit');
+  reward_tally();
+
+  // exit — continues from the drag position and speed, no pause
+  const dx=d?d.dx:0, dy=d?d.dy:0;
+  const duration=rm?1:340;
+  const from=`translate(${dx}px,${dy}px) rotate(${dx*.06}deg)`;
+  const to=`translate(${dir*620}px,${dy-40}px) rotate(${dir*(Math.abs(dx*.06)+14)}deg)`;
+  const exit=body.animate([{transform:from},{transform:to}],
+    {duration,easing:d?'cubic-bezier(.25,.6,.5,1)':'cubic-bezier(.4,0,.8,1)',fill:'forwards'});
+
+  // promote the next card at the same moment the front starts leaving
+  f.dataset.depth='x'; f.style.zIndex=20;
+  layoutRest(f);
+  index++; rollNum.textContent=Math.min(index+1,GAMES.length);
+
+  exit.onfinish=()=>{
+    f.remove(); busy=false;
+    if(!deck.children.length){done.classList.add('show');} else bind();
+  };
+}
+function layoutRest(exiting){
+  [...deck.children].filter(c=>c!==exiting).forEach((c,i)=>{c.dataset.depth=i;c.style.setProperty('--d',Math.min(i,3));});
+}
+
+/* ---------- reward: gold tally roll + pulse ---------- */
+function reward_tally(){
+  tally.classList.remove('pulse'); void tally.offsetWidth;
+  tally.classList.add('pulse'); setTimeout(()=>tally.classList.remove('pulse'),420);
+  const el=rollNum; el.style.transition='none'; el.style.transform='translateY(100%)'; void el.offsetWidth;
+  el.style.transition=''; el.style.transform='';
+}
+
+document.getElementById('reset').onclick=build;
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight') vote('play'); if(e.key==='ArrowLeft') vote('pass');
+});
+build();
+</script>
+</body>
+</html>
