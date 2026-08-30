@@ -263,6 +263,42 @@
   }
   .vote-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin-top:16px;}
 
+  /* ---- initial loading state: dealing the deck ----
+     Four face-down cards dealt into the vote deck, then a gold ring pulse.
+     Cards animate transform+opacity only; the ring animates box-shadow only,
+     on its own element — one animation per element, no transitions (WebKit). */
+  .deal-wrap{height:120px;display:flex;align-items:center;justify-content:center;margin:26px 0 0;}
+  .deal{position:relative;width:64px;height:85px;}
+  .deal .deck-card{
+    position:absolute;inset:0;width:64px;height:85px;
+    border-radius:8px;font-size:18px;
+    box-shadow:0 8px 18px rgba(0,0,0,.45);
+    opacity:0;
+    animation:bgs-deal-in 3.4s cubic-bezier(.3,.7,.3,1) infinite;
+  }
+  .deal .deck-card:nth-child(1){--rest:rotate(-5deg);}
+  .deal .deck-card:nth-child(2){--rest:rotate(4deg);animation-delay:.22s;}
+  .deal .deck-card:nth-child(3){--rest:rotate(-2deg);animation-delay:.44s;}
+  .deal .deck-card:nth-child(4){--rest:rotate(0deg);animation-delay:.66s;}
+  @keyframes bgs-deal-in{
+    0%   {opacity:0;transform:translate(110px,-90px) rotate(28deg);}
+    12%  {opacity:1;transform:translate(0,0) var(--rest);}   /* lands, tilted */
+    16%  {transform:translate(0,0) var(--rest);}
+    30%  {transform:translate(0,0) rotate(0deg);}            /* squares up */
+    84%  {opacity:1;transform:translate(0,0) rotate(0deg);}
+    94%,100%{opacity:0;transform:translate(0,0) rotate(0deg);}
+  }
+  .deal-ring{
+    position:absolute;inset:-7px;border-radius:13px;pointer-events:none;
+    box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);
+    animation:bgs-ring-pulse 3.4s infinite;
+  }
+  @keyframes bgs-ring-pulse{
+    0%,30%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+    40%   {box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.7);}
+    58%,100%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+  }
+
   /* ---- waiting state ---- */
   .waiting-panel{padding:6px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative;}
   /* The waiting animation is the shuffling deck in css/base.css, shared with
@@ -291,6 +327,8 @@
     .spinner{animation:none;}
     .stack .card,.stack .cover,.tally .roll span,.caption{transition:none!important;}
     .stamp.commit{animation-duration:.01s!important;}
+    .deal .deck-card{animation:none;opacity:1;transform:translate(0,0) rotate(0deg);}
+    .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
   }
 
   /* ---- roster ---- */
@@ -339,7 +377,16 @@
 
 <div class="screen" id="screen">
   <div class="eyebrow">Game Night</div>
-  <h1>Loading&hellip;</h1>
+  <h1>Dealing tonight's picks&hellip;</h1>
+  <div class="deal-wrap">
+    <div class="deal" aria-hidden="true">
+      <div class="deck-card back">?</div>
+      <div class="deck-card back">?</div>
+      <div class="deck-card back">?</div>
+      <div class="deck-card back">?</div>
+      <div class="deal-ring"></div>
+    </div>
+  </div>
 </div>
 
 <div class="confirm" id="confirm">
