@@ -1,9 +1,18 @@
-/* Game detail modal — the single source of truth for the shelf and the
-   game-night waiting room pages.
-   Consumed by index.html, night-host.html and vote.html; the markup that goes
-   with it is built by js/game-modal.js. Edit here, not per page. */
+/* Game detail modal — the single source of truth for the shelf, the
+   game-night waiting room pages, the swipe screen and the results screen.
+   The markup that goes with it is built by js/game-modal.js. Edit here, not
+   per page. */
 
 /* Requires css/base.css, which owns the design tokens this file uses. */
+
+/* The modal's own box is `.backdrop .card`, not a bare `.card`. It used to be
+   unscoped, which meant every page linking this file had `.card` silently
+   styled as a modal panel — an opaque plate, a gold border, overflow:hidden
+   and a pop animation. The swipe screen's card stack uses `.card` for its
+   depth layer and inherited all of it: the dragged card was clipped by the
+   outer box, a border sat over the deck, the card behind was hidden behind an
+   opaque plate, and the animation collided with the depth transition. Keep
+   these selectors scoped. */
 
 /* modal */
 .backdrop{
@@ -17,7 +26,7 @@
   z-index:30;
 }
 .backdrop.open{display:flex;}
-.card{
+.backdrop .card{
   background:var(--bgs-plate);
   border:1px solid rgba(var(--bgs-gold-rgb),0.3);
   border-radius:16px;
@@ -110,7 +119,7 @@
   text-align:center;
   margin:8px 0 0;
 }
-.card h2{
+.backdrop .card h2{
   font-family:'Fraunces',serif;
   font-weight:600;
   font-size:24px;
@@ -136,13 +145,13 @@
   gap:6px;
 }
 .stat-icon{ color:var(--bgs-icon-gold); flex-shrink:0; }
-.card p.blurb{
+.backdrop .card p.blurb{
   font-size:15px;
   line-height:1.6;
   color:var(--bgs-ivory-70);
   margin:0 0 18px;
 }
-.card .tag{
+.backdrop .card .tag{
   font-family:'IBM Plex Mono',monospace;
   font-size:11px;
   letter-spacing:0.06em;
