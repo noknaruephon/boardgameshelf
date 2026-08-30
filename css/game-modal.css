@@ -119,6 +119,81 @@
   text-align:center;
   margin:8px 0 0;
 }
+
+/* ---- cover / table-shot crossfade ---- */
+/* Only built for games that have a tableShot; everything else keeps the plain
+   cover markup above, untouched. */
+.media-stack{
+  /* No padding, border or overflow here on purpose: the cover's own -6px/18px
+     margins must keep collapsing straight through this wrapper, or adding the
+     toggle would shift the whole modal body. */
+  position:relative;
+}
+.media-layer{
+  opacity:0;
+  /* Transition only. Nothing may put a CSS animation on these elements —
+     WebKit silently drops a transition that fights an animation, the same rule
+     css/base.css:129 states for the deal-in loader. The modal's entrance
+     animation (bgs-modal-pop) is on `.backdrop .card`, an ancestor, so it does
+     not touch these; keep it that way. */
+  transition:opacity 0.32s ease;
+}
+.media-layer.on{opacity:1;}
+.media-table{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  /* The photo fills the frame the box art defines — cropping a table shot is
+     fine, cropping box art is not, which is why the cover layer keeps its own
+     object-fit and the container is never forced to a fixed ratio. */
+  object-fit:cover;
+  border-radius:10px;
+  box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
+}
+.media-toggle-row{
+  display:flex;
+  justify-content:center;
+  /* -8px collapses against the cover's 18px bottom margin to leave the 10px
+     the mockup shows above the toggle; the 18px below keeps the gap to the
+     title identical to a modal with no toggle. */
+  margin:-8px 0 18px;
+}
+.media-toggle{
+  display:inline-flex;
+  padding:3px;
+  border-radius:12px;
+  background:rgba(var(--bgs-bg-rgb),0.35);
+  border:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+}
+.media-toggle__btn{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 15px;
+  border:none;
+  border-radius:9px;
+  background:none;
+  font:inherit;
+  font-size:13px;
+  /* ivory-45 is the mockup's colour but measures 3.94:1 on the plate — under
+     4.5:1 for text this size. ivory-70 (8.0:1) is the same deviation spec §5
+     makes for the radar labels. */
+  color:var(--bgs-ivory-70);
+  cursor:pointer;
+  transition:color 0.18s, background 0.18s;
+}
+.media-toggle__btn svg{flex-shrink:0;}
+.media-toggle__btn[aria-pressed="true"]{
+  background:rgba(var(--bgs-gold-rgb),0.16);
+  color:var(--bgs-gold);
+  /* inset shadow, never outline: outline paints beneath child elements. */
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.55);
+}
+@media (prefers-reduced-motion:reduce){
+  .media-layer,
+  .media-toggle__btn{transition:none;}
+}
 .backdrop .card h2{
   font-family:'Fraunces',serif;
   font-weight:600;
@@ -263,6 +338,7 @@ body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
 }
 /* Visible keyboard focus on the dark plate. */
 .close-btn:focus-visible,
+.media-toggle__btn:focus-visible,
 .card-sticky button:focus-visible{
   outline:2px solid var(--bgs-gold);outline-offset:2px;
 }
