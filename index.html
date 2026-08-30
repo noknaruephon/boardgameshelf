@@ -808,13 +808,36 @@
     margin:0 auto 16px;
   }
   .gn-sheet h3{font-size:24px;}
-  /* Six 3:4 cards can outgrow 88vh on a short, wide window — a 1024x768 laptop
-     pushed the Re-roll / Continue row and Cancel below the fold, because
-     .gn-panel scrolls the whole panel as one block. Scroll the grid instead, so
-     the title and the actions stay put at any window height. */
+  /* All six cards stay on screen at any window height — nothing here scrolls.
+     Six 3:4 cards outgrow the sheet's 88vh cap on a short, wide window (a
+     1024x768 laptop pushed Cancel clean off the bottom), so the sheet is a flex
+     column: the chrome keeps its natural size and the grid takes what's left.
+     Inside it the rows share that height and each card's cover shrinks out of
+     its 3:4 base rather than overflowing. object-fit:cover already crops the
+     art, so a shorter cover stays undistorted; the title and meta never shrink. */
   .gn-sheet{display:flex;flex-direction:column;overflow:hidden;}
   .gn-sheet > *{flex:none;}
-  .gn-sheet .gn-surprise-grid{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
+  .gn-sheet .gn-surprise-grid{
+    flex:0 1 auto;
+    min-height:0;
+    /* Never grows past the cards' natural size, so a tall window still gets a
+       3:4 cover; shrinks when the sheet is squeezed, and the 1fr rows hand that
+       reduction to the cards. auto (not hidden) is the safety net: below any
+       realistic window height the grid scrolls rather than clipping a card. */
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    /* 140px floor = the title/meta block plus a readable sliver of cover. Below
+       that the rows stop shrinking and the grid scrolls, rather than collapsing
+       the art to nothing and clipping the title (a landscape phone did exactly
+       that). No realistic window height reaches the floor. */
+    grid-auto-rows:minmax(140px,1fr);
+  }
+  /* height:100% is what forces the card into its row: a grid item is stretched
+     up to its track but never compressed below its own content, so without this
+     the card keeps its full height and overflows the row instead of shrinking. */
+  .gn-surprise-card{display:flex;flex-direction:column;height:100%;min-height:0;}
+  .gn-surprise-card .art{flex:0 1 auto;min-height:0;}
+  .gn-surprise-card .meta{flex:none;}
 
   .gn-surprise-grid{gap:10px;margin-bottom:20px;perspective:900px;}
   .gn-surprise-card{
