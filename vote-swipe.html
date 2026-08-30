@@ -228,34 +228,11 @@
 
   /* ---- waiting state ---- */
   .waiting-panel{padding:6px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative;}
-  .die-wrap{position:relative;width:52px;height:52px;display:flex;align-items:center;justify-content:center;}
-  .die{width:52px;height:52px;position:relative;z-index:1;animation:tumble 2.4s cubic-bezier(.45,0,.2,1) infinite;}
-  @keyframes tumble{0%{transform:rotate(0) scale(1);}35%{transform:rotate(200deg) scale(1.06);}60%{transform:rotate(340deg) scale(.97);}100%{transform:rotate(360deg) scale(1);}}
-  .die rect{fill:var(--bgs-gold);} .die circle{fill:var(--bgs-plate);}
+  /* The waiting animation is the shuffling deck in css/base.css, shared with
+     the waiting room. */
   .waiting-title{font-family:'Fraunces',serif;font-weight:600;font-size:18px;text-align:center;line-height:1.35;margin:0;}
   .waiting-title b{color:var(--bgs-gold);font-weight:600;}
   .waiting-sub{font-size:12px;color:var(--bgs-ivory-45);text-align:center;min-height:16px;transition:opacity .2s ease;}
-
-  /* ---- tallying state: three face-down cards shuffling ----
-     Draws the same .deck-card.back from css/base.css that the waiting room
-     uses, scaled up — same component, not a second way of drawing a hidden
-     game. Face-down deliberately: nothing about the outcome may leak. */
-  .loader-wrap{height:66px;display:flex;align-items:center;justify-content:center;}
-  .shuffle{position:relative;width:104px;height:64px;}
-  .shuffle .deck-card{
-    position:absolute;top:0;left:30px;width:46px;height:62px;
-    box-shadow:0 7px 15px rgba(0,0,0,.5);
-    animation:deal 1.9s cubic-bezier(.45,0,.3,1) infinite;
-  }
-  @keyframes deal{
-    0%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
-    28%{transform:translateX(-36px) rotate(-13deg) scale(.97);opacity:1;}
-    62%{transform:translateX(36px) rotate(10deg) scale(.94);opacity:.7;}
-    100%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
-  }
-  .shuffle .deck-card:nth-child(1){z-index:3;}
-  .shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
-  .shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
 
   .waiting-sub.strong{
     display:flex;align-items:center;justify-content:center;gap:9px;
@@ -273,7 +250,8 @@
      Nothing here relies on an animation to become visible, so dropping the
      motion can never leave a card or a count blank. */
   @media (prefers-reduced-motion:reduce){
-    .shuffle .deck-card,.spinner{animation:none;}
+    /* .shuffle is handled by css/base.css, which ships its own rule. */
+    .spinner{animation:none;}
     .stack .card,.stack .cover,.tally .roll span{transition:none!important;}
     .stamp.commit{animation-duration:.01s!important;}
   }
@@ -345,7 +323,7 @@
 // the whole module script never runs, leaving the page stuck on "Loading…".
 import { fetchSession, submitVote, finishVoting, forceResults, fetchVotes, sessionErrorMessage } from '/js/session.js';
 import { joinSessionChannel } from '/js/presence.js';
-import { deckFromSession, openGameModal } from '/js/waiting-room.js';
+import { deckFromSession, openGameModal, shuffleHTML } from '/js/waiting-room.js';
 import { attachSwipe, markCommitted, exitCard } from '/js/swipe.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 
@@ -777,14 +755,6 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     };
   }
 
-  function loaderHTML() {
-    return `<div class="loader-wrap"><div class="shuffle">
-      <div class="deck-card back">?</div>
-      <div class="deck-card back">?</div>
-      <div class="deck-card back">?</div>
-    </div></div>`;
-  }
-
   function cycleHints() {
     clearInterval(hintTimer);
     let i = 0;
@@ -813,14 +783,7 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
       <div class="eyebrow">Game Night · ${code}</div>
       <h1>Votes locked</h1>
       <div class="waiting-panel">
-        ${allDone ? loaderHTML() : `
-        <div class="die-wrap">
-          <svg class="die" viewBox="0 0 52 52">
-            <rect x="2" y="2" width="48" height="48" rx="11"/>
-            <circle cx="17" cy="17" r="4.2"/><circle cx="35" cy="17" r="4.2"/>
-            <circle cx="17" cy="35" r="4.2"/><circle cx="35" cy="35" r="4.2"/><circle cx="26" cy="26" r="4.2"/>
-          </svg>
-        </div>`}
+        ${shuffleHTML()}
         <p class="waiting-title">${allDone ? 'All votes are in' : 'Waiting on the <b>table</b>'}</p>
         ${allDone
           ? `<p class="waiting-sub strong">Results are on their way<span class="spinner"></span></p>`

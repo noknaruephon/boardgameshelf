@@ -94,3 +94,29 @@ body.scroll-locked{
 }
 .deck-card.clickable{cursor:pointer;transition:transform .12s ease;}
 .deck-card.clickable:active{transform:scale(.92);}
+
+/* Three face-down cards being shuffled — the waiting animation for every
+   game-night screen that has to hold the table for a moment: waiting for the
+   host to start, waiting for the others to finish, and tallying.
+   Built from .deck-card.back above rather than drawn again, and face-down
+   deliberately, so a screen that must not leak a result cannot.
+   Markup comes from shuffleHTML() in js/waiting-room.js. */
+.shuffle-wrap{height:66px;display:flex;align-items:center;justify-content:center;}
+.shuffle{position:relative;width:104px;height:64px;}
+.shuffle .deck-card{
+  position:absolute;top:0;left:30px;width:46px;height:62px;
+  box-shadow:0 7px 15px rgba(0,0,0,.5);
+  animation:bgs-deal 1.9s cubic-bezier(.45,0,.3,1) infinite;
+}
+@keyframes bgs-deal{
+  0%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+  28%{transform:translateX(-36px) rotate(-13deg) scale(.97);opacity:1;}
+  62%{transform:translateX(36px) rotate(10deg) scale(.94);opacity:.7;}
+  100%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+}
+.shuffle .deck-card:nth-child(1){z-index:3;}
+.shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
+.shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
+@media (prefers-reduced-motion:reduce){
+  .shuffle .deck-card{animation:none;}
+}
