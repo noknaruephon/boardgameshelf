@@ -63,11 +63,15 @@
   }
   .tally .roll{display:inline-block;height:1.2em;line-height:1.2em;overflow:hidden;vertical-align:top;}
   .tally .roll span{display:block;transition:transform .34s cubic-bezier(.2,.8,.2,1);}
-  .tally.pulse{
+  /* .pulse is the per-vote flash; .done is the same gold held, so the last
+     vote does not drop back to grey in the moment before the waiting panel
+     takes over. */
+  .tally.pulse,.tally.done{
     background:rgba(var(--bgs-gold-rgb),.18);
     border-color:var(--bgs-gold);
     color:var(--bgs-gold);
   }
+  .tally[hidden],.tally #tallyTotal[hidden]{display:none;}
 
   /* ---- card stack ----
      Rules stay scoped under .stack so they cannot reach the shared game detail
@@ -641,19 +645,34 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     });
   }
 
-  /** The count chip: rolls to the new number and flashes gold. */
-  function rewardTally(nextCount) {
+  /**
+   * The count chip: rolls to its new value and flashes gold.
+   *
+   * The last vote has no next card to count, so it reads "Done" rather than
+   * rolling to the number already showing — an animation that lands on the
+   * same value looks like the screen failed to register the swipe.
+   *
+   * @param {number|string} value
+   * @param {boolean} [done] drop the "/ total" suffix and hold the gold
+   */
+  function rewardTally(value, done = false) {
     const tally = document.getElementById('tally');
     const rollNum = document.getElementById('rollNum');
+    const totalEl = document.getElementById('tallyTotal');
     if (!tally || !rollNum) return;
     tally.classList.remove('pulse');
     void tally.offsetWidth;            // restart the transition from the top
     tally.classList.add('pulse');
-    setTimeout(() => tally.classList.remove('pulse'), 420);
+    // Done is the end state, not a flash: it keeps the gold until the waiting
+    // panel replaces the screen a moment later.
+    if (done) tally.classList.add('done');
+    else setTimeout(() => tally.classList.remove('pulse'), 420);
+
+    if (done && totalEl) totalEl.hidden = true;
 
     rollNum.style.transition = 'none';
     rollNum.style.transform = 'translateY(100%)';
-    rollNum.textContent = nextCount;
+    rollNum.textContent = value;
     void rollNum.offsetWidth;          // commit the jump before animating back
     rollNum.style.transition = '';
     rollNum.style.transform = '';
@@ -667,7 +686,7 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
       <h1>Swipe to vote</h1>
       <div class="tally-row">
         <div class="tally" id="tally" aria-live="polite" aria-atomic="true">
-          <span class="roll"><span id="rollNum">${Math.min(index + 1, total)}</span></span><span>&nbsp;/ ${total}</span>
+          <span class="roll"><span id="rollNum">${Math.min(index + 1, total)}</span></span><span id="tallyTotal">&nbsp;/ ${total}</span>
         </div>
       </div>
       <div class="stack" id="stack"></div>
@@ -739,7 +758,8 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     relayout(front);
 
     index += 1;
-    rewardTally(Math.min(index + 1, deck.length));
+    const deckDone = index >= deck.length;
+    rewardTally(deckDone ? 'Done' : index + 1, deckDone);
     // Never block the gesture on the network: advance locally now, submit in
     // the background.
     submitWithRetry(game.bggId, vote);
