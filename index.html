@@ -737,12 +737,13 @@
     gap:8px;
     margin:0 0 18px;
   }
+  /* Shell matched to .game-card on the shelf — same plate, same radius, same
+     shadow — so a game reads identically in the sheet and in the grid behind it. */
   .gn-surprise-card{
-    border-radius:8px;
+    border-radius:10px;
     overflow:hidden;
-    /* Same plate as .game-card on the shelf, so a game reads the same in the
-       sheet as it does in the grid behind it. */
     background:var(--bgs-plate);
+    box-shadow:0 3px 10px rgba(0,0,0,.35);
   }
   .gn-surprise-card .art{aspect-ratio:3/4;width:100%;overflow:hidden;background:var(--bgs-plate);}
   .gn-surprise-card .art img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -849,7 +850,6 @@
   .gn-surprise-grid{gap:10px;margin-bottom:20px;perspective:900px;}
   .gn-surprise-card{
     position:relative;
-    border-radius:12px;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
   }
@@ -893,7 +893,7 @@
 
   /* Re-roll flip. The animation lives on this wrapper and only here; the card's
      .lock keeps its transition one level down. Never both on one node. */
-  .gn-surprise-flip{transform-style:preserve-3d;backface-visibility:hidden;border-radius:12px;}
+  .gn-surprise-flip{transform-style:preserve-3d;backface-visibility:hidden;border-radius:10px;}
   .gn-surprise-flip.out{animation:gn-flip-out 0.18s ease-in forwards;}
   .gn-surprise-flip.in{animation:gn-flip-in 0.28s cubic-bezier(0.2,0.8,0.2,1);}
   @keyframes gn-flip-out{to{transform:rotateY(90deg);}}
