@@ -42,10 +42,11 @@
     text-align:center;margin:0 0 18px;letter-spacing:-.01em;
   }
 
-  /* ---- progress ---- */
-  .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-  .progress-track{flex:1;height:4px;border-radius:99px;background:rgba(var(--bgs-ivory-rgb),.1);overflow:hidden;}
-  .progress-fill{height:100%;background:var(--bgs-gold);border-radius:99px;transition:width .35s ease;}
+  /* ---- progress ----
+     The count alone, centred. There was a filled bar beside it saying the same
+     thing a second way; the chip already rolls and flashes on every vote, so
+     the bar was a quieter duplicate of the screen's one reward. */
+  .tally-row{display:flex;justify-content:center;margin-bottom:20px;}
 
   /* The count is what a landed vote pays back, so it rolls and flashes gold.
      Gold rather than the sage/clay vote colours: those say which way you
@@ -644,19 +645,13 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     rollNum.style.transform = '';
   }
 
-  function updateProgressFill() {
-    const fill = document.querySelector('.progress-fill');
-    if (fill) fill.style.width = `${Math.round((index / deck.length) * 100)}%`;
-  }
-
   /** Builds the voting screen once; the stack is then mutated, never rebuilt. */
   function renderVoting() {
     const total = deck.length;
     screen.innerHTML = `
       <div class="eyebrow">Game Night · ${code}</div>
       <h1>Swipe to vote</h1>
-      <div class="progress-row">
-        <div class="progress-track"><div class="progress-fill" style="width:${Math.round((index / total) * 100)}%"></div></div>
+      <div class="tally-row">
         <div class="tally" id="tally" aria-live="polite" aria-atomic="true">
           <span class="roll"><span id="rollNum">${Math.min(index + 1, total)}</span></span><span>&nbsp;/ ${total}</span>
         </div>
@@ -731,7 +726,6 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
 
     index += 1;
     rewardTally(Math.min(index + 1, deck.length));
-    updateProgressFill();
     // Never block the gesture on the network: advance locally now, submit in
     // the background.
     submitWithRetry(game.bggId, vote);
