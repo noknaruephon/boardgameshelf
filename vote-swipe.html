@@ -84,8 +84,11 @@
      to be one element, so the depth and drag transforms overwrote each other —
      which is why the stack could only be rebuilt after the exit finished, and
      the next card appeared to jump in late. */
-  /* No bottom margin: the caption below takes that space. */
-  .stack{position:relative;height:400px;touch-action:none;}
+  /* No bottom margin: the caption below takes that space.
+     `isolation` keeps the cards' z-indexes (0-10, and 20 for the one flying
+     out) inside the stack, so the caption below only has to clear the stack
+     as a whole rather than outrank its tallest card. */
+  .stack{position:relative;height:400px;touch-action:none;isolation:isolate;}
 
   /* outer — depth only */
   .stack .card{
@@ -211,6 +214,11 @@
        in css/base.css), so a min-height of just the text height would be
        swallowed by the 30px of padding and a one-line caption would still sit
        19px shorter — moving the buttons under it. */
+    /* Above the card's drop shadow. The card is positioned with a z-index, so
+       without this the caption is static content underneath it and the shadow
+       — which reaches ~34px past the card's bottom edge, right across the
+       first line — is painted over the text, dimming it. */
+    position:relative;z-index:1;
     margin:0 auto;width:100%;min-height:calc(1.4em * 2 + 14px + 16px);
     padding:14px 0 16px;text-align:center;
     font-size:14px;line-height:1.4;color:var(--bgs-ivory-70);
@@ -219,6 +227,14 @@
   }
   /* Fades out with the card being voted, back in with the one promoted. */
   .caption.swap{opacity:0;transition:opacity .12s ease-in;}
+  /* The elevation above is for clearing the shadow of a card at rest. A card
+     under the finger is a different matter: dragged downward it reaches into
+     this band, and it should pass over the caption rather than have text
+     floating on top of it.
+     `position:static`, not merely a lower z-index: a positioned element still
+     paints above the stack by document order whatever its z-index. Dropping
+     out of positioning is layout-neutral here, since the offsets are zero. */
+  .stack.dragging + .caption{position:static;}
 
   /* ---- vote buttons ----
      Neutral glass discs; the vote colour lives on the icon stroke only. The
