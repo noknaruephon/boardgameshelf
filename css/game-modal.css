@@ -266,6 +266,59 @@
   border-radius:50%;
   background:var(--bgs-gold);
 }
+/* ---- Stats fingerprint ---- */
+/* Rendered only when a game has a complete fingerprint; when it is absent the
+   section is not emitted at all, so no divider is left behind. */
+.fp-section{
+  margin-top:20px;
+  padding-top:18px;
+  /* 0.10 is the divider alpha the rest of the app uses (index.html:256, :418);
+     the mockup's .08 was an approximation. */
+  border-top:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+}
+/* The shared heading rule carries a 20px top margin for the gap above
+   HIGHLIGHTS; here the section's own padding already provides it. */
+.fp-section .why-heading{margin-top:0;}
+.fp-chart{
+  display:flex;
+  justify-content:center;
+}
+.fp-chart svg{
+  width:100%;
+  max-width:360px;
+  height:auto;
+  overflow:visible;
+}
+.radar-grid{
+  fill:none;
+  stroke:rgba(var(--bgs-ivory-rgb),0.12);
+}
+.radar-axis{stroke:rgba(var(--bgs-ivory-rgb),0.10);}
+.radar-label{
+  /* ivory-70, not the mockup's ivory-45: at this size the label is text, and
+     ivory-45 measures 3.94:1 on the production plate against the 4.5:1 it
+     needs. ivory-70 gives 8.0:1. */
+  fill:var(--bgs-ivory-70);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.radar-shape{
+  fill:rgba(var(--bgs-gold-rgb),0.18);
+  stroke:var(--bgs-gold);
+  stroke-width:2;
+  stroke-linejoin:round;
+  /* Animation only, and never a transition on any property — the mirror of the
+     rule the crossfade layers follow above. transform-origin is set inline from
+     the derived centre. */
+  animation:bgs-fp-bloom 0.5s ease both;
+}
+@keyframes bgs-fp-bloom{from{transform:scale(0.6);opacity:0;}to{transform:scale(1);opacity:1;}}
+.radar-dot{fill:var(--bgs-gold);}
+@media (prefers-reduced-motion:reduce){
+  .radar-shape{animation:none;}
+}
 .close-btn{
   position:absolute;
   top:16px;right:16px;

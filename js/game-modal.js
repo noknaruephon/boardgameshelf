@@ -67,6 +67,99 @@ function mediaHTML(g) {
     </div>`;
 }
 
+// ---- Stats fingerprint ----
+// Display order, 12 o'clock first, clockwise.
+const FP_AXES = [
+  ['complexity', 'Complexity'],
+  ['luck', 'Luck'],
+  ['interaction', 'Interaction'],
+  ['length', 'Length'],
+  ['strategy', 'Strategy'],
+];
+const FP_MAX = 5;
+const FP_R = 88;                // radar radius
+const FP_LABEL_GAP = 1.23;      // labels sit at FP_R * FP_LABEL_GAP from centre
+const FP_LABEL_CLEARANCE = 85;  // horizontal px reserved per side for label text
+const FP_LABEL_FONT = 10;       // keep in step with .radar-label font-size
+const FP_BASELINE_NUDGE = 3.5;  // labels are drawn this far below their point
+
+// The viewBox is derived rather than hardcoded, so renaming an axis or resizing
+// the label font still fits. FP_LABEL_CLEARANCE has to cover the longest axis
+// name at the final font size — "Interaction" is the constraint. If a label ever
+// clips, that constant is the fix, not the radius.
+const FP_RING = FP_R * FP_LABEL_GAP;
+const FP_CX = Math.round(FP_RING + FP_LABEL_CLEARANCE);
+const FP_W = FP_CX * 2;
+// Vertically the 12 o'clock label sits a full ring above centre and the two
+// bottom labels sin(54deg) below it, each needing a line box around its baseline.
+const FP_CY = Math.round(FP_RING + FP_LABEL_FONT);
+const FP_H = Math.round(
+  FP_CY + FP_RING * Math.sin((54 * Math.PI) / 180) + FP_BASELINE_NUDGE + FP_LABEL_FONT
+);
+
+// All-or-nothing: a partial fingerprint hides the section rather than drawing a
+// shape that would read as real data. Bad input returns null, never throws.
+function fingerprintAxes(g) {
+  const fp = g.fingerprint;
+  if (!fp || typeof fp !== 'object') return null;
+
+  const axes = [];
+  for (const [key, label] of FP_AXES) {
+    const v = fp[key];
+    if (typeof v !== 'number' || !Number.isFinite(v)) return null;
+    const clamped = Math.min(FP_MAX, Math.max(0, v));
+    axes.push({ label, value: Math.round(clamped * 10) / 10 });
+  }
+  return axes;
+}
+
+function fpPoint(i, value, n) {
+  const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+  const r = (FP_R * value) / FP_MAX;
+  return [FP_CX + r * Math.cos(a), FP_CY + r * Math.sin(a)];
+}
+
+function fingerprintHTML(g) {
+  const axes = fingerprintAxes(g);
+  if (!axes) return '';
+
+  const n = axes.length;
+  const at = (i, v) => fpPoint(i, v, n).map((x) => x.toFixed(1)).join(',');
+
+  const rings = [FP_MAX / 3, (FP_MAX * 2) / 3, FP_MAX]
+    .map((v) => `<polygon class="radar-grid" points="${axes.map((_, i) => at(i, v)).join(' ')}"/>`)
+    .join('');
+
+  const spokes = axes.map((axis, i) => {
+    const [x, y] = fpPoint(i, FP_MAX, n);
+    const [lx, ly] = fpPoint(i, FP_MAX * FP_LABEL_GAP, n);
+    const anchor = Math.abs(lx - FP_CX) < 8 ? 'middle' : lx > FP_CX ? 'start' : 'end';
+    return `<line class="radar-axis" x1="${FP_CX}" y1="${FP_CY}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`
+      + `<text class="radar-label" x="${lx.toFixed(1)}" y="${(ly + FP_BASELINE_NUDGE).toFixed(1)}" text-anchor="${anchor}">${axis.label}</text>`;
+  }).join('');
+
+  const dots = axes.map((axis, i) => {
+    const [x, y] = fpPoint(i, axis.value, n);
+    return `<circle class="radar-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3"/>`;
+  }).join('');
+
+  // The exact numbers are not drawn anywhere, so this label is the only channel
+  // a screen reader has for them.
+  const readout = axes.map((a) => `${a.label} ${a.value} out of ${FP_MAX}`).join(', ');
+
+  return `
+    <section class="fp-section">
+      <p class="why-heading">Stats</p>
+      <div class="fp-chart">
+        <svg viewBox="0 0 ${FP_W} ${FP_H}" role="img" aria-label="Stats: ${readout}">
+          ${rings}${spokes}
+          <polygon class="radar-shape" points="${axes.map((axis, i) => at(i, axis.value)).join(' ')}" style="transform-origin:${FP_CX}px ${FP_CY}px"/>
+          ${dots}
+        </svg>
+      </div>
+    </section>`;
+}
+
 function bodyHTML(g) {
   return `
     ${mediaHTML(g)}
@@ -81,7 +174,8 @@ function bodyHTML(g) {
     <ul class="why-list">
       ${g.why.map((w) => `<li>${w}</li>`).join('')}
     </ul>
-    <span class="tag">${g.tag}</span>`;
+    <span class="tag">${g.tag}</span>
+    ${fingerprintHTML(g)}`;
 }
 
 // The back-of-box flip: tap, or swipe horizontally. Re-wired on every open
