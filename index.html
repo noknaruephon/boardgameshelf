@@ -737,10 +737,13 @@
     gap:8px;
     margin:0 0 18px;
   }
+  /* Shell matched to .game-card on the shelf — same plate, same radius, same
+     shadow — so a game reads identically in the sheet and in the grid behind it. */
   .gn-surprise-card{
-    border-radius:8px;
+    border-radius:10px;
     overflow:hidden;
-    background:var(--bgs-bg);
+    background:var(--bgs-plate);
+    box-shadow:0 3px 10px rgba(0,0,0,.35);
   }
   .gn-surprise-card .art{aspect-ratio:3/4;width:100%;overflow:hidden;background:var(--bgs-plate);}
   .gn-surprise-card .art img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -802,6 +805,11 @@
     animation:gn-rise 0.34s cubic-bezier(0.2,0.8,0.2,1);
   }
   @keyframes gn-rise{from{transform:translateY(24px);opacity:0;}to{transform:none;opacity:1;}}
+  /* The shelf pairs --bgs-plate cards with a --bgs-bg page. Matching the card
+     to the shelf means the sheet has to take the darker ground too — a plate
+     card on a plate sheet has no visible edge at all. .gn-panel keeps its plate
+     background for the confirm dialog. */
+  .gn-sheet{background:var(--bgs-bg);}
   .gn-sheet__grab{
     width:40px;height:4px;border-radius:2px;
     background:rgba(var(--bgs-ivory-rgb),0.22);
@@ -842,7 +850,6 @@
   .gn-surprise-grid{gap:10px;margin-bottom:20px;perspective:900px;}
   .gn-surprise-card{
     position:relative;
-    border-radius:12px;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
   }
@@ -886,7 +893,7 @@
 
   /* Re-roll flip. The animation lives on this wrapper and only here; the card's
      .lock keeps its transition one level down. Never both on one node. */
-  .gn-surprise-flip{transform-style:preserve-3d;backface-visibility:hidden;border-radius:12px;}
+  .gn-surprise-flip{transform-style:preserve-3d;backface-visibility:hidden;border-radius:10px;}
   .gn-surprise-flip.out{animation:gn-flip-out 0.18s ease-in forwards;}
   .gn-surprise-flip.in{animation:gn-flip-in 0.28s cubic-bezier(0.2,0.8,0.2,1);}
   @keyframes gn-flip-out{to{transform:rotateY(90deg);}}
