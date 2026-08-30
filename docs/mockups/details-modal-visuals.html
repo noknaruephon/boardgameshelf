@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#160F0A">
+<title>Mockup v3 — Details modal: cover/table toggle + fingerprint section</title>
+<style>
+  /* ============================================================
+     TOKENS — APPROXIMATED. Claude Code: replace with production
+     values from index.html / css/game-modal.css before lifting
+     styles. Only --bgs-bg is confirmed (live meta theme-color).
+     The modal structure below is a stand-in — map every class to
+     the real markup in js/game-modal.js during spec writing.
+     ============================================================ */
+  :root{
+    --bgs-bg:#160F0A;
+    --bgs-bg-radial:radial-gradient(120% 90% at 50% 0%, #241910 0%, #160F0A 60%);
+    --bgs-plate:#221711;
+    --bgs-ivory:#F2E9D8;
+    --bgs-ivory-rgb:242,233,216;
+    --bgs-ivory-70:rgba(242,233,216,.7);
+    --bgs-ivory-45:rgba(242,233,216,.45);
+    --bgs-gold:#D9A441;
+    --bgs-gold-rgb:217,164,65;
+    --bgs-vote-play:#8FA97E;
+    --bgs-vote-pass:#C0714F;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    min-height:100vh;
+    background:var(--bgs-bg-radial), var(--bgs-bg);
+    color:var(--bgs-ivory);
+    font:16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding:16px 12px 48px;
+  }
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  button:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;border-radius:8px}
+
+  /* ---------- mock chrome ---------- */
+  .mock-bar{max-width:560px;margin:0 auto 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .mock-bar .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--bgs-ivory-45);flex-basis:100%}
+  .pill{
+    padding:7px 13px;border-radius:999px;font-size:13px;
+    border:1px solid rgba(var(--bgs-ivory-rgb),.18);color:var(--bgs-ivory-70);
+    transition:background .18s, color .18s, border-color .18s;
+  }
+  .pill[aria-pressed="true"]{background:rgba(var(--bgs-gold-rgb),.14);border-color:var(--bgs-gold);color:var(--bgs-gold)}
+  .rm-toggle{margin-left:auto;display:flex;gap:6px;align-items:center;font-size:12px;color:var(--bgs-ivory-45)}
+  .rm-toggle input{accent-color:var(--bgs-gold)}
+
+  /* ---------- modal ---------- */
+  .modal{
+    max-width:560px;margin:14px auto 0;background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-ivory-rgb),.08);border-radius:18px;overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+  }
+
+  /* ===== media block: cover / table shot with toggle beneath ===== */
+  .media{
+    position:relative;aspect-ratio:16/10;background:#000;
+  }
+  .media .layer{
+    position:absolute;inset:0;display:grid;place-items:center;
+    opacity:0;transition:opacity .32s ease;   /* transition only — no animation
+                                                 on the same property (WebKit rule) */
+  }
+  .media .layer.on{opacity:1}
+  body.rm .media .layer{transition:none}
+  @media (prefers-reduced-motion: reduce){.media .layer{transition:none}}
+
+  .layer.cover{background:radial-gradient(100% 120% at 50% 20%, #3a2b18 0%, #1d1409 70%)}
+  .layer.table-brass{background:radial-gradient(110% 130% at 30% 15%, #4b3a24 0%, #2c2013 55%, #1a1209 100%)}
+  .layer.table-codenames{background:radial-gradient(110% 130% at 65% 20%, #33372b 0%, #22251a 55%, #14160f 100%)}
+  .layer .art-tag{
+    position:absolute;top:10px;right:10px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--bgs-ivory-45);border:1px dashed rgba(var(--bgs-ivory-rgb),.3);
+    padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.4);
+  }
+  /* stand-in box cover (Claude Code: real cover from games.json) */
+  .boxcover{
+    height:78%;aspect-ratio:3/4;border-radius:6px;display:grid;place-items:end center;
+    padding:12px;background:
+      linear-gradient(160deg, rgba(var(--bgs-gold-rgb),.35), transparent 45%),
+      linear-gradient(20deg, rgba(0,0,0,.5), transparent 60%),
+      #52401f;
+    box-shadow:0 12px 30px rgba(0,0,0,.6);
+    font-weight:700;font-size:15px;text-align:center;letter-spacing:.02em;
+    color:var(--bgs-ivory);text-shadow:0 1px 3px rgba(0,0,0,.6);
+  }
+  .layer .hint{color:var(--bgs-ivory-45);font-size:12.5px;text-align:center;max-width:65%}
+  .layer .hint svg{width:40px;height:40px;stroke:rgba(var(--bgs-ivory-rgb),.4);fill:none;stroke-width:1.4;margin-bottom:6px}
+  .media::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg, rgba(0,0,0,.12), transparent 28%, transparent 65%, rgba(0,0,0,.4));
+  }
+
+  /* the toggle — sits under the image, centered */
+  .media-toggle-row{
+    display:flex;justify-content:center;
+    padding:10px 22px 0;
+  }
+  .media-toggle{
+    display:inline-flex;padding:3px;border-radius:12px;
+    background:rgba(0,0,0,.35);border:1px solid rgba(var(--bgs-ivory-rgb),.1);
+  }
+  .media-toggle button{
+    display:flex;align-items:center;gap:7px;
+    padding:6px 15px;border-radius:9px;font-size:13px;color:var(--bgs-ivory-45);
+    transition:color .18s, background .18s;
+  }
+  .media-toggle button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .media-toggle button[aria-pressed="true"]{
+    background:rgba(var(--bgs-gold-rgb),.16);color:var(--bgs-gold);
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55); /* inset, never outline */
+  }
+
+  /* ===== body: title, meta, description, fingerprint last ===== */
+  .modal-body{padding:14px 22px 26px}
+  .modal-body h2{margin:0;font-size:22px}
+  /* production sections (styling matched to live modal screenshots) */
+  .chips-row{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+  .chipstat{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:5px 11px;border-radius:9px;font-size:12.5px;color:var(--bgs-ivory-70);
+    background:rgba(0,0,0,.28);border:1px solid rgba(var(--bgs-ivory-rgb),.14);
+  }
+  .chipstat svg{width:14px;height:14px;stroke:var(--bgs-gold);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .hl{margin-top:20px}
+  .hl h3, .fp-section h3{
+    margin:0 0 10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--bgs-gold);font-weight:600;opacity:.85;
+  }
+  .hl ul{margin:0;padding:0;list-style:none}
+  .hl li{
+    position:relative;padding-left:20px;margin-bottom:10px;
+    font-size:14.5px;line-height:1.55;color:var(--bgs-ivory);
+  }
+  .hl li::before{
+    content:"";position:absolute;left:2px;top:.55em;
+    width:6px;height:6px;border-radius:50%;background:var(--bgs-gold);
+  }
+  .cats{
+    margin-top:18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--bgs-gold);opacity:.85;font-weight:600;
+  }
+  .desc{margin-top:14px;font-size:14.5px;line-height:1.65;color:var(--bgs-ivory-70)}
+
+  .fp-section{
+    margin-top:20px;padding-top:18px;
+    border-top:1px solid rgba(var(--bgs-ivory-rgb),.08);
+  }
+  .fp-flex{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+  .fp-flex svg{flex:0 0 auto}
+  .radar-grid{stroke:rgba(var(--bgs-ivory-rgb),.12);fill:none}
+  .radar-axis{stroke:rgba(var(--bgs-ivory-rgb),.1)}
+  .radar-label{fill:var(--bgs-ivory-45);font-size:10px;letter-spacing:.05em;text-transform:uppercase}
+  .radar-shape{
+    fill:rgba(var(--bgs-gold-rgb),.18);stroke:var(--bgs-gold);stroke-width:2;stroke-linejoin:round;
+    transform-origin:180px 135px;
+  }
+  body:not(.rm) .radar-shape.reveal{animation:bloom .5s ease both}
+  @keyframes bloom{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+  @media (prefers-reduced-motion: reduce){.radar-shape{animation:none !important}}
+  .radar-dot{fill:var(--bgs-gold)}
+</style>
+</head>
+<body>
+
+<div class="mock-bar" role="group" aria-label="Test game">
+  <span class="lbl">Test game</span>
+  <button class="pill" data-game="brass" aria-pressed="true">Brass: Birmingham</button>
+  <button class="pill" data-game="codenames" aria-pressed="false">Codenames</button>
+  <button class="pill" data-game="edge" aria-pressed="false">Edge case (no table shot, no stats)</button>
+  <label class="rm-toggle"><input type="checkbox" id="rm"> Reduced motion</label>
+</div>
+
+<div class="modal">
+  <!-- media block -->
+  <div class="media" id="media"></div>
+  <div class="media-toggle-row" id="toggle-row"></div>
+
+  <!-- body -->
+  <div class="modal-body">
+    <h2 id="g-title"></h2>
+    <div class="chips-row" id="g-chips"></div>
+    <p class="desc" id="g-desc"></p>
+    <div class="hl" id="g-hl"></div>
+    <div class="cats" id="g-cats"></div>
+    <div class="fp-section" id="fp"></div>
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  cover:'<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 8h14"/></svg>',
+  table:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="9" rx="9" ry="4"/><path d="M5 12v6M19 12v6M12 13v7"/></svg>',
+  camera:'<svg viewBox="0 0 48 48"><rect x="5" y="13" width="38" height="27" rx="4"/><path d="M17 13l3-5h8l3 5"/><circle cx="24" cy="26" r="7"/></svg>',
+  players:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.5-3.3 2.8-5 5.5-5s5 1.7 5.5 5"/><circle cx="16.5" cy="9" r="2.6"/><path d="M16.5 14.5c2.3.2 3.7 1.7 4 4.5"/></svg>',
+  clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  scale:'<svg viewBox="0 0 24 24"><path d="M12 4v16M7 20h10M12 6h7M12 6H5"/><path d="M5 6l-2.4 5a2.7 2.7 0 004.8 0zM19 6l-2.4 5a2.7 2.7 0 004.8 0z"/></svg>'
+};
+
+const GAMES = {
+  brass:{
+    title:"Brass: Birmingham",
+    stats:{players:"2–4", time:"60–120m", weight:"3.9 / 5"},
+    highlights:[
+      "Canal and rail eras completely reshape the board halfway through",
+      "Beer is the cleverest resource in the hobby — selling needs it, and rivals can drink yours",
+      "Early loans feel scary but bold debt is how the engine gets built"
+    ],
+    cats:"EURO · NETWORK BUILDING",
+    desc:"Brass: Birmingham is an economic strategy game set in Birmingham during the industrial revolution, 1770–1870. Over two eras you build canals, then rails, develop industries, and exploit demand for coal, iron and beer across the network you create.",
+    tableShot:{cls:"table-brass"},
+    radar:{Complexity:4.8, Luck:1.4, Interaction:3.4, Length:4.2, Strategy:5}
+  },
+  codenames:{
+    title:"Codenames",
+    stats:{players:"2–8+", time:"15m", weight:"1.3 / 5"},
+    highlights:[
+      "One-word clues spark the best table talk in the collection",
+      "Scales from two players to a full party without changing the rules",
+      "Fifteen-minute rounds practically demand a rematch"
+    ],
+    cats:"PARTY · WORD GAME",
+    desc:"Two rival spymasters know the secret identities of 25 agents. Their teammates know the agents only by their codenames, and race to contact all of their agents from one-word clues — while avoiding the assassin.",
+    tableShot:{cls:"table-codenames"},
+    radar:{Complexity:1.2, Luck:2.2, Interaction:5, Length:1, Strategy:1.6}
+  },
+  edge:{
+    title:"The Gang",
+    stats:{players:"3–6", time:"20m", weight:null},
+    highlights:null,   /* no authored highlights → section hidden */
+    cats:"CARD GAME",
+    desc:"A cooperative poker heist: crack three vaults together by silently ranking your hands with numbered chips — no table talk allowed.",
+    tableShot:null,   /* no photo → toggle is hidden entirely */
+    radar:null        /* no derived data → Stats section is hidden entirely */
+  }
+};
+
+let cur = {game:"brass", view:"cover"};
+
+function renderMedia(){
+  const g = GAMES[cur.game];
+  const media = document.getElementById("media");
+  const row = document.getElementById("toggle-row");
+
+  const coverLayer = `
+    <div class="layer cover ${cur.view==="cover" ? "on" : ""}" aria-hidden="${cur.view!=="cover"}">
+      <span class="art-tag">Cover art from games.json</span>
+      <div class="boxcover">${g.title}</div>
+    </div>`;
+
+  const tableLayer = g.tableShot ? `
+    <div class="layer ${g.tableShot.cls} ${cur.view==="table" ? "on" : ""}" aria-hidden="${cur.view!=="table"}">
+      <span class="art-tag">Table shot slot</span>
+      <div class="hint">${ICONS.camera}<div>Real table photo goes here — shot per game, shipped progressively.</div></div>
+    </div>` : "";
+
+  media.innerHTML = coverLayer + tableLayer;
+
+  row.innerHTML = g.tableShot ? `
+    <div class="media-toggle" role="group" aria-label="Game image view">
+      <button aria-pressed="${cur.view==="cover"}" data-view="cover">${ICONS.cover} Cover</button>
+      <button aria-pressed="${cur.view==="table"}" data-view="table">${ICONS.table} On the table</button>
+    </div>` : "";
+
+  row.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => {
+    if(cur.view === b.dataset.view) return;
+    cur.view = b.dataset.view;
+    /* update in place so the crossfade transition runs (no re-render) */
+    row.querySelectorAll("[data-view]").forEach(x => x.setAttribute("aria-pressed", x.dataset.view === cur.view));
+    media.querySelectorAll(".layer").forEach(l => {
+      const isCover = l.classList.contains("cover");
+      const on = (cur.view === "cover") === isCover;
+      l.classList.toggle("on", on);
+      l.setAttribute("aria-hidden", !on);
+    });
+  }));
+}
+
+function renderFingerprint(){
+  const g = GAMES[cur.game];
+  const fp = document.getElementById("fp");
+  if(!g.radar){
+    fp.style.display = "none";
+    fp.innerHTML = "";
+    return;
+  }
+  fp.style.display = "";
+  const cx=180, cy=135, R=88, keys=Object.keys(g.radar), n=keys.length;
+  const pt=(i,v)=>{const a=-Math.PI/2+i*2*Math.PI/n, r=R*v/5; return [cx+r*Math.cos(a), cy+r*Math.sin(a)];};
+  const rings=[1.6667,3.3333,5].map(v=>`<polygon class="radar-grid" points="${keys.map((k,i)=>pt(i,v).map(x=>x.toFixed(1)).join(",")).join(" ")}"/>`).join("");
+  const axes=keys.map((k,i)=>{
+    const [x,y]=pt(i,5), [lx,ly]=pt(i,6.15);
+    const anchor=Math.abs(lx-cx)<8?"middle":lx>cx?"start":"end";
+    return `<line class="radar-axis" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>
+      <text class="radar-label" x="${lx.toFixed(1)}" y="${(ly+3.5).toFixed(1)}" text-anchor="${anchor}">${k}</text>`;
+  }).join("");
+  const shapePts=keys.map((k,i)=>pt(i,g.radar[k]).map(x=>x.toFixed(1)).join(",")).join(" ");
+  const dots=keys.map((k,i)=>{const[x,y]=pt(i,g.radar[k]);return `<circle class="radar-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3"/>`}).join("");
+  const alt=keys.map(k=>`${k} ${g.radar[k]} out of 5`).join(", ");
+
+  fp.innerHTML = `<h3>Stats</h3>
+    <div class="fp-flex">
+      <svg viewBox="0 0 360 265" style="width:100%;max-width:360px;height:auto;overflow:visible" role="img" aria-label="Stats: ${alt}">
+        ${rings}${axes}<polygon class="radar-shape reveal" points="${shapePts}"/>${dots}
+      </svg>
+    </div>`;
+}
+
+function render(){
+  const g = GAMES[cur.game];
+  document.getElementById("g-title").textContent = g.title;
+  document.getElementById("g-chips").innerHTML = [
+    `<span class="chipstat">${ICONS.players} ${g.stats.players}</span>`,
+    `<span class="chipstat">${ICONS.clock} ${g.stats.time}</span>`,
+    g.stats.weight ? `<span class="chipstat">${ICONS.scale} ${g.stats.weight}</span>` : ""
+  ].join("");
+  document.getElementById("g-desc").textContent = g.desc;
+  const hl = document.getElementById("g-hl");
+  hl.style.display = g.highlights ? "" : "none";
+  hl.innerHTML = g.highlights
+    ? `<h3>Highlights</h3><ul>${g.highlights.map(h=>`<li>${h}</li>`).join("")}</ul>` : "";
+  document.getElementById("g-cats").textContent = g.cats;
+  cur.view = "cover";           /* modal always opens on the cover */
+  renderMedia();
+  renderFingerprint();
+}
+
+document.querySelectorAll("[data-game]").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("[data-game]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  cur.game=b.dataset.game; render();
+}));
+document.getElementById("rm").addEventListener("change",e=>document.body.classList.toggle("rm",e.target.checked));
+render();
+</script>
+</body>
+</html>
