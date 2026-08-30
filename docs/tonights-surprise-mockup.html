@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tonight's surprise — 3 options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bgs-bg:#1B1712;
+  --bgs-bg-radial:radial-gradient(120% 80% at 50% 0%, #2A241B 0%, #1B1712 60%);
+  --bgs-plate:#2A241B;
+  --bgs-plate-2:#332C21;
+  --bgs-gold:#E5B65C;
+  --bgs-gold-rgb:229,182,92;
+  --bgs-ivory:#F2E9D8;
+  --bgs-ivory-rgb:242,233,216;
+  --bgs-ivory-70:rgba(242,233,216,.70);
+  --bgs-ivory-45:rgba(242,233,216,.45);
+  --bgs-line:rgba(229,182,92,.28);
+  --r-card:14px; --r-sheet:28px;
+  --font-title:"Fraunces",Georgia,serif;
+  --font-ui:"Inter",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bgs-bg);color:var(--bgs-ivory);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;overflow:hidden}
+
+/* ---- demo toggle bar ---- */
+.demo{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;gap:6px;padding:10px 12px;background:rgba(27,23,18,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--bgs-line);font-family:var(--font-mono);font-size:12px}
+.demo button{flex:1;padding:8px 6px;background:transparent;border:1px solid rgba(var(--bgs-ivory-rgb),.18);border-radius:8px;color:var(--bgs-ivory-70);font:inherit;cursor:pointer}
+.demo button[aria-pressed="true"]{border-color:var(--bgs-gold);color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),.1)}
+
+/* ---- faux shelf behind ---- */
+.shelf{position:absolute;inset:0;background:var(--bgs-bg-radial);padding:96px 24px 0;filter:blur(3px);opacity:.55;pointer-events:none}
+.shelf .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;color:var(--bgs-ivory-45);text-transform:uppercase}
+.shelf h1{font-family:var(--font-title);font-weight:600;font-size:40px;margin-top:6px}
+.shelf .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:28px}
+.shelf .grid div{aspect-ratio:3/4;background:var(--bgs-plate);border-radius:12px}
+
+/* ---- shared pieces ---- */
+.scrim{position:absolute;inset:0;background:rgba(10,8,5,.6);z-index:10}
+.panel{position:absolute;left:0;right:0;z-index:20;background:var(--bgs-plate);color:var(--bgs-ivory)}
+.title{font-family:var(--font-title);font-weight:600;font-size:28px;line-height:1.1;letter-spacing:-.01em}
+.sub{margin-top:6px;font-size:15px;line-height:1.4;color:var(--bgs-ivory-70)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chip{font-family:var(--font-mono);font-size:11px;letter-spacing:.02em;padding:5px 9px;border-radius:999px;border:1px solid rgba(var(--bgs-ivory-rgb),.16);color:var(--bgs-ivory-70)}
+.chip.src{border-color:var(--bgs-line);color:var(--bgs-gold)}
+
+.picks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.pick{position:relative;border-radius:var(--r-card);background:var(--bgs-plate-2);overflow:hidden;text-align:left;padding:0;border:0;color:inherit;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pick:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px}
+.cover{aspect-ratio:3/4;display:grid;place-items:center;font-family:var(--font-title);font-weight:600;font-size:34px;color:rgba(255,255,255,.8);text-shadow:0 2px 12px rgba(0,0,0,.35)}
+.meta{padding:8px 9px 10px}
+.name{font-family:var(--font-title);font-weight:600;font-size:14px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em}
+.stat{margin-top:4px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.02em;color:var(--bgs-ivory-45)}
+
+/* cover tints stand in for real art */
+.c1{background:linear-gradient(160deg,#1c1c1c,#3a3110)}
+.c2{background:linear-gradient(160deg,#2b4b7a,#7fa9c8)}
+.c3{background:linear-gradient(160deg,#c9b38a,#6b7c6c)}
+.c4{background:linear-gradient(160deg,#5d86b0,#8a6d4f)}
+.c5{background:linear-gradient(160deg,#d64a8a,#ecd44a)}
+.c6{background:linear-gradient(160deg,#3b1a6b,#f07f2a)}
+
+.lock{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:999px;background:var(--bgs-gold);color:#1B1712;display:grid;place-items:center;font-size:13px;transform:scale(0);transition:transform .18s cubic-bezier(.2,.9,.3,1.3)}
+.pick[aria-pressed="true"] .lock{transform:scale(1)}
+.reroll{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(20,16,10,.55);backdrop-filter:blur(6px);color:var(--bgs-ivory);display:grid;place-items:center;font-size:15px;cursor:pointer}
+.pick[aria-pressed="true"] .reroll{display:none}
+
+.actions{display:flex;gap:10px;margin-top:22px}
+.btn{flex:1;min-height:52px;border-radius:14px;font:600 16px var(--font-ui);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--bgs-gold);color:#1B1712;border:0;flex:1.6}
+.btn.ghost{background:transparent;color:var(--bgs-ivory);border:1px solid rgba(var(--bgs-ivory-rgb),.22)}
+.btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px}
+.cancel{display:block;width:100%;margin-top:6px;padding:12px;background:none;border:0;color:var(--bgs-ivory-45);font:600 14px var(--font-ui);cursor:pointer}
+.hint{margin-top:12px;text-align:center;font-family:var(--font-mono);font-size:11.5px;color:var(--bgs-ivory-45)}
+
+.x{position:absolute;top:18px;right:18px;width:36px;height:36px;border-radius:999px;border:1px solid rgba(var(--bgs-ivory-rgb),.18);background:rgba(var(--bgs-ivory-rgb),.06);color:var(--bgs-ivory);font-size:18px;display:grid;place-items:center;cursor:pointer}
+
+.opt{display:none}
+.opt.active{display:block}
+
+/* ---- Option 1 & 2: bottom sheet ---- */
+.sheet{bottom:0;border-radius:var(--r-sheet) var(--r-sheet) 0 0;padding:14px 20px calc(24px + env(safe-area-inset-bottom));border-top:1px solid var(--bgs-line);box-shadow:0 -20px 60px rgba(0,0,0,.5);animation:rise .38s cubic-bezier(.2,.8,.2,1)}
+.grab{width:40px;height:4px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.22);margin:0 auto 18px}
+@keyframes rise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+
+/* Option 2 re-roll flip — animation on the wrapper, transitions stay on children (.lock) */
+#picks2{perspective:900px}
+.flip2{transform-style:preserve-3d;backface-visibility:hidden;border-radius:var(--r-card)}
+.flip2>.pick{width:100%}
+.flip2.out{animation:flipout .18s ease-in forwards}
+.flip2.in{animation:flipin .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes flipout{to{transform:rotateY(90deg)}}
+@keyframes flipin{from{transform:rotateY(-90deg)}}
+@media (prefers-reduced-motion:reduce){.flip2.out,.flip2.in{animation:none}}
+
+/* Option 2 count stepper */
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.stepper{display:flex;align-items:center;border:1px solid rgba(var(--bgs-ivory-rgb),.2);border-radius:999px;overflow:hidden;font-family:var(--font-mono);flex-shrink:0;margin-top:2px}
+.stepper button{width:36px;height:36px;background:transparent;border:0;color:var(--bgs-ivory);font:500 16px var(--font-mono);cursor:pointer}
+.stepper span{min-width:28px;text-align:center;font-size:14px;color:var(--bgs-gold)}
+
+/* ---- Option 3: The deal (full-screen) ---- */
+.deal{inset:0;background:var(--bgs-bg-radial);padding:calc(64px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
+.deal .picks{margin-top:auto;margin-bottom:auto;perspective:1000px}
+.deal .ceremony{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--bgs-gold)}
+/* animation lives on the wrapper; transitions on the inner faces — never the same property on one element */
+.flip{transform-style:preserve-3d;animation:dealin .55s cubic-bezier(.2,.8,.2,1) both}
+.flip .pick{backface-visibility:hidden;width:100%}
+.flip .back{position:absolute;inset:0;border-radius:var(--r-card);background:
+  repeating-linear-gradient(45deg,rgba(var(--bgs-gold-rgb),.18) 0 2px,transparent 2px 10px),var(--bgs-plate-2);
+  border:1px solid var(--bgs-line);transform:rotateY(180deg);backface-visibility:hidden}
+.flip.faceup{animation:flipup .6s cubic-bezier(.3,.7,.2,1) both}
+@keyframes dealin{from{transform:translate(0,-140px) rotateY(180deg) rotate(-6deg);opacity:0}to{transform:translate(0,0) rotateY(180deg);opacity:1}}
+@keyframes flipup{from{transform:rotateY(180deg)}to{transform:rotateY(0)}}
+.deal .actions{margin-top:0}
+
+@media (prefers-reduced-motion:reduce){
+  .sheet,.flip,.flip.faceup{animation:none}
+  .flip{transform:none}
+  .flip .back{display:none}
+  .lock{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="demo" role="tablist" aria-label="Design option">
+  <button role="tab" aria-pressed="true" data-opt="o1">1 · Sheet polish</button>
+  <button role="tab" aria-pressed="false" data-opt="o2">2 · Lock &amp; reroll</button>
+  <button role="tab" aria-pressed="false" data-opt="o3">3 · The deal</button>
+</div>
+
+<div class="shelf" aria-hidden="true">
+  <div class="eyebrow">Boardgameshelf</div>
+  <h1>BoardgameShelf</h1>
+  <div class="grid"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+<!-- ================= OPTION 1 ================= -->
+<section class="opt active" id="o1">
+  <div class="scrim"></div>
+  <div class="panel sheet" role="dialog" aria-labelledby="t1">
+    <div class="grab"></div>
+    <h2 class="title" id="t1">Tonight's surprise</h2>
+    <p class="sub">Six games dealt at random from your filtered shelf.</p>
+    <div class="chips"><span class="chip src">From your filters</span><span class="chip">3–5 players</span><span class="chip">Party</span><span class="chip">≤ 60 min</span></div>
+
+    <div class="picks">
+      <div class="pick"><div class="cover c1">K</div><div class="meta"><div class="name">This Game Is Killer: Alien on Board</div><div class="stat">4–8p · 30m</div></div></div>
+      <div class="pick"><div class="cover c2">S</div><div class="meta"><div class="name">Smartphone Inc.</div><div class="stat">1–5p · 90m</div></div></div>
+      <div class="pick"><div class="cover c3">W</div><div class="meta"><div class="name">The Last Wizard</div><div class="stat">2–4p · 45m</div></div></div>
+      <div class="pick"><div class="cover c4">C</div><div class="meta"><div class="name">Cascadia</div><div class="stat">1–4p · 45m</div></div></div>
+      <div class="pick"><div class="cover c5">C</div><div class="meta"><div class="name">Cluellage</div><div class="stat">3–8p · 30m</div></div></div>
+      <div class="pick"><div class="cover c6">S</div><div class="meta"><div class="name">SCOUT</div><div class="stat">2–5p · 20m</div></div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost">⚄ Shuffle</button>
+      <button class="btn primary">Start voting</button>
+    </div>
+    <div class="hint">Swipe down to close</div>
+  </div>
+</section>
+
+<!-- ================= OPTION 2 ================= -->
+<section class="opt" id="o2">
+  <div class="scrim"></div>
+  <div class="panel sheet" role="dialog" aria-labelledby="t2">
+    <div class="grab"></div>
+    <div class="head">
+      <div>
+        <h2 class="title" id="t2">Tonight's surprise</h2>
+        <p class="sub">Tap a game to keep it. Re-roll swaps the rest.</p>
+      </div>
+    </div>
+
+    <div class="picks" id="picks2">
+      <div class="flip2"><button class="pick" aria-pressed="false"><div class="cover c1">K</div><div class="meta"><div class="name">This Game Is Killer: Alien on Board</div><div class="stat">4–8p · 30m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="reroll" role="button" aria-label="Swap this game">⚄</span></button></div>
+      <div class="flip2"><button class="pick" aria-pressed="true"><div class="cover c2">S</div><div class="meta"><div class="name">Smartphone Inc.</div><div class="stat">1–5p · 90m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="reroll" role="button" aria-label="Swap this game">⚄</span></button></div>
+      <div class="flip2"><button class="pick" aria-pressed="false"><div class="cover c3">W</div><div class="meta"><div class="name">The Last Wizard</div><div class="stat">2–4p · 45m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="reroll" role="button" aria-label="Swap this game">⚄</span></button></div>
+      <div class="flip2"><button class="pick" aria-pressed="true"><div class="cover c4">C</div><div class="meta"><div class="name">Cascadia</div><div class="stat">1–4p · 45m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="reroll" role="button" aria-label="Swap this game">⚄</span></button></div>
+      <div class="flip2"><button class="pick" aria-pressed="false"><div class="cover c5">C</div><div class="meta"><div class="name">Cluellage</div><div class="stat">3–8p · 30m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="reroll" role="button" aria-label="Swap this game">⚄</span></button></div>
+      <div class="flip2"><button class="pick" aria-pressed="false"><div class="cover c6">S</div><div class="meta"><div class="name">SCOUT</div><div class="stat">2–5p · 20m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="reroll" role="button" aria-label="Swap this game">⚄</span></button></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="shuffle2">⚄ Re-roll <span id="unlocked">4</span></button>
+      <button class="btn primary">Continue</button>
+    </div>
+    <button class="cancel">Cancel</button>
+  </div>
+</section>
+
+<!-- ================= OPTION 3 ================= -->
+<section class="opt" id="o3">
+  <div class="panel deal" role="dialog" aria-labelledby="t3">
+    <button class="x" aria-label="Close">✕</button>
+    <div class="ceremony">Tonight's surprise</div>
+    <h2 class="title" id="t3" style="margin-top:8px">Six from the shelf.</h2>
+    <p class="sub">Dealt from 3–5 player party games under an hour. Tap a card to hold it.</p>
+
+    <div class="picks" id="picks3">
+      <div class="flip" style="animation-delay:0ms"><div class="pick" aria-pressed="false"><div class="cover c1">K</div><div class="meta"><div class="name">This Game Is Killer: Alien on Board</div><div class="stat">4–8p · 30m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div><div class="back"></div></div>
+      <div class="flip" style="animation-delay:70ms"><div class="pick" aria-pressed="false"><div class="cover c2">S</div><div class="meta"><div class="name">Smartphone Inc.</div><div class="stat">1–5p · 90m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div><div class="back"></div></div>
+      <div class="flip" style="animation-delay:140ms"><div class="pick" aria-pressed="false"><div class="cover c3">W</div><div class="meta"><div class="name">The Last Wizard</div><div class="stat">2–4p · 45m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div><div class="back"></div></div>
+      <div class="flip" style="animation-delay:210ms"><div class="pick" aria-pressed="false"><div class="cover c4">C</div><div class="meta"><div class="name">Cascadia</div><div class="stat">1–4p · 45m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div><div class="back"></div></div>
+      <div class="flip" style="animation-delay:280ms"><div class="pick" aria-pressed="false"><div class="cover c5">C</div><div class="meta"><div class="name">Cluellage</div><div class="stat">3–8p · 30m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div><div class="back"></div></div>
+      <div class="flip" style="animation-delay:350ms"><div class="pick" aria-pressed="false"><div class="cover c6">S</div><div class="meta"><div class="name">SCOUT</div><div class="stat">2–5p · 20m</div></div><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span></div><div class="back"></div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" id="redeal">⚄ Deal again</button>
+      <button class="btn primary">Vote on these 6</button>
+    </div>
+  </div>
+</section>
+
+<script>
+// demo toggle
+document.querySelectorAll('.demo button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.demo button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  document.querySelectorAll('.opt').forEach(o=>o.classList.toggle('active',o.id===b.dataset.opt));
+  if(b.dataset.opt==='o3') dealCards();
+}));
+
+// option 2: lock & reroll
+const picks2=document.getElementById('picks2');
+function refresh2(){
+  const all=[...picks2.querySelectorAll('.pick')];
+  const kept=all.filter(p=>p.getAttribute('aria-pressed')==='true').length;
+  document.getElementById('unlocked').textContent=all.length-kept;
+}
+picks2.addEventListener('click',e=>{
+  const p=e.target.closest('.pick'); if(!p) return;
+  if(e.target.closest('.reroll')){ rollCards([p.closest('.flip2')]); return; }
+  p.setAttribute('aria-pressed', p.getAttribute('aria-pressed')!=='true');
+  refresh2();
+});
+document.getElementById('shuffle2').addEventListener('click',()=>{
+  const loose=[...picks2.querySelectorAll('.pick[aria-pressed="false"]')].map(p=>p.closest('.flip2'));
+  rollCards(loose);
+});
+// Stand-in game data so a re-roll visibly changes the card.
+const spare=[['Wingspan','c4','1–5p · 60m'],['Just One','c5','3–7p · 20m'],['Azul','c2','2–4p · 40m'],['The Crew','c6','2–5p · 20m'],['Codenames','c1','4–8p · 15m'],['Ticket to Ride','c3','2–5p · 45m']];
+function retint(w){
+  const [name,tint,stat]=spare[Math.floor(Math.random()*spare.length)];
+  const cover=w.querySelector('.cover'); cover.className='cover '+tint; cover.textContent=name[0];
+  w.querySelector('.name').textContent=name; w.querySelector('.stat').textContent=stat;
+}
+const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+// Staggered wave: each unkept card flips out, swaps its face at the edge, flips back in.
+function rollCards(wrappers){
+  wrappers.forEach((w,i)=>{
+    if(reduced){ retint(w); return; }
+    setTimeout(()=>{
+      w.classList.add('out');
+      w.addEventListener('animationend',()=>{
+        w.classList.remove('out'); retint(w); w.classList.add('in');
+        w.addEventListener('animationend',()=>w.classList.remove('in'),{once:true});
+      },{once:true});
+    }, i*70);
+  });
+}
+refresh2();
+
+// option 3: deal + flip, lock on tap
+const picks3=document.getElementById('picks3');
+function dealCards(){
+  const cards=[...picks3.querySelectorAll('.flip')];
+  cards.forEach((c,i)=>{c.classList.remove('faceup');c.style.animation='none';c.offsetHeight;c.style.animation='';c.style.animationDelay=`${i*70}ms`;});
+  setTimeout(()=>cards.forEach((c,i)=>{setTimeout(()=>{c.style.animationDelay='0ms';c.classList.add('faceup');},i*90)}),650);
+}
+document.getElementById('redeal').addEventListener('click',dealCards);
+picks3.addEventListener('click',e=>{
+  const p=e.target.closest('.pick'); if(!p) return;
+  p.setAttribute('aria-pressed', p.getAttribute('aria-pressed')!=='true');
+});
+</script>
+</body>
+</html>
