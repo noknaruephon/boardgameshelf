@@ -808,6 +808,13 @@
     margin:0 auto 16px;
   }
   .gn-sheet h3{font-size:24px;}
+  /* Six 3:4 cards can outgrow 88vh on a short, wide window — a 1024x768 laptop
+     pushed the Re-roll / Continue row and Cancel below the fold, because
+     .gn-panel scrolls the whole panel as one block. Scroll the grid instead, so
+     the title and the actions stay put at any window height. */
+  .gn-sheet{display:flex;flex-direction:column;overflow:hidden;}
+  .gn-sheet > *{flex:none;}
+  .gn-sheet .gn-surprise-grid{flex:0 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
 
   .gn-surprise-grid{gap:10px;margin-bottom:20px;perspective:900px;}
   .gn-surprise-card{
