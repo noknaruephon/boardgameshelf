@@ -72,22 +72,8 @@
     display:flex;flex-direction:column;align-items:center;gap:16px;
     position:relative;
   }
-  .die-wrap{
-    position:relative;width:52px;height:52px;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .die{
-    width:52px;height:52px;position:relative;z-index:1;
-    animation:tumble 2.4s cubic-bezier(.45,0,.2,1) infinite;
-  }
-  @keyframes tumble{
-    0%{transform:rotate(0deg) scale(1);}
-    35%{transform:rotate(200deg) scale(1.06);}
-    60%{transform:rotate(340deg) scale(.97);}
-    100%{transform:rotate(360deg) scale(1);}
-  }
-  .die rect{fill:var(--bgs-gold);}
-  .die circle{fill:var(--bgs-plate);}
+  /* The waiting animation is the shuffling deck in css/base.css, shared with
+     the swipe screen. */
 
   .waiting-title{
     font-family:'Fraunces',serif;font-weight:600;font-size:18px;
@@ -161,7 +147,7 @@
 // whole module script never runs, leaving the page stuck on "Loading…".
 import { fetchSession, joinGameNight, sessionErrorMessage } from '/js/session.js';
 import { joinSessionChannel } from '/js/presence.js';
-import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from '/js/waiting-room.js';
+import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession, shuffleHTML } from '/js/waiting-room.js';
 
 const screen = document.getElementById('screen');
 
@@ -299,16 +285,7 @@ function runJoined({ code, session, deck, myName }) {
       ${deckHTML(deck, session.reveal_deck)}
       ${rosterHTML(players, myName)}
       <div class="waiting-panel">
-        <div class="die-wrap">
-          <svg class="die" viewBox="0 0 52 52">
-            <rect x="2" y="2" width="48" height="48" rx="11"/>
-            <circle cx="17" cy="17" r="4.2"/>
-            <circle cx="35" cy="17" r="4.2"/>
-            <circle cx="17" cy="35" r="4.2"/>
-            <circle cx="35" cy="35" r="4.2"/>
-            <circle cx="26" cy="26" r="4.2"/>
-          </svg>
-        </div>
+        ${shuffleHTML()}
         <p class="waiting-title">Waiting for <b>${session.host_name}</b><br>to start voting</p>
         <p class="waiting-sub" id="waitHint">Everyone swipes at once<span class="waiting-dots"><span></span><span></span><span></span></span></p>
       </div>`;

@@ -64,6 +64,25 @@ export function rosterHTML(players, myName) {
     </div>`;
 }
 
+/**
+ * The waiting animation: three face-down cards being shuffled.
+ *
+ * Used on every game-night screen that has to hold the table for a moment —
+ * waiting for the host to start, waiting for the others to finish voting, and
+ * tallying. Face-down on all of them, so the one that must not leak a result
+ * cannot. Styled by `.shuffle` in css/base.css.
+ */
+export function shuffleHTML() {
+  return `
+    <div class="shuffle-wrap">
+      <div class="shuffle" aria-hidden="true">
+        <div class="deck-card back">?</div>
+        <div class="deck-card back">?</div>
+        <div class="deck-card back">?</div>
+      </div>
+    </div>`;
+}
+
 /** Builds the ordered deck of full game objects from a session's stored game_ids. */
 export function deckFromSession(session, games) {
   const byId = new Map(games.map((g) => [g.bggId, g]));
