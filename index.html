@@ -712,8 +712,13 @@
     line-height:1.5;
   }
   .gn-cancel-link{
-    display:block;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     width:100%;
+    /* 44px is the smallest comfortable thumb target; the old 10px-top-padding
+       box was barely taller than the text itself. */
+    min-height:44px;
     background:none;
     border:none;
     color:var(--bgs-ivory-45);
@@ -721,7 +726,7 @@
     font-size:13px;
     font-weight:600;
     text-align:center;
-    padding:10px 0 0;
+    padding:12px 0;
     cursor:pointer;
   }
   .gn-cancel-link:hover{color:var(--bgs-ivory);}
@@ -857,10 +862,18 @@
   @keyframes gn-flip-out{to{transform:rotateY(90deg);}}
   @keyframes gn-flip-in{from{transform:rotateY(-90deg);}}
 
-  .gn-row .gn-secondary-btn{display:flex;align-items:center;justify-content:center;gap:6px;}
-  .gn-row .gn-secondary-btn svg{width:16px;height:16px;}
-  .gn-row .gn-secondary-btn:disabled{opacity:0.4;cursor:not-allowed;}
-  .gn-row .gn-primary-btn{flex:1.6;}
+  /* Re-roll sizes to its label rather than taking a fixed share of the row —
+     "Re-roll 6" in a half-width slab read as mostly empty. Continue absorbs the
+     rest. Scoped to the sheet so the confirm dialog's own row is untouched. */
+  .gn-sheet .gn-row .gn-secondary-btn{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    flex:0 0 auto;
+    padding:12px 18px;
+  }
+  .gn-sheet .gn-row .gn-secondary-btn svg{width:16px;height:16px;}
+  .gn-sheet .gn-row .gn-secondary-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  /* Holds the button's width steady as the count ticks down. */
+  #gnRerollN{display:inline-block;min-width:1ch;text-align:center;}
 
   .sr-only{
     position:absolute;width:1px;height:1px;
