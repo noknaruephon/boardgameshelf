@@ -341,22 +341,47 @@
     box-shadow:0 1px 4px rgba(0,0,0,0.5);
     cursor:pointer;
   }
+  /* The numbers under the slider are buttons, not labels: tapping one picks
+     exactly that player count, which beats dragging both thumbs onto the same
+     notch. Tapping the picked one again clears back to Any. */
   .number-cue-row{
     position:relative;
-    height:12px;
-    font-family:'IBM Plex Mono',monospace;
-    font-size:9.5px;
-    color:var(--bgs-ivory-70);
-    opacity:0.55;
-    margin:0 2px;
+    height:24px;
+    margin:2px 2px 0;
   }
-  .number-cue-row span{
+  .number-cue{
     position:absolute;
     top:0;
     transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:24px;
+    height:22px;
+    padding:0 4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    line-height:1;
+    color:var(--bgs-ivory-70);
+    opacity:0.55;
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:999px;
     white-space:nowrap;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease,opacity 0.15s ease;
   }
-  .number-cue-row span.active{color:var(--bgs-gold);font-weight:600;opacity:1;}
+  .number-cue:hover{color:var(--bgs-ivory);opacity:1;}
+  .number-cue.active{color:var(--bgs-gold);font-weight:600;opacity:1;}
+  .number-cue[aria-pressed="true"]{
+    background:var(--bgs-gold);
+    border-color:var(--bgs-gold);
+    color:var(--bgs-bg);
+    font-weight:600;
+    opacity:1;
+  }
+  .number-cue:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
   .toggle-row{
     display:flex;
@@ -1227,8 +1252,8 @@
         <input type="range" min="1" max="11" step="1" value="1" id="rangeMin" class="range-input" aria-label="Minimum players">
         <input type="range" min="1" max="11" step="1" value="11" id="rangeMax" class="range-input" aria-label="Maximum players">
       </div>
-      <div class="number-cue-row" id="numberCueRow">
-        <span data-n="1" style="left:calc(10px + (100% - 20px) * 0)">1</span><span data-n="2" style="left:calc(10px + (100% - 20px) * 0.1)">2</span><span data-n="3" style="left:calc(10px + (100% - 20px) * 0.2)">3</span><span data-n="4" style="left:calc(10px + (100% - 20px) * 0.3)">4</span><span data-n="5" style="left:calc(10px + (100% - 20px) * 0.4)">5</span><span data-n="6" style="left:calc(10px + (100% - 20px) * 0.5)">6</span><span data-n="7" style="left:calc(10px + (100% - 20px) * 0.6)">7</span><span data-n="8" style="left:calc(10px + (100% - 20px) * 0.7)">8</span><span data-n="9" style="left:calc(10px + (100% - 20px) * 0.8)">9</span><span data-n="10" style="left:calc(10px + (100% - 20px) * 0.9)">10</span><span data-n="11" style="left:calc(10px + (100% - 20px) * 1)">11+</span>
+      <div class="number-cue-row" id="numberCueRow" role="group" aria-label="Pick an exact player count">
+        <button type="button" class="number-cue" data-n="1" aria-pressed="false" aria-label="Only 1 player" style="left:calc(10px + (100% - 20px) * 0)">1</button><button type="button" class="number-cue" data-n="2" aria-pressed="false" aria-label="Only 2 players" style="left:calc(10px + (100% - 20px) * 0.1)">2</button><button type="button" class="number-cue" data-n="3" aria-pressed="false" aria-label="Only 3 players" style="left:calc(10px + (100% - 20px) * 0.2)">3</button><button type="button" class="number-cue" data-n="4" aria-pressed="false" aria-label="Only 4 players" style="left:calc(10px + (100% - 20px) * 0.3)">4</button><button type="button" class="number-cue" data-n="5" aria-pressed="false" aria-label="Only 5 players" style="left:calc(10px + (100% - 20px) * 0.4)">5</button><button type="button" class="number-cue" data-n="6" aria-pressed="false" aria-label="Only 6 players" style="left:calc(10px + (100% - 20px) * 0.5)">6</button><button type="button" class="number-cue" data-n="7" aria-pressed="false" aria-label="Only 7 players" style="left:calc(10px + (100% - 20px) * 0.6)">7</button><button type="button" class="number-cue" data-n="8" aria-pressed="false" aria-label="Only 8 players" style="left:calc(10px + (100% - 20px) * 0.7)">8</button><button type="button" class="number-cue" data-n="9" aria-pressed="false" aria-label="Only 9 players" style="left:calc(10px + (100% - 20px) * 0.8)">9</button><button type="button" class="number-cue" data-n="10" aria-pressed="false" aria-label="Only 10 players" style="left:calc(10px + (100% - 20px) * 0.9)">10</button><button type="button" class="number-cue" data-n="11" aria-pressed="false" aria-label="11 or more players" style="left:calc(10px + (100% - 20px) * 1)">11+</button>
       </div>
       <button type="button" class="toggle-row" id="bestFitToggle" role="switch" aria-checked="false">
         <span class="toggle-switch" aria-hidden="true"></span>
@@ -1461,9 +1486,11 @@ function updateLiveCount(){
   const pct = v => ((v-1)/(11-1))*100;
   rangeFill.style.left = pct(draftFilters.minPlayers)+'%';
   rangeFill.style.width = (pct(draftFilters.maxPlayers)-pct(draftFilters.minPlayers))+'%';
-  numberCueRow.querySelectorAll('span').forEach(s=>{
-    const n = parseInt(s.dataset.n,10);
-    s.classList.toggle('active', n>=draftFilters.minPlayers && n<=draftFilters.maxPlayers);
+  const exact = draftFilters.minPlayers === draftFilters.maxPlayers ? draftFilters.minPlayers : null;
+  numberCueRow.querySelectorAll('.number-cue').forEach(cue=>{
+    const n = parseInt(cue.dataset.n,10);
+    cue.classList.toggle('active', n>=draftFilters.minPlayers && n<=draftFilters.maxPlayers);
+    cue.setAttribute('aria-pressed', String(n === exact));
   });
   playersGroupLabel.textContent = `Players — ${playersLabel(draftFilters)}`;
   const liveCount = applyFilters(games, draftFilters, state.search).length;
@@ -1484,6 +1511,20 @@ function clampRange(){
 }
 rangeMin.addEventListener('input', clampRange);
 rangeMax.addEventListener('input', clampRange);
+
+numberCueRow.addEventListener('click', (e)=>{
+  const cue = e.target.closest('.number-cue');
+  if(!cue) return;
+  const n = parseInt(cue.dataset.n,10);
+  // Tapping the count that's already the only one selected clears back to Any,
+  // so the pick stays reversible without dragging the thumbs apart again.
+  const alreadyOnly = draftFilters.minPlayers === n && draftFilters.maxPlayers === n;
+  draftFilters.minPlayers = alreadyOnly ? 1 : n;
+  draftFilters.maxPlayers = alreadyOnly ? 11 : n;
+  rangeMin.value = draftFilters.minPlayers;
+  rangeMax.value = draftFilters.maxPlayers;
+  updateLiveCount();
+});
 
 bestFitToggle.addEventListener('click', ()=>{
   draftFilters.bestFit = !draftFilters.bestFit;
