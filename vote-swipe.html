@@ -69,10 +69,9 @@
   }
 
   /* ---- card stack ----
-     Every rule here stays scoped under .stack: css/game-modal.css also owns a
-     .card (the shared game detail modal, which this page opens from the info
-     button), and an unscoped .card here would win on source order and stretch
-     that modal to fill the backdrop.
+     Rules stay scoped under .stack so they cannot reach the shared game detail
+     modal, which this page opens from the info button and which also uses
+     `.card` (scoped there as `.backdrop .card`).
 
      Two layers per card, and they have to stay separate. The outer .card owns
      the depth transform as a CSS transition; the inner .card-body owns the
@@ -89,14 +88,9 @@
     transition:transform var(--dur) cubic-bezier(.2,.8,.2,1);
     z-index:calc(10 - var(--d));
     will-change:transform;
-    /* css/game-modal.css styles an unscoped `.card` and gives it
-       `animation: bgs-modal-pop`, whose keyframes animate transform and
-       opacity. Every card here inherits it, which would leave this element
-       carrying an animation AND a transition on transform at once — the one
-       combination WebKit resolves by silently dropping the transition, so
-       promotion would snap on iPhone while looking correct in Chrome. It also
-       faded the depth-3 card in over its `opacity:0`. Cancelled here. */
-    animation:none;
+    /* Deliberately no background, border, overflow or animation: this layer is
+       pure geometry. The visible card is .card-body below, and the exiting
+       card has to be able to travel outside these bounds. */
   }
   /* Mounted and ready so a promotion never exposes an empty slot, but not yet
      part of what you can see. */
