@@ -759,6 +759,38 @@
     "caption": "A heavy sci-fi exploration game that drops players into a hostile."
   },
   {
+    "bggId": "365357",
+    "title": "Railways of the Lost Atlas",
+    "players": [
+      1,
+      5
+    ],
+    "time": [
+      60,
+      300
+    ],
+    "weight": "heavy",
+    "weightScore": 3.85,
+    "bggRating": 8.17,
+    "color": "#2E4257",
+    "image": "https://cf.geekdo-images.com/tQOk8bqG9CBvsNDD11F9yA__imagepage/img/2r7z29qhbr_POk-hkXa484-2zrE=/fit-in/900x600/filters:no_upscale():strip_icc()/pic9715149.jpg",
+    "blurb": "Launch minor rail companies, lay track and run trains, then merge them into majors while working the share market. A full 18xx-style game of stocks and steam on a modular map that is different every play — the genre's whole arc, trimmed to weeknight length.",
+    "why": [
+      "The full 18xx arc — stocks, track, trains, dividends — without the all-day commitment",
+      "Modular setup deals out a brand-new map every single play",
+      "Twelve minor companies with distinct powers that carry into their major mergers"
+    ],
+    "tag": "18xx · stock market · railway",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    },
+    "caption": "Launch minor rail companies, lay track and run trains, then merge them into majors."
+  },
+  {
     "bggId": "437356",
     "title": "Scales of Fate",
     "players": [
