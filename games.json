@@ -759,6 +759,38 @@
     "caption": "A heavy sci-fi exploration game that drops players into a hostile."
   },
   {
+    "bggId": "365357",
+    "title": "Railways of the Lost Atlas",
+    "players": [
+      1,
+      5
+    ],
+    "time": [
+      60,
+      300
+    ],
+    "weight": "heavy",
+    "weightScore": 3.85,
+    "bggRating": 8.17,
+    "color": "#3E5C4B",
+    "image": "",
+    "blurb": "A heavyweight railway epic for one to five players, laying routes across an uncharted atlas. Scales from a single evening to a full five-hour haul when you want the big one on the table.",
+    "why": [
+      "Scales all the way from a solo run to five players, and plays best at four",
+      "Up to five hours at full stretch — a full-night heavyweight, not a filler",
+      "Heavy rules load, but in-play text stays to a small crib sheet"
+    ],
+    "tag": "Heavy · railway",
+    "playerRecommendations": {
+      "1": "not_recommended",
+      "2": "recommended",
+      "3": "recommended",
+      "4": "best",
+      "5": "recommended"
+    },
+    "caption": "A heavyweight railway epic for one to five players, laying routes across an uncharted atlas."
+  },
+  {
     "bggId": "437356",
     "title": "Scales of Fate",
     "players": [
