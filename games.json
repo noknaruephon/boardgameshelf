@@ -774,13 +774,13 @@
     "bggRating": 8.17,
     "color": "#3E5C4B",
     "image": "",
-    "blurb": "A heavyweight railway epic for one to five players, laying routes across an uncharted atlas. Scales from a single evening to a full five-hour haul when you want the big one on the table.",
+    "blurb": "Launch minor rail companies, lay track and run trains, then merge them into majors while working the share market. A full 18xx-style game of stocks and steam on a modular map that is different every play — the genre's whole arc, trimmed to weeknight length.",
     "why": [
-      "Scales all the way from a solo run to five players, and plays best at four",
-      "Up to five hours at full stretch — a full-night heavyweight, not a filler",
-      "Heavy rules load, but in-play text stays to a small crib sheet"
+      "The full 18xx arc — stocks, track, trains, dividends — without the all-day commitment",
+      "Modular setup deals out a brand-new map every single play",
+      "Twelve minor companies with distinct powers that carry into their major mergers"
     ],
-    "tag": "Heavy · railway",
+    "tag": "18xx · stock market · railway",
     "playerRecommendations": {
       "1": "not_recommended",
       "2": "recommended",
@@ -788,7 +788,7 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "A heavyweight railway epic for one to five players, laying routes across an uncharted atlas."
+    "caption": "Launch minor rail companies, lay track and run trains, then merge them into majors."
   },
   {
     "bggId": "437356",
