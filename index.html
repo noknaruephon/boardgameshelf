@@ -456,8 +456,30 @@
   }
   .apply-btn:hover{filter:brightness(1.06);}
 
+  /* vibe filter */
+  .mode-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;margin:0 0 18px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.10);}
+  .mode-tab{background:none;border:0;padding:6px 0 12px;cursor:pointer;text-align:left;color:var(--bgs-ivory-45);font:inherit;transition:color .15s ease;}
+  .mode-tab:nth-child(2){text-align:right;}
+  .mode-tab strong{display:block;font:600 16px/1.1 'Fraunces',serif;color:inherit;}
+  .mode-tab em{display:block;font-style:normal;font-family:'Inter',sans-serif;font-size:12px;margin-top:3px;opacity:.85;}
+  .mode-tab[aria-selected=true]{color:var(--bgs-ivory);}
+  .mode-tab:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-gold) inset;border-radius:6px;}
+  .mode-ink{position:absolute;bottom:-1px;left:0;width:50%;height:2px;background:var(--bgs-gold);transition:transform .18s cubic-bezier(.2,.7,.2,1);}
+  .mode-tabs[data-mode=numbers] .mode-ink{transform:translateX(100%);}
+  .mode-panel{display:none;}
+  .mode-panel[data-show]{display:block;}
+  .pill .n{font:400 11px 'IBM Plex Mono',monospace;opacity:.6;margin-left:6px;}
+  .pill.active .n{opacity:.7;}
+  .pill:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-gold) inset;}
+  .pill:disabled{opacity:.35;cursor:default;}
+  .pill:disabled:hover{border-color:rgba(var(--bgs-ivory-rgb),0.22);color:var(--bgs-ivory-70);}
+  .vibe-hint{margin:12px 0 0;min-height:1.4em;font-family:'Inter',sans-serif;font-size:13px;color:var(--bgs-ivory-70);}
+  .vibe-hint b{color:var(--bgs-ivory);font-weight:500;}
+  .empty-state button{background:none;border:0;color:var(--bgs-gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font:inherit;margin-top:10px;display:block;margin-inline:auto;}
+  @media (max-width:400px){ .mode-tab em{display:none;} }
+
   @media (prefers-reduced-motion:reduce){
-    .sheet-scrim, .filter-sheet{transition:none;}
+    .sheet-scrim, .filter-sheet, .mode-ink, .mode-tab{transition:none;}
   }
 
   .shelf-count{
@@ -1260,6 +1282,18 @@
         <span class="toggle-label">Recommended counts only</span>
       </button>
     </div>
+    <div class="mode-tabs" role="tablist" data-mode="vibe" id="modeTabs">
+      <button type="button" class="mode-tab" role="tab" id="tab-vibe" aria-selected="true" aria-controls="panel-vibe"><strong>Vibe</strong><em>What kind of night is it?</em></button>
+      <button type="button" class="mode-tab" role="tab" id="tab-numbers" aria-selected="false" aria-controls="panel-numbers" tabindex="-1"><strong>Time &amp; weight</strong><em>If you already know</em></button>
+      <span class="mode-ink" aria-hidden="true"></span>
+    </div>
+    <div class="mode-panel" id="panel-vibe" role="tabpanel" aria-labelledby="tab-vibe" data-show>
+      <div class="sheet-group">
+        <div class="segmented" id="vibePills" role="group" aria-label="Vibe"></div>
+        <p class="vibe-hint" id="vibeHint" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="mode-panel" id="panel-numbers" role="tabpanel" aria-labelledby="tab-numbers">
     <div class="sheet-group">
       <span class="filter-label">Time</span>
       <div class="segmented" data-type="time" role="group" aria-label="Time">
@@ -1278,6 +1312,7 @@
         <button class="pill" data-value="heavy" aria-pressed="false">Heavy</button>
       </div>
     </div>
+    </div>
   </div>
   <div class="sheet-footer">
     <button class="apply-btn" id="applyBtn" type="button">Show 196 games</button>
@@ -1288,10 +1323,11 @@
 import {
   DEFAULT_FILTERS, isFilterActive, activeGroupCount, playersLabel,
   timeBucket, playersMatch, bestFitMatch, applyFilters,
-  weightLabel, timeLabel, playersRangeLabel
+  weightLabel, timeLabel, playersRangeLabel, vibeLabel
 } from './js/filters.js';
 import { createGameModal } from './js/game-modal.js';
 import { registerOverlay, syncScrollLock } from './js/scroll-lock.js';
+import { VIBES, applyVibes } from './js/vibes.js';
 
 // ---- Game Night feature flag ----
 // Live: every visitor gets the Game Night pill. All four stages — session
@@ -1309,6 +1345,7 @@ async function loadGames(){
   const res = await fetch('/games.json');
   if(!res.ok) throw new Error('Failed to load games');
   games = await res.json();
+  applyVibes(games);
 }
 const state = {
   filters: { ...DEFAULT_FILTERS },
@@ -1339,7 +1376,12 @@ function render(){
   renderChips();
 
   if(filtered.length===0){
-    shelf.innerHTML = `<p class="empty-state">Nothing fits that combo. Try loosening a filter.</p>`;
+    shelf.innerHTML = `<p class="empty-state">Nothing on the shelf for that.<br>Try another vibe, or widen the player count.<button type="button" id="emptyReset">Clear filters</button></p>`;
+    const emptyReset = document.getElementById('emptyReset');
+    if(emptyReset) emptyReset.addEventListener('click', ()=>{
+      state.filters = { ...DEFAULT_FILTERS };
+      render();
+    });
     if(gameNightVisible && state.selectionMode) updateGnBar();
     return;
   }
@@ -1421,6 +1463,9 @@ function renderChips(){
   if(state.filters.minPlayers !== 1 || state.filters.maxPlayers !== 11){
     chips.push({ key:'players', label:`${playersLabel(state.filters)} players` });
   }
+  if(state.filters.vibe){
+    chips.push({ key:'vibe', label: vibeLabel(state.filters.vibe) });
+  }
   if(state.filters.time !== 'any'){
     const labels = { quick:'Quick', medium:'Medium', long:'Long' };
     chips.push({ key:'time', label: labels[state.filters.time] });
@@ -1449,6 +1494,7 @@ function renderChips(){
       const key = btn.closest('.chip').dataset.key;
       if(key==='players'){ state.filters.minPlayers = 1; state.filters.maxPlayers = 11; }
       else if(key==='bestFit'){ state.filters.bestFit = false; }
+      else if(key==='vibe'){ state.filters.vibe = null; }
       else state.filters[key] = 'any';
       render();
     });
@@ -1466,11 +1512,46 @@ const numberCueRow = document.getElementById('numberCueRow');
 const playersGroupLabel = document.getElementById('playersGroupLabel');
 const applyBtn = document.getElementById('applyBtn');
 const bestFitToggle = document.getElementById('bestFitToggle');
+const modeTabs = document.getElementById('modeTabs');
+const vibePills = document.getElementById('vibePills');
+const vibeHint = document.getElementById('vibeHint');
+
+// Pills are built once and updated in place so focus survives a toggle.
+vibePills.innerHTML = VIBES.map(v =>
+  `<button type="button" class="pill" data-vibe="${v.key}" aria-pressed="false">${v.label}<span class="n">0</span></button>`
+).join('');
+
+function syncModeUI(){
+  modeTabs.dataset.mode = draftFilters.mode;
+  modeTabs.querySelectorAll('.mode-tab').forEach(t=>{
+    const selected = t.id === 'tab-'+draftFilters.mode;
+    t.setAttribute('aria-selected', String(selected));
+    t.tabIndex = selected ? 0 : -1;
+  });
+  document.querySelectorAll('.mode-panel').forEach(p=>p.toggleAttribute('data-show', p.id === 'panel-'+draftFilters.mode));
+}
+
+function syncVibePills(){
+  vibePills.querySelectorAll('.pill').forEach(p=>{
+    const k = p.dataset.vibe;
+    const n = applyFilters(games, { ...draftFilters, mode:'vibe', vibe:k }, state.search).length;
+    const isActive = draftFilters.vibe === k;
+    p.classList.toggle('active', isActive);
+    p.setAttribute('aria-pressed', String(isActive));
+    p.disabled = n === 0;
+    p.querySelector('.n').textContent = String(n);
+  });
+  const v = VIBES.find(x => x.key === draftFilters.vibe);
+  vibeHint.innerHTML = v
+    ? `<b>${v.label}</b> — ${v.hint}`
+    : 'Pick one. Or switch to Time &amp; weight if you already know how long you have.';
+}
 
 function syncSheetUI(){
   rangeMin.value = draftFilters.minPlayers;
   rangeMax.value = draftFilters.maxPlayers;
-  document.querySelectorAll('.segmented').forEach(group=>{
+  syncModeUI();
+  document.querySelectorAll('.segmented[data-type]').forEach(group=>{
     const type = group.dataset.type;
     group.querySelectorAll('.pill').forEach(p=>{
       const isActive = p.dataset.value === draftFilters[type];
@@ -1493,6 +1574,7 @@ function updateLiveCount(){
     cue.setAttribute('aria-pressed', String(n === exact));
   });
   playersGroupLabel.textContent = `Players — ${playersLabel(draftFilters)}`;
+  syncVibePills();
   const liveCount = applyFilters(games, draftFilters, state.search).length;
   applyBtn.textContent = `Show ${liveCount} game${liveCount===1?'':'s'}`;
 }
@@ -1532,7 +1614,7 @@ bestFitToggle.addEventListener('click', ()=>{
   updateLiveCount();
 });
 
-document.querySelectorAll('.segmented').forEach(group=>{
+document.querySelectorAll('.segmented[data-type]').forEach(group=>{
   group.addEventListener('click', (e)=>{
     const btn = e.target.closest('.pill');
     if(!btn) return;
@@ -1546,6 +1628,34 @@ document.querySelectorAll('.segmented').forEach(group=>{
     draftFilters[type] = btn.dataset.value;
     updateLiveCount();
   });
+});
+
+function setMode(mode, focusTab){
+  if(draftFilters.mode !== mode){
+    // Exactly one tab's criteria are live: switching clears the other draft.
+    draftFilters.mode = mode;
+    draftFilters.vibe = null;
+    draftFilters.time = draftFilters.weight = 'any';
+    syncSheetUI();
+  }
+  if(focusTab) document.getElementById('tab-'+mode).focus();
+}
+modeTabs.addEventListener('click', (e)=>{
+  const tab = e.target.closest('.mode-tab');
+  if(!tab) return;
+  setMode(tab.id.replace('tab-',''), false);
+});
+modeTabs.addEventListener('keydown', (e)=>{
+  if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  if(!e.target.closest('.mode-tab')) return;
+  e.preventDefault();
+  setMode(draftFilters.mode === 'vibe' ? 'numbers' : 'vibe', true);
+});
+vibePills.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.pill[data-vibe]');
+  if(!btn || btn.disabled) return;
+  draftFilters.vibe = draftFilters.vibe === btn.dataset.vibe ? null : btn.dataset.vibe;
+  updateLiveCount();
 });
 
 let sheetLastFocused = null;
