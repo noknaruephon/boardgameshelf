@@ -51,13 +51,3 @@ export function applyVibes(games){
   return games;
 }
 
-// Temporary console tally for ?debug=vibes — Task 2 removes it.
-export function logVibeTally(games){
-  const rows = VIBES.map(v => {
-    const hits = games.filter(g => g.vibes.includes(v.key));
-    return { vibe: v.key, count: hits.length, first8: hits.slice(0, 8).map(g => g.title).join(' | ') };
-  });
-  console.table(rows);
-  console.log('other:', games.filter(g => g.vibes.includes('other')).map(g => g.title));
-  console.log('≥4 vibes:', games.filter(g => g.vibes.length >= 4).map(g => `${g.title} [${g.vibes.join(',')}]`));
-}

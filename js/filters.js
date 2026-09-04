@@ -1,13 +1,18 @@
-export const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, time:"any", weight:"any", bestFit:false };
+import { VIBES } from './vibes.js';
+
+export const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, mode:"vibe", vibe:null, time:"any", weight:"any", bestFit:false };
 
 export function isFilterActive(filters){
-  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any" || filters.bestFit;
+  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any" || filters.bestFit || filters.vibe !== null;
 }
 export function activeGroupCount(filters){
   let n = 0;
   if(filters.minPlayers !== 1 || filters.maxPlayers !== 11) n++;
-  if(filters.time !== "any") n++;
-  if(filters.weight !== "any") n++;
+  if(filters.vibe) n++;
+  if(filters.mode === "numbers"){
+    if(filters.time !== "any") n++;
+    if(filters.weight !== "any") n++;
+  }
   if(filters.bestFit) n++;
   return n;
 }
@@ -45,11 +50,19 @@ export function applyFilters(list, filters, search){
   return list.filter(g=>{
     if(!playersMatch(g, filters)) return false;
     if(!bestFitMatch(g, filters)) return false;
-    if(filters.time!=="any" && timeBucket(g.time)!==filters.time) return false;
-    if(filters.weight!=="any" && g.weight!==filters.weight) return false;
+    if(filters.mode === "vibe"){
+      if(filters.vibe && !(g.vibes || []).includes(filters.vibe)) return false;
+    } else {
+      if(filters.time!=="any" && timeBucket(g.time)!==filters.time) return false;
+      if(filters.weight!=="any" && g.weight!==filters.weight) return false;
+    }
     if(search && !g.title.toLowerCase().includes(search)) return false;
     return true;
   });
+}
+export function vibeLabel(key){
+  const v = VIBES.find(x => x.key === key);
+  return v ? v.label : key;
 }
 export function weightLabel(score){
   return `${score.toFixed(1)} / 5`;
