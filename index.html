@@ -1292,6 +1292,7 @@ import {
 } from './js/filters.js';
 import { createGameModal } from './js/game-modal.js';
 import { registerOverlay, syncScrollLock } from './js/scroll-lock.js';
+import { VIBES, applyVibes, logVibeTally } from './js/vibes.js';
 
 // ---- Game Night feature flag ----
 // Live: every visitor gets the Game Night pill. All four stages — session
@@ -1309,6 +1310,8 @@ async function loadGames(){
   const res = await fetch('/games.json');
   if(!res.ok) throw new Error('Failed to load games');
   games = await res.json();
+  applyVibes(games);
+  if(new URLSearchParams(location.search).get('debug') === 'vibes') logVibeTally(games);
 }
 const state = {
   filters: { ...DEFAULT_FILTERS },
