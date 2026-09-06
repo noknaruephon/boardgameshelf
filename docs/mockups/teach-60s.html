@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mockup — Teach me in 60 seconds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   1. Production tokens + modal CSS, copied verbatim from css/base.css and
+      css/game-modal.css (main). Nothing in this block is new.
+   ===================================================================== */
+:root{
+  --bgs-bg:#160F0A;
+  --bgs-bg-rgb:22,15,10;
+  --bgs-bg-radial:#241708;
+  --bgs-plate:#241A10;
+  --bgs-plate-rgb:36,26,16;
+  --bgs-ivory:#F4EBDA;
+  --bgs-ivory-rgb:244,235,218;
+  --bgs-ivory-70:rgba(244,235,218,0.72);
+  --bgs-ivory-45:rgba(244,235,218,0.45);
+  --bgs-gold:#E3B04B;
+  --bgs-gold-rgb:227,176,75;
+  --bgs-gold-dim:rgba(227,176,75,0.62);
+  --bgs-icon-gold:#e2b463;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%),var(--bgs-bg);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;min-height:100svh;
+  -webkit-font-smoothing:antialiased;
+}
+.backdrop{
+  position:fixed;inset:0;
+  background:rgba(var(--bgs-bg-rgb),0.66);
+  backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;z-index:30;
+}
+.backdrop .card{
+  background:var(--bgs-plate);
+  border:1px solid rgba(var(--bgs-gold-rgb),0.3);
+  border-radius:16px;
+  max-width:440px;width:100%;
+  position:relative;
+  animation:bgs-modal-pop 0.18s ease;
+  max-height:85vh;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+#card-body{
+  padding:30px 30px calc(78px + env(safe-area-inset-bottom));
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+}
+@keyframes bgs-modal-pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
+.card-cover-wrap{
+  width:100%;min-height:80px;border-radius:10px;margin:-6px 0 18px;
+  box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.card-cover{display:block;max-width:100%;max-height:360px;width:auto;height:auto;}
+.media-toggle-row{display:flex;justify-content:center;margin:-8px 0 18px;}
+.media-toggle{
+  display:inline-flex;padding:3px;border-radius:12px;
+  background:rgba(var(--bgs-bg-rgb),0.35);
+  border:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+}
+.media-toggle__btn{
+  display:flex;align-items:center;gap:7px;padding:6px 15px;
+  border:none;border-radius:9px;background:none;font:inherit;font-size:13px;
+  color:var(--bgs-ivory-70);cursor:pointer;
+  transition:color 0.18s, background 0.18s;
+}
+.media-toggle__btn svg{flex-shrink:0;}
+.media-toggle__btn[aria-pressed="true"]{
+  background:rgba(var(--bgs-gold-rgb),0.16);color:var(--bgs-gold);
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.55);
+}
+.backdrop .card h2{font-family:'Fraunces',serif;font-weight:600;font-size:24px;margin:0 0 14px;line-height:1.2;}
+.stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.stat-chip{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-ivory);
+  background:rgba(var(--bgs-ivory-rgb),0.08);border:1px solid rgba(var(--bgs-ivory-rgb),0.16);
+  border-radius:6px;padding:5px 10px;display:flex;align-items:center;gap:6px;
+}
+.stat-icon{color:var(--bgs-icon-gold);flex-shrink:0;}
+.backdrop .card p.blurb{font-size:15px;line-height:1.6;color:var(--bgs-ivory-70);margin:0 0 18px;}
+.backdrop .card .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--bgs-gold);}
+.why-heading{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--bgs-gold-dim);margin:20px 0 10px;}
+.why-list{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-direction:column;gap:8px;}
+.why-list li{font-size:14px;line-height:1.5;color:var(--bgs-ivory);padding-left:18px;position:relative;}
+.why-list li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--bgs-gold);}
+.close-btn{
+  position:absolute;top:16px;right:16px;z-index:10;
+  background:rgba(var(--bgs-bg-rgb),0.55);border:none;border-radius:50%;
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  color:var(--bgs-ivory);font-size:16px;cursor:pointer;line-height:1;padding:0;
+}
+.card-sticky{
+  position:absolute;left:0;right:0;bottom:0;z-index:5;
+  padding:28px 20px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--bgs-plate) 0%,var(--bgs-plate) 62%,rgba(var(--bgs-plate-rgb),0) 100%);
+  display:flex;gap:10px;
+}
+.card-sticky .modal__close{
+  flex:1;
+  background:rgba(var(--bgs-plate-rgb),0.72);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);
+  border:1.5px solid rgba(var(--bgs-ivory-rgb),0.45);
+  box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.10) inset,0 8px 24px -10px rgba(0,0,0,0.6);
+  color:var(--bgs-ivory);font:inherit;font-size:13px;font-weight:600;
+  padding:13px 16px;border-radius:10px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+@supports not (backdrop-filter:blur(1px)){.card-sticky .modal__close{background:var(--bgs-plate);}}
+@media (prefers-reduced-transparency:reduce){
+  .card-sticky .modal__close{background:var(--bgs-plate);-webkit-backdrop-filter:none;backdrop-filter:none;}
+}
+.close-btn:focus-visible,.media-toggle__btn:focus-visible,.card-sticky button:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+
+/* =====================================================================
+   2. NEW — the "Teach me in 60 seconds" section. Rendered only when the
+      game carries a `teach` field, in the same all-or-nothing way as
+      Stats; when absent, no section, no divider. Always the last section,
+      so the modal reads cover → who/how long → why → how to play.
+   ===================================================================== */
+.teach-section{
+  margin-top:20px;padding-top:18px;
+  border-top:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+}
+.teach-section .why-heading{margin-top:0;display:flex;align-items:center;gap:6px;}
+.teach-section .why-heading svg{color:var(--bgs-gold);}
+
+/* Draft label — shown only while teach.reviewed is false. Sits directly
+   under the heading, in the heading's own voice. */
+.teach-draft{
+  display:flex;align-items:center;gap:7px;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.02em;
+  color:var(--bgs-gold-dim);margin:-4px 0 12px;
+}
+.teach-draft svg{flex-shrink:0;}
+
+/* -- The five beats ----------------------------------------------------
+   Picture first, caption second. Each beat is an 84px scene beside a
+   twelve-word caption; "Your turn" is the exception — a three-frame strip,
+   because a turn *is* a sequence and the layout should say so.
+   Scenes are inline SVG from the shared pictogram library, in the Tabler
+   line style the app already uses for icons: ivory strokes for the world,
+   gold for the one thing the player does. */
+.teach-beats{list-style:none;margin:0;padding:0;}
+.teach-beat{
+  display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center;
+  padding:12px 0;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+}
+.teach-beat:first-child{padding-top:2px;}
+.teach-beat:last-child{border-bottom:none;padding-bottom:4px;}
+.teach-beat--strip{grid-template-columns:1fr;gap:10px;}
+.teach-scene{
+  width:84px;height:84px;border-radius:10px;
+  background:rgba(var(--bgs-bg-rgb),0.35);
+  border:1px solid rgba(var(--bgs-ivory-rgb),0.08);
+  display:flex;align-items:center;justify-content:center;
+}
+.teach-scene svg{width:100%;height:100%;display:block;overflow:visible;}
+.teach-beat__label{
+  display:flex;align-items:center;gap:6px;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--bgs-gold-dim);margin:0 0 4px;
+}
+.teach-beat__label svg{color:var(--bgs-gold);}
+.teach-beat__text{font-size:15px;line-height:1.45;color:var(--bgs-ivory);margin:0;}
+/* the three-frame strip */
+.teach-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.teach-frame{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
+.teach-frame .teach-scene{position:relative;width:100%;height:auto;aspect-ratio:1/1;}
+.teach-frame__cap{font-size:12px;line-height:1.35;color:var(--bgs-ivory-70);margin:0;text-align:center;}
+.teach-frame__num{
+  position:absolute;top:6px;left:6px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--bgs-gold-dim);
+}
+.teach-beat--strip .teach-beat__text{color:var(--bgs-ivory-70);font-size:13.5px;}
+/* SVG palette — CSS vars so the scenes retheme with the app */
+.pg-line{stroke:var(--bgs-ivory);stroke-opacity:.72;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.pg-dim{stroke:var(--bgs-ivory);stroke-opacity:.32;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+.pg-fill{fill:rgba(var(--bgs-ivory-rgb),.06);}
+.pg-gold{stroke:var(--bgs-gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.pg-gold-fill{fill:rgba(var(--bgs-gold-rgb),.20);}
+.pg-gold-solid{fill:var(--bgs-gold);}
+.pg-ivory-solid{fill:var(--bgs-ivory);fill-opacity:.72;}
+.pg-mono{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;fill:var(--bgs-gold);}
+
+/* Word budget footer — the discipline the format depends on. */
+.teach-foot{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-ivory-45);
+  margin:12px 0 0;text-align:center;
+}
+
+@media (prefers-reduced-motion:reduce){.backdrop .card{animation:none;}}
+.rm .backdrop .card{animation:none;}
+
+/* =====================================================================
+   3. Mockup chrome — not part of the product.
+   ===================================================================== */
+.mock-bar{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:10px 14px;
+  background:rgba(var(--bgs-bg-rgb),0.92);
+  border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+  font-size:12px;color:var(--bgs-ivory-70);
+}
+.mock-bar .lbl{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-gold-dim);margin-right:4px;}
+.mock-bar button{
+  font:inherit;font-size:12px;color:var(--bgs-ivory-70);background:none;
+  border:1px solid rgba(var(--bgs-ivory-rgb),0.22);border-radius:999px;padding:5px 11px;cursor:pointer;
+}
+.mock-bar button.on{background:var(--bgs-gold);border-color:var(--bgs-gold);color:var(--bgs-bg);font-weight:600;}
+.mock-bar label{display:flex;align-items:center;gap:6px;margin-left:auto;cursor:pointer;}
+.mock-bar input{accent-color:var(--bgs-gold);}
+.backdrop{top:52px;}
+@media (max-width:480px){.backdrop{padding:16px;top:60px;}}
+</style>
+</head>
+<body>
+
+<div class="mock-bar" aria-label="Mockup states">
+  <span class="lbl">state</span>
+  <button data-state="default" class="on">With teach</button>
+  <button data-state="draft">Teach is a draft</button>
+  <button data-state="none">Game without teach</button>
+  <label><input type="checkbox" id="rm"> Reduced motion</label>
+</div>
+
+<div class="backdrop open">
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="close-btn" aria-label="Close">×</button>
+    <div id="card-body"></div>
+    <div class="card-sticky" id="sticky"></div>
+  </div>
+</div>
+
+<script>
+// ---- Data: Cascadia, verbatim from games.json + the proposed `teach` field ----
+const game = {
+  title: "Cascadia",
+  players: [1, 4], time: [30, 45], weightScore: 1.94, color: "#3E5C3E",
+  image: "https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg",
+  blurb: "Place hexagonal habitat tiles and wildlife tokens to build the most harmonious slice of Pacific Northwest wilderness, scoring for how your animals cluster and your terrain connects. Calm, tactile, and quietly clever.",
+  why: [
+    "Multiple scoring cards per animal keep every game's strategy different",
+    "Puzzly tile placement rewards spatial thinking without heavy rules",
+    "Gorgeous wildlife art makes it a relaxing one to have on the shelf"
+  ],
+  tag: "Tile-laying · nature",
+  // Each beat = one scene from the shared pictogram library + a caption of
+  // twelve words or fewer. Scenes are composed from ~10 reusable pieces
+  // (hex, token, card, arrow, hand, lock, bag, trophy…), not drawn per game,
+  // so 196 games means 196 data entries, not 196 illustrations.
+  teach: {
+    beats: [
+      { key: "hook",   label: "Hook",        scene: "hexes-tokens",
+        caption: "Build your own wilderness from hex tiles and animal tokens." },
+      { key: "win",    label: "How you win", scene: "trophy-patterns",
+        caption: "Most points wins: animal patterns, plus your biggest patch of each terrain." },
+      { key: "turn",   label: "Your turn",   scene: "strip",
+        steps: [
+          { scene: "pick-pair",   caption: "Pick a pair" },
+          { scene: "place-tile",  caption: "Tile touches your map" },
+          { scene: "place-token", caption: "Animal on a matching tile" }
+        ],
+        caption: "Refill the pair. Next player." },
+      { key: "gotcha", label: "Watch out",   scene: "lock-bag",
+        caption: "One animal per tile, forever. No fit? Back in the bag." },
+      { key: "first",  label: "Turn one",    scene: "hand-pair",
+        caption: "Take the pair you can place right now." }
+    ],
+    wordCount: 58,
+    source: "generated",
+    reviewed: true
+  }
+};
+
+// ---- Icons: Tabler, 24 viewBox, currentColor stroke, 1.75 ----
+const ic = (paths, s = 15, w = 1.75) =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+const PLAYERS_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="8" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 15c2.5.3 4.5 2 4.5 5"/></svg>`;
+const TIME_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg>`;
+const WEIGHT_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 006 0z"/><path d="M19 7l-3 6a3 3 0 006 0z"/><path d="M5 7h14"/><path d="M9 21h6"/></svg>`;
+const SCHOOL_ICON = ic('<path d="M22 9l-10-4-10 4 10 4 10-4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/>', 16);
+const ALERT_ICON  = ic('<path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/><path d="M12 16h.01"/>', 13);
+const PENCIL_ICON = ic('<path d="M4 20h4L18.5 9.5a2.828 2.828 0 1 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/>', 13);
+
+// ---- Label helpers from js/filters.js ----
+const weightLabel = (s) => `${s.toFixed(1)} / 5`;
+const timeLabel = (t) => t[0] === t[1] ? `${t[0]}m` : `${t[0]}–${t[1]}m`;
+const playersRangeLabel = (p) => p[0] === p[1] ? `${p[0]}` : `${p[0]}–${p[1]}`;
+
+const statRow = (g) => `
+  <div class="stat-row">
+    <span class="stat-chip">${PLAYERS_ICON} ${playersRangeLabel(g.players)}</span>
+    <span class="stat-chip">${TIME_ICON} ${timeLabel(g.time)}</span>
+    <span class="stat-chip">${WEIGHT_ICON} ${weightLabel(g.weightScore)}</span>
+  </div>`;
+
+// ---- Teach section ----
+
+// Pictogram library. Every piece draws into a 100×100 box. A game's beat
+// names a scene; a scene is a handful of pieces at positions. Adding a game
+// never means drawing — at most it means adding a scene from existing pieces.
+const PG = {
+  hex(x, y, r = 14, cls = 'pg-line', fill = '') {
+    const pts = [0,1,2,3,4,5].map((i) => {
+      const a = Math.PI / 3 * i + Math.PI / 6;
+      return `${(x + r * Math.cos(a)).toFixed(1)},${(y + r * Math.sin(a)).toFixed(1)}`;
+    }).join(' ');
+    return `<polygon points="${pts}" class="${cls} ${fill}"/>`;
+  },
+  // tile = hex with the small animal "slot" mark printed on it
+  tile(x, y, r = 14, cls = 'pg-line', fill = 'pg-fill') {
+    return PG.hex(x, y, r, cls, fill) + `<circle cx="${x}" cy="${y}" r="3" class="${cls === 'pg-gold' ? 'pg-gold' : 'pg-dim'}"/>`;
+  },
+  token(x, y, r = 6, cls = 'pg-ivory-solid') { return `<circle cx="${x}" cy="${y}" r="${r}" class="${cls}"/>`; },
+  card(x, y, w = 22, h = 30, cls = 'pg-line') { return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" class="${cls} pg-fill"/>`; },
+  arrow(x1, y1, x2, y2, cls = 'pg-gold') {
+    const ang = Math.atan2(y2 - y1, x2 - x1), k = 6;
+    const ax = x2 - k * Math.cos(ang - .5), ay = y2 - k * Math.sin(ang - .5);
+    const bx = x2 - k * Math.cos(ang + .5), by = y2 - k * Math.sin(ang + .5);
+    return `<path d="M${x1} ${y1}L${x2} ${y2}M${ax.toFixed(1)} ${ay.toFixed(1)}L${x2} ${y2}L${bx.toFixed(1)} ${by.toFixed(1)}" class="${cls}"/>`;
+  },
+  trophy(x, y, cls = 'pg-gold') {
+    return `<g transform="translate(${x - 12} ${y - 14})" class="${cls}">
+      <path d="M6 2h12v8a6 6 0 0 1-12 0z"/><path d="M6 4H3a3 3 0 0 0 3 6M18 4h3a3 3 0 0 1-3 6"/>
+      <path d="M12 16v4M8 22h8"/></g>`;
+  },
+  hand(x, y, cls = 'pg-gold') {
+    // Tabler hand-finger, simplified
+    return `<g transform="translate(${x - 12} ${y - 12})" class="${cls}">
+      <path d="M8 13V4.5a1.5 1.5 0 0 1 3 0V12"/><path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0V12"/>
+      <path d="M14 10.5a1.5 1.5 0 0 1 3 0V12"/>
+      <path d="M17 11.5a1.5 1.5 0 0 1 3 0V16a6 6 0 0 1-6 6h-2 .208a6 6 0 0 1-5.012-2.7L7 19c-.312-.479-1.407-2.388-3.286-5.728a1.5 1.5 0 0 1 .536-2.022 1.867 1.867 0 0 1 2.28.28L8 13"/></g>`;
+  },
+  lock(x, y, cls = 'pg-gold') {
+    return `<g transform="translate(${x - 8} ${y - 9})" class="${cls}">
+      <rect x="2" y="8" width="12" height="10" rx="2"/><path d="M5 8V5a3 3 0 0 1 6 0v3"/></g>`;
+  },
+  bag(x, y, cls = 'pg-line') {
+    return `<g transform="translate(${x - 12} ${y - 12})" class="${cls}">
+      <path d="M9 4h6l1 4H8z"/><path d="M6 8h12l2 8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" class="pg-fill"/></g>`;
+  },
+  check(x, y, cls = 'pg-gold') { return `<path d="M${x - 6} ${y}l4 4 8-8" class="${cls}"/>`; },
+  cross(x, y, cls = 'pg-gold') { return `<path d="M${x - 5} ${y - 5}l10 10M${x + 5} ${y - 5}l-10 10" class="${cls}"/>`; },
+  // a tile+token pair as it sits in the market
+  pair(x, y, hot = false) {
+    const c = hot ? 'pg-gold' : 'pg-dim';
+    return PG.tile(x, y, 11, c, hot ? 'pg-gold-fill' : 'pg-fill') + PG.token(x + 22, y, 5, hot ? 'pg-gold-solid' : 'pg-dim');
+  },
+  // a small player map: three touching tiles
+  map(x, y, cls = 'pg-line') {
+    return PG.tile(x, y, 13, cls) + PG.tile(x + 22.5, y + 13, 13, cls) + PG.tile(x, y + 26, 13, cls);
+  },
+};
+
+const SCENES = {
+  'hexes-tokens': () =>
+    PG.tile(38, 34, 16) + PG.tile(65, 50, 16, 'pg-line', 'pg-gold-fill') + PG.tile(38, 66, 16) +
+    PG.token(38, 34, 6) + PG.token(65, 50, 6, 'pg-gold-solid'),
+  'trophy-patterns': () =>
+    PG.trophy(50, 22) +
+    PG.token(20, 56, 5) + PG.token(34, 56, 5) + PG.token(27, 68, 5, 'pg-gold-solid') +
+    `<text x="27" y="88" text-anchor="middle" class="pg-mono">+3</text>` +
+    PG.hex(66, 54, 10, 'pg-line', 'pg-gold-fill') + PG.hex(83, 64, 10, 'pg-line', 'pg-gold-fill') + PG.hex(66, 74, 10, 'pg-line', 'pg-gold-fill') +
+    `<text x="75" y="95" text-anchor="middle" class="pg-mono">+5</text>`,
+  'pick-pair': () =>
+    PG.pair(30, 20) + PG.pair(30, 41, true) + PG.pair(30, 62) + PG.pair(30, 83) +
+    PG.arrow(86, 41, 66, 41),
+  'place-tile': () =>
+    PG.map(28, 40, 'pg-dim') + PG.hex(50.5, 79, 13, 'pg-gold', 'pg-gold-fill') + `<circle cx="50.5" cy="79" r="3" class="pg-gold"/>` +
+    PG.arrow(78, 54, 60, 70),
+  'place-token': () =>
+    PG.map(28, 40, 'pg-dim') + PG.hex(50.5, 79, 13, 'pg-line', 'pg-fill') + `<circle cx="50.5" cy="79" r="3" class="pg-gold"/>` +
+    PG.token(78, 38, 7, 'pg-gold-solid') + PG.arrow(76, 50, 58, 70) + PG.check(88, 84),
+  'lock-bag': () =>
+    PG.tile(30, 40, 16, 'pg-line') + PG.token(30, 40, 6, 'pg-gold-solid') + PG.lock(30, 71) +
+    PG.token(66, 32, 6, 'pg-gold-solid') + PG.cross(66, 32, 'pg-line') + PG.arrow(66, 44, 66, 60) + PG.bag(66, 78),
+  'hand-pair': () =>
+    PG.pair(30, 30, true) + PG.pair(30, 74) + PG.hand(74, 46) + PG.check(88, 26),
+};
+const scene = (name, label) =>
+  `<div class="teach-scene"><svg viewBox="0 0 100 100" role="img" aria-label="${label}">${SCENES[name] ? SCENES[name]() : ''}</svg></div>`;
+
+function beatHTML(b) {
+  const icon = b.key === 'gotcha' ? ALERT_ICON : '';
+  if (b.scene === 'strip') {
+    return `
+      <li class="teach-beat teach-beat--strip">
+        <p class="teach-beat__label">${icon}${b.label}</p>
+        <div class="teach-strip">
+          ${b.steps.map((s, i) => `
+            <div class="teach-frame">
+              <div class="teach-scene"><span class="teach-frame__num">${i + 1}</span><svg viewBox="0 0 100 100" role="img" aria-label="${s.caption}">${SCENES[s.scene]()}</svg></div>
+              <p class="teach-frame__cap">${s.caption}</p>
+            </div>`).join('')}
+        </div>
+        <p class="teach-beat__text">${b.caption}</p>
+      </li>`;
+  }
+  return `
+    <li class="teach-beat">
+      ${scene(b.scene, b.label)}
+      <div>
+        <p class="teach-beat__label">${icon}${b.label}</p>
+        <p class="teach-beat__text">${b.caption}</p>
+      </div>
+    </li>`;
+}
+
+// Rendered only when the game has a `teach` field; otherwise nothing is
+// emitted, so no divider is left behind — nothing is left behind.
+function teachHTML(g, { draft = false } = {}) {
+  const t = g.teach;
+  if (!t || !Array.isArray(t.beats) || !t.beats.length) return '';
+  return `
+    <section class="teach-section">
+      <p class="why-heading">${SCHOOL_ICON} Teach me in 60 seconds</p>
+      ${draft ? `<p class="teach-draft">${PENCIL_ICON} Draft — not yet checked against the rulebook</p>` : ''}
+      <ol class="teach-beats">
+        ${t.beats.map(beatHTML).join('')}
+      </ol>
+      <p class="teach-foot">${t.wordCount} words · five pictures</p>
+    </section>`;
+}
+
+// ---- Modal body: production order, with teach appended last ----
+function bodyHTML(g, opts) {
+  return `
+    <div class="card-cover-wrap" style="background:${g.color}22">
+      <img class="card-cover" src="${g.image}" alt="${g.title} box cover" width="600" height="450" decoding="async">
+    </div>
+    <h2 id="modal-title">${g.title}</h2>
+    ${statRow(g)}
+    <p class="blurb">${g.blurb}</p>
+    <p class="why-heading">Highlights</p>
+    <ul class="why-list">${g.why.map((w) => `<li>${w}</li>`).join('')}</ul>
+    <span class="tag">${g.tag}</span>
+    ${teachHTML(g, opts)}`;
+}
+
+// ---- Mockup state machine ----
+const body = document.getElementById('card-body');
+const sticky = document.getElementById('sticky');
+let state = 'default';
+function render() {
+  body.scrollTop = 0;
+  const g = state === 'none' ? { ...game, teach: null } : game;
+  body.innerHTML = bodyHTML(g, { draft: state === 'draft' });
+  sticky.innerHTML = `<button class="modal__close" type="button">Close</button>`;
+}
+function setState(s) {
+  state = s;
+  document.querySelectorAll('.mock-bar [data-state]').forEach((x) => x.classList.toggle('on', x.dataset.state === s));
+  render();
+}
+document.querySelectorAll('.mock-bar [data-state]').forEach((b) => b.addEventListener('click', () => setState(b.dataset.state)));
+document.getElementById('rm').addEventListener('change', (e) => document.documentElement.classList.toggle('rm', e.target.checked));
+render();
+</script>
+</body>
+</html>
