@@ -1,3 +1,5 @@
+> **Stats radar removed** in commit "Remove Stats radar from game modal" (branch `claude/teach-section-impl-33fuqd`); the table-shot toggle in this spec still stands.
+
 # Spec: Details modal — table-shot toggle + Stats fingerprint section
 
 **Design source of truth:** `docs/mockups/details-modal-visuals.html` (commit alongside this spec).

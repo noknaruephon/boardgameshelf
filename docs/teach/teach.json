@@ -86,7 +86,7 @@
             },
             {
               "scene": "reveal",
-              "caption": "Or reveal your hand to buy cards"
+              "caption": "Or reveal hand to buy cards"
             }
           ],
           "caption": "Agent turns first, then everyone reveals once."
@@ -104,7 +104,7 @@
           "caption": "Take a spot that gives you a soldier or spice."
         }
       ],
-      "wordCount": 66,
+      "wordCount": 65,
       "source": "generated",
       "reviewed": false
     }
@@ -526,7 +526,7 @@
             },
             {
               "scene": "reveal",
-              "caption": "Or reveal your hand to buy cards"
+              "caption": "Or reveal hand to buy cards"
             }
           ],
           "caption": "Agent turns first, then everyone reveals once."
@@ -544,7 +544,7 @@
           "caption": "Take a spot that gives you a soldier or spice."
         }
       ],
-      "wordCount": 66,
+      "wordCount": 65,
       "source": "generated",
       "reviewed": false
     }
@@ -581,7 +581,7 @@
             },
             {
               "scene": "vote",
-              "caption": "Vote on laws that shape the economy"
+              "caption": "Vote on laws shaping the economy"
             }
           ],
           "caption": "Five actions a round, then policy votes."
@@ -599,7 +599,7 @@
           "caption": "Working class: get jobs. Capitalists: build a company."
         }
       ],
-      "wordCount": 59,
+      "wordCount": 58,
       "source": "generated",
       "reviewed": false
     }
@@ -962,7 +962,7 @@
             },
             {
               "scene": "play-card",
-              "caption": "Or claim a route with a colour set"
+              "caption": "Or claim a route: colour set"
             },
             {
               "scene": "pick-market",
@@ -984,7 +984,7 @@
           "caption": "Take cards. Claim the longest route your hand covers."
         }
       ],
-      "wordCount": 59,
+      "wordCount": 57,
       "source": "generated",
       "reviewed": false
     }
@@ -1123,7 +1123,7 @@
           "steps": [
             {
               "scene": "explore",
-              "caption": "Move, then look at a new location"
+              "caption": "Move, then look at new location"
             },
             {
               "scene": "roll-dice",
@@ -1149,7 +1149,7 @@
           "caption": "Explore toward each other first."
         }
       ],
-      "wordCount": 56,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -1838,7 +1838,7 @@
           "steps": [
             {
               "scene": "roll-dice",
-              "caption": "Roll; tiles with that number pay out"
+              "caption": "Roll; tiles of that number pay"
             },
             {
               "scene": "trade-cards",
@@ -1864,7 +1864,7 @@
           "caption": "Settle on 6s and 8s, next to ore and wheat."
         }
       ],
-      "wordCount": 64,
+      "wordCount": 63,
       "source": "generated",
       "reviewed": false
     }
@@ -2223,7 +2223,7 @@
           "steps": [
             {
               "scene": "place-worker",
-              "caption": "Place a family member on an action"
+              "caption": "Place family member on an action"
             },
             {
               "scene": "collect-goods",
@@ -2249,7 +2249,7 @@
           "caption": "Grow your family only after you can feed it."
         }
       ],
-      "wordCount": 57,
+      "wordCount": 56,
       "source": "generated",
       "reviewed": false
     }
@@ -2498,11 +2498,11 @@
           "steps": [
             {
               "scene": "play-card",
-              "caption": "Lead a card; follow suit if you can"
+              "caption": "Lead; follow suit if you can"
             },
             {
               "scene": "flip-card",
-              "caption": "Highest card of the led suit wins"
+              "caption": "Highest card of led suit wins"
             },
             {
               "scene": "score-round",
@@ -2524,7 +2524,7 @@
           "caption": "Lead high in a suit you'll empty."
         }
       ],
-      "wordCount": 61,
+      "wordCount": 58,
       "source": "generated",
       "reviewed": false
     }
@@ -2557,7 +2557,7 @@
             },
             {
               "scene": "place-worker",
-              "caption": "Place a die on an action wheel"
+              "caption": "Place a die on action wheel"
             },
             {
               "scene": "collect-goods",
@@ -2579,7 +2579,7 @@
           "caption": "Build cheap early buildings that give ongoing goods."
         }
       ],
-      "wordCount": 55,
+      "wordCount": 54,
       "source": "generated",
       "reviewed": false
     }
@@ -2887,7 +2887,7 @@
             },
             {
               "scene": "draw-card",
-              "caption": "Or scout: take a card from the table"
+              "caption": "Or scout: take a table card"
             },
             {
               "scene": "collect-goods",
@@ -2909,7 +2909,7 @@
           "caption": "Flip your hand upside down if that helps. Decide before starting."
         }
       ],
-      "wordCount": 66,
+      "wordCount": 64,
       "source": "generated",
       "reviewed": false
     }
@@ -3433,7 +3433,7 @@
           "steps": [
             {
               "scene": "pick-market",
-              "caption": "Take a card from one of two rows"
+              "caption": "Take a card from either row"
             },
             {
               "scene": "play-card",
@@ -3459,7 +3459,7 @@
           "caption": "Take a card that gives coins or keys."
         }
       ],
-      "wordCount": 57,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -3492,7 +3492,7 @@
             },
             {
               "scene": "play-card",
-              "caption": "Or an action: break a tool, peek"
+              "caption": "Or an action: break tool, peek"
             },
             {
               "scene": "draw-card",
@@ -3514,7 +3514,7 @@
           "caption": "Extend the tunnel straight toward the middle."
         }
       ],
-      "wordCount": 52,
+      "wordCount": 51,
       "source": "generated",
       "reviewed": false
     }
@@ -3928,7 +3928,7 @@
           "steps": [
             {
               "scene": "pick-market",
-              "caption": "Take one of the next three patches"
+              "caption": "Take one of next three patches"
             },
             {
               "scene": "bid-coins",
@@ -3954,7 +3954,7 @@
           "caption": "Take patches with buttons on them."
         }
       ],
-      "wordCount": 52,
+      "wordCount": 51,
       "source": "generated",
       "reviewed": false
     }
@@ -4313,7 +4313,7 @@
           "steps": [
             {
               "scene": "play-card",
-              "caption": "Play a painting; auction type on it"
+              "caption": "Play a painting; auction type shown"
             },
             {
               "scene": "bid-coins",
@@ -4339,7 +4339,7 @@
           "caption": "Sell the artist you have most of."
         }
       ],
-      "wordCount": 54,
+      "wordCount": 53,
       "source": "generated",
       "reviewed": false
     }
@@ -4537,7 +4537,7 @@
             },
             {
               "scene": "play-card",
-              "caption": "Or claim a route with a colour set"
+              "caption": "Or claim a route: colour set"
             },
             {
               "scene": "pick-market",
@@ -4559,7 +4559,7 @@
           "caption": "Take cards. Claim the longest route your hand covers."
         }
       ],
-      "wordCount": 58,
+      "wordCount": 56,
       "source": "generated",
       "reviewed": false
     }
@@ -5087,7 +5087,7 @@
             },
             {
               "scene": "bid-coins",
-              "caption": "Slap a bet on the board any time"
+              "caption": "Slap a bet down any time"
             },
             {
               "scene": "collect-goods",
@@ -5109,7 +5109,7 @@
           "caption": "Bet the middle horses early; they're the boring winners."
         }
       ],
-      "wordCount": 63,
+      "wordCount": 61,
       "source": "generated",
       "reviewed": false
     }
@@ -5193,11 +5193,11 @@
           "steps": [
             {
               "scene": "guess",
-              "caption": "Ask: who was in this room at this hour?"
+              "caption": "Ask: who was here, this hour?"
             },
             {
               "scene": "reveal",
-              "caption": "Card shows the answer to you only"
+              "caption": "Card shows answer to you only"
             },
             {
               "scene": "write",
@@ -5219,7 +5219,7 @@
           "caption": "Ask about the hour and room the case describes."
         }
       ],
-      "wordCount": 65,
+      "wordCount": 61,
       "source": "generated",
       "reviewed": false
     }
@@ -5252,7 +5252,7 @@
             },
             {
               "scene": "collect-goods",
-              "caption": "Or run your city for money and points"
+              "caption": "Or run your city: money, points"
             },
             {
               "scene": "draw-card",
@@ -5274,7 +5274,7 @@
           "caption": "Play cheap cards, run early, buy boroughs."
         }
       ],
-      "wordCount": 60,
+      "wordCount": 58,
       "source": "generated",
       "reviewed": false
     }
@@ -5468,7 +5468,7 @@
           "steps": [
             {
               "scene": "discuss",
-              "caption": "Negotiate: who moves up, who gets paid?"
+              "caption": "Negotiate: who moves, who gets paid?"
             },
             {
               "scene": "move-piece",
@@ -5494,7 +5494,7 @@
           "caption": "Buy allies early. Promises are binding."
         }
       ],
-      "wordCount": 57,
+      "wordCount": 56,
       "source": "generated",
       "reviewed": false
     }
@@ -5633,7 +5633,7 @@
           "steps": [
             {
               "scene": "collect-goods",
-              "caption": "Take three gems, or two of one"
+              "caption": "Take three gems, or two alike"
             },
             {
               "scene": "play-card",
@@ -5659,7 +5659,7 @@
           "caption": "Take gems for the cheapest cards you see."
         }
       ],
-      "wordCount": 56,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -5798,7 +5798,7 @@
           "steps": [
             {
               "scene": "reveal",
-              "caption": "Ask a player for their lowest or highest"
+              "caption": "Ask a player: lowest or highest?"
             },
             {
               "scene": "flip-card",
@@ -5824,7 +5824,7 @@
           "caption": "Ask for lowest cards first."
         }
       ],
-      "wordCount": 60,
+      "wordCount": 58,
       "source": "generated",
       "reviewed": false
     }
@@ -5963,7 +5963,7 @@
           "steps": [
             {
               "scene": "write",
-              "caption": "Leader secretly writes a word for all but one"
+              "caption": "Word given to all but one"
             },
             {
               "scene": "play-card",
@@ -5989,7 +5989,7 @@
           "caption": "Explain your cards with confidence."
         }
       ],
-      "wordCount": 59,
+      "wordCount": 56,
       "source": "generated",
       "reviewed": false
     }
@@ -6183,7 +6183,7 @@
           "steps": [
             {
               "scene": "draw-card",
-              "caption": "Draw a number, one to a hundred"
+              "caption": "Draw a number, 1 to 100"
             },
             {
               "scene": "speak-clue",
@@ -6209,7 +6209,7 @@
           "caption": "Describe your number, then listen to everyone."
         }
       ],
-      "wordCount": 54,
+      "wordCount": 53,
       "source": "generated",
       "reviewed": false
     }
@@ -6623,11 +6623,11 @@
           "steps": [
             {
               "scene": "draw-card",
-              "caption": "Draw goods; put some in your bag"
+              "caption": "Draw goods; bag some of them"
             },
             {
               "scene": "discuss",
-              "caption": "Declare a legal good to the sheriff"
+              "caption": "Declare a legal good to sheriff"
             },
             {
               "scene": "reveal",
@@ -6649,7 +6649,7 @@
           "caption": "Tell the truth first round. Bluff later."
         }
       ],
-      "wordCount": 59,
+      "wordCount": 57,
       "source": "generated",
       "reviewed": false
     }
@@ -6686,7 +6686,7 @@
             },
             {
               "scene": "vote",
-              "caption": "Found it? Now vote for the insider"
+              "caption": "Found it? Vote for the insider"
             }
           ],
           "caption": "Timer is short. Insider must guide subtly."
@@ -6704,7 +6704,7 @@
           "caption": "Note who asked the question that cracked it."
         }
       ],
-      "wordCount": 56,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -6737,7 +6737,7 @@
             },
             {
               "scene": "guess",
-              "caption": "Players pick a suspect from the pictures"
+              "caption": "Players pick a suspect from pictures"
             },
             {
               "scene": "reveal",
@@ -6759,7 +6759,7 @@
           "caption": "Say what you see out loud; the group helps."
         }
       ],
-      "wordCount": 62,
+      "wordCount": 61,
       "source": "generated",
       "reviewed": false
     }
@@ -6788,7 +6788,7 @@
           "steps": [
             {
               "scene": "speak-clue",
-              "caption": "Psychic sees the target, gives a clue"
+              "caption": "Psychic sees target, gives a clue"
             },
             {
               "scene": "move-piece",
@@ -6814,7 +6814,7 @@
           "caption": "Give a real thing, not an adjective."
         }
       ],
-      "wordCount": 53,
+      "wordCount": 52,
       "source": "generated",
       "reviewed": false
     }
@@ -6843,11 +6843,11 @@
           "steps": [
             {
               "scene": "draw-card",
-              "caption": "Draw from the deck or the market"
+              "caption": "Draw from deck or the market"
             },
             {
               "scene": "play-card",
-              "caption": "Play a card to hand or market"
+              "caption": "Play a card: hand or market"
             },
             {
               "scene": "reveal",
@@ -6869,7 +6869,7 @@
           "caption": "Collect one company; ignore the rest."
         }
       ],
-      "wordCount": 55,
+      "wordCount": 53,
       "source": "generated",
       "reviewed": false
     }
@@ -7118,7 +7118,7 @@
           "steps": [
             {
               "scene": "play-card",
-              "caption": "Play a card: attack, move, swap roles"
+              "caption": "Play a card: attack, move, swap"
             },
             {
               "scene": "reveal",
@@ -7144,7 +7144,7 @@
           "caption": "Track who touched whose role."
         }
       ],
-      "wordCount": 57,
+      "wordCount": 56,
       "source": "generated",
       "reviewed": false
     }
@@ -7401,7 +7401,7 @@
             },
             {
               "scene": "guess",
-              "caption": "Caught fake can guess the word to win"
+              "caption": "Caught fake guesses word to win"
             }
           ],
           "caption": "Question master doesn't play."
@@ -7419,7 +7419,7 @@
           "caption": "Draw something that's true but vague."
         }
       ],
-      "wordCount": 60,
+      "wordCount": 58,
       "source": "generated",
       "reviewed": false
     }
@@ -7448,7 +7448,7 @@
           "steps": [
             {
               "scene": "take-or-pay",
-              "caption": "Take the card and its chips, or pay one"
+              "caption": "Take card and chips, or pay"
             },
             {
               "scene": "pass-turn",
@@ -7474,7 +7474,7 @@
           "caption": "Pay to pass early. Chips are cheap."
         }
       ],
-      "wordCount": 58,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -7617,11 +7617,11 @@
             },
             {
               "scene": "draw-card",
-              "caption": "Draw one card to end your turn"
+              "caption": "Draw one card to end turn"
             },
             {
               "scene": "reveal",
-              "caption": "Kitten? Defuse and hide it, or explode"
+              "caption": "Kitten? Defuse and hide, or explode"
             }
           ],
           "caption": "Skip, attack, and peek cards avoid the kitten."
@@ -7639,7 +7639,7 @@
           "caption": "Hold your defuse. Play attacks late."
         }
       ],
-      "wordCount": 53,
+      "wordCount": 51,
       "source": "generated",
       "reviewed": false
     }
@@ -7731,7 +7731,7 @@
             },
             {
               "scene": "vote",
-              "caption": "Found it? Now vote for the insider"
+              "caption": "Found it? Vote for the insider"
             }
           ],
           "caption": "Timer is short. Insider must guide subtly."
@@ -7749,7 +7749,7 @@
           "caption": "Note who asked the question that cracked it."
         }
       ],
-      "wordCount": 56,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -7947,7 +7947,7 @@
             },
             {
               "scene": "vote",
-              "caption": "Rooms elect a leader who picks hostages"
+              "caption": "Rooms elect leaders who pick hostages"
             },
             {
               "scene": "move-piece",
@@ -7969,7 +7969,7 @@
           "caption": "Find your teammates; share colours only."
         }
       ],
-      "wordCount": 56,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -8053,7 +8053,7 @@
           "steps": [
             {
               "scene": "play-card",
-              "caption": "Claim a role's action, or take income"
+              "caption": "Claim a role's action, or income"
             },
             {
               "scene": "discuss",
@@ -8061,7 +8061,7 @@
             },
             {
               "scene": "reveal",
-              "caption": "Loser of a challenge loses a card"
+              "caption": "Challenge loser loses a card"
             }
           ],
           "caption": "Seven coins: you must coup."
@@ -8079,7 +8079,7 @@
           "caption": "Take income twice. Watch who claims Duke."
         }
       ],
-      "wordCount": 58,
+      "wordCount": 55,
       "source": "generated",
       "reviewed": false
     }
@@ -8167,11 +8167,11 @@
             },
             {
               "scene": "bid-coins",
-              "caption": "Bid: quantity and face, higher each time"
+              "caption": "Bid quantity and face, always higher"
             },
             {
               "scene": "reveal",
-              "caption": "Call dudo: reveal; loser loses a die"
+              "caption": "Call dudo: reveal; loser drops die"
             }
           ],
           "caption": "Ones are wild."
@@ -8189,7 +8189,7 @@
           "caption": "Bid what you can see, plus one."
         }
       ],
-      "wordCount": 53,
+      "wordCount": 51,
       "source": "generated",
       "reviewed": false
     }
@@ -8277,7 +8277,7 @@
             },
             {
               "scene": "bid-coins",
-              "caption": "Answers lined up; bet on the best"
+              "caption": "Answers lined up; bet on best"
             },
             {
               "scene": "reveal",
@@ -8299,7 +8299,7 @@
           "caption": "Bet on the middle answer."
         }
       ],
-      "wordCount": 49,
+      "wordCount": 48,
       "source": "generated",
       "reviewed": false
     }
@@ -8497,7 +8497,7 @@
             },
             {
               "scene": "place-tile",
-              "caption": "Place it touching your colour by a corner"
+              "caption": "Corner to corner with your colour"
             },
             {
               "scene": "pass-turn",
@@ -8519,7 +8519,7 @@
           "caption": "Big pieces first, toward the middle."
         }
       ],
-      "wordCount": 53,
+      "wordCount": 51,
       "source": "generated",
       "reviewed": false
     }
@@ -8717,11 +8717,11 @@
             },
             {
               "scene": "guess",
-              "caption": "They say true or false, or peek and pass on"
+              "caption": "They guess, or peek and pass"
             },
             {
               "scene": "reveal",
-              "caption": "Wrong: they keep it. Right: you keep it"
+              "caption": "Wrong: they keep it. Right: yours"
             }
           ],
           "caption": "Cards in front of you count against you."
@@ -8739,7 +8739,7 @@
           "caption": "Tell the truth the first time."
         }
       ],
-      "wordCount": 70,
+      "wordCount": 64,
       "source": "generated",
       "reviewed": false
     }
@@ -8933,7 +8933,7 @@
           "steps": [
             {
               "scene": "reveal",
-              "caption": "Question read; one player gets the real answer"
+              "caption": "Question read; one player knows answer"
             },
             {
               "scene": "write",
@@ -8959,7 +8959,7 @@
           "caption": "Invent something boring. Boring sounds true."
         }
       ],
-      "wordCount": 54,
+      "wordCount": 52,
       "source": "generated",
       "reviewed": false
     }
@@ -8988,11 +8988,11 @@
           "steps": [
             {
               "scene": "draw-card",
-              "caption": "Deal cards; level number is the hand size"
+              "caption": "Deal cards, one per level"
             },
             {
               "scene": "play-card",
-              "caption": "Anyone plays when they feel it's lowest"
+              "caption": "Play when yours feels lowest"
             },
             {
               "scene": "reveal",
@@ -9014,7 +9014,7 @@
           "caption": "Wait longer than you think."
         }
       ],
-      "wordCount": 48,
+      "wordCount": 43,
       "source": "generated",
       "reviewed": false
     }
@@ -9043,7 +9043,7 @@
           "steps": [
             {
               "scene": "trade-cards",
-              "caption": "Swap your card with someone, or don't"
+              "caption": "Swap cards with someone, or don't"
             },
             {
               "scene": "reveal",
@@ -9051,7 +9051,7 @@
             },
             {
               "scene": "play-card",
-              "caption": "Or claim a role and use it"
+              "caption": "Or claim a role, use it"
             }
           ],
           "caption": "Anyone can contest your claim."
@@ -9069,7 +9069,7 @@
           "caption": "Look at your card. Then swap."
         }
       ],
-      "wordCount": 55,
+      "wordCount": 53,
       "source": "generated",
       "reviewed": false
     }
@@ -9208,11 +9208,11 @@
           "steps": [
             {
               "scene": "flip-card",
-              "caption": "Flip your top card and shout it"
+              "caption": "Flip your top card, shout it"
             },
             {
               "scene": "act",
-              "caption": "Find someone with the same; do the action"
+              "caption": "Find a match; do the action"
             },
             {
               "scene": "pass-turn",
@@ -9234,7 +9234,7 @@
           "caption": "Shout louder."
         }
       ],
-      "wordCount": 44,
+      "wordCount": 41,
       "source": "generated",
       "reviewed": false
     }
@@ -9428,7 +9428,7 @@
           "steps": [
             {
               "scene": "play-card",
-              "caption": "Both pick a card and a number"
+              "caption": "Both pick a card and number"
             },
             {
               "scene": "reveal",
@@ -9454,7 +9454,7 @@
           "caption": "Play a middle number first."
         }
       ],
-      "wordCount": 49,
+      "wordCount": 48,
       "source": "generated",
       "reviewed": false
     }
@@ -9703,7 +9703,7 @@
           "steps": [
             {
               "scene": "roll-dice",
-              "caption": "Roll; dice point to the secret word"
+              "caption": "Roll; dice point to secret word"
             },
             {
               "scene": "speak-clue",
@@ -9729,7 +9729,7 @@
           "caption": "Say something true but vague."
         }
       ],
-      "wordCount": 53,
+      "wordCount": 52,
       "source": "generated",
       "reviewed": false
     }
@@ -9978,7 +9978,7 @@
           "steps": [
             {
               "scene": "play-card",
-              "caption": "Play a card one higher or lower"
+              "caption": "Play one higher or lower"
             },
             {
               "scene": "draw-card",
@@ -10004,7 +10004,7 @@
           "caption": "Cheat when the guard is looking away."
         }
       ],
-      "wordCount": 53,
+      "wordCount": 51,
       "source": "generated",
       "reviewed": false
     }
@@ -10473,7 +10473,7 @@
           "steps": [
             {
               "scene": "play-card",
-              "caption": "Play a card on the gallery row"
+              "caption": "Play a card onto the gallery"
             },
             {
               "scene": "move-piece",
@@ -10499,7 +10499,7 @@
           "caption": "Move your duck to the back."
         }
       ],
-      "wordCount": 54,
+      "wordCount": 53,
       "source": "generated",
       "reviewed": false
     }

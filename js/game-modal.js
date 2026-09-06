@@ -1,5 +1,6 @@
 import { timeLabel, weightLabel, playersRangeLabel } from './filters.js';
 import { registerOverlay, syncScrollLock } from './scroll-lock.js';
+import { renderScene } from './teach-scenes.js';
 
 // The game detail modal, shared by the shelf and the game-night waiting room.
 // Markup lives here and styling in css/game-modal.css, so an enhancement to
@@ -14,6 +15,18 @@ const WEIGHT_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 
 
 const VIEW_COVER_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 8h14"/></svg>`;
 const VIEW_TABLE_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="9" rx="9" ry="4"/><path d="M5 12v6M19 12v6M12 13v7"/></svg>`;
+
+// Tabler line icons: 24 viewBox, currentColor stroke, 1.75, no fill.
+const ic = (paths, s = 15, w = 1.75) =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+const SCHOOL_ICON = ic('<path d="M22 9l-10-4-10 4 10 4 10-4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/>', 16);
+const ALERT_ICON  = ic('<path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/><path d="M12 16h.01"/>', 13);
+const PENCIL_ICON = ic('<path d="M4 20h4L18.5 9.5a2.828 2.828 0 1 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/>', 13);
+
+// ---- "Teach me in 60 seconds" feature flag ----
+// Read once at module load, the same way the shelf reads ?gamenight. While it
+// is off, teachHTML() returns '' and the modal is exactly what it was before.
+const TEACH_ENABLED = new URLSearchParams(location.search).get('teach') === '1';
 
 function coverHTML(g) {
   if (g.backImage) {
@@ -67,96 +80,57 @@ function mediaHTML(g) {
     </div>`;
 }
 
-// ---- Stats fingerprint ----
-// Display order, 12 o'clock first, clockwise.
-const FP_AXES = [
-  ['complexity', 'Complexity'],
-  ['luck', 'Luck'],
-  ['interaction', 'Interaction'],
-  ['length', 'Length'],
-  ['strategy', 'Strategy'],
-];
-const FP_MAX = 5;
-const FP_R = 88;                // radar radius
-const FP_LABEL_GAP = 1.23;      // labels sit at FP_R * FP_LABEL_GAP from centre
-const FP_LABEL_CLEARANCE = 85;  // horizontal px reserved per side for label text
-const FP_LABEL_FONT = 10;       // keep in step with .radar-label font-size
-const FP_BASELINE_NUDGE = 3.5;  // labels are drawn this far below their point
+// ---- Teach me in 60 seconds ----
+// Five beats, picture first. Scene SVGs are decorative: the caption beside
+// each one is the accessible text, so they are aria-hidden rather than
+// role="img" — naming the scene as well would read everything twice.
+const TEACH_BEAT_KEYS = ['hook', 'win', 'turn', 'gotcha', 'first'];
 
-// The viewBox is derived rather than hardcoded, so renaming an axis or resizing
-// the label font still fits. FP_LABEL_CLEARANCE has to cover the longest axis
-// name at the final font size — "Interaction" is the constraint. If a label ever
-// clips, that constant is the fix, not the radius.
-const FP_RING = FP_R * FP_LABEL_GAP;
-const FP_CX = Math.round(FP_RING + FP_LABEL_CLEARANCE);
-const FP_W = FP_CX * 2;
-// Vertically the 12 o'clock label sits a full ring above centre and the two
-// bottom labels sin(54deg) below it, each needing a line box around its baseline.
-const FP_CY = Math.round(FP_RING + FP_LABEL_FONT);
-const FP_H = Math.round(
-  FP_CY + FP_RING * Math.sin((54 * Math.PI) / 180) + FP_BASELINE_NUDGE + FP_LABEL_FONT
-);
-
-// All-or-nothing: a partial fingerprint hides the section rather than drawing a
-// shape that would read as real data. Bad input returns null, never throws.
-function fingerprintAxes(g) {
-  const fp = g.fingerprint;
-  if (!fp || typeof fp !== 'object') return null;
-
-  const axes = [];
-  for (const [key, label] of FP_AXES) {
-    const v = fp[key];
-    if (typeof v !== 'number' || !Number.isFinite(v)) return null;
-    const clamped = Math.min(FP_MAX, Math.max(0, v));
-    axes.push({ label, value: Math.round(clamped * 10) / 10 });
+function beatHTML(b) {
+  const icon = b.key === 'gotcha' ? ALERT_ICON : '';
+  if (b.scene === 'strip') {
+    return `
+      <li class="teach-beat teach-beat--strip">
+        <p class="teach-beat__label">${icon}${b.label}</p>
+        <div class="teach-strip">
+          ${b.steps.map((s, i) => `
+            <div class="teach-frame">
+              <div class="teach-scene"><span class="teach-frame__num">${i + 1}</span>${renderScene(s.scene)}</div>
+              <p class="teach-frame__cap">${s.caption}</p>
+            </div>`).join('')}
+        </div>
+        <p class="teach-beat__text">${b.caption}</p>
+      </li>`;
   }
-  return axes;
-}
-
-function fpPoint(i, value, n) {
-  const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-  const r = (FP_R * value) / FP_MAX;
-  return [FP_CX + r * Math.cos(a), FP_CY + r * Math.sin(a)];
-}
-
-function fingerprintHTML(g) {
-  const axes = fingerprintAxes(g);
-  if (!axes) return '';
-
-  const n = axes.length;
-  const at = (i, v) => fpPoint(i, v, n).map((x) => x.toFixed(1)).join(',');
-
-  const rings = [FP_MAX / 3, (FP_MAX * 2) / 3, FP_MAX]
-    .map((v) => `<polygon class="radar-grid" points="${axes.map((_, i) => at(i, v)).join(' ')}"/>`)
-    .join('');
-
-  const spokes = axes.map((axis, i) => {
-    const [x, y] = fpPoint(i, FP_MAX, n);
-    const [lx, ly] = fpPoint(i, FP_MAX * FP_LABEL_GAP, n);
-    const anchor = Math.abs(lx - FP_CX) < 8 ? 'middle' : lx > FP_CX ? 'start' : 'end';
-    return `<line class="radar-axis" x1="${FP_CX}" y1="${FP_CY}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`
-      + `<text class="radar-label" x="${lx.toFixed(1)}" y="${(ly + FP_BASELINE_NUDGE).toFixed(1)}" text-anchor="${anchor}">${axis.label}</text>`;
-  }).join('');
-
-  const dots = axes.map((axis, i) => {
-    const [x, y] = fpPoint(i, axis.value, n);
-    return `<circle class="radar-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3"/>`;
-  }).join('');
-
-  // The exact numbers are not drawn anywhere, so this label is the only channel
-  // a screen reader has for them.
-  const readout = axes.map((a) => `${a.label} ${a.value} out of ${FP_MAX}`).join(', ');
-
   return `
-    <section class="fp-section">
-      <p class="why-heading">Stats</p>
-      <div class="fp-chart">
-        <svg viewBox="0 0 ${FP_W} ${FP_H}" role="img" aria-label="Stats: ${readout}">
-          ${rings}${spokes}
-          <polygon class="radar-shape" points="${axes.map((axis, i) => at(i, axis.value)).join(' ')}" style="transform-origin:${FP_CX}px ${FP_CY}px"/>
-          ${dots}
-        </svg>
+    <li class="teach-beat">
+      <div class="teach-scene">${renderScene(b.scene)}</div>
+      <div>
+        <p class="teach-beat__label">${icon}${b.label}</p>
+        <p class="teach-beat__text">${b.caption}</p>
       </div>
+    </li>`;
+}
+
+// All-or-nothing, the same contract the Stats section had: with the flag off,
+// no `teach` field, or anything other than the five beats in order, nothing is
+// emitted — so no heading and no divider is ever left behind.
+function teachHTML(g) {
+  if (!TEACH_ENABLED) return '';
+  const t = g.teach;
+  if (!t || !Array.isArray(t.beats) || t.beats.length !== 5) return '';
+  if (t.beats.some((b, i) => !b || b.key !== TEACH_BEAT_KEYS[i])) return '';
+  const strip = t.beats[2];
+  if (strip.scene === 'strip' && (!Array.isArray(strip.steps) || strip.steps.length !== 3)) return '';
+  const draft = t.reviewed !== true;
+  return `
+    <section class="teach-section">
+      <p class="why-heading">${SCHOOL_ICON} Teach me in 60 seconds</p>
+      ${draft ? `<p class="teach-draft">${PENCIL_ICON} Draft — not yet checked against the rulebook</p>` : ''}
+      <ol class="teach-beats">
+        ${t.beats.map(beatHTML).join('')}
+      </ol>
+      <p class="teach-foot">${t.wordCount} words · five pictures</p>
     </section>`;
 }
 
@@ -174,8 +148,7 @@ function bodyHTML(g) {
     <ul class="why-list">
       ${g.why.map((w) => `<li>${w}</li>`).join('')}
     </ul>
-    <span class="tag">${g.tag}</span>
-    ${fingerprintHTML(g)}`;
+    <span class="tag">${g.tag}</span>${teachHTML(g)}`;
 }
 
 // The back-of-box flip: tap, or swipe horizontally. Re-wired on every open

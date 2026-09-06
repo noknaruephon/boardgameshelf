@@ -23,11 +23,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — A tile must touch a tile you already placed. First tile: anywhere.
 - **Turn one** `hand-cheap` — Finish a small region early for the big early-game bonus.
 
-## Dune: Imperium – Uprising  <sub>397598 · high · 66 words</sub>
+## Dune: Imperium – Uprising  <sub>397598 · high · 65 words</sub>
 
 - **Hook** `deck-cards` — Build a deck and send agents out to grab Arrakis.
 - **How you win** `trophy-first` — First to 10 victory points wins, or most points when time's up.
-- **Your turn** — Play a card, send an agent `play-card` → Take that spot's reward `collect-goods` → Or reveal your hand to buy cards `reveal`
+- **Your turn** — Play a card, send an agent `play-card` → Take that spot's reward `collect-goods` → Or reveal hand to buy cards `reveal`
   - Agent turns first, then everyone reveals once.
 - **Watch out** `alert` — Your card needs the spot's icon. No icon, no agent.
 - **Turn one** `hand-worker` — Take a spot that gives you a soldier or spice.
@@ -95,20 +95,20 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Rebels: the base is a card. Bluff where it is.
 - **Turn one** `hand-watch` — Empire, spread out. Rebels, run missions for loyalty.
 
-## Dune: Imperium  <sub>316554 · high · 66 words</sub>
+## Dune: Imperium  <sub>316554 · high · 65 words</sub>
 
 - **Hook** `deck-cards` — Build a deck and send agents out to grab Arrakis.
 - **How you win** `trophy-first` — First to 10 victory points wins, or most points when time's up.
-- **Your turn** — Play a card, send an agent `play-card` → Take that spot's reward `collect-goods` → Or reveal your hand to buy cards `reveal`
+- **Your turn** — Play a card, send an agent `play-card` → Take that spot's reward `collect-goods` → Or reveal hand to buy cards `reveal`
   - Agent turns first, then everyone reveals once.
 - **Watch out** `alert` — Your card needs the spot's icon. No icon, no agent.
 - **Turn one** `hand-worker` — Take a spot that gives you a soldier or spice.
 
-## Hegemony: Lead Your Class to Victory  <sub>321608 · medium · 59 words</sub>
+## Hegemony: Lead Your Class to Victory  <sub>321608 · medium · 58 words</sub>
 
 - **Hook** `coins-stack` — Play a social class fighting over laws, wages and taxes.
 - **How you win** `trophy-points` — Most points wins, each class scoring its own way.
-- **Your turn** — Play a card for an action `play-card` → Work, produce, buy or sell `collect-goods` → Vote on laws that shape the economy `vote`
+- **Your turn** — Play a card for an action `play-card` → Work, produce, buy or sell `collect-goods` → Vote on laws shaping the economy `vote`
   - Five actions a round, then policy votes.
 - **Watch out** `alert` — Laws change the rules for everyone mid-game.
 - **Turn one** `hand-worker` — Working class: get jobs. Capitalists: build a company.
@@ -167,11 +167,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Attack strength is hidden until both cards flip.
 - **Turn one** `hand-center` — Move to a space with two paths out.
 
-## Ticket to Ride: 10th Anniversary  <sub>160069 · high · 59 words</sub>
+## Ticket to Ride: 10th Anniversary  <sub>160069 · high · 57 words</sub>
 
 - **Hook** `trains` — Claim train routes across America to connect your cities.
 - **How you win** `trophy-points` — Most points wins: routes claimed, tickets done, longest train.
-- **Your turn** — Draw two train cards `draw-card` → Or claim a route with a colour set `play-card` → Or draw ticket cards `pick-market`
+- **Your turn** — Draw two train cards `draw-card` → Or claim a route: colour set `play-card` → Or draw ticket cards `pick-market`
   - One action per turn. That's the whole game.
 - **Watch out** `alert` — Unfinished tickets count against you at the end.
 - **Turn one** `hand-cheap` — Take cards. Claim the longest route your hand covers.
@@ -194,11 +194,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-center` — Grab a contested region early.
 
-## Vantage  <sub>420033 · medium · 56 words</sub>
+## Vantage  <sub>420033 · medium · 55 words</sub>
 
 - **Hook** `spaceship` — Crash-landed explorers survive a whole planet together.
 - **How you win** `trophy-survive` — Win by finishing your shared goal before hope runs out.
-- **Your turn** — Move, then look at a new location `explore` → Roll to attempt an action `roll-dice` → Gain items, skills, or trouble `collect-goods`
+- **Your turn** — Move, then look at new location `explore` → Roll to attempt an action `roll-dice` → Gain items, skills, or trouble `collect-goods`
   - Each location is a card with its own options.
 - **Watch out** `alert` — Danger spreads across the party. Watch everyone's health.
 - **Turn one** `hand-center` — Explore toward each other first.
@@ -311,11 +311,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-center` — Control the middle.
 
-## Catan: 3D Edition  <sub>338697 · high · 64 words</sub>
+## Catan: 3D Edition  <sub>338697 · high · 63 words</sub>
 
 - **Hook** `hexes-tokens` — Settle an island: dice give resources, trade for roads and towns.
 - **How you win** `trophy-first` — First to 10 points wins: towns, cities, longest road, biggest army.
-- **Your turn** — Roll; tiles with that number pay out `roll-dice` → Trade with anyone `trade-cards` → Build roads, settlements, cities `build`
+- **Your turn** — Roll; tiles of that number pay `roll-dice` → Trade with anyone `trade-cards` → Build roads, settlements, cities `build`
   - Roll happens for everyone; build only on your turn.
 - **Watch out** `alert` — Roll a 7: anyone with 8+ cards discards half.
 - **Turn one** `hand-center` — Settle on 6s and 8s, next to ore and wheat.
@@ -374,11 +374,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Horror and damage cards can be face-down and permanent.
 - **Turn one** `hand-center` — Split up to explore; regroup to fight.
 
-## Agricola 15  <sub>359999 · high · 57 words</sub>
+## Agricola 15  <sub>359999 · high · 56 words</sub>
 
 - **Hook** `workers-board` — Build a farm: fields, animals, rooms, and feed your family.
 - **How you win** `trophy-points` — Most points wins: balanced farm, few empty spaces.
-- **Your turn** — Place a family member on an action `place-worker` → Take goods or build `collect-goods` → Harvest: feed everyone `collect-goods`
+- **Your turn** — Place family member on an action `place-worker` → Take goods or build `collect-goods` → Harvest: feed everyone `collect-goods`
   - One spot per person. Fourteen rounds.
 - **Watch out** `must` — Can't feed at harvest? Beg. Begging is minus three each.
 - **Turn one** `hand-worker` — Grow your family only after you can feed it.
@@ -419,20 +419,20 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `bust` — Miss a loan payment and you're out.
 - **Turn one** `hand-cheap` — Deliver one good early; income snowballs.
 
-## Rebel Princess: Deluxe Edition  <sub>418556 · high · 61 words</sub>
+## Rebel Princess: Deluxe Edition  <sub>418556 · high · 58 words</sub>
 
 - **Hook** `cards-hand` — Trick-taking where taking tricks is bad and princesses are worse.
 - **How you win** `trophy-lowest` — Fewest points after the rounds wins.
-- **Your turn** — Lead a card; follow suit if you can `play-card` → Highest card of the led suit wins `flip-card` → Winner takes the trick's bad cards `score-round`
+- **Your turn** — Lead; follow suit if you can `play-card` → Highest card of led suit wins `flip-card` → Winner takes the trick's bad cards `score-round`
   - Each round adds a new rule card.
 - **Watch out** `alert` — Take the princess and the whole trick's points are yours.
 - **Turn one** `hand-card` — Lead high in a suit you'll empty.
 
-## Tiletum  <sub>351913 · high · 55 words</sub>
+## Tiletum  <sub>351913 · high · 54 words</sub>
 
 - **Hook** `hexes-dice` — Roll dice, place them to trade, build, and move the king.
 - **How you win** `trophy-points` — Most points wins: buildings, contracts, and bonuses.
-- **Your turn** — Roll your dice `roll-dice` → Place a die on an action wheel `place-worker` → Take goods, build, or move `collect-goods`
+- **Your turn** — Roll your dice `roll-dice` → Place a die on action wheel `place-worker` → Take goods, build, or move `collect-goods`
   - Die value matters; other dice stay for later.
 - **Watch out** `alert` — Draft — verify the wheel-bonus rule.
 - **Turn one** `hand-cheap` — Build cheap early buildings that give ongoing goods.
@@ -482,11 +482,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — verify each faction's win condition.
 - **Turn one** `hand-center` — Take the crystal nearest you.
 
-## SCOUT  <sub>291453 · high · 66 words</sub>
+## SCOUT  <sub>291453 · high · 64 words</sub>
 
 - **Hook** `cards-hand` — Play runs or sets from a hand you cannot reorder.
 - **How you win** `trophy-points` — Most points wins: cards captured minus cards left in hand.
-- **Your turn** — Show: play a stronger set `play-card` → Or scout: take a card from the table `draw-card` → Show and scout together, once `collect-goods`
+- **Your turn** — Show: play a stronger set `play-card` → Or scout: take a table card `draw-card` → Show and scout together, once `collect-goods`
   - Round ends when nobody can beat the set.
 - **Watch out** `order` — You can't rearrange your hand. Only insert scouted cards.
 - **Turn one** `hand-card` — Flip your hand upside down if that helps. Decide before starting.
@@ -572,20 +572,20 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Market tastes shift every round.
 - **Turn one** `hand-cheap` — Build one cheap car well.
 
-## Castle Combo  <sub>416851 · high · 57 words</sub>
+## Castle Combo  <sub>416851 · high · 55 words</sub>
 
 - **Hook** `cards-tableau` — Draft cards into a 3×3 grid; icons pay off neighbours.
 - **How you win** `trophy-points` — Most points wins: card scoring and coin bonuses.
-- **Your turn** — Take a card from one of two rows `pick-market` → Pay, place it in your grid `play-card` → Its effect triggers `collect-goods`
+- **Your turn** — Take a card from either row `pick-market` → Pay, place it in your grid `play-card` → Its effect triggers `collect-goods`
   - Nine cards, then score.
 - **Watch out** `count` — Grid is fixed at 3×3. First card sets the corner.
 - **Turn one** `hand-cheap` — Take a card that gives coins or keys.
 
-## Saboteur: 20th Anniversary Edition  <sub>406322 · high · 52 words</sub>
+## Saboteur: 20th Anniversary Edition  <sub>406322 · high · 51 words</sub>
 
 - **Hook** `hidden-role` — Dwarves dig for gold; saboteurs secretly block the tunnel.
 - **How you win** `trophy-team` — Miners win by reaching gold. Saboteurs win if they don't.
-- **Your turn** — Play a tunnel card `play-card` → Or an action: break a tool, peek `play-card` → Draw `draw-card`
+- **Your turn** — Play a tunnel card `play-card` → Or an action: break tool, peek `play-card` → Draw `draw-card`
   - Three rounds. Gold is under one of three cards.
 - **Watch out** `hidden` — Saboteurs play bad tunnels quietly.
 - **Turn one** `hand-card` — Extend the tunnel straight toward the middle.
@@ -653,11 +653,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Two identical clues both vanish. Be different.
 - **Turn one** `hand-talk` — Think of the second word, not the first.
 
-## Patchwork  <sub>163412 · high · 52 words</sub>
+## Patchwork  <sub>163412 · high · 51 words</sub>
 
 - **Hook** `polyomino` — Sew a quilt from patches you buy with buttons.
 - **How you win** `trophy-points` — Most buttons minus empty squares wins.
-- **Your turn** — Take one of the next three patches `pick-market` → Pay buttons, move time `bid-coins` → Fit it on your board `place-tile`
+- **Your turn** — Take one of next three patches `pick-market` → Pay buttons, move time `bid-coins` → Fit it on your board `place-tile`
   - Or move ahead and take buttons instead.
 - **Watch out** `alert` — Behind on the time track? You keep going.
 - **Turn one** `hand-cheap` — Take patches with buttons on them.
@@ -716,11 +716,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Supply limits army size. Overextend and you lose troops.
 - **Turn one** `hand-talk` — Make a deal with your neighbour before turn one.
 
-## Modern Art  <sub>118 · high · 54 words</sub>
+## Modern Art  <sub>118 · high · 53 words</sub>
 
 - **Hook** `auction-gavel` — Sell art to each other; painters' prices rise with sales.
 - **How you win** `trophy-coins` — Most money after four rounds wins.
-- **Your turn** — Play a painting; auction type on it `play-card` → Everyone bids that way `bid-coins` → Winner pays the seller `collect-goods`
+- **Your turn** — Play a painting; auction type shown `play-card` → Everyone bids that way `bid-coins` → Winner pays the seller `collect-goods`
   - Round ends at five of one artist.
 - **Watch out** `alert` — Only the top three artists pay out each round.
 - **Turn one** `hand-card` — Sell the artist you have most of.
@@ -752,11 +752,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Pan Am expansion is random; watch the event card.
 - **Turn one** `hand-cheap` — Build the cheapest route Pan Am will buy soon.
 
-## Ticket to Ride: Europe  <sub>14996 · high · 58 words</sub>
+## Ticket to Ride: Europe  <sub>14996 · high · 56 words</sub>
 
 - **Hook** `trains` — Claim train routes across Europe to connect your cities.
 - **How you win** `trophy-points` — Most points wins: routes, tickets, longest train, stations.
-- **Your turn** — Draw two train cards `draw-card` → Or claim a route with a colour set `play-card` → Or draw ticket cards `pick-market`
+- **Your turn** — Draw two train cards `draw-card` → Or claim a route: colour set `play-card` → Or draw ticket cards `pick-market`
   - One action per turn. Stations let you borrow routes.
 - **Watch out** `alert` — Tunnels: flip three cards; matches cost extra.
 - **Turn one** `hand-cheap` — Take cards. Claim the longest route your hand covers.
@@ -842,11 +842,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Tokens have different weights; the border decides who wins it.
 - **Turn one** `hand-center` — Place on borders touching two regions.
 
-## Ready Set Bet  <sub>351040 · high · 63 words</sub>
+## Ready Set Bet  <sub>351040 · high · 61 words</sub>
 
 - **Hook** `race-track` — Bet on a horse race that runs live while everyone shouts.
 - **How you win** `trophy-coins` — Most money after the last race wins.
-- **Your turn** — Announcer rolls; that horse moves `roll-dice` → Slap a bet on the board any time `bid-coins` → Payout when three horses finish `collect-goods`
+- **Your turn** — Announcer rolls; that horse moves `roll-dice` → Slap a bet down any time `bid-coins` → Payout when three horses finish `collect-goods`
   - Odds get worse as the race goes on.
 - **Watch out** `alert` — Bets lock the moment the red horse crosses the line.
 - **Turn one** `hand-safe` — Bet the middle horses early; they're the boring winners.
@@ -860,20 +860,20 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `hidden` — Hitler doesn't know who the fascists are, at 7+ players.
 - **Turn one** `hand-watch` — Track who passed which law. Claims beat feelings.
 
-## Kronologic: Paris 1920  <sub>402111 · high · 65 words</sub>
+## Kronologic: Paris 1920  <sub>402111 · high · 61 words</sub>
 
 - **Hook** `magnifier` — Deduce who was where at what hour in a Paris hotel.
 - **How you win** `trophy-guess` — First to answer the case question correctly wins.
-- **Your turn** — Ask: who was in this room at this hour? `guess` → Card shows the answer to you only `reveal` → Note it; deduce the rest `write`
+- **Your turn** — Ask: who was here, this hour? `guess` → Card shows answer to you only `reveal` → Note it; deduce the rest `write`
   - Every ask reveals to you alone.
 - **Watch out** `alert` — The answer card shows everyone something: the number of people.
 - **Turn one** `hand-watch` — Ask about the hour and room the case describes.
 
-## London (Second Edition)  <sub>236191 · high · 60 words</sub>
+## London (Second Edition)  <sub>236191 · high · 58 words</sub>
 
 - **Hook** `cards-tableau` — Rebuild London: play cards, run your city, manage poverty.
 - **How you win** `trophy-points` — Most points wins after minus poverty.
-- **Your turn** — Play cards into your city `play-card` → Or run your city for money and points `collect-goods` → Or buy a borough, draw cards `draw-card`
+- **Your turn** — Play cards into your city `play-card` → Or run your city: money, points `collect-goods` → Or buy a borough, draw cards `draw-card`
   - Running flips your cards face-down and adds poverty.
 - **Watch out** `alert` — Poverty piles up every time you run. Fewer cards, more poverty.
 - **Turn one** `hand-cheap` — Play cheap cards, run early, buy boroughs.
@@ -905,11 +905,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — A chain only pays when its tiles are adjacent.
 - **Turn one** `hand-talk` — Offer a trade before you've looked at your own cards.
 
-## Zoo Vadis  <sub>368061 · high · 57 words</sub>
+## Zoo Vadis  <sub>368061 · high · 56 words</sub>
 
 - **Hook** `handshake` — Animals vote themselves into the zoo's leadership.
 - **How you win** `trophy-points` — Most points among the animals who make it in wins.
-- **Your turn** — Negotiate: who moves up, who gets paid? `discuss` → Move an animal by group vote `move-piece` → Deals resolve, cash changes hands `collect-goods`
+- **Your turn** — Negotiate: who moves, who gets paid? `discuss` → Move an animal by group vote `move-piece` → Deals resolve, cash changes hands `collect-goods`
   - Only animals in the top rooms score.
 - **Watch out** `alert` — Only some animals get in. The rest score nothing.
 - **Turn one** `hand-talk` — Buy allies early. Promises are binding.
@@ -932,11 +932,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `hidden` — Dracula's path is written, not shown.
 - **Turn one** `hand-center` — Van Helsing: search where Dracula last struck.
 
-## Splendor  <sub>148228 · high · 56 words</sub>
+## Splendor  <sub>148228 · high · 55 words</sub>
 
 - **Hook** `cards-tableau` — Collect gems to buy cards; cards give free gems forever.
 - **How you win** `trophy-first` — First to 15 prestige wins.
-- **Your turn** — Take three gems, or two of one `collect-goods` → Or buy a card with gems `play-card` → Or reserve a card, take gold `draw-card`
+- **Your turn** — Take three gems, or two alike `collect-goods` → Or buy a card with gems `play-card` → Or reserve a card, take gold `draw-card`
   - Cards you own discount future cards.
 - **Watch out** `count` — Ten gems max in hand. Discard the rest.
 - **Turn one** `hand-cheap` — Take gems for the cheapest cards you see.
@@ -959,11 +959,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `no-talk` — Scientist never speaks. Murderer knows the answer.
 - **Turn one** `hand-watch` — Watch who steers the group away from a clue.
 
-## Trio  <sub>352515 · high · 60 words</sub>
+## Trio  <sub>352515 · high · 58 words</sub>
 
 - **Hook** `cards-hand` — Find three of a kind by peeking at hands and the table.
 - **How you win** `trophy-first` — First to collect three trios wins, or the 7s.
-- **Your turn** — Ask a player for their lowest or highest `reveal` → Or flip a table card `flip-card` → Three matching: keep them `score-round`
+- **Your turn** — Ask a player: lowest or highest? `reveal` → Or flip a table card `flip-card` → Three matching: keep them `score-round`
   - Cards not matching go back where they were.
 - **Watch out** `alert` — Everyone sees what you flipped; memory is the game.
 - **Turn one** `hand-watch` — Ask for lowest cards first.
@@ -986,11 +986,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Everyone or nobody guesses right: storyteller scores zero.
 - **Turn one** `hand-talk` — Clue a feeling, not an object.
 
-## Detective Club  <sub>256788 · high · 59 words</sub>
+## Detective Club  <sub>256788 · high · 56 words</sub>
 
 - **Hook** `story-picture` — One player doesn't know the word; hide it in your pictures.
 - **How you win** `trophy-points` — Most points after each player has led wins.
-- **Your turn** — Leader secretly writes a word for all but one `write` → Everyone plays two picture cards `play-card` → Vote who's the conspirator `vote`
+- **Your turn** — Word given to all but one `write` → Everyone plays two picture cards `play-card` → Vote who's the conspirator `vote`
   - The conspirator bluffs with cards that fit.
 - **Watch out** `hidden` — The conspirator gets a blank word, not the real one.
 - **Turn one** `hand-talk` — Explain your cards with confidence.
@@ -1022,11 +1022,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `bust` — Biggest total spender is disqualified.
 - **Turn one** `hand-safe` — Bid small; learn what others think is big.
 
-## ito  <sub>327778 · high · 54 words</sub>
+## ito  <sub>327778 · high · 53 words</sub>
 
 - **Hook** `count-sync` — Everyone has a secret number; describe it with a theme.
 - **How you win** `trophy-team` — Play cards in the right order to win together.
-- **Your turn** — Draw a number, one to a hundred `draw-card` → Describe it using the theme `speak-clue` → Play cards low to high `play-card`
+- **Your turn** — Draw a number, 1 to 100 `draw-card` → Describe it using the theme `speak-clue` → Play cards low to high `play-card`
   - No numbers, only theme talk.
 - **Watch out** `no-talk` — Never say a number, even nearby.
 - **Turn one** `hand-talk` — Describe your number, then listen to everyone.
@@ -1094,47 +1094,47 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `bust` — Two of the same number and your round is zero.
 - **Turn one** `hand-safe` — Stop after four cards the first round.
 
-## Sheriff of Nottingham: 2nd Edition  <sub>298638 · high · 59 words</sub>
+## Sheriff of Nottingham: 2nd Edition  <sub>298638 · high · 57 words</sub>
 
 - **Hook** `handshake` — Smuggle goods past a sheriff who can inspect your bag.
 - **How you win** `trophy-coins` — Most money and goods after everyone's been sheriff wins.
-- **Your turn** — Draw goods; put some in your bag `draw-card` → Declare a legal good to the sheriff `discuss` → Sheriff inspects or lets you through `reveal`
+- **Your turn** — Draw goods; bag some of them `draw-card` → Declare a legal good to sheriff `discuss` → Sheriff inspects or lets you through `reveal`
   - Bribes are legal. Lies aren't free.
 - **Watch out** `alert` — Caught lying: pay for every contraband card.
 - **Turn one** `hand-talk` — Tell the truth first round. Bluff later.
 
-## Insider Black  <sub>307997 · high · 56 words</sub>
+## Insider Black  <sub>307997 · high · 55 words</sub>
 
 - **Hook** `hidden-role` — Guess the word; someone already knows it and steers you.
 - **How you win** `trophy-team` — Everyone wins if the word is found. Insider wins if unfound.
-- **Your turn** — Ask yes/no questions `guess` → Master answers `discuss` → Found it? Now vote for the insider `vote`
+- **Your turn** — Ask yes/no questions `guess` → Master answers `discuss` → Found it? Vote for the insider `vote`
   - Timer is short. Insider must guide subtly.
 - **Watch out** `hidden` — Insider knows the word and pretends not to.
 - **Turn one** `hand-watch` — Note who asked the question that cracked it.
 
-## Mysterium  <sub>181304 · high · 62 words</sub>
+## Mysterium  <sub>181304 · high · 61 words</sub>
 
 - **Hook** `story-picture` — A ghost sends dream pictures to solve their murder.
 - **How you win** `trophy-team` — Everyone wins if all suspects are found and the killer named.
-- **Your turn** — Ghost gives each player picture cards `play-card` → Players pick a suspect from the pictures `guess` → Ghost knocks yes or shakes no `reveal`
+- **Your turn** — Ghost gives each player picture cards `play-card` → Players pick a suspect from pictures `guess` → Ghost knocks yes or shakes no `reveal`
   - Seven rounds. Ghost never speaks.
 - **Watch out** `no-talk` — Ghost can only give pictures. No pointing, no faces.
 - **Turn one** `hand-talk` — Say what you see out loud; the group helps.
 
-## Wavelength  <sub>262543 · high · 53 words</sub>
+## Wavelength  <sub>262543 · high · 52 words</sub>
 
 - **Hook** `word-bubble` — Guess where a concept sits between two extremes.
 - **How you win** `trophy-team` — First team to 10 points wins.
-- **Your turn** — Psychic sees the target, gives a clue `speak-clue` → Team turns the dial `move-piece` → Reveal; closer is better `reveal`
+- **Your turn** — Psychic sees target, gives a clue `speak-clue` → Team turns the dial `move-piece` → Reveal; closer is better `reveal`
   - Other team guesses left or right for a point.
 - **Watch out** `no-talk` — Psychic can't react to the dial. Poker face.
 - **Turn one** `hand-talk` — Give a real thing, not an adjective.
 
-## Startups  <sub>223770 · high · 55 words</sub>
+## Startups  <sub>223770 · high · 53 words</sub>
 
 - **Hook** `cards-hand` — Collect shares in startups; hold the most to win each.
 - **How you win** `trophy-coins` — Most coins after several rounds wins.
-- **Your turn** — Draw from the deck or the market `draw-card` → Play a card to hand or market `play-card` → Round ends; majority holders get paid `reveal`
+- **Your turn** — Draw from deck or the market `draw-card` → Play a card: hand or market `play-card` → Round ends; majority holders get paid `reveal`
   - Taking from the market can cost coins.
 - **Watch out** `alert` — Second-most shares pays the most shares.
 - **Turn one** `hand-card` — Collect one company; ignore the rest.
@@ -1175,11 +1175,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-center` — Take the middle.
 
-## Night of the Ninja  <sub>306321 · high · 57 words</sub>
+## Night of the Ninja  <sub>306321 · high · 56 words</sub>
 
 - **Hook** `hidden-role` — Ninjas hunt a hidden target in a house of secrets.
 - **How you win** `trophy-team` — Win if your target is dead at the end and you're not.
-- **Your turn** — Play a card: attack, move, swap roles `play-card` → Roles swap constantly `reveal` → Score if your target is dead `score-round`
+- **Your turn** — Play a card: attack, move, swap `play-card` → Roles swap constantly `reveal` → Score if your target is dead `score-round`
   - Draft — verify against the rulebook.
 - **Watch out** `hidden` — Your role can be swapped without you knowing.
 - **Turn one** `hand-watch` — Track who touched whose role.
@@ -1220,20 +1220,20 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — verify screening rule.
 - **Turn one** `hand-cheap` — Shoot a short film early.
 
-## A Fake Artist Goes to New York  <sub>135779 · high · 60 words</sub>
+## A Fake Artist Goes to New York  <sub>135779 · high · 58 words</sub>
 
 - **Hook** `drawing-pad` — Everyone adds one stroke; the fake artist doesn't know the word.
 - **How you win** `trophy-team` — Artists win by catching the fake. Fake wins by guessing the word.
-- **Your turn** — Draw one stroke each, twice around `draw-sketch` → Vote for the fake `vote` → Caught fake can guess the word to win `guess`
+- **Your turn** — Draw one stroke each, twice around `draw-sketch` → Vote for the fake `vote` → Caught fake guesses word to win `guess`
   - Question master doesn't play.
 - **Watch out** `no-talk` — Draw too clearly and the fake learns the word.
 - **Turn one** `hand-talk` — Draw something that's true but vague.
 
-## No Thanks!  <sub>12942 · high · 58 words</sub>
+## No Thanks!  <sub>12942 · high · 55 words</sub>
 
 - **Hook** `take-or-pay` — Take the card or pay a chip to pass it on.
 - **How you win** `trophy-lowest` — Fewest points wins: cards minus chips.
-- **Your turn** — Take the card and its chips, or pay one `take-or-pay` → Passed card comes back around `pass-turn` → Runs count only their lowest card `score-round`
+- **Your turn** — Take card and chips, or pay `take-or-pay` → Passed card comes back around `pass-turn` → Runs count only their lowest card `score-round`
   - Nine cards are missing from the deck.
 - **Watch out** `alert` — Runs: 20-21-22 scores just 20. Chase runs.
 - **Turn one** `hand-safe` — Pay to pass early. Chips are cheap.
@@ -1256,11 +1256,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `bust` — Holding bulbs when the bubble bursts: worth nothing.
 - **Turn one** `hand-safe` — Buy cheap colours, sell as soon as you profit.
 
-## Exploding Kittens: Party Pack  <sub>256804 · high · 53 words</sub>
+## Exploding Kittens: Party Pack  <sub>256804 · high · 51 words</sub>
 
 - **Hook** `cards-hand` — Draw cards; explode and you're out, unless you defuse.
 - **How you win** `trophy-standing` — Last player alive wins.
-- **Your turn** — Play any action cards `play-card` → Draw one card to end your turn `draw-card` → Kitten? Defuse and hide it, or explode `reveal`
+- **Your turn** — Play any action cards `play-card` → Draw one card to end turn `draw-card` → Kitten? Defuse and hide, or explode `reveal`
   - Skip, attack, and peek cards avoid the kitten.
 - **Watch out** `bust` — No defuse when you draw a kitten: out.
 - **Turn one** `hand-safe` — Hold your defuse. Play attacks late.
@@ -1274,11 +1274,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — verify placement rule.
 - **Turn one** `hand-talk` — Trade before you place.
 
-## Insider  <sub>206051 · high · 56 words</sub>
+## Insider  <sub>206051 · high · 55 words</sub>
 
 - **Hook** `hidden-role` — Guess the word; someone already knows it and steers you.
 - **How you win** `trophy-team` — Everyone wins if the word is found. Insider wins if unfound.
-- **Your turn** — Ask yes/no questions `guess` → Master answers `discuss` → Found it? Now vote for the insider `vote`
+- **Your turn** — Ask yes/no questions `guess` → Master answers `discuss` → Found it? Vote for the insider `vote`
   - Timer is short. Insider must guide subtly.
 - **Watch out** `hidden` — Insider knows the word and pretends not to.
 - **Turn one** `hand-watch` — Note who asked the question that cracked it.
@@ -1310,11 +1310,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `hidden` — Seer and others learn things in secret.
 - **Turn one** `hand-watch` — First day: watch who's quiet.
 
-## Two Rooms and a Boom  <sub>134352 · high · 56 words</sub>
+## Two Rooms and a Boom  <sub>134352 · high · 55 words</sub>
 
 - **Hook** `team-vs-team` — Two rooms, hidden roles: put the bomber with the president.
 - **How you win** `trophy-team` — Blue wins if president survives. Red wins if bomber reaches him.
-- **Your turn** — Talk, show cards, negotiate `discuss` → Rooms elect a leader who picks hostages `vote` → Hostages swap rooms `move-piece`
+- **Your turn** — Talk, show cards, negotiate `discuss` → Rooms elect leaders who pick hostages `vote` → Hostages swap rooms `move-piece`
   - Three rounds, shorter each time.
 - **Watch out** `hidden` — Card shares can be full or colour only. Ask which.
 - **Turn one** `hand-talk` — Find your teammates; share colours only.
@@ -1328,11 +1328,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-card` — Play low first.
 
-## Coup  <sub>131357 · high · 58 words</sub>
+## Coup  <sub>131357 · high · 55 words</sub>
 
 - **Hook** `hidden-role` — Bluff about which two cards you hold; get caught, lose one.
 - **How you win** `trophy-standing` — Last player with a card wins.
-- **Your turn** — Claim a role's action, or take income `play-card` → Anyone can challenge or block `discuss` → Loser of a challenge loses a card `reveal`
+- **Your turn** — Claim a role's action, or income `play-card` → Anyone can challenge or block `discuss` → Challenge loser loses a card `reveal`
   - Seven coins: you must coup.
 - **Watch out** `alert` — Bluffing is legal. Challenging a truth costs you a card.
 - **Turn one** `hand-safe` — Take income twice. Watch who claims Duke.
@@ -1346,11 +1346,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — verify stacking rule.
 - **Turn one** `hand-cheap` — Build the cheapest floor first.
 
-## Perudo  <sub>45 · high · 53 words</sub>
+## Perudo  <sub>45 · high · 51 words</sub>
 
 - **Hook** `dice-cup` — Liar's dice: bid on how many dice are under everyone's cups.
 - **How you win** `trophy-standing` — Last player with dice wins.
-- **Your turn** — Everyone rolls under their cup `roll-dice` → Bid: quantity and face, higher each time `bid-coins` → Call dudo: reveal; loser loses a die `reveal`
+- **Your turn** — Everyone rolls under their cup `roll-dice` → Bid quantity and face, always higher `bid-coins` → Call dudo: reveal; loser drops die `reveal`
   - Ones are wild.
 - **Watch out** `alert` — Bidding ones halves the count; going back doubles.
 - **Turn one** `hand-safe` — Bid what you can see, plus one.
@@ -1364,11 +1364,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — verify challenge penalty.
 - **Turn one** `hand-safe` — Tell the truth first round.
 
-## Wits & Wagers  <sub>20100 · high · 49 words</sub>
+## Wits & Wagers  <sub>20100 · high · 48 words</sub>
 
 - **Hook** `question-cards` — Trivia where you bet on other people's guesses.
 - **How you win** `trophy-coins` — Most chips after seven questions wins.
-- **Your turn** — Everyone writes a number `answer` → Answers lined up; bet on the best `bid-coins` → Closest without going over pays `reveal`
+- **Your turn** — Everyone writes a number `answer` → Answers lined up; bet on best `bid-coins` → Closest without going over pays `reveal`
   - You don't need to know the answer.
 - **Watch out** `alert` — Over the real number? That answer's out.
 - **Turn one** `hand-safe` — Bet on the middle answer.
@@ -1400,11 +1400,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-talk` — Commit to the bit.
 
-## Blokus  <sub>2453 · high · 53 words</sub>
+## Blokus  <sub>2453 · high · 51 words</sub>
 
 - **Hook** `polyomino` — Place your pieces on the board, corner to corner only.
 - **How you win** `trophy-lowest` — Fewest squares left in hand wins.
-- **Your turn** — Pick a piece `pick-market` → Place it touching your colour by a corner `place-tile` → Can't place? You're done `pass-turn`
+- **Your turn** — Pick a piece `pick-market` → Corner to corner with your colour `place-tile` → Can't place? You're done `pass-turn`
   - Edges of your own colour may never touch.
 - **Watch out** `alert` — Same colour touching along an edge is illegal.
 - **Turn one** `hand-center` — Big pieces first, toward the middle.
@@ -1436,11 +1436,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-card` — Play low.
 
-## Cockroach Poker  <sub>11971 · high · 70 words</sub>
+## Cockroach Poker  <sub>11971 · high · 64 words</sub>
 
 - **Hook** `cards-hand` — Pass a face-down card and lie about it.
 - **How you win** `trophy-standing` — Lose if you take four of one bug. Last one standing wins.
-- **Your turn** — Pass a card, name any bug `play-card` → They say true or false, or peek and pass on `guess` → Wrong: they keep it. Right: you keep it `reveal`
+- **Your turn** — Pass a card, name any bug `play-card` → They guess, or peek and pass `guess` → Wrong: they keep it. Right: yours `reveal`
   - Cards in front of you count against you.
 - **Watch out** `bust` — Four of a kind in front of you: you lose the game.
 - **Turn one** `hand-talk` — Tell the truth the first time.
@@ -1472,29 +1472,29 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — verify storm rule.
 - **Turn one** `hand-center` — Stay out of the storm's path.
 
-## Sounds Fishy  <sub>359893 · high · 54 words</sub>
+## Sounds Fishy  <sub>359893 · high · 52 words</sub>
 
 - **Hook** `question-cards` — One answer is true; the other players bluff answers.
 - **How you win** `trophy-points` — Most fish after the rounds wins.
-- **Your turn** — Question read; one player gets the real answer `reveal` → Others invent answers `write` → Guesser picks fake answers to eliminate `guess`
+- **Your turn** — Question read; one player knows answer `reveal` → Others invent answers `write` → Guesser picks fake answers to eliminate `guess`
   - Eliminate all fakes without picking the real one.
 - **Watch out** `alert` — Pick the real answer and your round ends.
 - **Turn one** `hand-talk` — Invent something boring. Boring sounds true.
 
-## The Mind  <sub>244992 · high · 48 words</sub>
+## The Mind  <sub>244992 · high · 43 words</sub>
 
 - **Hook** `count-sync` — Play numbered cards in order, without talking.
 - **How you win** `trophy-team` — Beat the final level together.
-- **Your turn** — Deal cards; level number is the hand size `draw-card` → Anyone plays when they feel it's lowest `play-card` → Wrong order: lose a life `reveal`
+- **Your turn** — Deal cards, one per level `draw-card` → Play when yours feels lowest `play-card` → Wrong order: lose a life `reveal`
   - No hints. Only timing.
 - **Watch out** `no-talk` — No talking, no gestures. Just feel it.
 - **Turn one** `hand-talk` — Wait longer than you think.
 
-## Mascarade (Second Edition)  <sub>356907 · high · 55 words</sub>
+## Mascarade (Second Edition)  <sub>356907 · high · 53 words</sub>
 
 - **Hook** `hidden-role` — Everyone has a secret role; cards get swapped face-down.
 - **How you win** `trophy-first` — First to 13 coins wins.
-- **Your turn** — Swap your card with someone, or don't `trade-cards` → Or look at your own card `reveal` → Or claim a role and use it `play-card`
+- **Your turn** — Swap cards with someone, or don't `trade-cards` → Or look at your own card `reveal` → Or claim a role, use it `play-card`
   - Anyone can contest your claim.
 - **Watch out** `hidden` — After a swap you might not know your own card.
 - **Turn one** `hand-safe` — Look at your card. Then swap.
@@ -1517,11 +1517,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `hidden` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-watch` — Watch who avoids questions.
 
-## Happy Salmon  <sub>194626 · high · 44 words</sub>
+## Happy Salmon  <sub>194626 · high · 41 words</sub>
 
 - **Hook** `flick` — Shout your card, find a match, do the action, race.
 - **How you win** `trophy-first` — First to empty their deck wins.
-- **Your turn** — Flip your top card and shout it `flip-card` → Find someone with the same; do the action `act` → Discard; next card `pass-turn`
+- **Your turn** — Flip your top card, shout it `flip-card` → Find a match; do the action `act` → Discard; next card `pass-turn`
   - Everyone at once.
 - **Watch out** `timer` — No turns. No waiting. Go.
 - **Turn one** `hand-talk` — Shout louder.
@@ -1553,11 +1553,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-card` — Play the cheapest spell.
 
-## King of 12  <sub>302917 · high · 49 words</sub>
+## King of 12  <sub>302917 · high · 48 words</sub>
 
 - **Hook** `dice-cup` — Pick a card and a number secretly; ties and totals decide.
 - **How you win** `trophy-rounds` — First to win two rounds.
-- **Your turn** — Both pick a card and a number `play-card` → Reveal; card effects change the totals `reveal` → Higher total takes the point `score-round`
+- **Your turn** — Both pick a card and number `play-card` → Reveal; card effects change the totals `reveal` → Higher total takes the point `score-round`
   - Draft — verify against the rulebook.
 - **Watch out** `alert` — Same number? Neither counts.
 - **Turn one** `hand-safe` — Play a middle number first.
@@ -1598,11 +1598,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-card` — Play low.
 
-## The Chameleon  <sub>227072 · high · 53 words</sub>
+## The Chameleon  <sub>227072 · high · 52 words</sub>
 
 - **Hook** `hidden-role` — Everyone knows the word except the chameleon; find them.
 - **How you win** `trophy-team` — Catch the chameleon, or the chameleon guesses the word.
-- **Your turn** — Roll; dice point to the secret word `roll-dice` → Each says one related word `speak-clue` → Vote for the chameleon `vote`
+- **Your turn** — Roll; dice point to secret word `roll-dice` → Each says one related word `speak-clue` → Vote for the chameleon `vote`
   - Chameleon bluffs from everyone's clues.
 - **Watch out** `hidden` — Say too much and the chameleon learns the word.
 - **Turn one** `hand-talk` — Say something true but vague.
@@ -1643,11 +1643,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — rules unknown. Replace before review.
 - **Turn one** `hand-card` — Play low.
 
-## Cheating Moth  <sub>105593 · high · 53 words</sub>
+## Cheating Moth  <sub>105593 · high · 51 words</sub>
 
 - **Hook** `cards-hand` — Get rid of cards; cheat by dropping them under the table.
 - **How you win** `trophy-lowest` — Fewest points after the rounds wins.
-- **Your turn** — Play a card one higher or lower `play-card` → Can't? Draw `draw-card` → Cheat: hide a card if unseen `act`
+- **Your turn** — Play one higher or lower `play-card` → Can't? Draw `draw-card` → Cheat: hide a card if unseen `act`
   - The guard watches for cheats.
 - **Watch out** `alert` — Caught cheating? Take the card back plus a penalty.
 - **Turn one** `hand-watch` — Cheat when the guard is looking away.
@@ -1724,11 +1724,11 @@ Caption budget: ≤ 12 words per beat, ≤ 6 per strip frame. Every game is `rev
 - **Watch out** `alert` — Draft — verify tie rule.
 - **Turn one** `hand-safe` — Bid low first.
 
-## Sitting Ducks Gallery  <sub>17027 · high · 54 words</sub>
+## Sitting Ducks Gallery  <sub>17027 · high · 53 words</sub>
 
 - **Hook** `cards-hand` — Ducks parade; play cards to shoot or protect them.
 - **How you win** `trophy-standing` — Last player with a duck wins.
-- **Your turn** — Play a card on the gallery row `play-card` → Ducks shift when shot or moved `move-piece` → Draw back to three `draw-card`
+- **Your turn** — Play a card onto the gallery `play-card` → Ducks shift when shot or moved `move-piece` → Draw back to three `draw-card`
   - Draft — verify against the rulebook.
 - **Watch out** `alert` — Your duck at the front is the one in danger.
 - **Turn one** `hand-safe` — Move your duck to the back.
