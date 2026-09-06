@@ -1,5 +1,6 @@
 import { timeLabel, weightLabel, playersRangeLabel } from './filters.js';
 import { registerOverlay, syncScrollLock } from './scroll-lock.js';
+import { renderScene } from './teach-scenes.js';
 
 // The game detail modal, shared by the shelf and the game-night waiting room.
 // Markup lives here and styling in css/game-modal.css, so an enhancement to
@@ -14,6 +15,18 @@ const WEIGHT_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 
 
 const VIEW_COVER_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 8h14"/></svg>`;
 const VIEW_TABLE_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="9" rx="9" ry="4"/><path d="M5 12v6M19 12v6M12 13v7"/></svg>`;
+
+// Tabler line icons: 24 viewBox, currentColor stroke, 1.75, no fill.
+const ic = (paths, s = 15, w = 1.75) =>
+  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+const SCHOOL_ICON = ic('<path d="M22 9l-10-4-10 4 10 4 10-4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/>', 16);
+const ALERT_ICON  = ic('<path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/><path d="M12 16h.01"/>', 13);
+const PENCIL_ICON = ic('<path d="M4 20h4L18.5 9.5a2.828 2.828 0 1 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/>', 13);
+
+// ---- "Teach me in 60 seconds" feature flag ----
+// Read once at module load, the same way the shelf reads ?gamenight. While it
+// is off, teachHTML() returns '' and the modal is exactly what it was before.
+const TEACH_ENABLED = new URLSearchParams(location.search).get('teach') === '1';
 
 function coverHTML(g) {
   if (g.backImage) {
@@ -67,6 +80,60 @@ function mediaHTML(g) {
     </div>`;
 }
 
+// ---- Teach me in 60 seconds ----
+// Five beats, picture first. Scene SVGs are decorative: the caption beside
+// each one is the accessible text, so they are aria-hidden rather than
+// role="img" — naming the scene as well would read everything twice.
+const TEACH_BEAT_KEYS = ['hook', 'win', 'turn', 'gotcha', 'first'];
+
+function beatHTML(b) {
+  const icon = b.key === 'gotcha' ? ALERT_ICON : '';
+  if (b.scene === 'strip') {
+    return `
+      <li class="teach-beat teach-beat--strip">
+        <p class="teach-beat__label">${icon}${b.label}</p>
+        <div class="teach-strip">
+          ${b.steps.map((s, i) => `
+            <div class="teach-frame">
+              <div class="teach-scene"><span class="teach-frame__num">${i + 1}</span>${renderScene(s.scene)}</div>
+              <p class="teach-frame__cap">${s.caption}</p>
+            </div>`).join('')}
+        </div>
+        <p class="teach-beat__text">${b.caption}</p>
+      </li>`;
+  }
+  return `
+    <li class="teach-beat">
+      <div class="teach-scene">${renderScene(b.scene)}</div>
+      <div>
+        <p class="teach-beat__label">${icon}${b.label}</p>
+        <p class="teach-beat__text">${b.caption}</p>
+      </div>
+    </li>`;
+}
+
+// All-or-nothing, the same contract the Stats section had: with the flag off,
+// no `teach` field, or anything other than the five beats in order, nothing is
+// emitted — so no heading and no divider is ever left behind.
+function teachHTML(g) {
+  if (!TEACH_ENABLED) return '';
+  const t = g.teach;
+  if (!t || !Array.isArray(t.beats) || t.beats.length !== 5) return '';
+  if (t.beats.some((b, i) => !b || b.key !== TEACH_BEAT_KEYS[i])) return '';
+  const strip = t.beats[2];
+  if (strip.scene === 'strip' && (!Array.isArray(strip.steps) || strip.steps.length !== 3)) return '';
+  const draft = t.reviewed !== true;
+  return `
+    <section class="teach-section">
+      <p class="why-heading">${SCHOOL_ICON} Teach me in 60 seconds</p>
+      ${draft ? `<p class="teach-draft">${PENCIL_ICON} Draft — not yet checked against the rulebook</p>` : ''}
+      <ol class="teach-beats">
+        ${t.beats.map(beatHTML).join('')}
+      </ol>
+      <p class="teach-foot">${t.wordCount} words · five pictures</p>
+    </section>`;
+}
+
 function bodyHTML(g) {
   return `
     ${mediaHTML(g)}
@@ -81,7 +148,7 @@ function bodyHTML(g) {
     <ul class="why-list">
       ${g.why.map((w) => `<li>${w}</li>`).join('')}
     </ul>
-    <span class="tag">${g.tag}</span>`;
+    <span class="tag">${g.tag}</span>${teachHTML(g)}`;
 }
 
 // The back-of-box flip: tap, or swipe horizontally. Re-wired on every open

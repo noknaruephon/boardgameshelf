@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teach scenes — contact sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<!-- Production tokens and the pg-* palette come from the real stylesheets, so
+     this sheet shows exactly what the modal shows. Serve the repo root over
+     http (the shelf already needs that for games.json) and open
+     /docs/mockups/teach-scenes.html — module imports don't work from file://. -->
+<link rel="stylesheet" href="../../css/base.css">
+<link rel="stylesheet" href="../../css/game-modal.css">
+<style>
+body{padding:24px;font-family:'Inter',sans-serif;color:var(--bgs-ivory);background:var(--bgs-bg);}
+h1{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--bgs-gold-dim);margin:0 0 6px;}
+p.note{font-size:13px;color:var(--bgs-ivory-70);margin:0 0 18px;max-width:70ch;line-height:1.5;}
+.bar{position:sticky;top:0;z-index:2;display:flex;gap:8px;align-items:center;padding:10px 0 14px;background:var(--bgs-bg);}
+.bar button{font:inherit;font-size:12px;color:var(--bgs-ivory-70);background:none;border:1px solid rgba(var(--bgs-ivory-rgb),0.22);border-radius:999px;padding:5px 11px;cursor:pointer;}
+.bar button.on{background:var(--bgs-gold);border-color:var(--bgs-gold);color:var(--bgs-bg);font-weight:600;}
+.bar .count{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-ivory-45);}
+/* The plate is the modal's background, so scenes are judged on the surface they ship on. */
+.sheet{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),0.3);border-radius:16px;padding:22px;}
+.group{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--bgs-gold-dim);margin:18px 0 10px;}
+.group:first-child{margin-top:0;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--cell,84px),1fr));gap:16px 12px;}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
+.cell .teach-scene{width:var(--cell,84px);height:var(--cell,84px);}
+.cell .name{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--bgs-ivory-70);text-align:center;word-break:break-all;}
+.cell .desc{font-size:10.5px;line-height:1.35;color:var(--bgs-ivory-45);text-align:center;max-width:var(--cell,84px);}
+.cell .uses{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--bgs-gold-dim);}
+</style>
+</head>
+<body>
+<h1>Teach me in 60 seconds — scene contact sheet</h1>
+<p class="note">Every scene in <code>js/teach-scenes.js</code>, rendered on the modal plate by the same code the modal uses. Toggle the size: 84px is the size of a beat scene, 180px is roughly a strip frame on a large phone. Gold is the thing the player does; ivory is the world. Numbers are how many games use each scene.</p>
+<div class="bar">
+  <button data-size="84" class="on">84px</button>
+  <button data-size="180">180px</button>
+  <span class="count" id="count"></span>
+</div>
+<div class="sheet" id="sheet"></div>
+
+<script type="module">
+import { renderScene, SCENE_NAMES } from '../../js/teach-scenes.js';
+
+// Groups and intent lines from docs/teach/teach-scenes.py; usage counts from
+// docs/teach/teach-review.md.
+const GROUPS = {
+  'Hook': {
+    'hexes-tokens': ['three touching hex tiles, animal tokens on two', 4],
+    'hexes-dice': ['hex tiles with a die beside them', 2],
+    'cards-hand': ['a fan of five cards', 19],
+    'cards-tableau': ['cards laid in a row in front of a player marker', 5],
+    'deck-cards': ['a face-down deck with two cards drawn beside it', 2],
+    'dice-cup': ['a cup with three dice spilling out', 3],
+    'map-armies': ['a map of four regions with meeples in three', 8],
+    'map-board': ['a board with routes/regions and a few pieces', 4],
+    'workers-board': ['a board with action spots, meeples on two', 2],
+    'hidden-role': ['a face-down card with a question mark', 27],
+    'team-vs-team': ['two clusters of meeples facing each other', 2],
+    'coop-threat': ['a cluster of meeples with a shield facing a skull', 6],
+    'drawing-pad': ['a pencil over a sketch pad', 4],
+    'word-bubble': ['a speech bubble with three lines', 8],
+    'route-network': ['dots connected by lines, one line highlighted', 4],
+    'coins-stack': ['a stack of coins with a banknote', 5],
+    'stock-chart': ['a rising line chart with a coin on it', 2],
+    'grid-pieces': ['a grid with a few abstract pieces', 6],
+    'duel': ['two figures facing each other over a card', 5],
+    'timer-sand': ['an hourglass with cards', 1],
+    'flick': ['a finger flicking a disc', 1],
+    'city-blocks': ['three buildings of different heights', 4],
+    'farm-fields': ['a field grid with a barn and a sheep', 2],
+    'engine-gears': ['two meshing gears with an arrow looping', 3],
+    'auction-gavel': ['a gavel over a card with rising coin stacks', 5],
+    'handshake': ['two hands shaking over cards', 3],
+    'push-luck': ['a die showing a skull and a die showing a gem', 7],
+    'race-track': ['a track with three pieces at different distances', 3],
+    'polyomino': ['tetris-like pieces fitting into a grid', 4],
+    'question-cards': ['a card with a question mark, a hand raised', 6],
+    'magnifier': ['a magnifying glass over cards', 6],
+    'spaceship': ['a rocket over a planet', 2],
+    'story-picture': ['a picture card with a speech bubble', 4],
+    'trains': ['a train on a track between two cities', 4],
+    'ship-sea': ['a boat on waves with cargo', 1],
+    'monster-fight': ['a hero figure facing a monster', 2],
+    'campaign-book': ['an open book with a map', 3],
+    'pencil-sheet': ['a pencil over a scoring sheet grid', 1],
+    'stack-tower': ['pieces stacked in a wobbly tower', 2],
+    'fish-hook': ['a fishing line with a fish', 1],
+    'phone': ['a phone with an app grid', 2],
+    'vote-hands': ['raised hands with a ballot', 2],
+  },
+  'How you win': {
+    'trophy-patterns': ['Cascadia: trophy with animal patterns and a terrain patch', 0],
+    'trophy-points': ['trophy with point chips beneath', 66],
+    'trophy-first': ['trophy with a finish flag: first to reach wins', 22],
+    'trophy-team': ['trophy shared by a group of meeples', 34],
+    'trophy-standing': ['trophy with one figure standing, others crossed out', 23],
+    'trophy-coins': ['trophy with a coin stack: richest wins', 23],
+    'trophy-survive': ['trophy with a shield and a check: beat the game together', 10],
+    'trophy-guess': ['trophy with a check on a card: guess right', 7],
+    'trophy-area': ['trophy over a map with most regions shaded', 6],
+    'trophy-rounds': ['trophy with tally marks: most round wins', 1],
+    'trophy-lowest': ['trophy with a small number: fewest points wins', 4],
+  },
+  'Your turn (strip frames)': {
+    'draw-card': ['hand drawing a card from a deck', 43],
+    'play-card': ['hand placing a card face-up on the table', 91],
+    'pick-market': ['row of four cards, one highlighted, hand pointing', 16],
+    'place-worker': ['meeple being placed on a board spot', 13],
+    'roll-dice': ['two dice mid-roll', 16],
+    'place-tile': ['tile snapping onto a map', 12],
+    'place-token': ['token dropping onto a tile', 6],
+    'pick-pair': ['column of tile+token pairs, one highlighted', 1],
+    'bid-coins': ['hand pushing coins forward', 23],
+    'move-piece': ['piece moving along an arrow', 36],
+    'trade-cards': ['two hands swapping cards', 7],
+    'collect-goods': ['resources flowing into a hand', 54],
+    'build': ['a building being placed with a plus', 19],
+    'attack': ['two pieces with a clash burst', 19],
+    'flip-card': ['card mid-flip', 9],
+    'discuss': ['two speech bubbles', 27],
+    'speak-clue': ['one speech bubble with a single word', 12],
+    'guess': ['hand pointing at one of three cards', 26],
+    'draw-sketch': ['pencil drawing on a card', 5],
+    'write': ['pencil writing on a sheet', 10],
+    'vote': ['hands raised, one card chosen', 24],
+    'reveal': ['hand turning a hidden card face-up', 59],
+    'flick-piece': ['finger flicking a disc', 1],
+    'pass-turn': ['arrow curving to the next seat', 14],
+    'pick-die': ['hand taking one die from a pool', 2],
+    'score-round': ['tally marks with a check', 30],
+    'take-or-pay': ['card with a coin and a fork arrow', 5],
+    'explore': ['a figure with a compass on a map', 1],
+    'answer': ['hand writing a number on a slate', 1],
+    'listen': ['an ear with sound lines', 2],
+    'act': ['a figure mid-gesture with a spotlight', 7],
+    'count-sync': ['three hands each holding a card, no speech bubble', 2],
+  },
+  'Watch out': {
+    'lock': ['tile with token and a lock: permanent', 1],
+    'lock-bag': ['Cascadia: locked token; no fit, back in the bag', 0],
+    'alert': ['warning triangle beside a card', 130],
+    'no-talk': ['speech bubble crossed out', 13],
+    'hidden': ['an eye crossed out over a card', 29],
+    'bust': ['die showing a skull, coins vanishing', 12],
+    'timer': ['hourglass nearly empty', 4],
+    'must': ['an exclamation over an action arrow', 2],
+    'order': ['three numbered dots in a strict sequence', 2],
+    'count': ['cards with a number badge', 3],
+  },
+  'Turn one': {
+    'hand-pair': ['hand pointing at a highlighted pair with a check', 1],
+    'hand-card': ['hand pointing at a highlighted card with a check', 21],
+    'hand-worker': ['hand placing a meeple on the obvious spot', 8],
+    'hand-cheap': ['hand pointing at the cheapest item in a row', 32],
+    'hand-center': ['hand pointing at the middle of a map', 33],
+    'hand-talk': ['hand beside a speech bubble: just say something', 44],
+    'hand-watch': ['an eye watching the other players', 27],
+    'hand-safe': ['hand pointing at a shield-marked option', 30],
+  },
+};
+
+const sheet = document.getElementById('sheet');
+const listed = new Set();
+let html = '';
+for (const [group, scenes] of Object.entries(GROUPS)) {
+  html += `<p class="group">${group}</p><div class="grid">`;
+  for (const [name, [desc, uses]] of Object.entries(scenes)) {
+    listed.add(name);
+    html += `<div class="cell"><div class="teach-scene">${renderScene(name)}</div><span class="name">${name}</span><span class="uses">×${uses}</span><span class="desc">${desc}</span></div>`;
+  }
+  html += `</div>`;
+}
+// Anything the library exports that this sheet doesn't know about yet.
+const extra = SCENE_NAMES.filter((n) => !listed.has(n));
+if (extra.length) {
+  html += `<p class="group">Unlisted</p><div class="grid">` +
+    extra.map((name) => `<div class="cell"><div class="teach-scene">${renderScene(name)}</div><span class="name">${name}</span></div>`).join('') + `</div>`;
+}
+sheet.innerHTML = html;
+document.getElementById('count').textContent = `${SCENE_NAMES.length} scenes`;
+
+document.querySelectorAll('.bar [data-size]').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('.bar [data-size]').forEach((x) => x.classList.toggle('on', x === b));
+  document.documentElement.style.setProperty('--cell', b.dataset.size + 'px');
+}));
+</script>
+</body>
+</html>
