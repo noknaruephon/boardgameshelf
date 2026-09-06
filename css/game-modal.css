@@ -337,7 +337,7 @@ body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
 }
 
 /* ---- "Teach me in 60 seconds" ---- */
-/* Rendered only when the game carries a `teach` field (and ?teach=1), in the
+/* Rendered only when the game carries a `teach` field, in the
    same all-or-nothing way Stats was; when absent, no section, no divider.
    Always the last section, so the modal reads cover → who/how long → why →
    how to play. Nothing in this block animates or transitions. */
