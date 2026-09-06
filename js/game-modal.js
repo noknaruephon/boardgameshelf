@@ -24,9 +24,13 @@ const ALERT_ICON  = ic('<path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a
 const PENCIL_ICON = ic('<path d="M4 20h4L18.5 9.5a2.828 2.828 0 1 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/>', 13);
 
 // ---- "Teach me in 60 seconds" feature flag ----
-// Read once at module load, the same way the shelf reads ?gamenight. While it
-// is off, teachHTML() returns '' and the modal is exactly what it was before.
-const TEACH_ENABLED = new URLSearchParams(location.search).get('teach') === '1';
+// Live: every visitor gets the section, so the flag is now a kill switch
+// rather than a curtain, the same shape as the shelf's Game Night flag. Set it
+// back to false to pull the section without reverting anything; ?teach=1
+// still reveals it while it is off. Read once at module load.
+const TEACH_ENABLED = true;
+const teachVisible =
+  TEACH_ENABLED || new URLSearchParams(location.search).get('teach') === '1';
 
 function coverHTML(g) {
   if (g.backImage) {
@@ -116,7 +120,7 @@ function beatHTML(b) {
 // no `teach` field, or anything other than the five beats in order, nothing is
 // emitted — so no heading and no divider is ever left behind.
 function teachHTML(g) {
-  if (!TEACH_ENABLED) return '';
+  if (!teachVisible) return '';
   const t = g.teach;
   if (!t || !Array.isArray(t.beats) || t.beats.length !== 5) return '';
   if (t.beats.some((b, i) => !b || b.key !== TEACH_BEAT_KEYS[i])) return '';
