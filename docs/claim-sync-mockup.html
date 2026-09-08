@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — claim & sync options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bgs-bg:#160F0A;--bgs-bg-rgb:22,15,10;--bgs-bg-radial:#241708;
+  --bgs-plate:#241A10;--bgs-plate-rgb:36,26,16;
+  --bgs-ivory:#F4EBDA;--bgs-ivory-rgb:244,235,218;
+  --bgs-ivory-70:rgba(244,235,218,0.72);--bgs-ivory-45:rgba(244,235,218,0.45);
+  --bgs-gold:#E3B04B;--bgs-gold-rgb:227,176,75;--bgs-gold-dim:rgba(227,176,75,0.62);
+  --bgs-vote-play:#8FA75A;--bgs-vote-pass:#C2604A;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:radial-gradient(ellipse at top,var(--bgs-bg-radial) 0%,var(--bgs-bg) 55%),var(--bgs-bg);
+  color:var(--bgs-ivory);font-family:'Inter',sans-serif;min-height:100svh;-webkit-font-smoothing:antialiased;
+}
+.bar{
+  position:sticky;top:0;z-index:50;display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  padding:10px 14px;background:rgba(var(--bgs-bg-rgb),0.92);border-bottom:1px solid rgba(var(--bgs-gold-rgb),0.18);
+  font-family:'IBM Plex Mono',monospace;font-size:12px;backdrop-filter:blur(8px);
+}
+.bar .lbl{color:var(--bgs-gold-dim);margin-right:2px}
+.bar button{font:inherit;color:var(--bgs-ivory-70);background:transparent;border:1px solid rgba(var(--bgs-gold-rgb),0.3);border-radius:999px;padding:5px 11px;cursor:pointer}
+.bar button[aria-pressed="true"]{color:var(--bgs-bg);background:var(--bgs-gold);border-color:var(--bgs-gold)}
+.bar button:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.bar .sep{width:100%;height:0}
+
+.opt{display:none}.opt.on{display:block}
+.wrap{max-width:560px;margin:0 auto;padding:36px 20px 80px}
+.mark{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;color:var(--bgs-gold);margin:0 0 10px}
+h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(34px,8vw,48px);line-height:1.05;letter-spacing:-0.015em;margin:0 0 12px}
+.lede{font-size:16px;line-height:1.5;color:var(--bgs-ivory-70);margin:0 0 26px;max-width:36ch}
+.plate{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.22);border-radius:16px;padding:22px 20px;box-shadow:0 12px 30px -18px rgba(0,0,0,.8)}
+label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 6px}
+label .opt-tag{color:var(--bgs-ivory-45)}
+.field{
+  width:100%;min-height:52px;padding:0 16px;border-radius:12px;font:400 16px 'Inter',sans-serif;color:var(--bgs-ivory);
+  background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
+}
+.field::placeholder{color:var(--bgs-ivory-45)}
+.field:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:0 18px;border-radius:12px;
+  font:600 16px/1 'Inter',sans-serif;cursor:pointer;border:1.5px solid rgba(var(--bgs-gold-rgb),.55);background:rgba(var(--bgs-gold-rgb),.1);color:var(--bgs-ivory);
+}
+.btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.btn[disabled]{opacity:.5;cursor:default}
+.help{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:10px 0 0}
+.help a{color:var(--bgs-gold-dim)}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* state visibility */
+[data-state] .s{display:none}
+[data-state="empty"] .s-empty,[data-state="checking"] .s-checking,[data-state="found"] .s-found,[data-state="missing"] .s-missing,[data-state="syncing"] .s-syncing,[data-state="done"] .s-done{display:block}
+[data-state="found"] .field.bgg{border-color:var(--bgs-vote-play)}
+[data-state="missing"] .field.bgg{border-color:var(--bgs-vote-pass)}
+
+/* lookup result card */
+.found{display:flex;gap:14px;align-items:center;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:rgba(var(--bgs-ivory-rgb),.05);border:1px solid rgba(var(--bgs-ivory-rgb),.1)}
+.found .stack{position:relative;width:54px;height:54px;flex:none}
+.found .stack img{position:absolute;width:38px;height:38px;object-fit:cover;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.5)}
+.found .stack img:nth-child(1){left:0;top:16px;transform:rotate(-8deg)}
+.found .stack img:nth-child(2){left:9px;top:8px;transform:rotate(3deg)}
+.found .stack img:nth-child(3){left:16px;top:0;transform:rotate(11deg)}
+.found b{display:block;font-weight:600;font-size:15px}
+.found span{font-size:13px;color:var(--bgs-ivory-70)}
+.ok{color:var(--bgs-vote-play)}.err{color:var(--bgs-vote-pass)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(var(--bgs-gold-rgb),.3);border-top-color:var(--bgs-gold);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.rm .spin{animation:none}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+
+/* sync progress: covers filling */
+.fill{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:14px 0 0}
+.fill div{aspect-ratio:1/1;border-radius:4px;background:rgba(var(--bgs-ivory-rgb),.06);overflow:hidden}
+.fill img{display:block;width:100%;height:100%;object-fit:cover}
+.prog{height:6px;border-radius:3px;background:rgba(var(--bgs-ivory-rgb),.08);margin:14px 0 8px;overflow:hidden}
+.prog i{display:block;height:100%;width:62%;background:var(--bgs-gold);border-radius:3px}
+.progtxt{display:flex;justify-content:space-between;font-size:12px;color:var(--bgs-ivory-70)}
+
+/* ---- A: verified claim ---- */
+#a .url{font-size:13px;color:var(--bgs-ivory-45);margin:8px 0 0}
+#a .url b{color:var(--bgs-gold);font-weight:500}
+
+/* ---- B: stepper ---- */
+#b .steps{display:flex;gap:0;margin:0 0 22px;font-size:13px}
+#b .step{flex:1;display:flex;flex-direction:column;gap:8px;color:var(--bgs-ivory-45)}
+#b .step i{height:3px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.12)}
+#b .step.done{color:var(--bgs-ivory-70)}#b .step.done i{background:rgba(var(--bgs-gold-rgb),.45)}
+#b .step.now{color:var(--bgs-ivory)}#b .step.now i{background:var(--bgs-gold)}
+#b .step span{padding-right:10px}
+#b .step + .step i{margin-left:4px}
+
+/* ---- C: address as input ---- */
+#c .addr{
+  display:flex;align-items:center;min-height:60px;border-radius:14px;padding:0 6px 0 16px;
+  background:rgba(var(--bgs-bg-rgb),.7);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
+}
+#c .addr:focus-within{box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+#c .addr .pre{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--bgs-ivory-45);white-space:nowrap}
+#c .addr input{flex:1;min-width:0;background:transparent;border:0;color:var(--bgs-gold);font:600 18px 'IBM Plex Mono',monospace;padding:0 4px}
+#c .addr input:focus{outline:none}
+#c .addr input::placeholder{color:rgba(var(--bgs-gold-rgb),.35);font-weight:500}
+#c .addr .st{width:40px;height:40px;display:grid;place-items:center;flex:none;font-size:18px}
+#c[data-state="found"] .addr{border-color:var(--bgs-vote-play)}
+#c[data-state="missing"] .addr{border-color:var(--bgs-vote-pass)}
+#c .big{margin-top:14px;min-height:56px;font-size:17px}
+#c .lede{margin-bottom:18px}
+</style>
+</head>
+<body>
+
+<div class="bar" role="toolbar" aria-label="Mockup options">
+  <span class="lbl">Option</span>
+  <button data-opt="a" aria-pressed="true">A · Verified claim</button>
+  <button data-opt="b" aria-pressed="false">B · Three steps</button>
+  <button data-opt="c" aria-pressed="false">C · Your address</button>
+  <span class="sep"></span>
+  <span class="lbl">State</span>
+  <button data-state="empty" aria-pressed="true">Empty</button>
+  <button data-state="checking" aria-pressed="false">Checking</button>
+  <button data-state="found" aria-pressed="false">Found</button>
+  <button data-state="missing" aria-pressed="false">Not found</button>
+  <button data-state="syncing" aria-pressed="false">Syncing</button>
+  <button data-state="done" aria-pressed="false">Done</button>
+  <button id="rm" aria-pressed="false" style="margin-left:auto">Reduced motion</button>
+</div>
+
+<!-- ============ A: VERIFIED CLAIM ============ -->
+<section class="opt on" id="a" data-state="empty">
+  <div class="wrap">
+    <p class="mark">BoardgameShelf</p>
+    <h1>Which shelf is yours?</h1>
+    <p class="lede">Type your BoardGameGeek username and we'll find your collection before you claim it.</p>
+    <div class="plate">
+      <label for="a-bgg">BoardGameGeek username</label>
+      <input class="field bgg" id="a-bgg" placeholder="noknaruephon" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <p class="url s s-empty">Your shelf will live at <b class="mono">/u/…</b></p>
+      <p class="help s s-checking"><span class="spin" aria-hidden="true"></span>Looking up your collection on BGG…</p>
+      <div class="found s s-found">
+        <div class="stack" aria-hidden="true"><img src="" data-cover="0" alt=""><img src="" data-cover="1" alt=""><img src="" data-cover="2" alt=""></div>
+        <div><b>noknaruephon</b><span class="ok">Found · 196 games owned</span><br><span class="mono">boardgameshelf.app/u/noknaruephon</span></div>
+      </div>
+      <p class="help err s s-missing">No BGG account called <span class="mono">nokna</span>. Check the spelling on your <a href="https://boardgamegeek.com/profile" target="_blank" rel="noopener">BGG profile</a>.</p>
+
+      <div class="s s-empty s-checking s-found s-missing" style="margin-top:18px">
+        <label for="a-name">Name on your shelf <span class="opt-tag">(optional)</span></label>
+        <input class="field" id="a-name" value="Naruephon Nateprachar">
+      </div>
+
+      <div class="s s-empty s-checking s-missing" style="margin-top:18px"><button class="btn gold" disabled>Claim and sync</button></div>
+      <div class="s s-found" style="margin-top:18px"><button class="btn gold">Claim and sync 196 games</button></div>
+
+      <div class="s s-syncing">
+        <p class="help" style="margin-top:0"><span class="spin" aria-hidden="true"></span>Building your shelf. BGG is slow the first time — about a minute.</p>
+        <div class="fill" data-fill="a"></div>
+        <div class="prog"><i></i></div>
+        <div class="progtxt"><span>122 of 196 games</span><span class="mono">/u/noknaruephon</span></div>
+      </div>
+      <div class="s s-done">
+        <p class="help ok" style="margin-top:0">Your shelf is ready. 196 games, 14 expansions tucked away.</p>
+        <div class="fill" data-fill="a2"></div>
+        <button class="btn gold" style="margin-top:18px">Open your shelf</button>
+        <button class="btn" style="margin-top:10px">Copy link</button>
+      </div>
+    </div>
+    <p class="help">You can change the username later, but your shelf address changes with it.</p>
+  </div>
+</section>
+
+<!-- ============ B: THREE STEPS ============ -->
+<section class="opt" id="b" data-state="empty">
+  <div class="wrap">
+    <p class="mark">BoardgameShelf</p>
+    <div class="steps" aria-label="Progress">
+      <div class="step done"><i></i><span>Sign in</span></div>
+      <div class="step now" data-step2><i></i><span>Your BGG name</span></div>
+      <div class="step" data-step3><i></i><span>Sync</span></div>
+    </div>
+    <h1 class="s s-empty s-checking s-found s-missing">Connect your collection</h1>
+    <h1 class="s s-syncing">Pulling in your games</h1>
+    <h1 class="s s-done">You're on the shelf</h1>
+    <p class="lede s s-empty s-checking s-found s-missing">We only need the username. Your owned games come straight from BGG, nothing to upload.</p>
+    <p class="lede s s-syncing">This runs once now and whenever you tap Sync in settings.</p>
+    <p class="lede s s-done">Send the link to your group. They can browse and vote without signing in.</p>
+
+    <div class="plate">
+      <div class="s s-empty s-checking s-found s-missing">
+        <label for="b-bgg">BoardGameGeek username</label>
+        <input class="field bgg" id="b-bgg" placeholder="noknaruephon" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <p class="help s s-empty">Same as your login on boardgamegeek.com. Not your email.</p>
+        <p class="help s s-checking"><span class="spin" aria-hidden="true"></span>Checking BGG…</p>
+        <p class="help ok s s-found">Found — 196 games owned. Shelf address: <span class="mono">/u/noknaruephon</span></p>
+        <p class="help err s s-missing">We couldn't find that account. Usernames are case-insensitive, so it's usually a typo.</p>
+        <div style="margin-top:18px" class="s s-empty s-checking s-missing"><button class="btn gold" disabled>Continue</button></div>
+        <div style="margin-top:18px" class="s s-found"><button class="btn gold">Continue to sync</button></div>
+      </div>
+
+      <div class="s s-syncing">
+        <div class="fill" data-fill="b"></div>
+        <div class="prog"><i></i></div>
+        <div class="progtxt"><span>122 of 196 games</span><span>about 30s left</span></div>
+        <p class="help">Covers and details are cached, so the next sync is quick.</p>
+      </div>
+      <div class="s s-done">
+        <div class="fill" data-fill="b2"></div>
+        <div class="progtxt" style="margin-top:12px"><span class="ok">196 games synced</span><span class="mono">/u/noknaruephon</span></div>
+        <button class="btn gold" style="margin-top:18px">Open your shelf</button>
+        <button class="btn" style="margin-top:10px">Copy link</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C: YOUR ADDRESS ============ -->
+<section class="opt" id="c" data-state="empty">
+  <div class="wrap">
+    <p class="mark">BoardgameShelf</p>
+    <h1>Pick your address.</h1>
+    <p class="lede">It's your BoardGameGeek username. That's the only thing we need to build your shelf.</p>
+
+    <div class="s s-empty s-checking s-found s-missing">
+      <div class="addr">
+        <span class="pre">boardgameshelf.app/u/</span>
+        <input id="c-bgg" placeholder="yourname" aria-label="BoardGameGeek username" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <span class="st" aria-hidden="true">
+          <span class="s s-checking"><span class="spin"></span></span>
+          <span class="s s-found ok">✓</span>
+          <span class="s s-missing err">✕</span>
+        </span>
+      </div>
+      <p class="help s s-empty">Same as your BGG login. Not your email.</p>
+      <p class="help s s-checking">Looking it up on BGG…</p>
+      <p class="help ok s s-found">That's you — 196 games owned on BGG.</p>
+      <p class="help err s s-missing">No BGG account by that name. Check your <a href="https://boardgamegeek.com/profile" target="_blank" rel="noopener">BGG profile</a> for the exact spelling.</p>
+      <button class="btn gold big s s-empty s-checking s-missing" disabled>Build my shelf</button>
+      <button class="btn gold big s s-found">Build my shelf</button>
+      <p class="help">Takes about a minute the first time. You can add a display name afterwards in settings.</p>
+    </div>
+
+    <div class="s s-syncing">
+      <div class="plate">
+        <p class="help" style="margin:0 0 4px"><span class="spin" aria-hidden="true"></span>Stocking <span class="mono">/u/noknaruephon</span></p>
+        <div class="fill" data-fill="c"></div>
+        <div class="prog"><i></i></div>
+        <div class="progtxt"><span>122 of 196</span><span>about 30s</span></div>
+      </div>
+    </div>
+    <div class="s s-done">
+      <div class="plate">
+        <p class="help ok" style="margin:0">Your shelf is up. 196 games.</p>
+        <div class="fill" data-fill="c2"></div>
+        <button class="btn gold" style="margin-top:18px">Open boardgameshelf.app/u/noknaruephon</button>
+        <button class="btn" style="margin-top:10px">Copy link</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const covers=["https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg","https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg","https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg","https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg","https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg","https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__itemrep@2x/img/2FLfeGWkuKb1KEkjl1fO9MFsdHQ=/fit-in/492x600/filters:strip_icc()/pic3490053.jpg","https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg","https://cf.geekdo-images.com/kjCm4ZvPjIZxS-mYgSPy1g__itemrep@2x/img/-avAay86cuC29LAZVlTE84r5SSA=/fit-in/492x600/filters:strip_icc()/pic7013651.jpg","https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg","https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg","https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg","https://cf.geekdo-images.com/Naw8y8J_s-8cvq1GoTON6w__original/img/8wVEVzdf5BoPvSiscnGvCAPNe2Q=/0x0/filters:format(jpeg)/pic7416519.jpg","https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg","https://cf.geekdo-images.com/aSwGrv9uvfRyBymlHJ-B8w__original/img/cHP3bhVFkJepWSfjWKBR-talnDc=/0x0/filters:format(jpeg)/pic6731109.jpg","https://cf.geekdo-images.com/4Kr0RereFqdS29qe-mNYkQ__itemrep@2x/img/tLVpEitsYKWuXA5zydJh8SQrwI4=/fit-in/492x600/filters:strip_icc()/pic6192204.png","https://cf.geekdo-images.com/oXUOPeRynJB1sLEYQiKzTg__itemrep@2x/img/VAmkdlgj4gc9CcxqPMsztlyc4Rc=/fit-in/492x600/filters:strip_icc()/pic1927856.jpg"];
+document.querySelectorAll('[data-cover]').forEach(im=>im.src=covers[+im.dataset.cover]);
+document.querySelectorAll('[data-fill]').forEach(f=>{
+  const full=f.dataset.fill.endsWith('2');
+  for(let i=0;i<12;i++){const d=document.createElement('div');
+    if(full||i<8){const im=document.createElement('img');im.src=covers[i];im.alt='';im.loading='lazy';d.appendChild(im);}
+    f.appendChild(d);}
+});
+const opts=document.querySelectorAll('.opt');
+document.querySelectorAll('.bar [data-opt]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.bar [data-opt]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  opts.forEach(o=>o.classList.toggle('on',o.id===b.dataset.opt));window.scrollTo({top:0});
+}));
+document.querySelectorAll('.bar [data-state]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.bar [data-state]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  opts.forEach(o=>o.dataset.state=b.dataset.state);
+  const s=b.dataset.state,s2=document.querySelector('[data-step2]'),s3=document.querySelector('[data-step3]');
+  s2.className='step '+((s==='syncing'||s==='done')?'done':'now');
+  s3.className='step '+(s==='syncing'?'now':s==='done'?'done':'');
+}));
+const rm=document.getElementById('rm');
+rm.addEventListener('click',()=>{const on=rm.getAttribute('aria-pressed')!=='true';rm.setAttribute('aria-pressed',on);document.body.classList.toggle('rm',on);});
+</script>
+</body>
+</html>
