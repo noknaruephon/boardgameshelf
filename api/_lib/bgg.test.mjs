@@ -166,3 +166,24 @@ test('parseThings: an empty response yields no rows', () => {
 test('cleanDescription strips tags and collapses blank lines', () => {
   assert.equal(cleanDescription('A&#10;&#10;&#10;<b>B</b>&nbsp;C'), 'A\n\nB C');
 });
+
+// ---- user + brief collection (the /api/bgg/lookup endpoint) ----
+import { parseUser, countCollectionItems } from './bgg.js';
+
+test('parseUser: canonical name and id when the account exists', () => {
+  const xml = `<?xml version="1.0" encoding="utf-8"?><user id="123456" name="NokNaruephon" termsofuse="x"><firstname value=""/><lastname value=""/><avatarlink value="N/A"/><yearregistered value="2019"/></user>`;
+  assert.deepEqual(parseUser(xml), { id: '123456', name: 'NokNaruephon' });
+});
+
+test('parseUser: unknown account has an empty id', () => {
+  const xml = `<?xml version="1.0" encoding="utf-8"?><user id="" name="nobody-here" termsofuse="x"><firstname value=""/></user>`;
+  assert.equal(parseUser(xml), null);
+  assert.equal(parseUser('<errors><error><message>Not found</message></error></errors>'), null);
+});
+
+test('countCollectionItems: totalitems wins, item count is the fallback', () => {
+  assert.equal(countCollectionItems('<items totalitems="196" termsofuse="x"></items>'), 196);
+  assert.equal(countCollectionItems('<items termsofuse="x"><item objectid="1"/><item objectid="2"/></items>'), 2);
+  assert.equal(countCollectionItems('<items totalitems="0"></items>'), 0);
+  assert.equal(countCollectionItems('<errors><error><message>Invalid username specified</message></error></errors>'), null);
+});

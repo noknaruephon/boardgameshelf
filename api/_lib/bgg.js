@@ -166,6 +166,31 @@ export function parseCollection(xml) {
   return { error: null, items: items.filter((i) => !seen.has(i.bgg_id) && seen.add(i.bgg_id)) };
 }
 
+// ---- user ----
+
+/**
+ * The user endpoint answers 200 for any name; an unknown one comes back with
+ * an empty id attribute. The name attribute carries BGG's canonical casing.
+ * @returns {{ id: string, name: string } | null}
+ */
+export function parseUser(xml) {
+  const doc = parser.parse(xml);
+  const user = doc.user;
+  if (!user) return null;
+  const id = attr(user, 'id');
+  if (!id) return null;
+  return { id, name: attr(user, 'name') || '' };
+}
+
+/** How many items a collection response lists — for brief=1 lookups. */
+export function countCollectionItems(xml) {
+  const doc = parser.parse(xml);
+  if (doc.errors || !doc.items) return null;
+  const total = int(attr(doc.items, 'totalitems'));
+  if (total !== null) return total;
+  return (doc.items.item || []).length;
+}
+
 // ---- thing ----
 
 const POLL_LABEL = { Best: 'best', Recommended: 'recommended', 'Not Recommended': 'not' };
