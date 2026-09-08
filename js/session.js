@@ -10,10 +10,12 @@ import { supabase } from './supabase.js';
  * @param {string}   opts.hostName   the host's display name; they vote too
  * @param {string}   opts.mode       'manual' (host picked) or 'random' (surprise)
  * @param {boolean}  opts.revealDeck whether the games show in the waiting room
- * @param {string[]} opts.gameIds    bggId values from games.json, as strings
+ * @param {string[]} opts.gameIds    bggId values from the shelf, as strings
+ * @param {string}   [opts.ownerId]  profile id of the shelf the deck came from;
+ *   scopes the game night to that shelf so its pages load the right games
  * @returns {Promise<string>} the session code
  */
-export async function createGameNight({ hostName, mode, revealDeck, gameIds }) {
+export async function createGameNight({ hostName, mode, revealDeck, gameIds, ownerId }) {
   const { data, error } = await supabase.rpc('create_game_night', {
     p_host_name: hostName,
     p_mode: mode,
@@ -21,6 +23,14 @@ export async function createGameNight({ hostName, mode, revealDeck, gameIds }) {
     p_game_ids: gameIds,
   });
   if (error) throw error;
+  // create_game_night predates profiles and is not redefined; the owner is
+  // stamped right after, and only while the session has none.
+  if (ownerId) {
+    const { error: claimError } = await supabase.rpc('claim_game_night_owner', {
+      p_code: data, p_owner_id: ownerId,
+    });
+    if (claimError) throw claimError;
+  }
   return data;
 }
 
@@ -52,7 +62,7 @@ export async function cancelGameNight(code) {
 export async function fetchSession(code) {
   const { data, error } = await supabase
     .from('sessions')
-    .select('code, host_name, mode, reveal_deck, game_ids, status, round')
+    .select('code, host_name, mode, reveal_deck, game_ids, status, round, owner_id')
     .eq('code', code)
     .maybeSingle();
   if (error) throw error;

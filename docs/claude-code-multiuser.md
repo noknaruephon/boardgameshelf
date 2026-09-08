@@ -189,9 +189,10 @@ all read from those fields. So `games` gains:
 and game-night pages already consume (`bggId`, `players`, `time`, `weight`
 bucket, `weightScore`, `image`, …). For a game with no curated extras: the
 blurb is the first paragraph of BGG's description, `tag` is the first two
-mechanics joined with ` · ` (which is what `js/vibes.js` keys on), Highlights
-and the tag chip are omitted rather than rendered empty. That last point is
-the only change to `js/game-modal.js`.
+mechanics and the first category joined with ` · ` (which is what
+`js/vibes.js` keys on), Highlights and the tag chip are omitted rather than
+rendered empty. That, and the modal preferring `image_url` over the grid's
+`thumbnail_url` for its cover, are the only changes to `js/game-modal.js`.
 
 ### 11.3 Covers
 
@@ -272,5 +273,6 @@ collection is one request.
 The implementation was written without outbound access to Supabase, BGG or
 esm.sh, so the migration has not been applied to the live project and the
 sync has not been run against BGG. The XML parsers are unit-tested against
-recorded-shape fixtures in `api/_lib/bgg.test.mjs` (`node --test api/_lib`).
+recorded-shape fixtures in `api/_lib/bgg.test.mjs` (`npm test`), and the
+games.json → row → shelf round trip was checked for all 196 games.
 Run the migration and a sync on the preview deployment before merging.

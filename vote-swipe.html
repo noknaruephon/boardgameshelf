@@ -375,6 +375,7 @@ import { joinSessionChannel } from '/js/presence.js';
 import { deckFromSession, openGameModal, shuffleHTML } from '/js/waiting-room.js';
 import { attachSwipe, markCommitted, exitCard } from '/js/swipe.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
+import { fetchGamesForSession } from '/js/shelf-data.js';
 
 const screen = document.getElementById('screen');
 const confirmDialog = document.getElementById('confirm');
@@ -473,9 +474,7 @@ async function init(code) {
 
   let games;
   try {
-    const res = await fetch('/games.json');
-    if (!res.ok) throw new Error('failed to load games');
-    games = await res.json();
+    games = await fetchGamesForSession(session);
   } catch (e) {
     renderEnded('Something went wrong loading this game night.');
     return;

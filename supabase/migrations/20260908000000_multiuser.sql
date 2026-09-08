@@ -218,6 +218,24 @@ begin
 end;
 $$;
 
+-- Whether /u/<slug> exists and whether it is public. RLS hides a private
+-- profile from anonymous readers entirely, so without this shelf.html could
+-- not tell "This shelf is private" from a slug nobody has claimed. It leaks
+-- only that a slug is taken — which the sign-up form reveals anyway.
+create or replace function shelf_status(p_slug text)
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select case when is_public then 'public' else 'private' end
+  from profiles
+  where slug = p_slug;
+$$;
+
+grant execute on function shelf_status(text) to anon, authenticated;
+
 -- Slug normalisation lives in one place so the client, the migration script
 -- and any future server code agree on it. Mirrors slugify() in js/auth.js.
 create or replace function slugify_bgg_username(p_username text)

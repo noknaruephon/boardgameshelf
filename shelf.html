@@ -476,6 +476,10 @@
   .vibe-hint{margin:12px 0 0;min-height:1.4em;font-family:'Inter',sans-serif;font-size:13px;color:var(--bgs-ivory-70);}
   .vibe-hint b{color:var(--bgs-ivory);font-weight:500;}
   .empty-state button{background:none;border:0;color:var(--bgs-gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font:inherit;margin-top:10px;display:block;margin-inline:auto;}
+  .empty-state a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;margin-top:10px;display:block;}
+  .empty-state code{font-family:'IBM Plex Mono',monospace;font-size:0.95em;}
+  .owner-link{color:var(--bgs-gold);text-decoration:none;}
+  .owner-link:hover{text-decoration:underline;text-underline-offset:3px;}
   @media (max-width:400px){ .mode-tab em{display:none;} }
 
   @media (prefers-reduced-motion:reduce){
@@ -1203,7 +1207,7 @@
 <body>
 <div class="wrap">
   <header>
-    <p class="eyebrow" style="color:var(--bgs-ivory-70)">noknaruephon</p>
+    <p class="eyebrow" style="color:var(--bgs-ivory-70)" id="shelfOwner">&nbsp;</p>
     <h1>BoardgameShelf</h1>
     <p class="sub">Browse the game, judge by its cover.</p>
   </header>
@@ -1313,6 +1317,12 @@
       </div>
     </div>
     </div>
+    <div class="sheet-group">
+      <button type="button" class="toggle-row" id="expansionsToggle" role="switch" aria-checked="false">
+        <span class="toggle-switch" aria-hidden="true"></span>
+        <span class="toggle-label">Show expansions</span>
+      </button>
+    </div>
   </div>
   <div class="sheet-footer">
     <button class="apply-btn" id="applyBtn" type="button">Show 196 games</button>
@@ -1328,6 +1338,8 @@ import {
 import { createGameModal } from './js/game-modal.js';
 import { registerOverlay, syncScrollLock } from './js/scroll-lock.js';
 import { VIBES, applyVibes } from './js/vibes.js';
+import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from './js/shelf-data.js';
+import { getUser } from './js/auth.js';
 
 // ---- Game Night feature flag ----
 // Live: every visitor gets the Game Night pill. All four stages — session
@@ -1340,12 +1352,78 @@ const gameNightVisible =
   GAME_NIGHT_ENABLED || new URLSearchParams(location.search).has('gamenight');
 
 let games = [];
+// The profile whose shelf this is. Set by loadGames(); game nights started
+// from here are scoped to it (owner_id).
+let profile = null;
+
+class ShelfError extends Error {
+  constructor(kind){ super(kind); this.kind = kind; } // 'not-found' | 'private'
+}
+
+// /u/<slug>: the slug is the BGG username lowercased, and is compared to
+// profiles.slug as is — no lookup by original casing.
+function slugFromPath(){
+  const m = location.pathname.match(/^\/u\/([^/]+)/);
+  return m ? decodeURIComponent(m[1]).trim().toLowerCase() : '';
+}
 
 async function loadGames(){
-  const res = await fetch('/games.json');
-  if(!res.ok) throw new Error('Failed to load games');
-  games = await res.json();
+  const slug = slugFromPath();
+  if(!slug) throw new ShelfError('not-found');
+  profile = await fetchProfileBySlug(slug);
+  if(!profile){
+    // RLS hides a private profile from everyone but its owner, so ask the
+    // one thing the database will say about it: does it exist, and is it public.
+    const status = await fetchShelfStatus(slug);
+    throw new ShelfError(status === 'private' ? 'private' : 'not-found');
+  }
+  games = await fetchShelfGames(profile.id);
   applyVibes(games);
+  renderOwner();
+}
+
+function renderOwner(){
+  const name = profile.display_name || profile.bgg_username || profile.slug;
+  document.title = `${name} · BoardgameShelf`;
+  const eyebrow = document.getElementById('shelfOwner');
+  eyebrow.textContent = name;
+  // The owner gets a way back to Settings; nobody else sees a link here.
+  getUser().then(user => {
+    if(!user || user.id !== profile.id) return;
+    const a = document.createElement('a');
+    a.href = '/settings';
+    a.className = 'owner-link';
+    a.textContent = 'Settings';
+    eyebrow.append(' · ', a);
+  }).catch(()=>{});
+  // The expansions switch only earns its place on a shelf that has some.
+  const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
+  document.getElementById('expansionsToggle').style.display = hasExpansions ? '' : 'none';
+}
+
+function showShelfState(kind){
+  const shelf = document.getElementById('shelf');
+  document.getElementById('shelf-count').textContent = '';
+  // .filter-sort-bar is display:flex, which would beat the hidden attribute.
+  document.getElementById('filterSortBar').style.display = 'none';
+  if(kind === 'not-found' || kind === 'private'){
+    const meta = document.createElement('meta');
+    meta.name = 'robots'; meta.content = 'noindex';
+    document.head.appendChild(meta);
+  }
+  if(kind === 'not-found'){
+    document.title = 'Shelf not found · BoardgameShelf';
+    document.getElementById('shelfOwner').textContent = '404';
+    shelf.innerHTML = `<p class="empty-state">There's no shelf at <code>/u/${slugFromPath() || '…'}</code>.<br>The address is a BGG username, lowercased.<a href="/">Go to the front page</a></p>`;
+    return;
+  }
+  if(kind === 'private'){
+    document.title = 'Private shelf · BoardgameShelf';
+    document.getElementById('shelfOwner').textContent = slugFromPath();
+    shelf.innerHTML = `<p class="empty-state">This shelf is private.<br>Its owner can make it public in Settings.<a href="/">Go to the front page</a></p>`;
+    return;
+  }
+  shelf.innerHTML = `<p class="empty-state">Couldn't load the collection. Try refreshing.</p>`;
 }
 const state = {
   filters: { ...DEFAULT_FILTERS },
@@ -1477,6 +1555,9 @@ function renderChips(){
   if(state.filters.bestFit){
     chips.push({ key:'bestFit', label: 'Recommended counts only' });
   }
+  if(state.filters.showExpansions){
+    chips.push({ key:'showExpansions', label: 'Expansions shown' });
+  }
   if(chips.length===0){
     row.hidden = true;
     row.innerHTML = '';
@@ -1494,6 +1575,7 @@ function renderChips(){
       const key = btn.closest('.chip').dataset.key;
       if(key==='players'){ state.filters.minPlayers = 1; state.filters.maxPlayers = 11; }
       else if(key==='bestFit'){ state.filters.bestFit = false; }
+      else if(key==='showExpansions'){ state.filters.showExpansions = false; }
       else if(key==='vibe'){ state.filters.vibe = null; }
       else state.filters[key] = 'any';
       render();
@@ -1512,6 +1594,7 @@ const numberCueRow = document.getElementById('numberCueRow');
 const playersGroupLabel = document.getElementById('playersGroupLabel');
 const applyBtn = document.getElementById('applyBtn');
 const bestFitToggle = document.getElementById('bestFitToggle');
+const expansionsToggle = document.getElementById('expansionsToggle');
 const modeTabs = document.getElementById('modeTabs');
 const vibePills = document.getElementById('vibePills');
 const vibeHint = document.getElementById('vibeHint');
@@ -1560,6 +1643,7 @@ function syncSheetUI(){
     });
   });
   bestFitToggle.setAttribute('aria-checked', String(draftFilters.bestFit));
+  expansionsToggle.setAttribute('aria-checked', String(!!draftFilters.showExpansions));
   updateLiveCount();
 }
 
@@ -1611,6 +1695,12 @@ numberCueRow.addEventListener('click', (e)=>{
 bestFitToggle.addEventListener('click', ()=>{
   draftFilters.bestFit = !draftFilters.bestFit;
   bestFitToggle.setAttribute('aria-checked', String(draftFilters.bestFit));
+  updateLiveCount();
+});
+
+expansionsToggle.addEventListener('click', ()=>{
+  draftFilters.showExpansions = !draftFilters.showExpansions;
+  expansionsToggle.setAttribute('aria-checked', String(draftFilters.showExpansions));
   updateLiveCount();
 });
 
@@ -2151,7 +2241,7 @@ async function handleGnStart(){
   startBtn.textContent = 'Starting…';
   try {
     const { createGameNight } = await gnSessionModPromise;
-    const code = await createGameNight({ hostName, mode, revealDeck, gameIds });
+    const code = await createGameNight({ hostName, mode, revealDeck, gameIds, ownerId: profile.id });
     sessionStorage.setItem(`gamenight:${code}:name`, hostName);
     location.href = `/night/${code}/host`;
   } catch (err) {
@@ -2393,9 +2483,8 @@ try {
   await loadGames();
   render();
   if(gameNightVisible) initGameNight();
-} catch {
-  document.getElementById('shelf').innerHTML = `<p class="empty-state">Couldn't load the collection. Try refreshing.</p>`;
-  document.getElementById('shelf-count').textContent = '';
+} catch (err) {
+  showShelfState(err instanceof ShelfError ? err.kind : 'error');
 }
 </script>
 </body>
