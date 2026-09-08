@@ -131,6 +131,10 @@
       <button class="btn danger" id="signOutBtnNoProfile" type="button">Sign out</button>
       <button class="btn quiet" id="deleteBtnNoProfile" type="button">Delete account</button>
     </div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn quiet" id="browseBtnNoProfile" type="button">Browse an existing shelf</button>
+    </div>
+    <div id="pickerHostNoProfile" hidden></div>
   </section>
 
   <div id="settings" hidden>
@@ -378,18 +382,22 @@ async function updateBrowseOffer({ syncFailed = false } = {}) {
   show('browseWrap', offer);
   if (!offer) show('pickerHost', false);
 }
-let pickerMounted = false;
-$('browseBtn').addEventListener('click', async () => {
-  const host = $('pickerHost');
-  if (pickerMounted) { host.hidden = false; return; }
+// One picker per host: the sync section (profile exists) and the
+// "No collection yet" card (no profile at all — skipped /welcome).
+const mounted = new Set();
+async function openPicker(hostId, hideOnFail) {
+  const host = $(hostId);
+  if (mounted.has(hostId)) { host.hidden = false; return; }
   try {
     await mountShelfPicker(host);
-    pickerMounted = true;
+    mounted.add(hostId);
   } catch (err) {
     console.error('public_shelves failed', err);
-    show('browseWrap', false);
+    hideOnFail();
   }
-});
+}
+$('browseBtn').addEventListener('click', () => openPicker('pickerHost', () => show('browseWrap', false)));
+$('browseBtnNoProfile').addEventListener('click', () => openPicker('pickerHostNoProfile', () => { $('browseBtnNoProfile').hidden = true; }));
 
 // ---- sign out ----
 async function doSignOut() {
