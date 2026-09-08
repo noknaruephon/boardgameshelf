@@ -121,25 +121,6 @@
     <div class="deal"><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deal-ring"></div></div>
   </div>
 
-  <!-- First login: claim the BGG username that becomes the shelf's address. -->
-  <section class="plate" id="claim" hidden>
-    <h2>Your BGG username</h2>
-    <p class="hint">Your shelf lives at <code>/u/&lt;your BGG username&gt;</code>. Match your <a href="https://boardgamegeek.com" rel="noopener" style="color:inherit">BoardGameGeek</a> account exactly. You can change it later in Settings, but the shelf address changes with it.</p>
-    <form class="row" id="claimForm" novalidate>
-      <div>
-        <label for="bgg">BGG username</label>
-        <input class="field" id="bgg" name="bgg" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="e.g. noknaruephon" required>
-        <p class="slug-preview" id="slugPreview" aria-live="polite"></p>
-      </div>
-      <div>
-        <label for="displayName">Name on your shelf <span style="color:var(--bgs-ivory-45)">(optional)</span></label>
-        <input class="field" id="displayName" name="displayName" type="text" autocomplete="nickname" placeholder="Shown above the grid">
-      </div>
-      <button class="btn gold" id="claimBtn" type="submit">Claim it</button>
-      <p class="msg" id="claimMsg" aria-live="polite"></p>
-    </form>
-  </section>
-
   <div id="settings" hidden>
     <section class="plate">
       <h2>Your shelf</h2>
@@ -201,7 +182,7 @@
 
 <script type="module">
 import {
-  getUser, fetchMyProfile, claimProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
+  getUser, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
 
@@ -230,52 +211,8 @@ function renderSettings() {
   $('publicToggle').setAttribute('aria-checked', String(profile.is_public));
   $('publicHint').textContent = profile.is_public ? 'Anyone with the link can see it.' : 'Only you can see it while signed in.';
   $('lastSynced').textContent = relTime(profile.last_synced_at);
-  show('claim', false);
   show('settings', true);
 }
-
-function renderClaim() {
-  $('sub').textContent = `Signed in as ${user.email || userDisplayName(user)}. One more step.`;
-  $('displayName').value = userDisplayName(user);
-  show('settings', false);
-  show('claim', true);
-  $('bgg').focus();
-}
-
-// ---- claim ----
-$('bgg').addEventListener('input', () => {
-  const slug = slugify($('bgg').value);
-  $('slugPreview').innerHTML = slug ? `Your shelf: <b>/u/${slug}</b>` : '';
-});
-
-$('claimForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const bggUsername = $('bgg').value.trim();
-  const slug = slugify(bggUsername);
-  if (!bggUsername) { say($('claimMsg'), 'Enter your BGG username.', 'err'); $('bgg').focus(); return; }
-  if (!isValidSlug(slug)) { say($('claimMsg'), 'Letters, numbers, dots, underscores and hyphens only, up to 64 characters.', 'err'); $('bgg').focus(); return; }
-  const btn = $('claimBtn');
-  btn.disabled = true;
-  say($('claimMsg'), 'Claiming…');
-  try {
-    const result = await claimProfile({ bggUsername, displayName: $('displayName').value });
-    if (result.error === 'taken') {
-      say($('claimMsg'), `“${bggUsername}” is already claimed on this site. If that's you on another account, sign in with it; otherwise check the spelling.`, 'err');
-      $('bgg').focus();
-      $('bgg').select();
-      return;
-    }
-    if (result.error === 'invalid') { say($('claimMsg'), 'That username can’t be used as a link.', 'err'); return; }
-    profile = result.profile;
-    say($('claimMsg'), '');
-    renderSettings();
-    say($('syncMsg'), 'Now sync your collection to fill the shelf.', 'ok');
-  } catch (err) {
-    say($('claimMsg'), err.message || "Couldn't save that. Try again.", 'err');
-  } finally {
-    btn.disabled = false;
-  }
-});
 
 // ---- shelf link ----
 $('copyLink').addEventListener('click', async () => {
@@ -396,7 +333,8 @@ try {
     show('signedOut', true);
   } else {
     profile = await fetchMyProfile();
-    if (profile) renderSettings(); else renderClaim();
+    // No profile yet: onboarding lives at /welcome.
+    if (profile) renderSettings(); else location.replace('/welcome');
   }
 } catch (err) {
   show('loading', false);

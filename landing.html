@@ -184,11 +184,14 @@ try {
   if (user) {
     const profile = await fetchMyProfile().catch(() => null);
     document.getElementById('hello').textContent = `Welcome back, ${profile?.display_name || userDisplayName(user) || 'friend'}`;
-    const link = document.getElementById('shelfLink');
-    if (profile?.slug) link.href = `/u/${profile.slug}`;
-    else link.textContent = 'Claim your BGG username';
-    document.getElementById('signIn').hidden = true;
-    document.getElementById('signedIn').hidden = false;
+    // Signed in but never claimed a BGG name: onboarding, not the pitch.
+    if (!profile?.slug) {
+      location.replace('/welcome');
+    } else {
+      document.getElementById('shelfLink').href = `/u/${profile.slug}`;
+      document.getElementById('signIn').hidden = true;
+      document.getElementById('signedIn').hidden = false;
+    }
   }
 } catch { /* stay on the sign-in card */ }
 </script>
