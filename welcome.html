@@ -121,7 +121,10 @@
       <label for="bgg">BoardGameGeek username</label>
       <input class="field bgg" id="bgg" name="bgg" type="text" placeholder="noknaruephon" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="help">
       <p class="help" id="help" aria-live="polite">Same as your login on boardgamegeek.com. Not your email.</p>
-      <div class="stack"><button class="btn gold" id="continue" type="submit" disabled>Continue</button></div>
+      <div class="stack">
+        <button class="btn gold" id="continue" type="submit" disabled>Continue</button>
+        <button class="btn" id="claimAnyway" type="button" hidden>Claim anyway</button>
+      </div>
       <p class="skip"><a href="/settings">Skip for now</a> — you can connect a BGG account later in Settings.</p>
     </form>
 
@@ -200,6 +203,7 @@ function cancelLookup() {
 
 function resetToEmpty() {
   lookup = null;
+  $('claimAnyway').hidden = true;
   $('continue').disabled = true;
   $('continue').textContent = 'Continue';
   setState('empty');
@@ -245,9 +249,13 @@ async function check(name) {
     }
   } catch (err) {
     if (err.name === 'AbortError' || ctrl.signal.aborted) return;
+    // The check itself failed (BGG down, or our server could not verify the
+    // session) — different from "no such account". Let the name be claimed
+    // as typed so sign-up is never blocked on BGG; the sync can run later.
     lookup = null;
-    help(escapeHTML(err.message || "Couldn't reach BGG. Try again in a moment."), 'err');
+    help(`Couldn't check with BGG right now (${escapeHTML(err.message || 'no reply')}). You can claim the name as typed and sync later from Settings.`, 'err');
     $('continue').disabled = true;
+    $('claimAnyway').hidden = false;
     setState('missing');
   } finally {
     if (inflight === ctrl) inflight = null;
@@ -262,33 +270,40 @@ $('bgg').addEventListener('input', () => {
   debounce = setTimeout(() => check(name), DEBOUNCE_MS);
 });
 
-$('nameForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!lookup || page.dataset.state !== 'found') return;
-  const btn = $('continue');
+async function claim(username, btn, idleLabel) {
   btn.disabled = true;
   btn.textContent = 'Saving…';
   try {
-    const result = await claimProfile({ bggUsername: lookup.username, displayName: userDisplayName(user) });
+    const result = await claimProfile({ bggUsername: username, displayName: userDisplayName(user) });
     if (result.error === 'taken') {
       help("That shelf is already claimed. If it's yours, sign in with the account you used before.", 'err');
-      btn.textContent = 'Continue to sync';
-      btn.disabled = false;
       return;
     }
     if (result.error === 'invalid') {
       help("That username can't be used as a link.", 'err');
-      btn.textContent = 'Continue to sync';
-      btn.disabled = false;
       return;
     }
     profile = result.profile;
     startSync();
   } catch (err) {
     help(escapeHTML(err.message || "Couldn't save that. Try again."), 'err');
-    btn.textContent = 'Continue to sync';
+  } finally {
+    btn.textContent = idleLabel;
     btn.disabled = false;
   }
+}
+
+$('nameForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!lookup || page.dataset.state !== 'found') return;
+  claim(lookup.username, $('continue'), 'Continue to sync');
+});
+
+$('claimAnyway').addEventListener('click', () => {
+  const name = $('bgg').value.trim();
+  if (name.length < MIN_CHARS) return;
+  cancelLookup();
+  claim(name, $('claimAnyway'), 'Claim anyway');
 });
 
 // ---- step 3: sync with covers filling in ----
