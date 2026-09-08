@@ -164,9 +164,11 @@
 import { fetchSession, joinGameNight, sessionErrorMessage } from '/js/session.js';
 import { joinSessionChannel } from '/js/presence.js';
 import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession, shuffleHTML } from '/js/waiting-room.js';
-import { fetchGamesForSession } from '/js/shelf-data.js';
+import { fetchGamesForSession, shelfHrefForSession } from '/js/shelf-data.js';
 
 const screen = document.getElementById('screen');
+// Where "Back to the shelf" goes: the owner's shelf once the session is known.
+let shelfHref = '/';
 
 function codeFromPath() {
   // /vote/{code}
@@ -179,7 +181,7 @@ function renderEnded(message) {
     <div class="eyebrow">Game Night</div>
     <h1>Game night over</h1>
     <div class="ended"><p>${message}</p></div>
-    <a class="start-btn" href="/">Back to the shelf</a>`;
+    <a class="start-btn" href="${shelfHref}">Back to the shelf</a>`;
 }
 
 const code = codeFromPath();
@@ -197,6 +199,7 @@ async function init(code) {
     renderEnded('Something went wrong loading this game night.');
     return;
   }
+  if (session) shelfHref = await shelfHrefForSession(session);
 
   if (!session) {
     renderEnded('That game night has ended, or the code is wrong.');

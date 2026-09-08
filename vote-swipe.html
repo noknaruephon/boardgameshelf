@@ -382,9 +382,11 @@ import { joinSessionChannel } from '/js/presence.js';
 import { deckFromSession, openGameModal, shuffleHTML } from '/js/waiting-room.js';
 import { attachSwipe, markCommitted, exitCard } from '/js/swipe.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
-import { fetchGamesForSession } from '/js/shelf-data.js';
+import { fetchGamesForSession, shelfHrefForSession } from '/js/shelf-data.js';
 
 const screen = document.getElementById('screen');
+// Where "Back to the shelf" goes: the owner's shelf once the session is known.
+let shelfHref = '/';
 const confirmDialog = document.getElementById('confirm');
 const confirmBody = document.getElementById('confirmBody');
 registerOverlay(() => confirmDialog.classList.contains('open'));
@@ -427,7 +429,7 @@ function renderEnded(message, detail) {
     <h1>Game night over</h1>
     <div class="ended"><p>${message}</p></div>
     ${showDetail ? `<p class="ended-detail">${detail}</p>` : ''}
-    <a class="start-btn" href="/">Back to the shelf</a>`;
+    <a class="start-btn" href="${shelfHref}">Back to the shelf</a>`;
 }
 
 // Supabase errors carry the useful part in `message`, with `code`/`hint`
@@ -460,6 +462,7 @@ async function init(code) {
     renderEnded('Something went wrong loading this game night.', errorDetail(e));
     return;
   }
+  if (session) shelfHref = await shelfHrefForSession(session);
 
   if (!session) {
     renderEnded('That game night has ended, or the code is wrong.');

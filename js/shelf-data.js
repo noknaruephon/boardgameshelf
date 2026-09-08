@@ -133,6 +133,24 @@ export async function fetchShelfGames(profileId) {
 }
 
 /**
+ * Where "Back to the shelf" should go for a game night: the owner's shelf.
+ * Sessions from before profiles existed (owner_id null) belong to
+ * DEFAULT_SHELF_SLUG; an owner whose profile is private is invisible here,
+ * so that case falls back to the front page.
+ */
+export async function shelfHrefForSession(session) {
+  const ownerId = session?.owner_id || null;
+  if (!ownerId) return `/u/${DEFAULT_SHELF_SLUG}`;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('slug')
+    .eq('id', ownerId)
+    .maybeSingle();
+  if (error || !data?.slug) return '/';
+  return `/u/${data.slug}`;
+}
+
+/**
  * The games a game night was dealt from. Sessions created before profiles
  * existed have no owner_id and fall back to DEFAULT_SHELF_SLUG.
  */
