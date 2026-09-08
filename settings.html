@@ -180,6 +180,10 @@
       </div>
       <p class="msg" id="syncMsg" aria-live="polite"></p>
       <p class="last-synced" id="lastSynced"></p>
+      <div class="actions" id="browseWrap" hidden style="margin-top:14px">
+        <button class="btn quiet" id="browseBtn" type="button">Browse an existing shelf</button>
+      </div>
+      <div id="pickerHost" hidden></div>
     </section>
 
     <section class="plate">
@@ -211,6 +215,8 @@ import {
   getUser, getAccessToken, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
+import { mountShelfPicker } from '/js/shelf-picker.js';
+import { supabase } from '/js/supabase.js';
 
 const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
@@ -318,6 +324,8 @@ const syncHandlers = {
     $('progressBar').style.width = '100%';
     profile = await fetchMyProfile();
     renderSettings();
+    ownGameCount = null;
+    updateBrowseOffer();
     const parts = [`${r.total} owned`];
     if (r.fetched) parts.push(`${r.fetched} updated`);
     if (r.removed) parts.push(`${r.removed} removed`);
@@ -328,6 +336,8 @@ const syncHandlers = {
     say($('syncMsg'), message, 'err');
     $('syncStep').textContent = 'Stopped';
     $('progress').classList.remove('indeterminate');
+    ownGameCount = null;
+    updateBrowseOffer({ syncFailed: true });
   },
 };
 
@@ -341,6 +351,44 @@ $('syncBtn').addEventListener('click', async () => {
   await runSync(syncHandlers);
   btn.disabled = false;
   btn.textContent = 'Sync collection';
+});
+
+// ---- fallback: browse a stocked shelf ----
+// Offered only while this user's own shelf is empty: never synced, or the
+// last sync failed and nothing came through earlier.
+let ownGameCount = null;
+async function countOwnGames() {
+  const { count, error } = await supabase
+    .from('user_games')
+    .select('bgg_id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('owned', true);
+  if (error) throw error;
+  ownGameCount = count || 0;
+  return ownGameCount;
+}
+async function updateBrowseOffer({ syncFailed = false } = {}) {
+  try {
+    if (ownGameCount === null) await countOwnGames();
+  } catch (err) {
+    console.error('count own games failed', err);
+    ownGameCount = 0;
+  }
+  const offer = ownGameCount === 0 && (!profile?.last_synced_at || syncFailed);
+  show('browseWrap', offer);
+  if (!offer) show('pickerHost', false);
+}
+let pickerMounted = false;
+$('browseBtn').addEventListener('click', async () => {
+  const host = $('pickerHost');
+  if (pickerMounted) { host.hidden = false; return; }
+  try {
+    await mountShelfPicker(host);
+    pickerMounted = true;
+  } catch (err) {
+    console.error('public_shelves failed', err);
+    show('browseWrap', false);
+  }
 });
 
 // ---- sign out ----
@@ -393,6 +441,7 @@ try {
     profile = await fetchMyProfile();
     if (profile) {
       renderSettings();
+      updateBrowseOffer();
     } else {
       // Skipped onboarding: offer the way back to /welcome, and a way out.
       $('sub').textContent = `Signed in as ${user.email || userDisplayName(user)}`;

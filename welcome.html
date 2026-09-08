@@ -44,6 +44,8 @@
   .btn.gold:hover{background:#ecbd5b;}
   .btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
   .btn[disabled]{opacity:.5;cursor:default;}
+  .btn.quiet{border-color:rgba(var(--bgs-ivory-rgb),.18);background:none;color:var(--bgs-ivory-70);}
+  .btn.quiet:hover{background:rgba(var(--bgs-ivory-rgb),.06);}
   .help{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:10px 0 0;}
   .help.ok{color:var(--bgs-vote-play);}
   .help.err{color:var(--bgs-vote-pass);}
@@ -124,6 +126,7 @@
       <div class="stack">
         <button class="btn gold" id="continue" type="submit" disabled>Continue</button>
         <button class="btn" id="claimAnyway" type="button" hidden>Claim anyway</button>
+        <button class="btn quiet" id="browseBtn" type="button" hidden>Browse an existing shelf instead</button>
       </div>
       <p class="skip"><a href="/settings">Skip for now</a> — you can connect a BGG account later in Settings.</p>
     </form>
@@ -134,7 +137,10 @@
       <div class="prog" id="prog"><i id="progBar"></i></div>
       <div class="progtxt" role="status" aria-live="polite"><span id="progLeft">Asking BGG for your collection…</span><span id="progRight"></span></div>
       <p class="help" id="syncHelp">Covers and details are cached, so the next sync is quick.</p>
-      <div class="retry" id="retryWrap" hidden><button class="btn" id="retry" type="button">Try again</button></div>
+      <div class="retry stack" id="retryWrap" hidden>
+        <button class="btn" id="retry" type="button">Try again</button>
+        <button class="btn quiet" id="browseBtnSync" type="button">Browse an existing shelf instead</button>
+      </div>
     </div>
 
     <!-- done -->
@@ -147,11 +153,15 @@
       </div>
     </div>
   </div>
+
+  <!-- Fallback: browse a stocked shelf as a guest. Mounted on demand. -->
+  <div id="pickerHost" hidden></div>
 </div>
 
 <script type="module">
 import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName } from '/js/auth.js';
 import { runSync, BATCH_SIZE, BATCH_SECONDS } from '/js/sync.js';
+import { mountShelfPicker } from '/js/shelf-picker.js';
 
 const $ = (id) => document.getElementById(id);
 const page = $('page');
@@ -204,6 +214,7 @@ function cancelLookup() {
 function resetToEmpty() {
   lookup = null;
   $('claimAnyway').hidden = true;
+  $('browseBtn').hidden = true;
   $('continue').disabled = true;
   $('continue').textContent = 'Continue';
   setState('empty');
@@ -245,6 +256,7 @@ async function check(name) {
       lookup = null;
       help("We couldn't find that account. Usernames are case-insensitive, so it's usually a typo.", 'err');
       $('continue').disabled = true;
+      $('browseBtn').hidden = false;
       setState('missing');
     }
   } catch (err) {
@@ -252,11 +264,24 @@ async function check(name) {
     // The check itself failed (BGG down, or our server could not verify the
     // session) — different from "no such account". Let the name be claimed
     // as typed so sign-up is never blocked on BGG; the sync can run later.
-    lookup = null;
-    help(`Couldn't check with BGG right now (${escapeHTML(err.message || 'no reply')}). You can claim the name as typed and sync later from Settings.`, 'err');
-    $('continue').disabled = true;
-    $('claimAnyway').hidden = false;
-    setState('missing');
+    if (err.status >= 500) {
+      // BGG itself is unreachable (token not yet valid, outage). Continue still
+      // saves the profile with the name as typed, and the picker opens right
+      // away so there is something to look at.
+      lookup = { username: name, count: null };
+      help("BGG isn't reachable right now. Your username is saved — you can sync later from Settings.", 'err');
+      $('continue').textContent = 'Continue';
+      $('continue').disabled = false;
+      setState('missing');
+      showPicker();
+    } else {
+      lookup = null;
+      help(`Couldn't check with BGG right now (${escapeHTML(err.message || 'no reply')}). You can claim the name as typed and sync later from Settings.`, 'err');
+      $('continue').disabled = true;
+      $('claimAnyway').hidden = false;
+      $('browseBtn').hidden = false;
+      setState('missing');
+    }
   } finally {
     if (inflight === ctrl) inflight = null;
   }
@@ -295,9 +320,28 @@ async function claim(username, btn, idleLabel) {
 
 $('nameForm').addEventListener('submit', (e) => {
   e.preventDefault();
-  if (!lookup || page.dataset.state !== 'found') return;
-  claim(lookup.username, $('continue'), 'Continue to sync');
+  if (!lookup) return;
+  claim(lookup.username, $('continue'), page.dataset.state === 'found' ? 'Continue to sync' : 'Continue');
 });
+
+// ---- fallback: browse a stocked shelf ----
+let pickerMounted = false;
+async function showPicker() {
+  const host = $('pickerHost');
+  if (pickerMounted) { host.hidden = false; host.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
+  try {
+    await mountShelfPicker(host, { note: 'Your own shelf will be here once BGG lets us sync.' });
+    pickerMounted = true;
+    host.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (err) {
+    // Nothing to offer: hide the buttons rather than show an empty plate.
+    console.error('public_shelves failed', err);
+    $('browseBtn').hidden = true;
+    $('browseBtnSync').hidden = true;
+  }
+}
+$('browseBtn').addEventListener('click', showPicker);
+$('browseBtnSync').addEventListener('click', showPicker);
 
 $('claimAnyway').addEventListener('click', () => {
   const name = $('bgg').value.trim();

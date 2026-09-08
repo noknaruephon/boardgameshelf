@@ -151,7 +151,11 @@ export async function lookupBggUser(name, { signal } = {}) {
     err.retryAfter = Number(data.retryAfter) || 1;
     throw err;
   }
-  if (!res.ok) throw new Error(data.message || "Couldn't reach BGG. Try again in a moment.");
+  if (!res.ok) {
+    const err = new Error(data.message || "Couldn't reach BGG. Try again in a moment.");
+    err.status = res.status;
+    throw err;
+  }
   return data;
 }
 
