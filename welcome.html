@@ -453,7 +453,8 @@ try {
   user = await getUser();
   if (!user) { location.replace('/'); throw new Error('signed out'); }
   profile = await fetchMyProfile();
-  if (profile?.last_synced_at) { location.replace('/settings'); throw new Error('done'); }
+  // Already on the shelf: sign-in lands on the collection, not on settings.
+  if (profile?.last_synced_at) { location.replace(`/u/${profile.slug}`); throw new Error('done'); }
   if (profile) {
     // Refreshed mid-sync, or claimed and never finished: pick up at step 3.
     startSync();
