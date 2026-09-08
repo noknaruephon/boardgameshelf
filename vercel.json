@@ -13,6 +13,7 @@
     { "source": "/settings",          "destination": "/settings.html" },
     { "source": "/welcome",           "destination": "/welcome.html" },
     { "source": "/privacy",           "destination": "/privacy.html" },
+    { "source": "/terms",             "destination": "/terms.html" },
     { "source": "/night/:code/host",  "destination": "/night-host.html" },
     { "source": "/vote/:code",        "destination": "/vote.html" },
     { "source": "/vote/:code/swipe",  "destination": "/vote-swipe.html" },
