@@ -1360,7 +1360,7 @@ import { createGameModal } from '/js/game-modal.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { VIBES, applyVibes } from '/js/vibes.js';
 import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
-import { getUser, fetchMyProfile } from '/js/auth.js';
+import { getUser } from '/js/auth.js';
 
 // ---- Game Night feature flag ----
 // Live: every visitor gets the Game Night pill. All four stages — session
@@ -2499,14 +2499,6 @@ if('IntersectionObserver' in window){
     { threshold: 0 }
   ).observe(stickySentinel);
 }
-
-// A signed-in visitor who never claimed a BGG name belongs in onboarding.
-// Checked alongside the shelf load, never blocking it.
-getUser().then(async user => {
-  if(!user) return;
-  const mine = await fetchMyProfile().catch(()=>undefined);
-  if(mine === null) location.replace('/welcome');
-}).catch(()=>{});
 
 try {
   await loadGames();
