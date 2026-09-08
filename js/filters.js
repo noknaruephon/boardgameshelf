@@ -1,9 +1,11 @@
 import { VIBES } from './vibes.js';
 
-export const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, mode:"vibe", vibe:null, time:"any", weight:"any", bestFit:false };
+// showExpansions: expansions (subtype = boardgameexpansion) are hidden until the
+// filter sheet's "Show expansions" switch is on.
+export const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, mode:"vibe", vibe:null, time:"any", weight:"any", bestFit:false, showExpansions:false };
 
 export function isFilterActive(filters){
-  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any" || filters.bestFit || filters.vibe !== null;
+  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any" || filters.bestFit || filters.vibe !== null || !!filters.showExpansions;
 }
 export function activeGroupCount(filters){
   let n = 0;
@@ -14,6 +16,7 @@ export function activeGroupCount(filters){
     if(filters.weight !== "any") n++;
   }
   if(filters.bestFit) n++;
+  if(filters.showExpansions) n++;
   return n;
 }
 export function playersLabel(filters){
@@ -48,6 +51,7 @@ export function bestFitMatch(g, filters){
 }
 export function applyFilters(list, filters, search){
   return list.filter(g=>{
+    if(!filters.showExpansions && g.subtype === "boardgameexpansion") return false;
     if(!playersMatch(g, filters)) return false;
     if(!bestFitMatch(g, filters)) return false;
     if(filters.mode === "vibe"){

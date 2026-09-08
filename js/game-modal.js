@@ -38,7 +38,7 @@ function coverHTML(g) {
       <div class="flip-scene">
         <div class="flip-card" id="flip-card">
           <div class="flip-face flip-front">
-            <img class="card-cover" src="${g.image}" alt="${g.title} box cover" loading="lazy" decoding="async" onerror="this.style.display='none'">
+            <img class="card-cover" src="${g.imageLarge || g.image}" alt="${g.title} box cover" loading="lazy" decoding="async" onerror="this.style.display='none'">
           </div>
           <div class="flip-face flip-back">
             <img class="card-cover" src="${g.backImage}" alt="${g.title} back of box" loading="lazy" decoding="async" onerror="this.style.display='none'">
@@ -49,7 +49,7 @@ function coverHTML(g) {
   }
   return `
     <div class="card-cover-wrap" style="background:${g.color}22">
-      <img class="card-cover" src="${g.image}" alt="${g.title} box cover" width="600" height="450" loading="lazy" decoding="async" fetchpriority="low" onerror="this.parentElement.style.background='${g.color}';this.style.display='none'">
+      <img class="card-cover" src="${g.imageLarge || g.image}" alt="${g.title} box cover" width="600" height="450" loading="lazy" decoding="async" fetchpriority="low" onerror="this.parentElement.style.background='${g.color}';this.style.display='none'">
     </div>`;
 }
 
@@ -138,6 +138,18 @@ function teachHTML(g) {
     </section>`;
 }
 
+// Curated on the owner's shelf; a freshly synced shelf has none, and an empty
+// "Highlights" heading would say so louder than leaving it out.
+function highlightsHTML(g) {
+  const why = Array.isArray(g.why) ? g.why.filter(Boolean) : [];
+  if (!why.length) return '';
+  return `
+    <p class="why-heading">Highlights</p>
+    <ul class="why-list">
+      ${why.map((w) => `<li>${w}</li>`).join('')}
+    </ul>`;
+}
+
 function bodyHTML(g) {
   return `
     ${mediaHTML(g)}
@@ -148,11 +160,8 @@ function bodyHTML(g) {
       <span class="stat-chip">${WEIGHT_ICON} ${weightLabel(g.weightScore)}</span>
     </div>
     <p class="blurb">${g.blurb}</p>
-    <p class="why-heading">Highlights</p>
-    <ul class="why-list">
-      ${g.why.map((w) => `<li>${w}</li>`).join('')}
-    </ul>
-    <span class="tag">${g.tag}</span>${teachHTML(g)}`;
+    ${highlightsHTML(g)}
+    ${g.tag ? `<span class="tag">${g.tag}</span>` : ''}${teachHTML(g)}`;
 }
 
 // The back-of-box flip: tap, or swipe horizontally. Re-wired on every open

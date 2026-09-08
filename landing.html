@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#160F0A">
+<title>BoardgameShelf</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/icon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<script defer src="/_vercel/insights/script.js"></script>
+<style>
+  /* Tokens and page chrome come from css/base.css. */
+  body{padding:32px 20px 80px;}
+  .wrap{max-width:560px;margin:0 auto;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.14em;
+    text-transform:uppercase;color:var(--bgs-gold);margin:0 0 10px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,5vw,44px);
+    margin:0 0 8px;letter-spacing:-0.01em;
+  }
+  .sub{color:var(--bgs-gold);font-size:15px;margin:0 0 6px;max-width:50ch;line-height:1.5;}
+  .pitch{color:var(--bgs-ivory-70);font-size:15px;line-height:1.6;margin:18px 0 28px;max-width:52ch;}
+  .pitch strong{color:var(--bgs-ivory);font-weight:500;}
+
+  .plate{
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.22);
+    border-radius:16px;padding:22px 20px;
+    box-shadow:0 12px 30px -18px rgba(0,0,0,.8);
+  }
+  .plate h2{font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin:0 0 14px;}
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    min-height:46px;padding:0 16px;border-radius:12px;cursor:pointer;
+    font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+    border:1.5px solid rgba(var(--bgs-gold-rgb),.55);
+    background:rgba(var(--bgs-gold-rgb),.1);color:var(--bgs-ivory);
+    transition:background .15s ease,transform .1s ease;
+  }
+  .btn:hover{background:rgba(var(--bgs-gold-rgb),.18);}
+  .btn:active{transform:scale(.985);}
+  .btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;}
+  .btn[disabled]{opacity:.6;cursor:default;}
+  .btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold);}
+  .btn.gold:hover{background:#ecbd5b;}
+  .btn svg{width:18px;height:18px;flex:none;}
+
+  .or{
+    display:flex;align-items:center;gap:12px;margin:18px 0 14px;
+    color:var(--bgs-ivory-45);font-family:'IBM Plex Mono',monospace;font-size:11px;
+    letter-spacing:.12em;text-transform:uppercase;
+  }
+  .or::before,.or::after{content:"";flex:1;height:1px;background:rgba(var(--bgs-ivory-rgb),.12);}
+
+  label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 6px;}
+  .field{
+    width:100%;min-height:46px;padding:0 14px;border-radius:12px;
+    background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
+    color:var(--bgs-ivory);font:inherit;font-size:15px;
+  }
+  .field:focus{outline:none;border-color:var(--bgs-gold);}
+  .row{display:flex;gap:10px;flex-direction:column;}
+  .msg{margin:10px 0 0;font-size:14px;line-height:1.45;color:var(--bgs-ivory-70);min-height:1.2em;}
+  .msg.ok{color:var(--bgs-vote-play);}
+  .msg.err{color:var(--bgs-vote-pass);}
+  .signed-in{display:flex;flex-direction:column;gap:10px;}
+  .foot{margin:26px 0 0;color:var(--bgs-ivory-45);font-size:13px;line-height:1.55;}
+  .foot a{color:var(--bgs-gold-dim);}
+  [hidden]{display:none!important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">BoardgameShelf</p>
+    <h1>Your shelf, judged by its covers.</h1>
+    <p class="sub">Browse the game, judge by its cover.</p>
+  </header>
+
+  <p class="pitch">
+    Sign in, tell us your <strong>BoardGameGeek username</strong>, and your collection
+    becomes a shelf you can hand to friends at <strong>/u/yourname</strong> — with filters
+    for the night you're having, a card for every game, and a game-night vote that runs
+    from any phone at the table.
+  </p>
+
+  <section class="plate" id="signIn">
+    <h2>Sign in</h2>
+    <button class="btn gold" id="googleBtn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="currentColor" opacity=".8" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="currentColor" opacity=".6" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="currentColor" opacity=".9" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg>
+      Continue with Google
+    </button>
+    <div class="or">or</div>
+    <form id="emailForm" class="row" novalidate>
+      <div>
+        <label for="email">Email a sign-in link</label>
+        <input class="field" id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
+      </div>
+      <button class="btn" id="emailBtn" type="submit">Send magic link</button>
+    </form>
+    <p class="msg" id="msg" aria-live="polite"></p>
+  </section>
+
+  <section class="plate signed-in" id="signedIn" hidden>
+    <h2 id="hello">Welcome back</h2>
+    <a class="btn gold" id="shelfLink" href="/settings">Open your shelf</a>
+    <a class="btn" href="/settings">Settings &amp; sync</a>
+  </section>
+
+  <p class="foot">
+    Game data and covers come from <a href="https://boardgamegeek.com" rel="noopener">BoardGameGeek</a>.
+    Nothing is downloaded or resold; your shelf shows what BGG says you own.
+  </p>
+</div>
+
+<script type="module">
+import { getUser, signInWithGoogle, signInWithEmail, fetchMyProfile, userDisplayName } from '/js/auth.js';
+
+const msg = document.getElementById('msg');
+const say = (text, kind = '') => { msg.textContent = text; msg.className = `msg ${kind}`; };
+
+const googleBtn = document.getElementById('googleBtn');
+googleBtn.addEventListener('click', async () => {
+  googleBtn.disabled = true;
+  say('Opening Google…');
+  try { await signInWithGoogle(); }
+  catch (err) { say(err.message || "Couldn't start Google sign-in.", 'err'); googleBtn.disabled = false; }
+});
+
+document.getElementById('emailForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('email');
+  const email = input.value.trim();
+  if (!input.checkValidity() || !email) { say('Enter a valid email address.', 'err'); input.focus(); return; }
+  const btn = document.getElementById('emailBtn');
+  btn.disabled = true;
+  say('Sending…');
+  try {
+    await signInWithEmail(email);
+    say(`Check ${email} for a sign-in link. It opens Settings, where you can add your BGG username.`, 'ok');
+  } catch (err) {
+    say(err.message || "Couldn't send the link. Try again in a minute.", 'err');
+    btn.disabled = false;
+  }
+});
+
+// Already signed in: skip the pitch and point at the shelf.
+try {
+  const user = await getUser();
+  if (user) {
+    const profile = await fetchMyProfile().catch(() => null);
+    document.getElementById('hello').textContent = `Welcome back, ${profile?.display_name || userDisplayName(user) || 'friend'}`;
+    const link = document.getElementById('shelfLink');
+    if (profile?.slug) link.href = `/u/${profile.slug}`;
+    else link.textContent = 'Claim your BGG username';
+    document.getElementById('signIn').hidden = true;
+    document.getElementById('signedIn').hidden = false;
+  }
+} catch { /* stay on the sign-in card */ }
+</script>
+</body>
+</html>

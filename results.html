@@ -222,6 +222,7 @@ import {
 } from '/js/session.js';
 import { joinSessionChannel } from '/js/presence.js';
 import { deckFromSession, openGameModal } from '/js/waiting-room.js';
+import { fetchGamesForSession } from '/js/shelf-data.js';
 
 const screen = document.getElementById('screen');
 
@@ -301,9 +302,7 @@ async function init(code) {
 
   let games, participants, votes;
   try {
-    const res = await fetch('/games.json');
-    if (!res.ok) throw new Error('failed to load games');
-    games = await res.json();
+    games = await fetchGamesForSession(session);
   } catch (e) {
     renderEnded('Something went wrong loading this game night.', errorDetail(e));
     return;

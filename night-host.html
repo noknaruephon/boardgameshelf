@@ -182,6 +182,7 @@ import { fetchSession, joinGameNight, startVoting, cancelGameNight, sessionError
 import { joinSessionChannel, MIN_PLAYERS_TO_START } from '/js/presence.js';
 import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from '/js/waiting-room.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
+import { fetchGamesForSession } from '/js/shelf-data.js';
 
 const screen = document.getElementById('screen');
 const confirmDialog = document.getElementById('confirm');
@@ -229,9 +230,7 @@ async function init(code) {
 
   let games;
   try {
-    const res = await fetch('/games.json');
-    if (!res.ok) throw new Error('failed to load games');
-    games = await res.json();
+    games = await fetchGamesForSession(session);
   } catch (e) {
     renderEnded('Something went wrong loading this game night.');
     return;

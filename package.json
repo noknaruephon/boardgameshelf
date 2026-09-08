@@ -1,0 +1,17 @@
+{
+  "name": "boardgameshelf",
+  "private": true,
+  "type": "module",
+  "description": "Dependencies for the /api sync functions and scripts/ only. The site itself is static and has no build step.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test api/_lib/bgg.test.mjs",
+    "migrate": "node scripts/migrate-games-json.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "fast-xml-parser": "^4.5.0"
+  }
+}

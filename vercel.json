@@ -5,15 +5,12 @@
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
-    },
-    {
-      "source": "/games.json",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
-      ]
     }
   ],
   "rewrites": [
+    { "source": "/",                  "destination": "/landing.html" },
+    { "source": "/u/:slug",           "destination": "/shelf.html" },
+    { "source": "/settings",          "destination": "/settings.html" },
     { "source": "/night/:code/host",  "destination": "/night-host.html" },
     { "source": "/vote/:code",        "destination": "/vote.html" },
     { "source": "/vote/:code/swipe",  "destination": "/vote-swipe.html" },
