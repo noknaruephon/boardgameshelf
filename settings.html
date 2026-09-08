@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/confirm-dialog.css">
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
   /* Tokens and page chrome come from css/base.css. */
@@ -128,6 +129,7 @@
     <div class="actions">
       <a class="btn gold" href="/welcome">Connect your collection</a>
       <button class="btn danger" id="signOutBtnNoProfile" type="button">Sign out</button>
+      <button class="btn quiet" id="deleteBtnNoProfile" type="button">Delete account</button>
     </div>
   </section>
 
@@ -183,8 +185,22 @@
     <section class="plate">
       <div class="actions">
         <button class="btn danger" id="signOutBtn" type="button">Sign out</button>
+        <button class="btn quiet" id="deleteBtn" type="button">Delete account</button>
       </div>
+      <p class="hint" style="margin:12px 0 0">Deleting removes your shelf, your synced collection and your sign-in. It can't be undone.</p>
+      <p class="msg" id="deleteMsg" aria-live="polite"></p>
     </section>
+  </div>
+
+  <div class="confirm" id="confirm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="confirm__panel">
+      <h3 id="confirmTitle">Delete your account?</h3>
+      <p id="confirmBody">Your shelf, synced collection and sign-in are removed for good. Game nights already running keep their votes.</p>
+      <div class="confirm__row">
+        <button class="confirm__keep" id="confirmKeep" type="button">Keep it</button>
+        <button class="confirm__end" id="confirmDelete" type="button">Delete</button>
+      </div>
+    </div>
   </div>
 
   <p class="empty" id="signedOut" hidden>You're signed out. <a href="/" style="color:var(--bgs-gold)">Sign in</a> to manage a shelf.</p>
@@ -192,7 +208,7 @@
 
 <script type="module">
 import {
-  getUser, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
+  getUser, getAccessToken, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
 
@@ -334,6 +350,36 @@ async function doSignOut() {
 }
 $('signOutBtn').addEventListener('click', doSignOut);
 $('signOutBtnNoProfile').addEventListener('click', doSignOut);
+
+// ---- delete account ----
+// Same confirm dialog the game-night pages use for irreversible steps.
+const confirmEl = $('confirm');
+const openConfirm = () => { confirmEl.classList.add('open'); $('confirmKeep').focus(); };
+const closeConfirm = () => confirmEl.classList.remove('open');
+$('deleteBtn').addEventListener('click', openConfirm);
+$('deleteBtnNoProfile').addEventListener('click', openConfirm);
+$('confirmKeep').addEventListener('click', closeConfirm);
+confirmEl.addEventListener('click', (e) => { if (e.target === confirmEl) closeConfirm(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && confirmEl.classList.contains('open')) closeConfirm(); });
+
+$('confirmDelete').addEventListener('click', async () => {
+  const btn = $('confirmDelete');
+  btn.disabled = true;
+  btn.textContent = 'Deleting…';
+  try {
+    const token = await getAccessToken();
+    const res = await fetch('/api/account/delete', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || "Couldn't delete the account. Try again in a minute.");
+    try { await signOut(); } catch { /* the user is gone server-side already */ }
+    location.replace('/');
+  } catch (err) {
+    closeConfirm();
+    say($('deleteMsg'), err.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'Delete';
+  }
+});
 
 // ---- boot ----
 try {
