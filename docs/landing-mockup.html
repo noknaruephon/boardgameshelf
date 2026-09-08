@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — landing options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bgs-bg:#160F0A;
+  --bgs-bg-rgb:22,15,10;
+  --bgs-bg-radial:#241708;
+  --bgs-plate:#241A10;
+  --bgs-plate-rgb:36,26,16;
+  --bgs-ivory:#F4EBDA;
+  --bgs-ivory-rgb:244,235,218;
+  --bgs-ivory-70:rgba(244,235,218,0.72);
+  --bgs-ivory-45:rgba(244,235,218,0.45);
+  --bgs-gold:#E3B04B;
+  --bgs-gold-rgb:227,176,75;
+  --bgs-gold-dim:rgba(227,176,75,0.62);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:radial-gradient(ellipse at top,var(--bgs-bg-radial) 0%,var(--bgs-bg) 55%),var(--bgs-bg);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  min-height:100svh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---- mockup toggle bar (not part of the product) ---- */
+.bar{
+  position:sticky;top:0;z-index:50;
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  padding:10px 14px;
+  background:rgba(var(--bgs-bg-rgb),0.92);
+  border-bottom:1px solid rgba(var(--bgs-gold-rgb),0.18);
+  font-family:'IBM Plex Mono',monospace;font-size:12px;
+  backdrop-filter:blur(8px);
+}
+.bar .lbl{color:var(--bgs-gold-dim);margin-right:4px}
+.bar button{
+  font:inherit;color:var(--bgs-ivory-70);background:transparent;
+  border:1px solid rgba(var(--bgs-gold-rgb),0.3);border-radius:999px;
+  padding:5px 11px;cursor:pointer;
+}
+.bar button[aria-pressed="true"]{color:var(--bgs-bg);background:var(--bgs-gold);border-color:var(--bgs-gold)}
+.bar button:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.bar .spacer{flex:1}
+
+/* ---- shared ---- */
+.opt{display:none}
+.opt.on{display:block}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+.mark{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;
+  color:var(--bgs-gold);letter-spacing:0.01em;
+}
+h1{
+  font-family:'Fraunces',serif;font-weight:600;
+  font-variation-settings:'opsz' 144;
+  font-size:clamp(38px,9vw,64px);line-height:1.02;letter-spacing:-0.015em;
+  margin:14px 0 14px;
+}
+.sub{font-size:17px;line-height:1.45;color:var(--bgs-ivory-70);margin:0 0 26px;max-width:32ch}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;min-height:52px;padding:0 18px;border-radius:12px;
+  font:600 16px/1 'Inter',sans-serif;cursor:pointer;
+  border:1px solid rgba(var(--bgs-gold-rgb),0.55);background:transparent;color:var(--bgs-gold);
+}
+.btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.btn svg{width:18px;height:18px}
+.field{
+  width:100%;min-height:52px;padding:0 16px;border-radius:12px;
+  font:400 16px 'Inter',sans-serif;color:var(--bgs-ivory);
+  background:rgba(var(--bgs-bg-rgb),0.6);border:1px solid rgba(var(--bgs-ivory-rgb),0.18);
+}
+.field::placeholder{color:var(--bgs-ivory-45)}
+.field:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.or{
+  display:flex;align-items:center;gap:12px;margin:14px 0;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;color:var(--bgs-ivory-45);
+}
+.or::before,.or::after{content:"";flex:1;height:1px;background:rgba(var(--bgs-ivory-rgb),0.14)}
+.row{display:grid;gap:10px}
+@media(min-width:560px){.row{grid-template-columns:1fr auto}.row .btn{width:auto;padding:0 22px}}
+.hint{font-size:13px;color:var(--bgs-ivory-45);margin:12px 0 0;line-height:1.5}
+
+footer{
+  max-width:960px;margin:44px auto 0;padding:24px 20px 40px;
+  text-align:center;font-family:'IBM Plex Mono',monospace;
+  border-top:1px solid rgba(var(--bgs-gold-rgb),0.18);
+}
+footer .bgg{display:inline-block;line-height:0;margin:0 0 14px;border-radius:4px}
+footer .bgg img{display:block;width:150px;height:33px}
+footer .bgg:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+footer p{font-size:12px;line-height:1.55;letter-spacing:0.015em;color:var(--bgs-gold-dim);margin:0 0 6px}
+footer p.sec{font-size:11px;color:rgba(var(--bgs-gold-rgb),0.4)}
+footer a.txt{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px}
+
+.cover{border-radius:6px;background:var(--c,#3a2a1a);overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,0.45)}
+.cover img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* ---- Option A: cover wall ---- */
+#a .wall{
+  position:relative;height:min(62vw,420px);overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 55%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0%,#000 55%,transparent 100%);
+}
+#a .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 20px;max-width:960px;margin:0 auto}
+@media(min-width:700px){#a .cols{grid-template-columns:repeat(5,1fr)}#a .col:nth-child(n+4){display:flex}}
+#a .col{display:flex;flex-direction:column;gap:10px;will-change:transform}
+#a .col:nth-child(n+4){display:none}
+#a .col .cover{aspect-ratio:1/1;flex:none}
+#a .col:nth-child(odd){animation:drift-up 40s linear infinite}
+#a .col:nth-child(even){animation:drift-down 46s linear infinite;transform:translateY(-50%)}
+@keyframes drift-up{to{transform:translateY(-50%)}}
+@keyframes drift-down{from{transform:translateY(-50%)}to{transform:translateY(0)}}
+body.rm #a .col{animation:none;transform:none}
+@media(prefers-reduced-motion:reduce){#a .col{animation:none;transform:none}}
+#a .hero{margin-top:-64px;position:relative}
+#a .plate{
+  margin-top:26px;padding:22px 20px 20px;border-radius:16px;
+  background:rgba(var(--bgs-plate-rgb),0.85);border:1px solid rgba(var(--bgs-gold-rgb),0.22);
+}
+@media(min-width:760px){
+  #a .hero{display:grid;grid-template-columns:1.1fr 0.9fr;gap:40px;align-items:end}
+  #a .plate{margin-top:0}
+}
+
+/* ---- Option B: the shelf ---- */
+#b .top{padding-top:34px}
+#b .shelf{position:relative;margin:26px -20px 0;padding:0 20px;overflow:hidden}
+#b .ledge{position:relative;padding:0 0 34px}
+#b .ledge::after{
+  content:"";position:absolute;left:0;right:0;bottom:12px;height:14px;border-radius:2px;
+  background:linear-gradient(#5A3F25,#3A2816);box-shadow:0 12px 20px rgba(0,0,0,0.55);
+}
+#b .ledge::before{
+  content:"";position:absolute;left:0;right:0;bottom:26px;height:8px;
+  background:linear-gradient(to top,rgba(0,0,0,0.55),transparent);
+}
+#b .standing{display:flex;gap:10px;align-items:flex-end;padding:0 0 2px;position:relative;z-index:1}
+#b .standing .cover{aspect-ratio:1/1;flex:1 0 0;box-shadow:0 6px 10px rgba(0,0,0,0.5)}
+#b .standing .cover:nth-child(2){transform:translateY(-6px)}
+#b .standing .cover:nth-child(4){transform:translateY(-3px)}
+#b .standing .cover:nth-child(n+5){display:none}
+@media(min-width:700px){#b .standing .cover:nth-child(n+5){display:block}#b .standing .cover:nth-child(n+8){display:none}}
+#b .signin{margin-top:26px}
+@media(min-width:760px){
+  #b .grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  #b .shelf{margin:0}
+}
+
+/* ---- Option C: the hand ---- */
+#c .top{padding-top:40px;text-align:center}
+#c .sub{margin-left:auto;margin-right:auto}
+#c .hand{position:relative;height:210px;margin:8px auto 0;max-width:520px}
+#c .hand .cover{
+  position:absolute;left:50%;bottom:0;width:132px;aspect-ratio:1/1;
+  transform-origin:50% 160%;
+  transform:translateX(-50%) rotate(var(--r)) translateY(var(--y));
+  transition:transform .25s ease;
+  border:1px solid rgba(var(--bgs-ivory-rgb),0.12);
+}
+#c .hand .cover:hover{transform:translateX(-50%) rotate(var(--r)) translateY(calc(var(--y) - 14px))}
+#c .hand .cover:nth-child(1){--r:-22deg;--y:8px}
+#c .hand .cover:nth-child(2){--r:-11deg;--y:-2px}
+#c .hand .cover:nth-child(3){--r:0deg;--y:-8px;z-index:2;box-shadow:0 0 0 2px var(--bgs-gold),0 16px 30px rgba(0,0,0,0.6)}
+#c .hand .cover:nth-child(4){--r:11deg;--y:-2px}
+#c .hand .cover:nth-child(5){--r:22deg;--y:8px}
+#c .pick{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.02em;
+  color:var(--bgs-gold-dim);margin:14px 0 0;
+}
+#c .signin{max-width:420px;margin:30px auto 0}
+</style>
+</head>
+<body>
+
+<div class="bar" role="toolbar" aria-label="Mockup options">
+  <span class="lbl">Option</span>
+  <button data-opt="a" aria-pressed="true">A · Cover wall</button>
+  <button data-opt="b" aria-pressed="false">B · The shelf</button>
+  <button data-opt="c" aria-pressed="false">C · The hand</button>
+  <span class="spacer"></span>
+  <button id="rm" aria-pressed="false">Reduced motion</button>
+</div>
+
+<!-- ============ A: COVER WALL ============ -->
+<section class="opt on" id="a" aria-label="Option A">
+  <div class="wall" aria-hidden="true">
+    <div class="cols">
+      <div class="col" data-col="0"></div>
+      <div class="col" data-col="1"></div>
+      <div class="col" data-col="2"></div>
+      <div class="col" data-col="3"></div>
+      <div class="col" data-col="4"></div>
+    </div>
+  </div>
+  <div class="wrap hero">
+    <div>
+      <div class="mark">BoardgameShelf</div>
+      <h1>Your shelf, judged by its covers.</h1>
+      <p class="sub">Every game you own on one page you can send to the group, with a vote for the night.</p>
+    </div>
+    <div class="plate">
+      <button class="btn gold" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="currentColor" opacity=".8" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="currentColor" opacity=".6" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="currentColor" opacity=".9" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg>
+        Continue with Google
+      </button>
+      <div class="or">or</div>
+      <div class="row">
+        <input class="field" type="email" placeholder="you@example.com" aria-label="Email">
+        <button class="btn" type="button">Send magic link</button>
+      </div>
+      <p class="hint">Then enter your BoardGameGeek username and your collection is on the shelf.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B: THE SHELF ============ -->
+<section class="opt" id="b" aria-label="Option B">
+  <div class="wrap top">
+    <div class="grid">
+      <div>
+        <div class="mark">BoardgameShelf</div>
+        <h1>Your shelf, judged by its covers.</h1>
+        <p class="sub">Sign in, enter your BoardGameGeek username, and your collection stands on a shelf at /u/yourname.</p>
+        <div class="signin">
+          <button class="btn gold" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="currentColor" opacity=".8" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="currentColor" opacity=".6" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="currentColor" opacity=".9" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg>
+            Continue with Google
+          </button>
+          <div class="or">or</div>
+          <div class="row">
+            <input class="field" type="email" placeholder="you@example.com" aria-label="Email">
+            <button class="btn" type="button">Send magic link</button>
+          </div>
+        </div>
+      </div>
+      <div class="shelf" aria-hidden="true">
+        <div class="ledge"><div class="standing" data-shelf="0"></div></div>
+        <div class="ledge"><div class="standing" data-shelf="1"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C: THE HAND ============ -->
+<section class="opt" id="c" aria-label="Option C">
+  <div class="wrap top">
+    <div class="mark">BoardgameShelf</div>
+    <div class="hand" aria-hidden="true" data-hand></div>
+    <p class="pick">Tonight's shortlist · 5 of 196</p>
+    <h1>Your shelf, judged by its covers.</h1>
+    <p class="sub">A page for your collection and a vote for your table, from any phone.</p>
+    <div class="signin">
+      <button class="btn gold" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="currentColor" opacity=".8" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="currentColor" opacity=".6" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="currentColor" opacity=".9" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg>
+        Continue with Google
+      </button>
+      <div class="or">or</div>
+      <div class="row">
+        <input class="field" type="email" placeholder="you@example.com" aria-label="Email">
+        <button class="btn" type="button">Send magic link</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a class="bgg" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
+    <img src="powered-by-bgg.svg" alt="" width="150" height="33">
+  </a>
+  <p>Game data and covers come from <a class="txt" href="https://boardgamegeek.com" target="_blank" rel="noopener">BoardGameGeek</a>.</p>
+  <p class="sec">Not affiliated with or endorsed by BGG.</p>
+</footer>
+
+<script>
+const games=[{"t":"Cascadia","c":"#3E5C3E","i":"https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg"},{"t":"Root","c":"#2E5339","i":"https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg"},{"t":"Ark Nova","c":"#3B4F76","i":"https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg"},{"t":"Brass: Birmingham","c":"#4A6C6F","i":"https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__itemrep@2x/img/2FLfeGWkuKb1KEkjl1fO9MFsdHQ=/fit-in/492x600/filters:strip_icc()/pic3490053.jpg"},{"t":"Dune: Imperium – Uprising","c":"#7A3B2E","i":"https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg"},{"t":"Spirit Island","c":"#3B4F76","i":"https://cf.geekdo-images.com/kjCm4ZvPjIZxS-mYgSPy1g__itemrep@2x/img/-avAay86cuC29LAZVlTE84r5SSA=/fit-in/492x600/filters:strip_icc()/pic7013651.jpg"},{"t":"Terraforming Mars","c":"#A64B32","i":"https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg"},{"t":"The Castles of Burgundy: Special Edition","c":"#5C2E3E","i":"https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg"},{"t":"Pandemic","c":"#6B2E2E","i":"https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg"},{"t":"Codenames","c":"#7A3B3B","i":"https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg"},{"t":"Ticket to Ride: 10th Anniversary","c":"#2E5339","i":"https://cf.geekdo-images.com/oXUOPeRynJB1sLEYQiKzTg__itemrep@2x/img/VAmkdlgj4gc9CcxqPMsztlyc4Rc=/fit-in/492x600/filters:strip_icc()/pic1927856.jpg"},{"t":"7 Wonders (Second Edition)","c":"#A8562E","i":"https://cf.geekdo-images.com/Naw8y8J_s-8cvq1GoTON6w__original/img/8wVEVzdf5BoPvSiscnGvCAPNe2Q=/0x0/filters:format(jpeg)/pic7416519.jpg"},{"t":"Patchwork","c":"#7A5C2E","i":"https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg"},{"t":"Blood on the Clocktower","c":"#8B3A3A","i":"https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg"},{"t":"Terra Mystica: Big Box","c":"#5B4470","i":"https://cf.geekdo-images.com/aSwGrv9uvfRyBymlHJ-B8w__original/img/cHP3bhVFkJepWSfjWKBR-talnDc=/0x0/filters:format(jpeg)/pic6731109.jpg"},{"t":"Catan: 3D Edition","c":"#5B3E63","i":"https://cf.geekdo-images.com/4Kr0RereFqdS29qe-mNYkQ__itemrep@2x/img/tLVpEitsYKWuXA5zydJh8SQrwI4=/fit-in/492x600/filters:strip_icc()/pic6192204.png"}];
+
+const cover=g=>{const d=document.createElement('div');d.className='cover';d.style.setProperty('--c',g.c);
+  const im=document.createElement('img');im.src=g.i;im.alt='';im.loading='lazy';im.decoding='async';d.appendChild(im);return d;};
+
+/* A: 5 columns, each column doubled so the loop is seamless */
+document.querySelectorAll('#a .col').forEach((col,i)=>{
+  const set=[];for(let k=0;k<4;k++)set.push(games[(i*4+k)%games.length]);
+  [...set,...set].forEach(g=>col.appendChild(cover(g)));
+});
+/* B: two ledges */
+document.querySelectorAll('#b .standing').forEach((s,i)=>{
+  for(let k=0;k<7;k++)s.appendChild(cover(games[(i*7+k)%games.length]));
+});
+/* C: five fanned covers */
+const hand=document.querySelector('[data-hand]');
+[games[0],games[2],games[4],games[6],games[13]].forEach(g=>hand.appendChild(cover(g)));
+
+/* toggle bar */
+const opts=document.querySelectorAll('.opt');
+document.querySelectorAll('.bar [data-opt]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.bar [data-opt]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  opts.forEach(o=>o.classList.toggle('on',o.id===b.dataset.opt));
+  window.scrollTo({top:0});
+}));
+const rm=document.getElementById('rm');
+rm.addEventListener('click',()=>{const on=rm.getAttribute('aria-pressed')!=='true';rm.setAttribute('aria-pressed',on);document.body.classList.toggle('rm',on);});
+</script>
+</body>
+</html>
