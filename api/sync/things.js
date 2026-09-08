@@ -35,5 +35,12 @@ export default handler(async (req, res) => {
 
   const done = rows.map((r) => r.bgg_id);
   const doneSet = new Set(done);
-  json(res, 200, { status: 'ok', done, skipped: ids.filter((id) => !doneSet.has(id)) });
+  json(res, 200, {
+    status: 'ok',
+    done,
+    skipped: ids.filter((id) => !doneSet.has(id)),
+    // Just enough for the sync UI to show covers arriving. These are rows
+    // the caller's own sync wrote a moment ago, not a pass-through.
+    games: rows.map((r) => ({ bgg_id: r.bgg_id, name: r.name, thumbnail_url: r.thumbnail_url })),
+  });
 });

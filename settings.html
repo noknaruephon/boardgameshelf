@@ -203,7 +203,7 @@
 import {
   getUser, fetchMyProfile, claimProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
-import { runSync, SyncError, QUEUE_MAX_TRIES } from '/js/sync.js';
+import { runSync } from '/js/sync.js';
 
 const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
@@ -340,25 +340,33 @@ $('publicToggle').addEventListener('click', async () => {
 });
 
 // ---- sync ----
-function progress({ phase, attempt, done, total }) {
-  const bar = $('progress');
-  if (phase === 'collection') {
-    bar.classList.add('indeterminate');
-    $('syncStep').textContent = attempt > 1
-      ? `BGG is preparing your collection… (try ${attempt} of ${QUEUE_MAX_TRIES})`
-      : 'Asking BGG for your collection…';
-    $('syncCount').textContent = '';
-  } else if (phase === 'things') {
-    bar.classList.remove('indeterminate');
+// The loop lives in js/sync.js (shared with /welcome); this is only the wiring.
+const syncHandlers = {
+  onStep(text, { waiting }) {
+    $('progress').classList.toggle('indeterminate', waiting);
+    $('syncStep').textContent = text;
+    if (waiting) $('syncCount').textContent = '';
+  },
+  onProgress(done, total) {
     $('progressBar').style.width = total ? `${Math.round((done / total) * 100)}%` : '100%';
-    $('syncStep').textContent = total ? 'Fetching game details…' : 'Everything is already up to date.';
     $('syncCount').textContent = total ? `${done} of ${total}` : '';
-  } else if (phase === 'done') {
-    bar.classList.remove('indeterminate');
+  },
+  async onDone(r) {
     $('progressBar').style.width = '100%';
-    $('syncStep').textContent = 'Done';
-  }
-}
+    profile = await fetchMyProfile();
+    renderSettings();
+    const parts = [`${r.total} owned`];
+    if (r.fetched) parts.push(`${r.fetched} updated`);
+    if (r.removed) parts.push(`${r.removed} removed`);
+    if (r.skipped) parts.push(`${r.skipped} skipped`);
+    say($('syncMsg'), `Synced — ${parts.join(', ')}.`, 'ok');
+  },
+  onError(message) {
+    say($('syncMsg'), message, 'err');
+    $('syncStep').textContent = 'Stopped';
+    $('progress').classList.remove('indeterminate');
+  },
+};
 
 $('syncBtn').addEventListener('click', async () => {
   const btn = $('syncBtn');
@@ -367,28 +375,9 @@ $('syncBtn').addEventListener('click', async () => {
   show('syncPanel', true);
   $('progressBar').style.width = '0%';
   say($('syncMsg'), '');
-  try {
-    const r = await runSync({ onProgress: progress });
-    profile = await fetchMyProfile();
-    renderSettings();
-    const parts = [`${r.total} owned`];
-    if (r.fetched) parts.push(`${r.fetched} updated`);
-    if (r.removed) parts.push(`${r.removed} removed`);
-    if (r.skipped) parts.push(`${r.skipped} skipped`);
-    say($('syncMsg'), `Synced — ${parts.join(', ')}.`, 'ok');
-  } catch (err) {
-    const kind = err instanceof SyncError ? err.kind : 'error';
-    const text = kind === 'busy' ? 'BGG is busy, try again in a minute.'
-      : kind === 'down' ? (err.message || 'BGG is down right now. Your last synced shelf is still up.')
-      : kind === 'auth' ? 'Your session expired — sign in again.'
-      : err.message || 'Sync failed. Try again in a minute.';
-    say($('syncMsg'), text, 'err');
-    $('syncStep').textContent = 'Stopped';
-    $('progress').classList.remove('indeterminate');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Sync collection';
-  }
+  await runSync(syncHandlers);
+  btn.disabled = false;
+  btn.textContent = 'Sync collection';
 });
 
 // ---- sign out ----
