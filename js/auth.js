@@ -1,10 +1,12 @@
 import { supabase } from './supabase.js';
 
 // Supabase Auth helpers shared by landing.html, settings.html and the shelf.
-// Google OAuth and magic-link email both land on /settings, which is where a
+// Google OAuth and magic-link email both land on /welcome, which sends a
+// user with a shelf straight to it, resumes an unfinished sync, and shows
+// the connect screen to a brand-new user. It is also the page where a
 // first-time user is made to claim their BGG username.
 
-const SETTINGS_URL = () => `${location.origin}/settings`;
+const AFTER_SIGN_IN_URL = () => `${location.origin}/welcome`;
 
 /** @returns {Promise<object|null>} the current auth user, or null when signed out */
 export async function getUser() {
@@ -26,7 +28,7 @@ export function onAuthChange(fn) {
 export async function signInWithGoogle() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: SETTINGS_URL() },
+    options: { redirectTo: AFTER_SIGN_IN_URL() },
   });
   if (error) throw error;
 }
@@ -34,7 +36,7 @@ export async function signInWithGoogle() {
 export async function signInWithEmail(email) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: SETTINGS_URL(), shouldCreateUser: true },
+    options: { emailRedirectTo: AFTER_SIGN_IN_URL(), shouldCreateUser: true },
   });
   if (error) throw error;
 }

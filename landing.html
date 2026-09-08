@@ -169,7 +169,7 @@ document.getElementById('emailForm').addEventListener('submit', async (e) => {
   say('Sending…');
   try {
     await signInWithEmail(email);
-    say(`Check ${email} for a sign-in link. It opens Settings, where you can add your BGG username.`, 'ok');
+    say(`Check ${email} for a sign-in link. It brings you straight back here, signed in.`, 'ok');
   } catch (err) {
     say(err.message || "Couldn't send the link. Try again in a minute.", 'err');
     btn.disabled = false;
