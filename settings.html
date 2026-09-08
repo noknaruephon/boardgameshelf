@@ -122,21 +122,6 @@
     <div class="deal"><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deal-ring"></div></div>
   </div>
 
-  <!-- Signed in, but no BGG account connected yet (skipped /welcome). -->
-  <section class="plate" id="noProfile" hidden>
-    <h2>No collection yet</h2>
-    <p class="hint">Connect your BoardGameGeek account to get a shelf at <code>/u/&lt;your BGG username&gt;</code>. It takes about a minute.</p>
-    <div class="actions">
-      <a class="btn gold" href="/welcome">Connect your collection</a>
-      <button class="btn danger" id="signOutBtnNoProfile" type="button">Sign out</button>
-      <button class="btn quiet" id="deleteBtnNoProfile" type="button">Delete account</button>
-    </div>
-    <div class="actions" style="margin-top:14px">
-      <button class="btn quiet" id="browseBtnNoProfile" type="button">Browse an existing shelf</button>
-    </div>
-    <div id="pickerHostNoProfile" hidden></div>
-  </section>
-
   <div id="settings" hidden>
     <section class="plate">
       <h2>Your shelf</h2>
@@ -382,22 +367,18 @@ async function updateBrowseOffer({ syncFailed = false } = {}) {
   show('browseWrap', offer);
   if (!offer) show('pickerHost', false);
 }
-// One picker per host: the sync section (profile exists) and the
-// "No collection yet" card (no profile at all — skipped /welcome).
-const mounted = new Set();
-async function openPicker(hostId, hideOnFail) {
-  const host = $(hostId);
-  if (mounted.has(hostId)) { host.hidden = false; return; }
+let pickerMounted = false;
+$('browseBtn').addEventListener('click', async () => {
+  const host = $('pickerHost');
+  if (pickerMounted) { host.hidden = false; return; }
   try {
     await mountShelfPicker(host);
-    mounted.add(hostId);
+    pickerMounted = true;
   } catch (err) {
     console.error('public_shelves failed', err);
-    hideOnFail();
+    show('browseWrap', false);
   }
-}
-$('browseBtn').addEventListener('click', () => openPicker('pickerHost', () => show('browseWrap', false)));
-$('browseBtnNoProfile').addEventListener('click', () => openPicker('pickerHostNoProfile', () => { $('browseBtnNoProfile').hidden = true; }));
+});
 
 // ---- sign out ----
 async function doSignOut() {
@@ -405,7 +386,6 @@ async function doSignOut() {
   location.href = '/';
 }
 $('signOutBtn').addEventListener('click', doSignOut);
-$('signOutBtnNoProfile').addEventListener('click', doSignOut);
 
 // ---- delete account ----
 // Same confirm dialog the game-night pages use for irreversible steps.
@@ -413,7 +393,6 @@ const confirmEl = $('confirm');
 const openConfirm = () => { confirmEl.classList.add('open'); $('confirmKeep').focus(); };
 const closeConfirm = () => confirmEl.classList.remove('open');
 $('deleteBtn').addEventListener('click', openConfirm);
-$('deleteBtnNoProfile').addEventListener('click', openConfirm);
 $('confirmKeep').addEventListener('click', closeConfirm);
 confirmEl.addEventListener('click', (e) => { if (e.target === confirmEl) closeConfirm(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && confirmEl.classList.contains('open')) closeConfirm(); });
@@ -451,9 +430,9 @@ try {
       renderSettings();
       updateBrowseOffer();
     } else {
-      // Skipped onboarding: offer the way back to /welcome, and a way out.
-      $('sub').textContent = `Signed in as ${user.email || userDisplayName(user)}`;
-      show('noProfile', true);
+      // No BGG account connected yet: onboarding lives at /welcome, which
+      // also offers guest browsing and sign-out.
+      location.replace('/welcome');
     }
   }
 } catch (err) {
