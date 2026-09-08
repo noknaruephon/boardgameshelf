@@ -100,6 +100,25 @@ export async function claimProfile({ bggUsername, displayName }) {
   return { profile: data };
 }
 
+/**
+ * Changes the BGG username, and with it the slug (the shelf's address).
+ * Clears last_synced_at so the next sync is understood to be from scratch:
+ * the old username's games are removed by that sync's reconcile step.
+ * @returns {Promise<{ profile?: object, error?: 'taken' | 'invalid' }>}
+ */
+export async function changeBggUsername(bggUsername) {
+  const bgg = String(bggUsername || '').trim();
+  const slug = slugify(bgg);
+  if (!isValidSlug(slug)) return { error: 'invalid' };
+  try {
+    const profile = await updateMyProfile({ bgg_username: bgg, slug, last_synced_at: null });
+    return { profile };
+  } catch (error) {
+    if (error?.code === '23505') return { error: 'taken' };
+    throw error;
+  }
+}
+
 export async function updateMyProfile(patch) {
   const user = await getUser();
   if (!user) throw new Error('Not signed in');

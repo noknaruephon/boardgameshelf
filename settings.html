@@ -66,6 +66,8 @@
   }
   .field:focus{outline:none;border-color:var(--bgs-gold);}
   .field[readonly]{color:var(--bgs-ivory-70);border-style:dashed;}
+  .inline-edit{display:flex;gap:10px;align-items:center;}
+  .inline-edit .field{flex:1;min-width:0;}
   .row{display:flex;flex-direction:column;gap:12px;}
   .slug-preview{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--bgs-gold-dim);margin:6px 0 0;}
   .slug-preview b{color:var(--bgs-gold);font-weight:600;}
@@ -122,7 +124,7 @@
   <!-- First login: claim the BGG username that becomes the shelf's address. -->
   <section class="plate" id="claim" hidden>
     <h2>Your BGG username</h2>
-    <p class="hint">Your shelf lives at <code>/u/&lt;your BGG username&gt;</code>. This is the one field that can't be changed later, so match your <a href="https://boardgamegeek.com" rel="noopener" style="color:inherit">BoardGameGeek</a> account exactly.</p>
+    <p class="hint">Your shelf lives at <code>/u/&lt;your BGG username&gt;</code>. Match your <a href="https://boardgamegeek.com" rel="noopener" style="color:inherit">BoardGameGeek</a> account exactly. You can change it later in Settings, but the shelf address changes with it.</p>
     <form class="row" id="claimForm" novalidate>
       <div>
         <label for="bgg">BGG username</label>
@@ -152,7 +154,22 @@
     <section class="plate">
       <h2>BGG account</h2>
       <label for="bggRo">BGG username</label>
-      <input class="field" id="bggRo" type="text" readonly>
+      <div class="inline-edit" id="bggView">
+        <input class="field" id="bggRo" type="text" readonly>
+        <button class="btn quiet" id="bggEdit" type="button">Change</button>
+      </div>
+      <form class="row" id="bggForm" hidden novalidate>
+        <div>
+          <input class="field" id="bggNew" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Your BGG username" aria-label="New BGG username">
+          <p class="slug-preview" id="bggNewPreview" aria-live="polite"></p>
+        </div>
+        <p class="hint" style="margin:0">Your shelf address changes with it, so links you've already shared will stop working. Sync again afterwards to load the right collection.</p>
+        <div class="actions">
+          <button class="btn gold" id="bggSave" type="submit">Save</button>
+          <button class="btn quiet" id="bggCancel" type="button">Cancel</button>
+        </div>
+      </form>
+      <p class="msg" id="bggMsg" aria-live="polite"></p>
       <button class="toggle-row" id="publicToggle" type="button" role="switch" aria-checked="true" style="margin-top:14px">
         <span class="toggle-switch" aria-hidden="true"></span>
         <span class="toggle-text">Public shelf<small id="publicHint">Anyone with the link can see it.</small></span>
@@ -184,7 +201,7 @@
 
 <script type="module">
 import {
-  getUser, fetchMyProfile, claimProfile, updateMyProfile, signOut, slugify, isValidSlug, userDisplayName,
+  getUser, fetchMyProfile, claimProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync, SyncError, QUEUE_MAX_TRIES } from '/js/sync.js';
 
@@ -265,6 +282,47 @@ $('copyLink').addEventListener('click', async () => {
   const url = `${location.origin}/u/${profile.slug}`;
   try { await navigator.clipboard.writeText(url); say($('linkMsg'), 'Copied.', 'ok'); }
   catch { say($('linkMsg'), url); }
+});
+
+// ---- change BGG username ----
+function showBggForm(on) {
+  show('bggView', !on);
+  show('bggForm', on);
+  if (on) {
+    $('bggNew').value = profile.bgg_username;
+    $('bggNewPreview').textContent = '';
+    say($('bggMsg'), '');
+    $('bggNew').focus();
+    $('bggNew').select();
+  }
+}
+$('bggEdit').addEventListener('click', () => showBggForm(true));
+$('bggCancel').addEventListener('click', () => showBggForm(false));
+$('bggNew').addEventListener('input', () => {
+  const slug = slugify($('bggNew').value);
+  $('bggNewPreview').innerHTML = slug && slug !== profile.slug ? `New address: <b>/u/${slug}</b>` : '';
+});
+$('bggForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const next = $('bggNew').value.trim();
+  if (!next) { say($('bggMsg'), 'Enter your BGG username.', 'err'); return; }
+  if (next === profile.bgg_username) { showBggForm(false); return; }
+  if (!isValidSlug(slugify(next))) { say($('bggMsg'), 'Letters, numbers, dots, underscores and hyphens only, up to 64 characters.', 'err'); return; }
+  const btn = $('bggSave');
+  btn.disabled = true;
+  try {
+    const result = await changeBggUsername(next);
+    if (result.error === 'taken') { say($('bggMsg'), `“${next}” is already claimed on this site.`, 'err'); return; }
+    if (result.error === 'invalid') { say($('bggMsg'), 'That username can’t be used as a link.', 'err'); return; }
+    profile = result.profile;
+    renderSettings();
+    showBggForm(false);
+    say($('bggMsg'), `Saved. Your shelf is now /u/${profile.slug} — sync to load its games.`, 'ok');
+  } catch (err) {
+    say($('bggMsg'), err.message || "Couldn't save that. Try again.", 'err');
+  } finally {
+    btn.disabled = false;
+  }
 });
 
 // ---- visibility ----
