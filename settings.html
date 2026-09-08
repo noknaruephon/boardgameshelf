@@ -121,6 +121,16 @@
     <div class="deal"><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deal-ring"></div></div>
   </div>
 
+  <!-- Signed in, but no BGG account connected yet (skipped /welcome). -->
+  <section class="plate" id="noProfile" hidden>
+    <h2>No collection yet</h2>
+    <p class="hint">Connect your BoardGameGeek account to get a shelf at <code>/u/&lt;your BGG username&gt;</code>. It takes about a minute.</p>
+    <div class="actions">
+      <a class="btn gold" href="/welcome">Connect your collection</a>
+      <button class="btn danger" id="signOutBtnNoProfile" type="button">Sign out</button>
+    </div>
+  </section>
+
   <div id="settings" hidden>
     <section class="plate">
       <h2>Your shelf</h2>
@@ -182,7 +192,7 @@
 
 <script type="module">
 import {
-  getUser, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug,
+  getUser, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
 
@@ -318,10 +328,12 @@ $('syncBtn').addEventListener('click', async () => {
 });
 
 // ---- sign out ----
-$('signOutBtn').addEventListener('click', async () => {
+async function doSignOut() {
   try { await signOut(); } catch { /* fall through */ }
   location.href = '/';
-});
+}
+$('signOutBtn').addEventListener('click', doSignOut);
+$('signOutBtnNoProfile').addEventListener('click', doSignOut);
 
 // ---- boot ----
 try {
@@ -333,8 +345,13 @@ try {
     show('signedOut', true);
   } else {
     profile = await fetchMyProfile();
-    // No profile yet: onboarding lives at /welcome.
-    if (profile) renderSettings(); else location.replace('/welcome');
+    if (profile) {
+      renderSettings();
+    } else {
+      // Skipped onboarding: offer the way back to /welcome, and a way out.
+      $('sub').textContent = `Signed in as ${user.email || userDisplayName(user)}`;
+      show('noProfile', true);
+    }
   }
 } catch (err) {
   show('loading', false);

@@ -85,6 +85,10 @@
   .progtxt{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--bgs-ivory-70);margin:0;}
   .progtxt .ok{color:var(--bgs-vote-play);}
   .stack{margin-top:18px;display:grid;gap:10px;}
+  .skip{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:14px 0 0;text-align:center;}
+  .skip a{color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
+  .skip a:hover{color:var(--bgs-gold);}
+  .skip a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
   .retry{margin-top:14px;}
   @media(prefers-reduced-motion:reduce){
     .spin{animation:none;}
@@ -118,6 +122,7 @@
       <input class="field bgg" id="bgg" name="bgg" type="text" placeholder="noknaruephon" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="help">
       <p class="help" id="help" aria-live="polite">Same as your login on boardgamegeek.com. Not your email.</p>
       <div class="stack"><button class="btn gold" id="continue" type="submit" disabled>Continue</button></div>
+      <p class="skip"><a href="/settings">Skip for now</a> — you can connect a BGG account later in Settings.</p>
     </form>
 
     <!-- syncing -->
