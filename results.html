@@ -229,9 +229,11 @@ import {
 } from '/js/session.js';
 import { joinSessionChannel } from '/js/presence.js';
 import { deckFromSession, openGameModal } from '/js/waiting-room.js';
-import { fetchGamesForSession } from '/js/shelf-data.js';
+import { fetchGamesForSession, shelfHrefForSession } from '/js/shelf-data.js';
 
 const screen = document.getElementById('screen');
+// Where "Back to the shelf" goes: the owner's shelf once the session is known.
+let shelfHref = '/';
 
 function codeFromPath() {
   // /results/{code}
@@ -251,7 +253,7 @@ function renderEnded(message, detail) {
     <h1>Game night over</h1>
     <div class="ended"><p>${message}</p></div>
     ${detail && SHOW_ERROR_DETAIL ? `<p class="ended-detail">${detail}</p>` : ''}
-    <a class="btn-primary" href="/">Back to the shelf</a>`;
+    <a class="btn-primary" href="${shelfHref}">Back to the shelf</a>`;
 }
 
 function errorDetail(e) {
@@ -288,6 +290,7 @@ async function init(code) {
     renderEnded('Something went wrong loading this game night.', errorDetail(e));
     return;
   }
+  if (session) shelfHref = await shelfHrefForSession(session);
 
   if (!session) {
     renderEnded('That game night has ended, or the code is wrong.');
@@ -402,10 +405,10 @@ function runResults({ code, session, deck, myName, participants, votes }) {
   }
 
   function actionsHTML() {
-    const shelf = '<a class="btn-ghost" href="/">Back to the shelf</a>';
+    const shelf = `<a class="btn-ghost" href="${shelfHref}">Back to the shelf</a>`;
     // A clear winner (or nobody at all) gets one action — nothing competes
     // with the result, and re-voting a deck everyone rejected helps nobody.
-    if (!tie) return '<a class="btn-primary" href="/">Back to the shelf</a>';
+    if (!tie) return `<a class="btn-primary" href="${shelfHref}">Back to the shelf</a>`;
 
     if (isHost) {
       const names = requesters();
