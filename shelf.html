@@ -615,6 +615,24 @@
     margin:0;
     line-height:1.55;
   }
+  /* "Powered by BGG" attribution. The footer shares the grid's 960px cap, so
+     the rule sits on footer itself and lines up with the shelf above it.
+     No hover opacity: BGG's guidelines want the logo fully legible. */
+  footer{
+    padding-top:24px;
+    border-top:1px solid rgba(var(--bgs-gold-rgb),0.18);
+  }
+  footer .bgg-badge{
+    display:inline-block;
+    line-height:0;
+    margin:0 0 14px;
+    border-radius:4px;
+  }
+  footer .bgg-badge img{ display:block; }
+  footer .bgg-badge:focus-visible{
+    outline:none;
+    box-shadow:0 0 0 2px var(--bgs-bg), 0 0 0 4px var(--bgs-gold);
+  }
 
   /* ==== Game Night (Stage 1: session creation) ==== */
 
@@ -1256,6 +1274,9 @@
 </div>
 
 <footer>
+<a class="bgg-badge" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
+  <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33" loading="lazy">
+</a>
 <p class="primary">196 games in the collection (expansions excluded) &middot; synced daily from BoardGameGeek</p>
 <p class="secondary">Descriptions sourced from BoardGameGeek and publisher listings</p>
 </footer>
