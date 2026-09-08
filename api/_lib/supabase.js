@@ -25,6 +25,17 @@ export function adminClient() {
  * @returns {Promise<{ user: object, profile: object }>}
  */
 export async function requireProfile(req) {
+  const { user, profile } = await requireProfileOrUser(req);
+  if (!profile) throw new HttpError(404, 'Set your BGG username in Settings before syncing.');
+  return { user, profile };
+}
+
+/**
+ * Same check, but a user who has not claimed a profile yet is allowed
+ * through — the onboarding lookup runs before the profile row exists.
+ * @returns {Promise<{ user: object, profile: object|null }>}
+ */
+export async function requireProfileOrUser(req) {
   const token = bearerToken(req);
   if (!token) throw new HttpError(401, 'Sign in to sync.');
 
@@ -38,7 +49,6 @@ export async function requireProfile(req) {
     .eq('id', user.id)
     .maybeSingle();
   if (pErr) throw pErr;
-  if (!profile) throw new HttpError(404, 'Set your BGG username in Settings before syncing.');
 
-  return { user, profile };
+  return { user, profile: profile || null };
 }

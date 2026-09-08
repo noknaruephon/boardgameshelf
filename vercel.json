@@ -11,6 +11,7 @@
     { "source": "/",                  "destination": "/landing.html" },
     { "source": "/u/:slug",           "destination": "/shelf.html" },
     { "source": "/settings",          "destination": "/settings.html" },
+    { "source": "/welcome",           "destination": "/welcome.html" },
     { "source": "/night/:code/host",  "destination": "/night-host.html" },
     { "source": "/vote/:code",        "destination": "/vote.html" },
     { "source": "/vote/:code/swipe",  "destination": "/vote-swipe.html" },

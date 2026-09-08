@@ -132,6 +132,29 @@ export async function updateMyProfile(patch) {
   return data;
 }
 
+/**
+ * Live check of a BGG username through /api/bgg/lookup.
+ * @returns {Promise<{ found: boolean, username?: string, count?: number|null }>}
+ *   throws with `retryAfter` (seconds) when the endpoint asks to slow down
+ */
+export async function lookupBggUser(name, { signal } = {}) {
+  const token = await getAccessToken();
+  if (!token) throw new Error('Sign in first.');
+  const res = await fetch(`/api/bgg/lookup?name=${encodeURIComponent(name)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal,
+  });
+  let data = {};
+  try { data = await res.json(); } catch { /* non-JSON */ }
+  if (res.status === 429) {
+    const err = new Error(data.message || 'Slow down a moment.');
+    err.retryAfter = Number(data.retryAfter) || 1;
+    throw err;
+  }
+  if (!res.ok) throw new Error(data.message || "Couldn't reach BGG. Try again in a moment.");
+  return data;
+}
+
 /** A name to greet the user with before they have a profile. */
 export function userDisplayName(user) {
   const m = user?.user_metadata || {};

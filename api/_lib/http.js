@@ -31,6 +31,13 @@ export async function readBody(req) {
   try { return JSON.parse(raw); } catch { return {}; }
 }
 
+/** Query string of a GET request, whichever shape the runtime hands over. */
+export function queryParams(req) {
+  if (req.query && typeof req.query === 'object') return req.query;
+  const url = new URL(req.url || '/', 'http://localhost');
+  return Object.fromEntries(url.searchParams.entries());
+}
+
 export function bearerToken(req) {
   const header = req.headers?.authorization || req.headers?.Authorization || '';
   const m = /^Bearer\s+(.+)$/i.exec(String(header).trim());
@@ -42,11 +49,11 @@ export function bearerToken(req) {
  * with its own status, anything else as a 500 that says nothing about the
  * internals.
  */
-export function handler(fn) {
+export function handler(fn, { methods = ['POST'] } = {}) {
   return async (req, res) => {
     try {
       if (req.method === 'OPTIONS') { res.statusCode = 204; res.end(); return; }
-      if (req.method !== 'POST') throw new HttpError(405, 'Method not allowed');
+      if (!methods.includes(req.method)) throw new HttpError(405, 'Method not allowed');
       await fn(req, res);
     } catch (err) {
       if (err instanceof HttpError) {
