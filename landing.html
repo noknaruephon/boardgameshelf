@@ -127,11 +127,12 @@ import { getUser, signInWithGoogle, signInWithEmail, fetchMyProfile, userDisplay
 const msg = document.getElementById('msg');
 const say = (text, kind = '') => { msg.textContent = text; msg.className = `msg ${kind}`; };
 
-document.getElementById('googleBtn').addEventListener('click', async (e) => {
-  e.currentTarget.disabled = true;
+const googleBtn = document.getElementById('googleBtn');
+googleBtn.addEventListener('click', async () => {
+  googleBtn.disabled = true;
   say('Opening Google…');
   try { await signInWithGoogle(); }
-  catch (err) { say(err.message || "Couldn't start Google sign-in.", 'err'); e.target.disabled = false; }
+  catch (err) { say(err.message || "Couldn't start Google sign-in.", 'err'); googleBtn.disabled = false; }
 });
 
 document.getElementById('emailForm').addEventListener('submit', async (e) => {

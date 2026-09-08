@@ -5,10 +5,9 @@
 // content from games.json) survives every sync. Ids BGG does not return are
 // skipped and reported; the client keeps going.
 
-import { handler, json, HttpError } from '../_lib/http.js';
+import { handler, json, readBody, HttpError } from '../_lib/http.js';
 import { adminClient, requireProfile } from '../_lib/supabase.js';
 import { bggFetch, parseThings } from '../_lib/bgg.js';
-import { readBody } from '../_lib/http.js';
 
 export const MAX_IDS = 20;
 

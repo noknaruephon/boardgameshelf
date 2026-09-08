@@ -1330,16 +1330,18 @@
 </div>
 
 <script type="module">
+// Absolute imports: this page is served at /u/<slug>, so a relative './js/…'
+// would resolve under /u/ and 404 silently. Same rule as the game-night pages.
 import {
   DEFAULT_FILTERS, isFilterActive, activeGroupCount, playersLabel,
   timeBucket, playersMatch, bestFitMatch, applyFilters,
   weightLabel, timeLabel, playersRangeLabel, vibeLabel
-} from './js/filters.js';
-import { createGameModal } from './js/game-modal.js';
-import { registerOverlay, syncScrollLock } from './js/scroll-lock.js';
-import { VIBES, applyVibes } from './js/vibes.js';
-import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from './js/shelf-data.js';
-import { getUser } from './js/auth.js';
+} from '/js/filters.js';
+import { createGameModal } from '/js/game-modal.js';
+import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
+import { VIBES, applyVibes } from '/js/vibes.js';
+import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
+import { getUser } from '/js/auth.js';
 
 // ---- Game Night feature flag ----
 // Live: every visitor gets the Game Night pill. All four stages — session
@@ -2255,7 +2257,7 @@ async function handleGnStart(){
 // ---- wiring ----
 
 function initGameNight(){
-  gnSessionModPromise = import('./js/session.js');
+  gnSessionModPromise = import('/js/session.js');
 
   // Entry point: a floating pill fixed bottom-centre, above the grid but below
   // every bar, sheet, and modal. Labelled, because an icon alone would give no
