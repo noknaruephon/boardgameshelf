@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#160F0A">
+<title>Privacy · BoardgameShelf</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/icon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<script defer src="/_vercel/insights/script.js"></script>
+<style>
+  /* Tokens and page chrome come from css/base.css. */
+  body{padding:36px 20px 80px;}
+  .wrap{max-width:640px;margin:0 auto;}
+  .mark{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;color:var(--bgs-gold);margin:0 0 22px;}
+  .mark a{color:inherit;text-decoration:none;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(32px,7vw,44px);line-height:1.05;letter-spacing:-.015em;margin:0 0 6px;}
+  .updated{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);margin:0 0 28px;}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:32px 0 10px;}
+  p,li{font-size:16px;line-height:1.6;color:var(--bgs-ivory-70);}
+  p{margin:0 0 14px;}
+  ul{margin:0 0 14px;padding-left:22px;}
+  li{margin:0 0 6px;}
+  strong{color:var(--bgs-ivory);font-weight:500;}
+  a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
+  a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  footer{max-width:640px;margin:44px auto 0;padding:24px 0 0;border-top:1px solid rgba(var(--bgs-gold-rgb),.18);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-gold-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="mark"><a href="/">BoardgameShelf</a></p>
+  <h1>Privacy policy</h1>
+  <p class="updated">Last updated 8 September 2026</p>
+
+  <p>BoardgameShelf is a free, non-commercial hobby site run by one person. It shows a board game collection as a browsable shelf and lets friends vote on what to play. This page explains what the site stores and why.</p>
+
+  <h2>What is collected</h2>
+  <ul>
+    <li><strong>Sign-in details.</strong> When you sign in with Google or an email link, the site receives your email address and, from Google, your name and profile picture URL. These identify your account. The site never sees your Google password.</li>
+    <li><strong>Your BoardGameGeek username</strong> and the list of games you have marked as owned on BoardGameGeek, together with your rating, play count and comment for each. This is fetched from BoardGameGeek's public API only when you press Sync, and only for the username you entered.</li>
+    <li><strong>Game night activity.</strong> When you host or join a game night, the site stores the name you type, the games in the deck, and your play or pass votes so the table can see a result. No account is needed to join.</li>
+    <li><strong>Basic visit statistics</strong> from Vercel Web Analytics: page views and general device and country information. This is aggregated and does not identify you.</li>
+  </ul>
+
+  <h2>What is public</h2>
+  <p>Your shelf at <strong>/u/&lt;your BGG username&gt;</strong> is public by default so you can share it. It shows your BGG username, the display name you chose, and the games you own with their covers and details. Your email address, ratings, play counts and comments are not shown on the shelf. You can make your shelf private in Settings; then only you can see it while signed in.</p>
+
+  <h2>Where it is stored</h2>
+  <p>Account, profile, collection and game night data are stored in a <a href="https://supabase.com" rel="noopener">Supabase</a> database. The site itself is hosted on <a href="https://vercel.com" rel="noopener">Vercel</a>. Game covers are not downloaded; they are loaded in your browser directly from BoardGameGeek's image servers, which means BoardGameGeek may see the request as it would for any image on their own site.</p>
+
+  <h2>What it is used for</h2>
+  <p>Only to run the site: signing you in, showing your shelf, syncing your collection, and running game nights. The data is not sold, shared with advertisers, or used for anything else. There are no ads and no tracking cookies. The site keeps a sign-in session in your browser's local storage so you stay signed in.</p>
+
+  <h2>Third parties</h2>
+  <ul>
+    <li><a href="https://policies.google.com/privacy" rel="noopener">Google</a>, if you sign in with Google.</li>
+    <li><a href="https://supabase.com/privacy" rel="noopener">Supabase</a>, for sign-in and the database.</li>
+    <li><a href="https://vercel.com/legal/privacy-policy" rel="noopener">Vercel</a>, for hosting and analytics.</li>
+    <li><a href="https://boardgamegeek.com/privacy" rel="noopener">BoardGameGeek</a>, for game data and cover images. BoardgameShelf is not affiliated with or endorsed by BoardGameGeek.</li>
+  </ul>
+
+  <h2>Deleting your data</h2>
+  <p>To delete your account and everything stored about you, email <a href="mailto:nok.naruephon@gmail.com">nok.naruephon@gmail.com</a> from the address you signed in with. Your profile, collection and game night rows will be removed. Game details shared across users (the cache of names, covers and stats fetched from BoardGameGeek) are not personal data and stay.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the date at the top will change with it.</p>
+
+  <h2>Contact</h2>
+  <p><a href="mailto:nok.naruephon@gmail.com">nok.naruephon@gmail.com</a></p>
+</div>
+<footer><a href="/">Back to BoardgameShelf</a></footer>
+</body>
+</html>
