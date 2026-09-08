@@ -170,3 +170,19 @@ body.scroll-locked{
   .deal .deck-card{animation:none;opacity:1;transform:translate(0,0) rotate(0deg);}
   .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
 }
+
+/* "Powered by BGG" attribution, shared by every game-night screen (the
+   shelf and landing carry their own footer rules with the same values).
+   Sits outside #screen so re-rendering the screen never removes it. The
+   badge is never tinted, dimmed or hidden: BGG's guidelines want the logo
+   fully legible wherever their data is shown. */
+.bgg-footer{
+  max-width:420px;margin:36px auto 0;padding:20px 0 0;
+  border-top:1px solid rgba(var(--bgs-gold-rgb),.18);text-align:center;
+}
+.bgg-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;}
+.bgg-footer .bgg-badge img{display:block;width:150px;height:33px;}
+.bgg-footer .bgg-badge:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
