@@ -126,9 +126,9 @@
       <div class="stack">
         <button class="btn gold" id="continue" type="submit" disabled>Continue</button>
         <button class="btn" id="claimAnyway" type="button" hidden>Claim anyway</button>
-        <button class="btn quiet" id="browseBtn" type="button" hidden>Browse an existing shelf instead</button>
+        <button class="btn quiet" id="browseBtn" type="button">Browse an existing shelf instead</button>
       </div>
-      <p class="skip"><a href="/settings">Skip for now</a> — you can connect a BGG account later in Settings.</p>
+      <p class="skip">Not now? <a href="#" id="signOutLink">Sign out</a> — you can come back and connect your BGG account any time.</p>
     </form>
 
     <!-- syncing -->
@@ -159,7 +159,7 @@
 </div>
 
 <script type="module">
-import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName } from '/js/auth.js';
+import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName, signOut } from '/js/auth.js';
 import { runSync, BATCH_SIZE, BATCH_SECONDS } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
 
@@ -214,7 +214,6 @@ function cancelLookup() {
 function resetToEmpty() {
   lookup = null;
   $('claimAnyway').hidden = true;
-  $('browseBtn').hidden = true;
   $('continue').disabled = true;
   $('continue').textContent = 'Continue';
   setState('empty');
@@ -256,7 +255,6 @@ async function check(name) {
       lookup = null;
       help("We couldn't find that account. Usernames are case-insensitive, so it's usually a typo.", 'err');
       $('continue').disabled = true;
-      $('browseBtn').hidden = false;
       setState('missing');
     }
   } catch (err) {
@@ -279,7 +277,6 @@ async function check(name) {
       help(`Couldn't check with BGG right now (${escapeHTML(err.message || 'no reply')}). You can claim the name as typed and sync later from Settings.`, 'err');
       $('continue').disabled = true;
       $('claimAnyway').hidden = false;
-      $('browseBtn').hidden = false;
       setState('missing');
     }
   } finally {
@@ -342,6 +339,12 @@ async function showPicker() {
 }
 $('browseBtn').addEventListener('click', showPicker);
 $('browseBtnSync').addEventListener('click', showPicker);
+
+$('signOutLink').addEventListener('click', async (e) => {
+  e.preventDefault();
+  try { await signOut(); } catch { /* fall through */ }
+  location.href = '/';
+});
 
 $('claimAnyway').addEventListener('click', () => {
   const name = $('bgg').value.trim();
