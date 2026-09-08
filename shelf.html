@@ -1413,13 +1413,14 @@ function renderOwner(){
   document.title = `${name} · BoardgameShelf`;
   const eyebrow = document.getElementById('shelfOwner');
   eyebrow.textContent = name;
-  // The owner gets a way back to Settings; nobody else sees a link here.
+  // Owner: Settings. Signed-in guest: their own shelf (/welcome routes to it,
+  // or to the connect screen if they have none yet). Signed out: Sign in.
   getUser().then(user => {
-    if(!user || user.id !== profile.id) return;
     const a = document.createElement('a');
-    a.href = '/settings';
     a.className = 'owner-link';
-    a.textContent = 'Settings';
+    if(!user){ a.href = '/'; a.textContent = 'Sign in'; }
+    else if(user.id === profile.id){ a.href = '/settings'; a.textContent = 'Settings'; }
+    else { a.href = '/welcome'; a.textContent = 'Your shelf'; }
     eyebrow.append(' · ', a);
   }).catch(()=>{});
   // The expansions switch only earns its place on a shelf that has some.
