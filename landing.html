@@ -161,7 +161,7 @@
     <p class="msg" id="msg" aria-live="polite"></p>
 
     <p class="guestline" id="guestLine" hidden>Just looking?
-      <a id="guestLink" href="/u/noknaruephon">Browse <span id="guestName">Nok's</span> shelf as a guest</a>
+      <a id="guestLink" href="/u/noknaruephon">Browse as a guest</a>
     </p>
   </section>
 
@@ -253,15 +253,12 @@ emailToggle.addEventListener('click', () => {
   if (open) document.getElementById('email').focus();
 });
 
-// ---- Guest line: the first public shelf, fetched after first paint ----
+// ---- Guest line: links to the first public shelf, fetched after first paint ----
 // Never blocks the sign-in buttons; stays hidden if the list is empty or fails.
-const possessive = (name) => (/s$/i.test(name) ? `${name}'` : `${name}'s`);
 setTimeout(async () => {
   try {
     const [shelf] = await fetchPublicShelves();
     if (!shelf?.slug) return;
-    const name = shelf.display_name || shelf.bgg_username || shelf.slug;
-    document.getElementById('guestName').textContent = possessive(name);
     document.getElementById('guestLink').href = `/u/${encodeURIComponent(shelf.slug)}`;
     document.getElementById('guestLine').hidden = false;
   } catch (err) {

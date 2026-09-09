@@ -37,7 +37,7 @@ fanned covers, h1, sub) stays exactly as it is.
   <p class="msg" id="msg" aria-live="polite"></p>
 
   <p class="guestline" id="guestLine" hidden>Just looking?
-    <a id="guestLink" href="/u/noknaruephon">Browse <span id="guestName">Nok's</span> shelf as a guest</a>
+    <a id="guestLink" href="/u/noknaruephon">Browse as a guest</a>
   </p>
 </section>
 ```
@@ -52,11 +52,10 @@ row card with cover stack, and the old dark Google button styling.
   states.
 - After a magic link is sent successfully, the panel stays open and the ok
   message shows under it as before.
-- `#guestLine` is populated from the existing `public_shelves()` RPC
-  (first row): `guestName` = `display_name` or `bgg_username` with a
-  possessive ("Nok's"), href = `/u/<slug>`. If the RPC fails or returns
-  nothing it stays hidden. Fetched after first paint; never blocks the
-  sign-in buttons.
+- `#guestLine` links to the first row of the existing `public_shelves()`
+  RPC: href = `/u/<slug>`. The label is the fixed "Browse as a guest". If
+  the RPC fails or returns nothing it stays hidden. Fetched after first
+  paint; never blocks the sign-in buttons.
 - A user who is already signed in sees `#signedIn` instead of `#signIn`,
   as before.
 
@@ -120,10 +119,8 @@ and divider CSS that is no longer referenced is removed.
   cannot load (or no client ID is configured), the overlay never mounts
   and the gold button runs the redirect flow through Supabase as before.
   Nothing in the auth JS changed.
-- **Possessive** is `Name's`, or `Name'` when the name already ends in an
-  s. The default markup carries "Nok's" and `/u/noknaruephon` so the line
-  reads correctly even before the RPC answers, but it is hidden until it
-  does.
+- The default markup carries `/u/noknaruephon` so the link is right even
+  before the RPC answers, but the line is hidden until it does.
 - **The shelf picker module** (`js/shelf-picker.js`) is still used by the
   welcome and settings pages; the landing page now imports only its
   `fetchPublicShelves()` helper.
