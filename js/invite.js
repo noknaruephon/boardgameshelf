@@ -1,5 +1,5 @@
-// Game night invite poster — the invite sheet and night creation, reached
-// from the Game Night selection mode. Behind the INVITE_ENABLED kill switch
+// Game night invite poster — the invite sheet, reached from the Game Night
+// selection mode. Behind the INVITE_ENABLED kill switch
 // on the shelf (?invite=1 reveals it while off); shelf.html calls
 // setupInvite() only when the flag is on, so with it off none of this is in
 // the DOM.
@@ -14,16 +14,13 @@
 // drawn by js/invite-poster.js.
 
 import { registerOverlay, syncScrollLock } from './scroll-lock.js';
-import { userDisplayName } from './auth.js';
-import { renderInvitePoster, NIGHT_URL_BASE } from './invite-poster.js';
+import { renderInvitePoster } from './invite-poster.js';
 
 // Tabler outline icons (3.31), 24px grid, stroke 2, currentColor.
 const ICON_PATHS = {
   calendar: '<path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/><path d="M11 15h1"/><path d="M12 15v3"/>',
   'map-pin': '<path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"/>',
   star: '<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>',
-  link: '<path d="M9 15l6 -6"/><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>',
-  copy: '<path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"/><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"/>',
   'chevron-right': '<path d="M9 6l6 6l-6 6"/>',
   share: '<path d="M6 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M18 6m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M8.7 10.7l6.6 -3.4"/><path d="M8.7 13.3l6.6 3.4"/>',
   x: '<path d="M18 6l-12 12"/><path d="M6 6l12 12"/>',
@@ -70,11 +67,9 @@ const esc = s => String(s)
  * @param {HTMLElement} ctx.beforeEl    the bar's Continue button; Share goes before it
  * @param {() => string[]} ctx.getSelectedIds  the shelf's picks, bggIds in selection order
  * @param {() => object[]} ctx.getGames legacy-shaped games currently loaded
- * @param {() => object|null} ctx.getProfile  the shelf's profile (owner)
- * @param {() => Promise<object|null>} ctx.getViewer  the signed-in user, if any
  * @returns {{ onSelection: () => void, reset: () => void }}
  */
-export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProfile, getViewer }) {
+export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames }) {
   if (!document.querySelector(`link[href="${POSTER_FONTS_HREF}"]`)) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -107,7 +102,7 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
 
   function onSelection() {
     shareBtn.disabled = picks().length === 0;
-    if (sheetOpen) { syncRows(); ensureNight(); renderPreview(); }
+    if (sheetOpen) { syncRows(); renderPreview(); }
   }
 
   // ---- sheet ----
@@ -134,7 +129,6 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
       <div class="invite-previewwrap">
         <div class="invite-preview" id="invitePreview">
           <div class="invite-preview__canvas" id="inviteCanvasHolder"></div>
-          <div class="invite-spinner" id="inviteSpinner" role="status" hidden><i aria-hidden="true"></i>Creating the night…</div>
         </div>
       </div>
       <div class="invite-seg" role="group" aria-label="Format">
@@ -168,12 +162,6 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
           ${icon('chevron-right', 'invite-row__chev')}
         </button>
         <div class="invite-picker" id="invitePicker" role="group" aria-label="Pick the headline" hidden></div>
-        <button class="invite-row" id="inviteLinkRow" type="button">
-          ${icon('link')}
-          <span class="invite-row__lab"><b>Link</b></span>
-          <span class="invite-row__val mono" id="inviteLinkVal" aria-live="polite"></span>
-          ${icon('copy', 'invite-row__chev')}
-        </button>
       </div>
     </div>
     <div class="invite-actions">
@@ -199,7 +187,6 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
 
   const $ = id => sheet.querySelector('#' + id);
   const holder = $('inviteCanvasHolder');
-  const spinnerEl = $('inviteSpinner');
   const formatBtns = [...sheet.querySelectorAll('[data-format]')];
   const whenInput = $('inviteWhenInput');
   const whereEdit = $('inviteWhereEdit');
@@ -283,7 +270,6 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     if (!tile) return;
     headlineId = tile.dataset.headline;
     syncRows();
-    ensureNight();
     renderPreview();
   });
   function renderPicker() {
@@ -312,22 +298,6 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     }).join('') || '<p class="invite-picker__empty">Pick games on the shelf first.</p>';
   }
 
-  // Link: copies the night's URL; while there is no code it says why, and a
-  // failed creation makes the row the retry.
-  const nightUrl = () => (night.code ? `${NIGHT_URL_BASE}${night.code}` : '');
-  let copiedTimer = null;
-  $('inviteLinkRow').addEventListener('click', async () => {
-    if (night.error) { night = emptyNight(); ensureNight(); return; }
-    if (!night.code) return;
-    try {
-      await navigator.clipboard.writeText(nightUrl());
-      const val = $('inviteLinkVal');
-      val.textContent = 'Copied';
-      clearTimeout(copiedTimer);
-      copiedTimer = setTimeout(syncRows, 1600);
-    } catch {}
-  });
-
   function syncRows() {
     const dateLabel = formatWhen(when.date, when.time);
     setRow('inviteWhenVal', dateLabel, 'Add a date');
@@ -340,12 +310,6 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     $('inviteThumbs').innerHTML = thumbs.map(g =>
       `<i class="${g.bggId === head ? 'h' : ''}" style="--c:${esc(g.color || '')}${g.image ? `;background-image:url(&quot;${esc(g.image)}&quot;)` : ''}"></i>`).join('');
     if (!picker.hidden) renderPicker();
-
-    const linkVal = $('inviteLinkVal');
-    if (night.code) { linkVal.textContent = `/n/${night.code}`; linkVal.classList.remove('muted'); }
-    else if (night.error) { linkVal.textContent = "Couldn't create the night. Tap to retry"; linkVal.classList.add('muted'); }
-    else if (night.pending) { linkVal.textContent = 'Creating…'; linkVal.classList.add('muted'); }
-    else { linkVal.textContent = ids.length ? '' : 'Pick a game first'; linkVal.classList.add('muted'); }
   }
   // A row's value, or a muted "Add a …" when the host hasn't set one — in
   // which case that line is simply not on the poster.
@@ -368,7 +332,6 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     syncScrollLock();
     syncRows();
     getFocusable()[0]?.focus();
-    ensureNight();
     renderPreview();
   }
 
@@ -401,57 +364,9 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     headlineId = null;
     when.date = ''; when.time = '';
     venue = '';
-    night = emptyNight();
     if (!viewer.hidden) closeViewer();
     if (sheetOpen) closeSheet();
     shareBtn.disabled = true;
-  }
-
-  // ---- the night ----
-
-  // One night per selection: the key is the ordered picks. Reopening the
-  // sheet on the same picks reuses the code; a different selection creates a
-  // new night. The headline is not part of the key — the night does not
-  // store it, so moving it must not spend another night.
-  function emptyNight() { return { key: null, code: null, pending: false, error: false }; }
-  let night = emptyNight();
-  const selectionKey = () => picks().join(',');
-
-  // The host is the signed-in viewer when there is one, else the shelf's owner.
-  let hostPromise = null;
-  function getHost() {
-    hostPromise ||= Promise.resolve(getViewer()).then(viewer => {
-      const p = getProfile();
-      return (viewer && userDisplayName(viewer)) || p?.display_name || p?.bgg_username || p?.slug || 'the host';
-    }).catch(() => getProfile()?.display_name || 'the host');
-    return hostPromise;
-  }
-
-  async function ensureNight() {
-    const key = selectionKey();
-    if (night.key === key && (night.code || night.pending)) return;
-    const ids = picks();
-    if (!ids.length) { night = { ...emptyNight(), key }; syncRows(); return; }
-    night = { key, code: null, pending: true, error: false };
-    spinnerEl.hidden = false;
-    syncRows();
-    try {
-      const [{ createGameNight }, hostName] = await Promise.all([import('./session.js'), getHost()]);
-      const code = await createGameNight({
-        hostName, mode: 'manual', revealDeck: true,
-        gameIds: ids, ownerId: getProfile()?.id,
-      });
-      if (night.key !== key) return; // the selection moved on meanwhile
-      // Same key the Game Night flow sets, so /night/:code/host knows the host.
-      try { sessionStorage.setItem(`gamenight:${code}:name`, hostName); } catch {}
-      night = { key, code, pending: false, error: false };
-    } catch (err) {
-      if (night.key !== key) return;
-      night = { key, code: null, pending: false, error: true };
-    }
-    spinnerEl.hidden = true;
-    syncRows();
-    if (sheetOpen) renderPreview();
   }
 
   // ---- preview ----
@@ -470,7 +385,7 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     const dateLabel = formatWhen(when.date, when.time);
     const canvas = await renderInvitePoster({
       format, headline, rest,
-      night: { code: night.code, error: night.error, dateLabel, venue: venue || null },
+      details: { dateLabel, venue: venue || null },
     });
     if (seq !== renderSeq) return;
     canvas.className = `invite-canvas ${format}`;
@@ -487,7 +402,7 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
 
   // ---- share / save ----
 
-  const fileName = () => `game-night-${night.code || 'draft'}-${format}.png`;
+  const fileName = () => `game-night-${format}.png`;
 
   function toPng(canvas) {
     return new Promise((resolve, reject) => {

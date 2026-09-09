@@ -10,11 +10,12 @@
 // canvas stays untainted and toBlob() keeps working; a cover that fails
 // falls back to the game's curated colour plate with its title set in
 // Fraunces, exactly as the mockup's placeholder plates do.
-
-import qrcode from '../vendor/qrcode-generator.js';
+//
+// No link and no QR: until there is an RSVP page there is nothing for
+// them to point at, so the poster says only what the host knows — the
+// games, and the date and place when set.
 
 export const STRIP_MAX = 5;
-export const NIGHT_URL_BASE = 'https://boardgameshelf.app/n/';
 
 const W = 1080;
 
@@ -24,13 +25,13 @@ const LAYOUT = {
     h: 1920, hero: 1160, bodyTop: 1040,
     title: 128, titleFloor: 96,
     tile: 150, gap: 22, tileFont: 26, tilePad: 12, plusFont: 40, caption: 34, stripTop: 44,
-    hairlineBottom: 330, footBottom: 88, date: 44, venue: 34, link: 36, linkTop: 22, qr: 190,
+    hairlineTop: 56, footTop: 40, date: 44, venue: 34,
   },
   square: {
     h: 1080, hero: 620, bodyTop: 520,
     title: 84, titleFloor: 64,
     tile: 104, gap: 16, tileFont: 18, tilePad: 8, plusFont: 28, caption: 24, stripTop: 26,
-    hairlineBottom: 230, footBottom: 60, date: 32, venue: 24, link: 26, linkTop: 14, qr: 140,
+    hairlineTop: 36, footTop: 26, date: 32, venue: 24,
   },
 };
 
@@ -42,8 +43,7 @@ const TITLE = { top: 12, maxW: 920, step: 8, lh: 1, tracking: -0.02 };
 const PLATE = { font: 96, pad: 120, lh: 1 }; // hero placeholder title
 const TILE_RADIUS = 10;
 const CAPTION = { lh: 1.35, gap: 8 };    // .say has margin-left 8 on top of the flex gap
-const FOOT = { dateLh: 1.2, venueLh: 1.3, venueTop: 6, linkLh: 1.2 };
-const QR = { pad: 14, radius: 12 };
+const FOOT = { dateLh: 1.2, venueLh: 1.3, venueTop: 6 };
 
 const FONTS = {
   display: '"Fraunces", Georgia, serif',
@@ -263,28 +263,6 @@ function drawPlusTile(ctx, L, T, n, x, y) {
   ctx.restore();
 }
 
-function drawQr(ctx, L, T, url) {
-  const qr = qrcode(0, 'M');
-  qr.addData(url);
-  qr.make();
-  const n = qr.getModuleCount();
-  const x = W - INSET - L.qr, y = L.h - L.footBottom - L.qr;
-  ctx.fillStyle = T.ivory;
-  roundRect(ctx, x, y, L.qr, L.qr, QR.radius);
-  ctx.fill();
-  const inner = L.qr - QR.pad * 2;
-  const m = inner / n;
-  ctx.fillStyle = T.bg;
-  for (let r = 0; r < n; r++) {
-    for (let c = 0; c < n; c++) {
-      if (!qr.isDark(r, c)) continue;
-      const x0 = Math.round(x + QR.pad + c * m), x1 = Math.round(x + QR.pad + (c + 1) * m);
-      const y0 = Math.round(y + QR.pad + r * m), y1 = Math.round(y + QR.pad + (r + 1) * m);
-      ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
-    }
-  }
-}
-
 /** Strip caption for n games beside the headline. */
 export function stripCaption(n) {
   if (n === 0) return 'Bring your own if you like';
@@ -297,11 +275,11 @@ export function stripCaption(n) {
  * @param {'story'|'square'} opts.format
  * @param {object|null} opts.headline   legacy game ({ title, color, image, imageLarge }) or null
  * @param {object[]} opts.rest          the other picks, in strip order
- * @param {object} opts.night           { code, error, dateLabel, venue } — no code: no QR, no link;
- *   a missing dateLabel or venue leaves that footer line out entirely, never a placeholder
+ * @param {object} opts.details         { dateLabel, venue } — a missing one leaves that
+ *   line out entirely, never a placeholder; with neither, no footer and no hairline
  * @returns {Promise<HTMLCanvasElement>}
  */
-export async function renderInvitePoster({ format = 'story', headline = null, rest = [], night = {} }) {
+export async function renderInvitePoster({ format = 'story', headline = null, rest = [], details = {} }) {
   const L = LAYOUT[format] || LAYOUT.story;
   const H = L.h;
   const T = readTokens();
@@ -350,41 +328,29 @@ export async function renderInvitePoster({ format = 'story', headline = null, re
   const capTop = y + (rowH - L.caption * CAPTION.lh) / 2;
   fillText(ctx, stripCaption(rest.length), x + CAPTION.gap, baseline(ctx, capTop, L.caption, CAPTION.lh));
 
-  // hairline
-  ctx.fillStyle = `rgba(${T.goldRgb},.8)`;
-  ctx.fillRect(INSET, H - L.hairlineBottom - 2, W - INSET * 2, 2);
+  y += rowH;
 
-  // footer: date, "at {venue}", link — bottom-aligned with the QR plate.
-  // Lines the host hasn't decided are left out and the column collapses
-  // upward, so the link keeps its gap to whatever sits above it.
-  const dateH = night.dateLabel ? L.date * FOOT.dateLh : 0;
-  const venueH = night.venue ? L.venue * FOOT.venueLh : 0;
-  const venueGap = night.dateLabel && night.venue ? FOOT.venueTop : 0;
-  const linkH = L.link * FOOT.linkLh;
-  const aboveLink = dateH + venueGap + venueH;
-  let fy = H - L.footBottom - (aboveLink + (aboveLink ? L.linkTop : 0) + linkH);
-  if (night.dateLabel) {
-    setFont(ctx, 500, L.date, FONTS.mono);
-    ctx.fillStyle = T.ivory;
-    fillText(ctx, night.dateLabel, INSET, baseline(ctx, fy, L.date, FOOT.dateLh));
-    fy += dateH + venueGap;
+  // footer: a hairline under the strip, then the date and "at {venue}".
+  // Lines the host hasn't decided are left out; with neither there is no
+  // footer and no hairline. Everything flows down from the strip, so the
+  // gap above the hairline is the same whatever the title's line count.
+  if (details.dateLabel || details.venue) {
+    y = Math.round(y + L.hairlineTop); // whole pixels: a 2px rule must not blur across three rows
+    ctx.fillStyle = `rgba(${T.goldRgb},.8)`;
+    ctx.fillRect(INSET, y, W - INSET * 2, 2);
+    y += 2 + L.footTop;
+    if (details.dateLabel) {
+      setFont(ctx, 500, L.date, FONTS.mono);
+      ctx.fillStyle = T.ivory;
+      fillText(ctx, details.dateLabel, INSET, baseline(ctx, y, L.date, FOOT.dateLh));
+      y += L.date * FOOT.dateLh + (details.venue ? FOOT.venueTop : 0);
+    }
+    if (details.venue) {
+      setFont(ctx, 400, L.venue, FONTS.ui);
+      ctx.fillStyle = `rgba(${T.ivoryRgb},.7)`;
+      fillText(ctx, `at ${details.venue}`, INSET, baseline(ctx, y, L.venue, FOOT.venueLh));
+    }
   }
-  if (night.venue) {
-    setFont(ctx, 400, L.venue, FONTS.ui);
-    ctx.fillStyle = `rgba(${T.ivoryRgb},.7)`;
-    fillText(ctx, `at ${night.venue}`, INSET, baseline(ctx, fy, L.venue, FOOT.venueLh));
-    fy += venueH;
-  }
-  if (aboveLink) fy += L.linkTop;
-  const linkText = night.error ? "Couldn't create the night. Try again."
-    : night.code ? `${NIGHT_URL_BASE.replace(/^https?:\/\//, '')}${night.code}` : '';
-  if (linkText) {
-    setFont(ctx, 500, L.link, FONTS.mono);
-    ctx.fillStyle = T.ivory;
-    fillText(ctx, linkText, INSET, baseline(ctx, fy, L.link, FOOT.linkLh));
-  }
-
-  if (night.code) drawQr(ctx, L, T, `${NIGHT_URL_BASE}${night.code}`);
 
   return canvas;
 }

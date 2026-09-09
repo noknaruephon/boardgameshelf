@@ -1198,22 +1198,6 @@
     border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);background:var(--bgs-bg);
   }
   .invite-canvas.square{width:300px;}
-  /* The one animated element in the feature: rotation only, no transition. */
-  .invite-spinner{
-    position:absolute;top:10px;left:10px;
-    display:flex;align-items:center;gap:8px;
-    padding:6px 10px;border-radius:999px;
-    background:rgba(var(--bgs-bg-rgb),0.72);color:var(--bgs-ivory);
-    font-family:'Inter',sans-serif;font-size:12px;
-  }
-  .invite-spinner[hidden]{display:none;}
-  .invite-spinner i{
-    width:12px;height:12px;border-radius:50%;flex:none;
-    border:2px solid rgba(var(--bgs-ivory-rgb),0.3);border-top-color:var(--bgs-gold);
-    animation:invite-spin 0.8s linear infinite;
-    transition:none;
-  }
-  @keyframes invite-spin{to{transform:rotate(360deg);}}
 
   .invite-seg{
     display:flex;justify-content:center;gap:4px;padding:4px;border-radius:999px;
@@ -1240,7 +1224,6 @@
     font:400 14px 'Inter',sans-serif;color:var(--bgs-ivory-70);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%;
   }
-  .invite-row__val.mono{font-family:'IBM Plex Mono',monospace;font-size:13px;}
   .invite-row__val.muted{color:var(--bgs-ivory-45);}
   .invite-row__chev{width:20px;height:20px;color:rgba(var(--bgs-ivory-rgb),.4);margin-left:-4px;}
   .invite-thumbs{display:flex;gap:4px;}
@@ -1345,9 +1328,6 @@
   .invite-icon:focus-visible,.invite-row:focus-visible,.invite-seg button:focus-visible,
   .invite-primary:focus-visible,.invite-secondary:focus-visible,.invite-pick:focus-visible,.invite-edit__done:focus-visible{
     outline:2px solid var(--bgs-gold);outline-offset:2px;
-  }
-  @media (prefers-reduced-motion:reduce){
-    .invite-spinner i{animation:none;border-top-color:var(--bgs-gold);}
   }
 
   @media (prefers-reduced-motion:reduce){
@@ -2745,8 +2725,6 @@ async function initInvite(){
     beforeEl: document.getElementById('gnBarContinue'),
     getSelectedIds: () => Array.from(state.selectedIds),
     getGames: () => games,
-    getProfile: () => profile,
-    getViewer: () => getUser().catch(() => null),
   });
 }
 
