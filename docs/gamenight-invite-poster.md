@@ -47,7 +47,7 @@ Mockup: `docs/mockups/invite-sheet-mobile.html` at 390px wide. Reuse the share-s
   - **Where** (map-pin): a short text field folds out under the row. Value "Nok's"; unset reads "Add a place", muted, and the line is not on the poster.
   - **Headline and games** (star): cover thumbs, the headline ringed gold. Tapping opens the picks as tiles with the shelf's star treatment so the host can move the headline without leaving the sheet.
   - **Link** (link, copy icon): "/n/{code}". Tapping copies the full URL. While the night is being created it reads "Creating…"; if creation failed the row reads "Couldn't create the night. Tap to retry" and is the retry.
-- One primary action: "Share invite" (Tabler `share`), gold, full width. "Save as PNG" is a quiet text button beneath it. Same Web Share and PNG-download code paths as the shelf share.
+- One primary action: "Share invite" (Tabler `share`), gold, full width. Beneath it a quiet text button: "Save as PNG" downloads the file; on iPhone and iPad it reads "Save to Photos" and shows the image full screen, where press-and-hold offers Save to Photos (a web page cannot write to Photos directly; a download would land in Files).
 - Filename: `game-night-{code}-{story|square}.png`
 - Tabler icons: calendar, map-pin, star, link, copy, chevron-right, share, x. Outline, `currentColor`.
 

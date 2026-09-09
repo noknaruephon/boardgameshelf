@@ -55,6 +55,12 @@ export function formatWhen(date, time) {
   return `${day}, ${h12}${min ? ':' + String(min).padStart(2, '0') : ''} ${h < 12 ? 'am' : 'pm'}`;
 }
 
+// iPhone and iPad (iPadOS reports itself as a Mac with touch). Saving to
+// Photos from a web page there goes through the image's press-and-hold
+// menu; a download lands in Files instead.
+const IS_IOS = typeof navigator !== 'undefined' && (/iP(hone|ad|od)/.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
 const esc = s => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -172,10 +178,24 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     </div>
     <div class="invite-actions">
       <button class="invite-primary" id="inviteShareBtn" type="button">${icon('share')}Share invite</button>
-      <button class="invite-secondary" id="inviteSaveBtn" type="button">Save as PNG</button>
+      <button class="invite-secondary" id="inviteSaveBtn" type="button">${IS_IOS ? 'Save to Photos' : 'Save as PNG'}</button>
     </div>
   `;
-  document.body.append(scrim, sheet);
+  // Save to Photos on iOS: the image full screen, where press-and-hold
+  // offers Photos. Sits above the sheet; Done or Escape returns to it.
+  const viewer = document.createElement('div');
+  viewer.className = 'invite-viewer';
+  viewer.id = 'inviteViewer';
+  viewer.setAttribute('role', 'dialog');
+  viewer.setAttribute('aria-modal', 'true');
+  viewer.setAttribute('aria-labelledby', 'inviteViewerHint');
+  viewer.hidden = true;
+  viewer.innerHTML = `
+    <img class="invite-viewer__img" id="inviteViewerImg" alt="Your invite">
+    <p class="invite-viewer__hint" id="inviteViewerHint">Press and hold the image, then tap <b>Save to Photos</b></p>
+    <button class="invite-viewer__done" id="inviteViewerDone" type="button">Done</button>
+  `;
+  document.body.append(scrim, sheet, viewer);
 
   const $ = id => sheet.querySelector('#' + id);
   const holder = $('inviteCanvasHolder');
@@ -366,7 +386,7 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
   registerOverlay(() => sheetOpen);
 
   document.addEventListener('keydown', (e) => {
-    if (!sheetOpen || (e.key !== 'Escape' && e.key !== 'Tab')) return;
+    if (!sheetOpen || !viewer.hidden || (e.key !== 'Escape' && e.key !== 'Tab')) return;
     if (e.key === 'Escape') { closeSheet(); return; }
     const focusable = getFocusable();
     if (!focusable.length) return;
@@ -382,6 +402,7 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     when.date = ''; when.time = '';
     venue = '';
     night = emptyNight();
+    if (!viewer.hidden) closeViewer();
     if (sheetOpen) closeSheet();
     shareBtn.disabled = true;
   }
@@ -504,9 +525,35 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProf
     download(blob);
   }
 
+  // ---- save to Photos (iOS) ----
+
+  let viewerUrl = null;
+  let viewerLastFocused = null;
+  function openViewer(blob) {
+    if (viewerUrl) URL.revokeObjectURL(viewerUrl);
+    viewerUrl = URL.createObjectURL(blob);
+    const img = viewer.querySelector('#inviteViewerImg');
+    img.src = viewerUrl;
+    img.alt = currentCanvas?.getAttribute('aria-label') || 'Your invite';
+    viewerLastFocused = document.activeElement;
+    viewer.hidden = false;
+    viewer.querySelector('#inviteViewerDone').focus();
+  }
+  function closeViewer() {
+    viewer.hidden = true;
+    if (viewerLastFocused) viewerLastFocused.focus();
+  }
+  viewer.querySelector('#inviteViewerDone').addEventListener('click', closeViewer);
+  viewer.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { e.stopPropagation(); closeViewer(); }
+    if (e.key === 'Tab') e.preventDefault(); // one control: focus stays on Done
+  });
+
   async function savePng() {
     const blob = await currentPng();
-    if (blob) download(blob);
+    if (!blob) return;
+    if (IS_IOS) openViewer(blob);
+    else download(blob);
   }
 
   return { onSelection, reset };
