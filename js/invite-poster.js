@@ -159,11 +159,18 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function drawCover(ctx, img, x, y, w, h) {
+// Cover-fit with a focal point: fx/fy pick which part of the image survives
+// the crop (0 = left/top edge, .5 = centre, 1 = right/bottom edge).
+function drawCover(ctx, img, x, y, w, h, fx = 0.5, fy = 0.5) {
   const s = Math.max(w / img.naturalWidth, h / img.naturalHeight);
   const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
-  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+  ctx.drawImage(img, x + (w - dw) * fx, y + (h - dh) * fy, dw, dh);
 }
+
+// Box art carries its title and key art in the upper part, so when the hero
+// is wider than the cover (Square's 1080×620 most of all) the crop keeps the
+// top rather than the middle band.
+const HERO_FOCAL = { x: 0.5, y: 0.25 };
 
 const coverCache = new Map();
 
@@ -191,7 +198,7 @@ function drawHero(ctx, L, T, headline, img) {
     ctx.fillStyle = headline.color || T.plate;
     ctx.fillRect(0, 0, W, L.hero);
     if (img) {
-      drawCover(ctx, img, 0, 0, W, L.hero);
+      drawCover(ctx, img, 0, 0, W, L.hero, HERO_FOCAL.x, HERO_FOCAL.y);
     } else {
       setFont(ctx, 400, PLATE.font, FONTS.display);
       ctx.fillStyle = `rgba(${T.ivoryRgb},.35)`;
