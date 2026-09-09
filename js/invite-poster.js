@@ -24,13 +24,13 @@ const LAYOUT = {
     h: 1920, hero: 1160, bodyTop: 1040,
     title: 128, titleFloor: 96,
     tile: 150, gap: 22, tileFont: 26, tilePad: 12, plusFont: 40, caption: 34, stripTop: 44,
-    hairlineBottom: 330, footBottom: 88, date: 44, host: 34, link: 36, linkTop: 22, qr: 190,
+    hairlineBottom: 330, footBottom: 88, date: 44, link: 36, linkTop: 22, qr: 190,
   },
   square: {
     h: 1080, hero: 620, bodyTop: 520,
     title: 84, titleFloor: 64,
     tile: 104, gap: 16, tileFont: 18, tilePad: 8, plusFont: 28, caption: 24, stripTop: 26,
-    hairlineBottom: 230, footBottom: 60, date: 32, host: 24, link: 26, linkTop: 14, qr: 140,
+    hairlineBottom: 230, footBottom: 60, date: 32, link: 26, linkTop: 14, qr: 140,
   },
 };
 
@@ -43,7 +43,7 @@ const TITLE = { top: 12, maxW: 920, step: 8, lh: 1, tracking: -0.02 };
 const PLATE = { font: 96, pad: 120, lh: 1 }; // hero placeholder title
 const TILE_RADIUS = 10;
 const CAPTION = { lh: 1.35, gap: 8 };    // .say has margin-left 8 on top of the flex gap
-const FOOT = { hostTop: 6, dateLh: 1.2, hostLh: 1.3, linkLh: 1.2 };
+const FOOT = { dateLh: 1.2, linkLh: 1.2 };
 const QR = { pad: 14, radius: 12 };
 
 const FONTS = {
@@ -304,11 +304,10 @@ export function stripCaption(n) {
  * @param {'story'|'square'} opts.format
  * @param {object|null} opts.headline   legacy game ({ title, color, image, imageLarge }) or null
  * @param {object[]} opts.rest          the other picks, in strip order
- * @param {object} opts.night           { code, error, dateLabel } — no code: no QR, no link
- * @param {string} opts.host            the host's name, for "at {host}'s"
+ * @param {object} opts.night           { code, error, dateLabel } — no code: no QR, no link; no dateLabel: "Date TBC"
  * @returns {Promise<HTMLCanvasElement>}
  */
-export async function renderInvitePoster({ format = 'story', headline = null, rest = [], night = {}, host = '' }) {
+export async function renderInvitePoster({ format = 'story', headline = null, rest = [], night = {} }) {
   const L = LAYOUT[format] || LAYOUT.story;
   const H = L.h;
   const T = readTokens();
@@ -362,17 +361,13 @@ export async function renderInvitePoster({ format = 'story', headline = null, re
   ctx.fillStyle = `rgba(${T.goldRgb},.8)`;
   ctx.fillRect(INSET, H - L.hairlineBottom - 2, W - INSET * 2, 2);
 
-  // footer: date, host, link — bottom-aligned with the QR plate
-  const dateH = L.date * FOOT.dateLh, hostH = L.host * FOOT.hostLh, linkH = L.link * FOOT.linkLh;
-  let fy = H - L.footBottom - (dateH + FOOT.hostTop + hostH + L.linkTop + linkH);
+  // footer: date and link — bottom-aligned with the QR plate
+  const dateH = L.date * FOOT.dateLh, linkH = L.link * FOOT.linkLh;
+  let fy = H - L.footBottom - (dateH + L.linkTop + linkH);
   setFont(ctx, 500, L.date, FONTS.mono);
   ctx.fillStyle = T.ivory;
   fillText(ctx, night.dateLabel || 'Date TBC', INSET, baseline(ctx, fy, L.date, FOOT.dateLh));
-  fy += dateH + FOOT.hostTop;
-  setFont(ctx, 400, L.host, FONTS.ui);
-  ctx.fillStyle = `rgba(${T.ivoryRgb},.7)`;
-  fillText(ctx, `at ${host}'s`, INSET, baseline(ctx, fy, L.host, FOOT.hostLh));
-  fy += hostH + L.linkTop;
+  fy += dateH + L.linkTop;
   const linkText = night.error ? "Couldn't create the night. Try again."
     : night.code ? `${NIGHT_URL_BASE.replace(/^https?:\/\//, '')}${night.code}` : '';
   if (linkText) {

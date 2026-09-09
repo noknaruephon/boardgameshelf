@@ -1244,6 +1244,18 @@
   .invite-sheet .invite-format{margin-bottom:16px;display:flex;align-items:center;gap:12px;}
   .invite-sheet .invite-format .filter-label{margin:0;}
   .invite-sheet .pill.active{font-weight:500;}
+  .invite-when{margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .invite-when .filter-label{margin:0;}
+  .invite-when__inputs{display:flex;gap:8px;flex:1;min-width:0;}
+  .invite-input{
+    flex:1;min-width:0;
+    background:var(--bgs-bg);border:1px solid rgba(var(--bgs-gold-rgb),0.22);border-radius:10px;
+    color:var(--bgs-ivory);font-family:'Inter',sans-serif;
+    /* 16px, not smaller: iOS Safari zooms in on a smaller input and never zooms back. */
+    font-size:16px;padding:9px 11px;outline:none;
+    color-scheme:dark; /* native pickers in the site's dark palette */
+  }
+  .invite-input:focus-visible{border-color:var(--bgs-gold);}
   .invite-preview{position:relative;min-height:120px;}
   .invite-canvas{
     display:block;width:auto;height:auto;max-width:100%;max-height:50vh;

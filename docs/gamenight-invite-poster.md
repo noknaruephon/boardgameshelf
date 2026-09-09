@@ -19,7 +19,8 @@ In:
 
 Out (follow-up specs):
 - OG image for `/n/:code`
-- Editing date/time/venue in the sheet (use the values the night already has; if the night has none, render "Date TBC" and "at {host}")
+- Venue on the poster (there is no host line)
+- Persisting the date on the night (the sheet's date and time live in memory; with none set the poster renders "Date TBC")
 - Any change to voting stages
 
 ## Before you write code
@@ -53,6 +54,7 @@ Reuse the share-shelf bottom sheet. Differences:
 - Title: "Invite"
 - Format picker: Story (default) and Square only. No Portrait.
 - Preview: the poster canvas scaled to fit the sheet width. Re-render on format change and on any selection change if the sheet is open.
+- "When": a date and a time input under the format picker. The poster's date line reads "Sat 19 Sep, 7 pm" (minutes only when not :00, time optional), or "Date TBC" while empty. Re-render on change.
 - Buttons: "Share" (Web Share API with the PNG file, falls back to download) and "Save PNG". Same code paths as the shelf share.
 - Filename: `game-night-{code}-{story|square}.png`
 
@@ -60,7 +62,7 @@ On first open, create the night if one doesn't exist for this selection: call th
 
 ## 3. Poster renderer
 
-`renderInvitePoster({ format, headline, rest, night, host }) → Promise<HTMLCanvasElement>`
+`renderInvitePoster({ format, headline, rest, night }) → Promise<HTMLCanvasElement>` — `night` carries `{ code, error, dateLabel }`
 
 Layout constants come from the mockup; do not eyeball them. Story values, with Square in brackets:
 
@@ -79,7 +81,6 @@ Layout constants come from the mockup; do not eyeball them. Story values, with S
 | Hairline | 2px gold 80%, bottom 330, inset 80 | bottom 230 |
 | Footer | bottom 88, inset 80 | bottom 60 |
 | Date | Plex Mono 500 44 | 32 |
-| Host line | Inter 400 34, ivory 70%, "at {host}" | 24 |
 | Link | Plex Mono 500 36, `boardgameshelf.app/n/{code}` | 26 |
 | QR | 190 square, ivory plate radius 12, 14 padding | 140 |
 

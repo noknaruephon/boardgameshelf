@@ -27,6 +27,23 @@ const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 const POSTER_FONTS_HREF =
   'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=IBM+Plex+Mono:wght@400&display=swap';
 
+// "Sat 19 Sep, 7 pm" from the picker's YYYY-MM-DD and HH:MM; empty date → null
+// (the poster prints "Date TBC"). Minutes only when they are not :00.
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+export function formatWhen(date, time) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date || '');
+  if (!m) return null;
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  if (Number.isNaN(d.getTime())) return null;
+  const day = `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+  const t = /^(\d{2}):(\d{2})/.exec(time || '');
+  if (!t) return day;
+  const h = Number(t[1]), min = Number(t[2]);
+  const h12 = h % 12 || 12;
+  return `${day}, ${h12}${min ? ':' + String(min).padStart(2, '0') : ''} ${h < 12 ? 'am' : 'pm'}`;
+}
+
 const esc = s => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -203,6 +220,8 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     sel.picked = [];
     sel.headline = null;
     night = emptyNight();
+    when.date = ''; when.time = '';
+    dateInput.value = ''; timeInput.value = '';
     undecorate();
     document.body.classList.remove('is-selecting');
     bar.hidden = true;
@@ -247,6 +266,13 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
         Couldn't create the night.
         <button class="invite-retry" id="inviteRetry" type="button">Try again</button>
       </p>
+      <div class="sheet-group invite-when">
+        <span class="filter-label" id="inviteWhenLabel">When</span>
+        <div class="invite-when__inputs" role="group" aria-labelledby="inviteWhenLabel">
+          <input class="invite-input" id="inviteDate" type="date" aria-label="Date">
+          <input class="invite-input" id="inviteTime" type="time" step="300" aria-label="Time">
+        </div>
+      </div>
       <div class="invite-preview" id="invitePreview">
         <div class="invite-preview__canvas" id="inviteCanvasHolder"></div>
         <div class="invite-spinner" id="inviteSpinner" role="status" hidden><i aria-hidden="true"></i>Creating the night…</div>
@@ -265,6 +291,7 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   const formatBtns = [...sheet.querySelectorAll('[data-format]')];
 
   let format = 'story';
+  const when = { date: '', time: '' }; // the picker's values; in memory only, like the picks
   let sheetOpen = false;
   let sheetLastFocused = null;
   let currentCanvas = null;
@@ -280,6 +307,11 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     });
     renderPreview();
   }));
+
+  const dateInput = sheet.querySelector('#inviteDate');
+  const timeInput = sheet.querySelector('#inviteTime');
+  dateInput.addEventListener('change', () => { when.date = dateInput.value; renderPreview(); });
+  timeInput.addEventListener('change', () => { when.time = timeInput.value; renderPreview(); });
 
   sheet.querySelector('#inviteClose').addEventListener('click', closeSheet);
   scrim.addEventListener('click', closeSheet);
@@ -384,16 +416,16 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   async function renderPreview() {
     const seq = ++renderSeq;
     const { headline, rest } = posterInputs();
-    const host = await getHost();
+    const dateLabel = formatWhen(when.date, when.time);
     const canvas = await renderInvitePoster({
-      format, headline, rest, host,
-      night: { code: night.code, error: night.error, dateLabel: null },
+      format, headline, rest,
+      night: { code: night.code, error: night.error, dateLabel },
     });
     if (seq !== renderSeq) return;
     canvas.className = 'invite-canvas';
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label',
-      `Invite preview: ${headline ? headline.title : 'no headline yet'}, ${rest.length} other game${rest.length === 1 ? '' : 's'}, Date TBC`);
+      `Invite preview: ${headline ? headline.title : 'no headline yet'}, ${rest.length} other game${rest.length === 1 ? '' : 's'}, ${dateLabel || 'Date TBC'}`);
     holder.replaceChildren(canvas);
     currentCanvas = canvas;
     currentBlob = null;
