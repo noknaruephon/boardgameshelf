@@ -20,15 +20,19 @@ export const STRIP_MAX = 5;
 const W = 1080;
 
 // Story values, Square alongside — the spec's layout table, in px.
+// The text block hangs from the bottom margin (footBottom) and the hero
+// fills everything above it, reaching `heroOverlap` below the block's top so
+// the fade carries the eyebrow. Less text — no date, no place, a one-line
+// title — means more artwork, never a gap.
 const LAYOUT = {
   story: {
-    h: 1920, hero: 1160, bodyTop: 1040,
+    h: 1920, footBottom: 88, heroOverlap: 120, heroMin: 0.4,
     title: 128, titleFloor: 96,
     tile: 150, gap: 22, tileFont: 26, tilePad: 12, plusFont: 40, caption: 34, stripTop: 44,
     hairlineTop: 56, footTop: 40, date: 44, venue: 34,
   },
   square: {
-    h: 1080, hero: 620, bodyTop: 520,
+    h: 1080, footBottom: 60, heroOverlap: 100, heroMin: 0.4,
     title: 84, titleFloor: 64,
     tile: 104, gap: 16, tileFont: 18, tilePad: 8, plusFont: 28, caption: 24, stripTop: 26,
     hairlineTop: 36, footTop: 26, date: 32, venue: 24,
@@ -191,20 +195,20 @@ export function loadCover(url) {
 
 // ---- regions ----
 
-function drawHero(ctx, L, T, headline, img) {
+function drawHero(ctx, L, T, headline, img, heroH) {
   ctx.save();
-  ctx.beginPath(); ctx.rect(0, 0, W, L.hero); ctx.clip();
+  ctx.beginPath(); ctx.rect(0, 0, W, heroH); ctx.clip();
   if (headline) {
     ctx.fillStyle = headline.color || T.plate;
-    ctx.fillRect(0, 0, W, L.hero);
+    ctx.fillRect(0, 0, W, heroH);
     if (img) {
-      drawCover(ctx, img, 0, 0, W, L.hero, HERO_FOCAL.x, HERO_FOCAL.y);
+      drawCover(ctx, img, 0, 0, W, heroH, HERO_FOCAL.x, HERO_FOCAL.y);
     } else {
       setFont(ctx, 400, PLATE.font, FONTS.display);
       ctx.fillStyle = `rgba(${T.ivoryRgb},.35)`;
       ctx.textAlign = 'center';
       const lines = wrap(ctx, headline.title, W - PLATE.pad * 2);
-      let y = (L.hero - lines.length * PLATE.font * PLATE.lh) / 2;
+      let y = (heroH - lines.length * PLATE.font * PLATE.lh) / 2;
       for (const line of lines) {
         fillText(ctx, line, W / 2, baseline(ctx, y, PLATE.font, PLATE.lh));
         y += PLATE.font * PLATE.lh;
@@ -213,14 +217,14 @@ function drawHero(ctx, L, T, headline, img) {
     }
   } else {
     ctx.fillStyle = T.plate;
-    ctx.fillRect(0, 0, W, L.hero);
+    ctx.fillRect(0, 0, W, heroH);
   }
-  const fadeTop = L.hero * (1 - FADE);
-  const fade = ctx.createLinearGradient(0, fadeTop, 0, L.hero);
+  const fadeTop = heroH * (1 - FADE);
+  const fade = ctx.createLinearGradient(0, fadeTop, 0, heroH);
   fade.addColorStop(0, `rgba(${T.bgRgb},0)`);
   fade.addColorStop(1, T.bg);
   ctx.fillStyle = fade;
-  ctx.fillRect(0, fadeTop, W, L.hero - fadeTop);
+  ctx.fillRect(0, fadeTop, W, heroH - fadeTop);
   ctx.restore();
 }
 
@@ -301,16 +305,30 @@ export async function renderInvitePoster({ format = 'story', headline = null, re
   ctx.fillStyle = T.bg;
   ctx.fillRect(0, 0, W, H);
 
-  drawHero(ctx, L, T, headline, heroImg);
+  // Measure the text block first: its height decides where it starts and
+  // how tall the hero is.
+  const { size, lines } = fitTitle(ctx, headline ? headline.title : 'Pick a game', L);
+  const rowH = shown.length ? L.tile : L.caption * CAPTION.lh;
+  const hasFoot = Boolean(details.dateLabel || details.venue);
+  const footH = !hasFoot ? 0
+    : L.hairlineTop + 2 + L.footTop
+      + (details.dateLabel ? L.date * FOOT.dateLh : 0)
+      + (details.dateLabel && details.venue ? FOOT.venueTop : 0)
+      + (details.venue ? L.venue * FOOT.venueLh : 0);
+  const bodyH = EYEBROW.font * EYEBROW.lh + TITLE.top + lines.length * size * TITLE.lh + L.stripTop + rowH + footH;
+  const bodyTop = Math.max(Math.round(H * L.heroMin) - L.heroOverlap, Math.round(H - L.footBottom - bodyH));
+  const heroH = Math.min(H, bodyTop + L.heroOverlap);
+
+  drawHero(ctx, L, T, headline, heroImg, heroH);
 
   // body: eyebrow, title, strip
-  let y = L.bodyTop;
+  let y = bodyTop;
   setFont(ctx, 400, EYEBROW.font, FONTS.ui);
   ctx.fillStyle = `rgba(${T.ivoryRgb},.7)`;
   fillText(ctx, "We're probably playing", INSET, baseline(ctx, y, EYEBROW.font, EYEBROW.lh));
   y += EYEBROW.font * EYEBROW.lh + TITLE.top;
 
-  const { size, lines } = fitTitle(ctx, headline ? headline.title : 'Pick a game', L);
+  setFont(ctx, 300, size, FONTS.display, TITLE.tracking);
   ctx.fillStyle = T.ivory;
   for (const line of lines) {
     fillText(ctx, line, INSET, baseline(ctx, y, size, TITLE.lh));
@@ -324,7 +342,6 @@ export async function renderInvitePoster({ format = 'story', headline = null, re
   if (rest.length > STRIP_MAX) { drawPlusTile(ctx, L, T, rest.length - STRIP_MAX, x, y); x += L.tile + L.gap; }
   setFont(ctx, 400, L.caption, FONTS.ui);
   ctx.fillStyle = `rgba(${T.ivoryRgb},.7)`;
-  const rowH = shown.length ? L.tile : L.caption * CAPTION.lh;
   const capTop = y + (rowH - L.caption * CAPTION.lh) / 2;
   fillText(ctx, stripCaption(rest.length), x + CAPTION.gap, baseline(ctx, capTop, L.caption, CAPTION.lh));
 
@@ -334,7 +351,7 @@ export async function renderInvitePoster({ format = 'story', headline = null, re
   // Lines the host hasn't decided are left out; with neither there is no
   // footer and no hairline. Everything flows down from the strip, so the
   // gap above the hairline is the same whatever the title's line count.
-  if (details.dateLabel || details.venue) {
+  if (hasFoot) {
     y = Math.round(y + L.hairlineTop); // whole pixels: a 2px rule must not blur across three rows
     ctx.fillStyle = `rgba(${T.goldRgb},.8)`;
     ctx.fillRect(INSET, y, W - INSET * 2, 2);
