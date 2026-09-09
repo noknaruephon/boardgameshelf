@@ -90,8 +90,9 @@ card styles are removed.
 
 ## Implementation notes
 
-- The note line is passed as `{ note: true }` by `welcome.html`; settings
-  calls `mountShelfPicker(host)` and gets no note. The mount signature is
+- The note line was dropped again after review: no page passes
+  `{ note: true }`, so it never renders. The option remains for the
+  markup above. The mount signature is
   otherwise unchanged, and `title` / `lede` are still accepted. The
   earlier `variant` and `limit` options had no remaining callers (the
   landing page now uses only `fetchPublicShelves()` for its guest link)

@@ -344,7 +344,7 @@ async function showPicker() {
   const host = $('pickerHost');
   if (pickerMounted) { host.hidden = false; host.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
   try {
-    await mountShelfPicker(host, { note: true });
+    await mountShelfPicker(host);
     pickerMounted = true;
     host.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (err) {
