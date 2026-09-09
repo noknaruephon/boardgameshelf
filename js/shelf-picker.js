@@ -1,13 +1,11 @@
 import { supabase } from './supabase.js';
 
-// "Browse a shelf that's already stocked": the fallback for a signed-in user
+// "Shelves you can browse as a guest": the fallback for a signed-in user
 // whose own sync is not available yet (BGG approval pending, 202 cap, 5xx,
 // unknown username). Lists public shelves from the public_shelves() RPC as
 // plain links to /u/<slug>; viewing one is the ordinary guest view.
-// Spec: docs/claude-code-browse-shelves-fallback.md.
-
-const DEFAULT_TITLE = "Browse a shelf that's already stocked";
-const DEFAULT_LEDE = "Have a look around while your own sync isn't available. You're viewing as a guest.";
+// Data and mounting: docs/claude-code-browse-shelves-fallback.md.
+// Layout: docs/claude-code-shelf-picker-a.md (mockup option A, "Inline list").
 
 /** @returns {Promise<Array<{slug, display_name, bgg_username, game_count, last_synced_at, thumbnails}>>} */
 export async function fetchPublicShelves() {
@@ -16,64 +14,42 @@ export async function fetchPublicShelves() {
   return Array.isArray(data) ? data : [];
 }
 
-/** "3 days ago" style, or '' when never. */
+/** Compact relative time: "just now", "5m ago", "20h ago", "3d ago"; '' when never. */
 export function relativeTime(iso) {
   if (!iso) return '';
   const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
   if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins} min ago`;
+  if (mins < 60) return `${mins}m ago`;
   const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `${hrs} h ago`;
+  if (hrs < 24) return `${hrs}h ago`;
   const days = Math.round(hrs / 24);
-  if (days < 30) return `${days} day${days === 1 ? '' : 's'} ago`;
+  if (days < 30) return `${days}d ago`;
   const months = Math.round(days / 30);
-  return `${months} month${months === 1 ? '' : 's'} ago`;
+  return `${months}mo ago`;
 }
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // Styles ship with the module so every page that mounts the picker gets the
-// same rows without linking another stylesheet. Injected once.
-//
-// Two shapes: the default is a plate with a heading and a line of copy (the
-// welcome and settings pages, where it answers a question). `variant: 'bare'`
-// is just the rows, for a page that already introduced them (the landing
-// page's "or browse as a guest" divider).
+// same list without linking another stylesheet. Injected once.
 export const PICKER_CSS = `
-  .shelf-picker{text-align:left;}
-  .shelf-picker.sp-plate{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.22);border-radius:16px;padding:20px;margin:16px 0 0;box-shadow:0 12px 30px -18px rgba(0,0,0,.8);}
-  .shelf-picker h2{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0 0 6px;color:var(--bgs-ivory);}
-  .shelf-picker .sp-lede{font-size:14px;line-height:1.5;color:var(--bgs-ivory-70);margin:0 0 10px;}
-  .shelf-picker .sp-note{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);margin:0 0 6px;}
-  .shelf-picker ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;}
-  .shelf-picker .sp-row{
-    display:flex;align-items:center;gap:14px;padding:10px 14px 10px 12px;border-radius:14px;
-    background:rgba(var(--bgs-ivory-rgb),.04);border:1px solid rgba(var(--bgs-ivory-rgb),.09);
-    color:var(--bgs-ivory);text-decoration:none;transition:background .15s ease,border-color .15s ease;
-  }
-  .shelf-picker .sp-row:hover{background:rgba(var(--bgs-gold-rgb),.08);border-color:rgba(var(--bgs-gold-rgb),.3);}
-  .shelf-picker .sp-row:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
-  /* Three covers, fanned gently and evenly — reads as a small hand of cards. */
-  .shelf-picker .sp-stack{position:relative;width:64px;height:50px;flex:none;}
-  .shelf-picker .sp-stack span{
-    position:absolute;top:5px;width:40px;height:40px;border-radius:5px;overflow:hidden;
-    background:rgba(var(--bgs-ivory-rgb),.08);border:1px solid rgba(var(--bgs-ivory-rgb),.12);
-    box-shadow:0 4px 10px rgba(0,0,0,.5);transform-origin:50% 120%;
-  }
-  .shelf-picker .sp-stack span:nth-child(1){left:0;transform:rotate(-10deg);}
-  .shelf-picker .sp-stack span:nth-child(2){left:12px;transform:rotate(0deg);z-index:1;}
-  .shelf-picker .sp-stack span:nth-child(3){left:24px;transform:rotate(10deg);}
-  .shelf-picker .sp-stack img{display:block;width:100%;height:100%;object-fit:cover;}
-  .shelf-picker .sp-text{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px;}
-  .shelf-picker .sp-text b{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .shelf-picker .sp-meta{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.01em;color:var(--bgs-ivory-70);}
-  .shelf-picker .sp-go{flex:none;color:var(--bgs-gold-dim);font-size:20px;line-height:1;transition:transform .15s ease,color .15s ease;}
-  .shelf-picker .sp-row:hover .sp-go{color:var(--bgs-gold);transform:translateX(2px);}
-  .shelf-picker .sp-more{display:block;margin:10px auto 0;background:none;border:0;padding:6px 10px;border-radius:8px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;}
-  .shelf-picker .sp-more:hover{color:var(--bgs-gold);}
-  .shelf-picker .sp-more:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
-  .shelf-picker .sp-empty{font-size:14px;color:var(--bgs-ivory-45);margin:0;}
-  @media (prefers-reduced-motion:reduce){.shelf-picker .sp-row,.shelf-picker .sp-go{transition:none;}}
+  .picker{margin-top:28px;padding-top:22px;border-top:1px solid rgba(var(--bgs-gold-rgb),.18);text-align:left;}
+  .picker .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);margin:0 0 6px;}
+  .picker-list{list-style:none;margin:0;padding:0;}
+  .picker-row{display:flex;align-items:center;gap:14px;padding:12px 0;text-decoration:none;color:inherit;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.08);border-radius:6px;}
+  .picker-list li:last-child .picker-row{border-bottom:0;}
+  .picker-row:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  .picker .stack{position:relative;width:60px;height:54px;flex:none;}
+  .picker .stack img{position:absolute;width:38px;height:38px;object-fit:cover;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.5);background:var(--bgs-plate);}
+  .picker .stack img:nth-child(1){left:0;top:14px;transform:rotate(-8deg);}
+  .picker .stack img:nth-child(2){left:11px;top:7px;transform:rotate(3deg);}
+  .picker .stack img:nth-child(3){left:22px;top:0;transform:rotate(11deg);}
+  .picker-text{min-width:0;}
+  .picker-text b{display:block;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .picker-meta{font-size:13px;color:var(--bgs-ivory-45);white-space:nowrap;}
+  .picker .chev{margin-left:auto;color:var(--bgs-gold-dim);font-size:18px;}
+  .picker-note{font-size:12px;color:var(--bgs-ivory-45);margin:10px 0 0;}
+  .picker-empty{font-size:13px;color:var(--bgs-ivory-45);margin:6px 0 0;}
 `;
 let styled = false;
 function ensureStyles() {
@@ -89,16 +65,18 @@ function rowHTML(s) {
   const n = Number(s.game_count) || 0;
   const when = relativeTime(s.last_synced_at);
   const meta = `${n} game${n === 1 ? '' : 's'}${when ? ` · synced ${when}` : ''}`;
-  const thumbs = Array.isArray(s.thumbnails) ? s.thumbnails.slice(0, 3) : [];
-  const stack = Array.from({ length: 3 }, (_, i) => thumbs[i]
-    ? `<span><img src="${esc(thumbs[i])}" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>`
-    : '<span></span>').join('');
+  // Up to three covers; a shelf with fewer simply gets a smaller stack.
+  const thumbs = (Array.isArray(s.thumbnails) ? s.thumbnails : []).filter(Boolean).slice(0, 3);
+  const stack = thumbs.map((url) => `<img src="${esc(url)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`).join('');
   return `
     <li>
-      <a class="sp-row" href="/u/${encodeURIComponent(s.slug)}">
-        <span class="sp-stack" aria-hidden="true">${stack}</span>
-        <span class="sp-text"><b>${esc(name)}</b><span class="sp-meta">${esc(meta)}</span></span>
-        <span class="sp-go" aria-hidden="true">›</span>
+      <a class="picker-row" href="/u/${encodeURIComponent(s.slug)}">
+        <span class="stack" aria-hidden="true">${stack}</span>
+        <span class="picker-text">
+          <b>${esc(name)}</b>
+          <span class="picker-meta">${esc(meta)}</span>
+        </span>
+        <span class="chev" aria-hidden="true">›</span>
       </a>
     </li>`;
 }
@@ -110,36 +88,22 @@ function rowHTML(s) {
  *
  * @param {HTMLElement} container
  * @param {object} [opts]
- * @param {'plate'|'bare'} [opts.variant]  'bare' = rows only, no heading
- * @param {string} [opts.title]
- * @param {string} [opts.lede]
- * @param {string} [opts.note]  one mono line above the list
- * @param {number} [opts.limit] rows shown before a "Show all" link
+ * @param {boolean} [opts.note]  show the "Your own shelf will be here…" line
+ *   (the welcome page); omitted on settings
+ * @param {string} [opts.title]  accepted for compatibility, unused
+ * @param {string} [opts.lede]   accepted for compatibility, unused
  */
-export async function mountShelfPicker(container, {
-  variant = 'plate', title = DEFAULT_TITLE, lede = DEFAULT_LEDE, note = '', limit = 0,
-} = {}) {
+export async function mountShelfPicker(container, { note = false } = {}) {
   ensureStyles();
   const shelves = await fetchPublicShelves();
-  const capped = limit > 0 && shelves.length > limit;
-  const shown = capped ? shelves.slice(0, limit) : shelves;
-  const bare = variant === 'bare';
   container.innerHTML = `
-    <section class="shelf-picker${bare ? '' : ' sp-plate'}" aria-label="${esc(title)}">
-      ${bare ? '' : `<h2>${esc(title)}</h2><p class="sp-lede">${esc(lede)}</p>`}
-      ${note ? `<p class="sp-note">${esc(note)}</p>` : ''}
+    <div class="picker" id="shelfPicker">
+      <p class="kicker">Shelves you can browse as a guest</p>
       ${shelves.length
-        ? `<ul>${shown.map(rowHTML).join('')}</ul>`
-        : '<p class="sp-empty">No public shelves yet.</p>'}
-      ${capped ? `<button class="sp-more" type="button">Show all ${shelves.length} shelves</button>` : ''}
-    </section>`;
-  const more = container.querySelector('.sp-more');
-  if (more) {
-    more.addEventListener('click', () => {
-      container.querySelector('ul').innerHTML = shelves.map(rowHTML).join('');
-      more.remove();
-    });
-  }
+        ? `<ul class="picker-list" role="list">${shelves.map(rowHTML).join('')}</ul>`
+        : '<p class="picker-empty">No public shelves yet.</p>'}
+      ${note ? '<p class="picker-note">Your own shelf will be here once BGG lets us sync.</p>' : ''}
+    </div>`;
   container.hidden = false;
   return shelves.length;
 }
