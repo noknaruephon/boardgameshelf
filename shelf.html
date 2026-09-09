@@ -1155,6 +1155,137 @@
   @keyframes gn-pop{0%{opacity:0;transform:scale(0.4);}100%{opacity:1;transform:scale(1);}}
   @keyframes gn-ring-pass{0%{border-color:transparent;}35%{border-color:rgba(var(--bgs-gold-rgb),0.9);}100%{border-color:transparent;}}
 
+  /* ==== Game night invite (behind ?invite=1): select mode + action bar ==== */
+  /* Entry point: a peer of the filter and sort buttons. Built by js/invite.js
+     only when the flag is on. The Game Night selection mode owns the shelf
+     while it is up, so the button steps aside for it, and vice versa below. */
+  .plan-btn{
+    width:auto;padding:0 12px;
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+    white-space:nowrap;cursor:pointer;
+  }
+  .plan-btn[aria-pressed="true"]{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+  body.gn-selecting .plan-btn{display:none;}
+  body.is-selecting .gn-fab{opacity:0;visibility:hidden;pointer-events:none;}
+
+  /* A selected card wears the gold ring on the pick overlay that covers it —
+     inset box-shadow, never outline — with the check pip top-right, the star
+     top-left and the Headline tag bottom-left of the cover, as the mockup. */
+  .inv-tile{position:relative;}
+  .inv-tile .game-card{pointer-events:none;}
+  .inv-tile .pick{
+    position:absolute;inset:0;z-index:5;
+    border:0;padding:0;margin:0;background:transparent;
+    border-radius:10px;cursor:pointer;color:var(--bgs-ivory);
+  }
+  .inv-tile.on .pick{box-shadow:inset 0 0 0 3px var(--bgs-gold);}
+  .inv-tile .art-zone{position:absolute;left:0;right:0;top:0;aspect-ratio:3/4;pointer-events:none;}
+  .inv-tile .pip{
+    display:none;position:absolute;top:8px;right:8px;
+    width:22px;height:22px;border-radius:50%;
+    background:var(--bgs-gold);color:var(--bgs-bg);
+    align-items:center;justify-content:center;
+  }
+  .inv-tile .pip svg{width:16px;height:16px;}
+  .inv-tile.on .pip{display:flex;}
+  .inv-tile .tag{
+    display:none;position:absolute;left:8px;bottom:8px;
+    font:500 11px 'IBM Plex Mono',monospace;
+    background:var(--bgs-gold);color:var(--bgs-bg);
+    padding:3px 7px;border-radius:4px;
+  }
+  .inv-tile.on.head .tag{display:block;}
+  .inv-tile .star{
+    display:none;position:absolute;left:8px;top:8px;z-index:6;
+    width:26px;height:26px;border-radius:50%;border:0;padding:0;cursor:pointer;
+    background:rgba(var(--bgs-bg-rgb),.75);color:var(--bgs-ivory);
+    align-items:center;justify-content:center;
+  }
+  .inv-tile.on .star{display:flex;}
+  .inv-tile.on.head .star{background:var(--bgs-gold);color:var(--bgs-bg);}
+  .inv-tile .star svg{width:15px;height:15px;}
+  .inv-tile .pick:focus-visible,.inv-tile .star:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:-4px;}
+
+  /* Action bar: sticky at the bottom of the grid, plate on a soft shadow. */
+  .invite-bar{
+    position:sticky;bottom:12px;z-index:16;margin-top:16px;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:12px 14px 12px 18px;border-radius:12px;
+    background:var(--bgs-plate);box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  .invite-bar[hidden]{display:none;}
+  .invite-bar__text{min-width:0;flex:1;}
+  .invite-bar b{display:block;font:500 14px 'Inter',sans-serif;color:var(--bgs-ivory);}
+  .invite-bar small{
+    display:block;font-size:12px;color:rgba(var(--bgs-ivory-rgb),.55);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  /* "Done" only at phone widths; wider screens leave by the toolbar button or Escape. */
+  .invite-bar__done{
+    display:none;flex:none;background:transparent;border:0;
+    color:var(--bgs-ivory-70);font:500 14px 'Inter',sans-serif;
+    padding:10px 10px 10px 0;cursor:pointer;
+  }
+  @media (max-width:640px){
+    .invite-bar{padding-left:12px;}
+    .invite-bar__done{display:block;}
+  }
+  .invite-bar__share{
+    flex:none;font:500 14px 'Inter',sans-serif;
+    background:var(--bgs-gold);color:var(--bgs-bg);
+    border:0;border-radius:8px;padding:10px 16px;cursor:pointer;white-space:nowrap;
+  }
+  .invite-bar__done:focus-visible,.invite-bar__share:focus-visible,.plan-btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+
+  /* Invite sheet: the filter sheet's scrim and panel (.sheet-scrim/.filter-sheet
+     above, reduced-motion rule included), with a format picker, the poster
+     preview and Share / Save PNG in the footer. */
+  .invite-sheet .sheet-body{padding-bottom:14px;}
+  .invite-sheet .invite-format{margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .invite-sheet .invite-format .filter-label{margin:0;}
+  .invite-sheet .pill.active{font-weight:500;}
+  .invite-preview{position:relative;min-height:120px;}
+  .invite-canvas{
+    display:block;width:auto;height:auto;max-width:100%;max-height:50vh;
+    margin:0 auto;border-radius:8px;background:var(--bgs-bg);
+  }
+  /* The one animated element in the feature: rotation only, no transition. */
+  .invite-spinner{
+    position:absolute;top:10px;left:10px;
+    display:flex;align-items:center;gap:8px;
+    padding:6px 10px;border-radius:999px;
+    background:rgba(var(--bgs-bg-rgb),0.72);color:var(--bgs-ivory);
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.02em;
+  }
+  .invite-spinner[hidden]{display:none;}
+  .invite-spinner i{
+    width:12px;height:12px;border-radius:50%;flex:none;
+    border:2px solid rgba(var(--bgs-ivory-rgb),0.3);border-top-color:var(--bgs-gold);
+    animation:invite-spin 0.8s linear infinite;
+    transition:none; /* animation and transition never share an element */
+  }
+  @keyframes invite-spin{to{transform:rotate(360deg);}}
+  .invite-error{
+    margin:0 0 12px;font-family:'Inter',sans-serif;font-size:12.5px;color:var(--bgs-danger-hover);
+  }
+  .invite-error[hidden]{display:none;}
+  .invite-retry{
+    background:none;border:none;color:var(--bgs-gold);cursor:pointer;
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 6px;
+  }
+  .invite-actions{display:flex;gap:10px;}
+  .invite-actions .apply-btn{flex:1;width:auto;}
+  .invite-save{
+    flex:1;background:transparent;color:var(--bgs-ivory);border:none;border-radius:12px;
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),0.35);
+    font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:13px;cursor:pointer;
+  }
+  .invite-save:hover{box-shadow:inset 0 0 0 1px var(--bgs-gold);}
+  .invite-retry:focus-visible,.invite-save:focus-visible,#inviteClose:focus-visible,.invite-sheet .apply-btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+  @media (prefers-reduced-motion:reduce){
+    .invite-spinner i{animation:none;border-top-color:var(--bgs-gold);}
+  }
+
   @media (prefers-reduced-motion:reduce){
     body.gn-selecting.gn-waving .checkbox,
     body.gn-selecting.gn-waving .info-btn,
@@ -1377,6 +1508,15 @@ const GAME_NIGHT_ENABLED = true;
 const gameNightVisible =
   GAME_NIGHT_ENABLED || new URLSearchParams(location.search).has('gamenight');
 
+// ---- Game night invite poster flag ----
+// Dark: select mode, the invite sheet and the poster only exist with
+// ?invite=1. js/invite.js is imported, and builds its DOM, only when this is
+// true, so a shelf without the flag is byte-for-byte what it was.
+const INVITE_ENABLED = false;
+const inviteVisible =
+  INVITE_ENABLED || new URLSearchParams(location.search).get('invite') === '1';
+let invite = null; // set by initInvite(); render() hands it every re-render
+
 let games = [];
 // The profile whose shelf this is. Set by loadGames(); game nights started
 // from here are scoped to it (owner_id).
@@ -1553,6 +1693,7 @@ function render(){
   // so the tray's "hidden by filters" tags need to stay in sync with every
   // re-render, not just the ones that came from toggling a selection.
   if(gameNightVisible && state.selectionMode) updateGnBar();
+  invite?.onRender();
 }
 
 // The detail modal itself lives in js/game-modal.js + css/game-modal.css, shared
@@ -2523,6 +2664,19 @@ function initGameNight(){
   });
 }
 
+// ---- Game night invite (behind ?invite=1) ----
+
+async function initInvite(){
+  const { setupInvite } = await import('/js/invite.js');
+  invite = setupInvite({
+    shelfEl: document.getElementById('shelf'),
+    toolbarEl: document.getElementById('filterSortBar'),
+    getGames: () => games,
+    getProfile: () => profile,
+    getViewer: () => getUser().catch(() => null),
+  });
+}
+
 // ---- Sticky bar background (only while actually pinned) ----
 
 const stickySentinel = document.getElementById('stickySentinel');
@@ -2538,6 +2692,7 @@ try {
   await loadGames();
   render();
   if(gameNightVisible) initGameNight();
+  if(inviteVisible) await initInvite();
 } catch (err) {
   showShelfState(err instanceof ShelfError ? err.kind : 'error');
 }
