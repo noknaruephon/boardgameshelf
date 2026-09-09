@@ -327,7 +327,7 @@ async function showPicker() {
   const host = $('pickerHost');
   if (pickerMounted) { host.hidden = false; host.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); return; }
   try {
-    await mountShelfPicker(host, { note: 'Your own shelf will be here once BGG lets us sync.' });
+    await mountShelfPicker(host);
     pickerMounted = true;
     host.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (err) {
