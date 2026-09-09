@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js';
+import { GOOGLE_CLIENT_ID } from './config.js';
 
 // Supabase Auth helpers shared by landing.html, settings.html and the shelf.
 // Google OAuth and magic-link email both land on /welcome, which sends a
@@ -31,6 +32,33 @@ export async function signInWithGoogle() {
     options: { redirectTo: AFTER_SIGN_IN_URL() },
   });
   if (error) throw error;
+}
+
+/**
+ * Sign in with an ID token from Google's own sign-in button (Google Identity
+ * Services) rendered on this site. Google's consent screen then names this
+ * site's domain instead of the Supabase callback. `nonce` is the raw value
+ * whose SHA-256 hash was given to Google; Supabase checks it against the
+ * token.
+ */
+export async function signInWithGoogleCredential(credential, nonce) {
+  const { error } = await supabase.auth.signInWithIdToken({
+    provider: 'google',
+    token: credential,
+    nonce,
+  });
+  if (error) throw error;
+}
+
+export { GOOGLE_CLIENT_ID };
+
+/** A random nonce and its SHA-256 hex digest, for the Google ID-token flow. */
+export async function makeNonce() {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const raw = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
+  const hashed = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+  return { raw, hashed };
 }
 
 export async function signInWithEmail(email) {

@@ -10,3 +10,11 @@ export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // (their sessions.owner_id is null). Also where the migration script lands
 // games.json. Lowercase: it is compared against profiles.slug.
 export const DEFAULT_SHELF_SLUG = 'noknaruephon';
+
+// Google OAuth client ID (Google Cloud Console → Credentials → the Web
+// application client). Public by design: it identifies the app, it does not
+// authenticate it. When set, the landing page signs people in with Google's
+// own button on this site, so Google's screen shows this domain rather than
+// the Supabase project address. Leave empty to fall back to the redirect flow
+// through Supabase.
+export const GOOGLE_CLIENT_ID = '';
