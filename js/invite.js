@@ -21,11 +21,11 @@ import { renderInvitePoster } from './invite-poster.js';
 const STAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg>`;
 const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>`;
 
-// The poster uses faces the shelf does not: Fraunces 300 and 400, Plex Mono
-// 400. Loaded here, not in shelf.html's <link>, so a shelf without the flag
-// requests exactly the fonts it does today.
+// The poster uses faces the shelf does not: Fraunces 300 and 400. Loaded
+// here, not in shelf.html's <link>, so a shelf without the flag requests
+// exactly the fonts it does today.
 const POSTER_FONTS_HREF =
-  'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&family=IBM+Plex+Mono:wght@400&display=swap';
+  'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&display=swap';
 
 // "Sat 19 Sep, 7 pm" from the picker's YYYY-MM-DD and HH:MM; empty date → null
 // (the poster prints "Date TBC"). Minutes only when they are not :00.
@@ -436,13 +436,13 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     const dateLabel = when.decided ? formatWhen(when.date, when.time) : null;
     const canvas = await renderInvitePoster({
       format, headline, rest,
-      night: { code: night.code, error: night.error, dateLabel },
+      night: { code: night.code, error: night.error, dateLabel, venue: null },
     });
     if (seq !== renderSeq) return;
     canvas.className = 'invite-canvas';
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label',
-      `Invite preview: ${headline ? headline.title : 'no headline yet'}, ${rest.length} other game${rest.length === 1 ? '' : 's'}, ${dateLabel || 'Date TBC'}`);
+      `Invite preview: ${headline ? headline.title : 'no headline yet'}, ${rest.length} other game${rest.length === 1 ? '' : 's'}, ${dateLabel || 'no date yet'}`);
     holder.replaceChildren(canvas);
     currentCanvas = canvas;
     currentBlob = null;

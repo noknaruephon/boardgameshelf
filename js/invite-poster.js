@@ -24,26 +24,25 @@ const LAYOUT = {
     h: 1920, hero: 1160, bodyTop: 1040,
     title: 128, titleFloor: 96,
     tile: 150, gap: 22, tileFont: 26, tilePad: 12, plusFont: 40, caption: 34, stripTop: 44,
-    hairlineBottom: 330, footBottom: 88, date: 44, link: 36, linkTop: 22, qr: 190,
+    hairlineBottom: 330, footBottom: 88, date: 44, venue: 34, link: 36, linkTop: 22, qr: 190,
   },
   square: {
     h: 1080, hero: 620, bodyTop: 520,
     title: 84, titleFloor: 64,
     tile: 104, gap: 16, tileFont: 18, tilePad: 8, plusFont: 28, caption: 24, stripTop: 26,
-    hairlineBottom: 230, footBottom: 60, date: 32, link: 26, linkTop: 14, qr: 140,
+    hairlineBottom: 230, footBottom: 60, date: 32, venue: 24, link: 26, linkTop: 14, qr: 140,
   },
 };
 
 // Shared by both formats.
 const INSET = 80;
 const FADE = 0.46;                       // bottom share of the hero under the fade
-const BADGE = { right: 72, top: 72, font: 22, padX: 14, padY: 8, radius: 8, lh: 1.3 };
 const EYEBROW = { font: 34, lh: 1.3 };
 const TITLE = { top: 12, maxW: 920, step: 8, lh: 1, tracking: -0.02 };
 const PLATE = { font: 96, pad: 120, lh: 1 }; // hero placeholder title
 const TILE_RADIUS = 10;
 const CAPTION = { lh: 1.35, gap: 8 };    // .say has margin-left 8 on top of the flex gap
-const FOOT = { dateLh: 1.2, linkLh: 1.2 };
+const FOOT = { dateLh: 1.2, venueLh: 1.3, venueTop: 6, linkLh: 1.2 };
 const QR = { pad: 14, radius: 12 };
 
 const FONTS = {
@@ -80,7 +79,7 @@ async function loadFonts(L) {
   const faces = [
     `300 ${L.title}px Fraunces`, `400 ${PLATE.font}px Fraunces`,
     `400 ${EYEBROW.font}px Inter`,
-    `500 ${L.date}px "IBM Plex Mono"`, `400 ${BADGE.font}px "IBM Plex Mono"`,
+    `500 ${L.date}px "IBM Plex Mono"`,
   ];
   const timeout = new Promise(resolve => setTimeout(resolve, 3000));
   await Promise.race([Promise.allSettled(faces.map(f => document.fonts.load(f))), timeout]);
@@ -218,19 +217,6 @@ function drawHero(ctx, L, T, headline, img) {
   ctx.restore();
 }
 
-function drawBadge(ctx, T) {
-  const label = 'Powered by BGG';
-  setFont(ctx, 400, BADGE.font, FONTS.mono);
-  const w = textWidth(ctx, label) + BADGE.padX * 2;
-  const h = BADGE.font * BADGE.lh + BADGE.padY * 2;
-  const x = W - BADGE.right - w, y = BADGE.top;
-  ctx.fillStyle = `rgba(${T.bgRgb},.55)`;
-  roundRect(ctx, x, y, w, h, BADGE.radius);
-  ctx.fill();
-  ctx.fillStyle = T.ivory;
-  fillText(ctx, label, x + BADGE.padX, baseline(ctx, y + BADGE.padY, BADGE.font, BADGE.lh));
-}
-
 function drawTile(ctx, L, T, game, img, x, y) {
   ctx.save();
   roundRect(ctx, x, y, L.tile, L.tile, TILE_RADIUS);
@@ -304,7 +290,8 @@ export function stripCaption(n) {
  * @param {'story'|'square'} opts.format
  * @param {object|null} opts.headline   legacy game ({ title, color, image, imageLarge }) or null
  * @param {object[]} opts.rest          the other picks, in strip order
- * @param {object} opts.night           { code, error, dateLabel } — no code: no QR, no link; no dateLabel: "Date TBC"
+ * @param {object} opts.night           { code, error, dateLabel, venue } — no code: no QR, no link;
+ *   a missing dateLabel or venue leaves that footer line out entirely, never a placeholder
  * @returns {Promise<HTMLCanvasElement>}
  */
 export async function renderInvitePoster({ format = 'story', headline = null, rest = [], night = {} }) {
@@ -330,7 +317,6 @@ export async function renderInvitePoster({ format = 'story', headline = null, re
   ctx.fillRect(0, 0, W, H);
 
   drawHero(ctx, L, T, headline, heroImg);
-  drawBadge(ctx, T);
 
   // body: eyebrow, title, strip
   let y = L.bodyTop;
@@ -361,13 +347,28 @@ export async function renderInvitePoster({ format = 'story', headline = null, re
   ctx.fillStyle = `rgba(${T.goldRgb},.8)`;
   ctx.fillRect(INSET, H - L.hairlineBottom - 2, W - INSET * 2, 2);
 
-  // footer: date and link — bottom-aligned with the QR plate
-  const dateH = L.date * FOOT.dateLh, linkH = L.link * FOOT.linkLh;
-  let fy = H - L.footBottom - (dateH + L.linkTop + linkH);
-  setFont(ctx, 500, L.date, FONTS.mono);
-  ctx.fillStyle = T.ivory;
-  fillText(ctx, night.dateLabel || 'Date TBC', INSET, baseline(ctx, fy, L.date, FOOT.dateLh));
-  fy += dateH + L.linkTop;
+  // footer: date, "at {venue}", link — bottom-aligned with the QR plate.
+  // Lines the host hasn't decided are left out and the column collapses
+  // upward, so the link keeps its gap to whatever sits above it.
+  const dateH = night.dateLabel ? L.date * FOOT.dateLh : 0;
+  const venueH = night.venue ? L.venue * FOOT.venueLh : 0;
+  const venueGap = night.dateLabel && night.venue ? FOOT.venueTop : 0;
+  const linkH = L.link * FOOT.linkLh;
+  const aboveLink = dateH + venueGap + venueH;
+  let fy = H - L.footBottom - (aboveLink + (aboveLink ? L.linkTop : 0) + linkH);
+  if (night.dateLabel) {
+    setFont(ctx, 500, L.date, FONTS.mono);
+    ctx.fillStyle = T.ivory;
+    fillText(ctx, night.dateLabel, INSET, baseline(ctx, fy, L.date, FOOT.dateLh));
+    fy += dateH + venueGap;
+  }
+  if (night.venue) {
+    setFont(ctx, 400, L.venue, FONTS.ui);
+    ctx.fillStyle = `rgba(${T.ivoryRgb},.7)`;
+    fillText(ctx, `at ${night.venue}`, INSET, baseline(ctx, fy, L.venue, FOOT.venueLh));
+    fy += venueH;
+  }
+  if (aboveLink) fy += L.linkTop;
   const linkText = night.error ? "Couldn't create the night. Try again."
     : night.code ? `${NIGHT_URL_BASE.replace(/^https?:\/\//, '')}${night.code}` : '';
   if (linkText) {
