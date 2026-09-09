@@ -1,13 +1,13 @@
-// Game night invite poster — shelf select mode, the invite sheet, and night
-// creation. Behind ?invite=1 on the shelf; shelf.html calls setupInvite() only
-// when the flag is on, so with it off none of this is in the DOM.
+// Game night invite poster — the invite sheet and night creation, reached
+// from the Game Night selection mode. Behind the INVITE_ENABLED kill switch
+// on the shelf (?invite=1 reveals it while off); shelf.html calls
+// setupInvite() only when the flag is on, so with it off none of this is in
+// the DOM.
 //
-// Select mode wraps each shelf card in a tile that carries two real buttons:
-// "pick" (toggles the game in or out of the night) and "star" (makes it the
-// headline). The card itself is a <button>, and a button cannot contain
-// buttons, so the tile sits around it rather than inside it. Leaving select
-// mode unwraps every card again; nothing about the grid is re-rendered, so
-// covers and scroll position survive both transitions.
+// The picks are the shelf's own Game Night selection (state.selectedIds, in
+// selection order). This module adds one thing to that mode's bar: a Share
+// button that opens the sheet for the games already selected. The headline
+// is the first pick until the host moves it in the sheet's picker.
 //
 // The sheet is the filter sheet's twin: same scrim and panel classes, same
 // scroll lock, same focus trap and Escape handling. The poster itself is
@@ -17,8 +17,6 @@ import { registerOverlay, syncScrollLock } from './scroll-lock.js';
 import { userDisplayName } from './auth.js';
 import { renderInvitePoster, NIGHT_URL_BASE } from './invite-poster.js';
 
-// Tabler "star" (outline) and "check", both on currentColor.
-const STAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg>`;
 // Tabler outline icons (3.31), 24px grid, stroke 2, currentColor.
 const ICON_PATHS = {
   calendar: '<path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/><path d="M11 15h1"/><path d="M12 15v3"/>',
@@ -32,7 +30,7 @@ const ICON_PATHS = {
 };
 const icon = (name, cls = '') =>
   `<svg class="invite-ti ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name]}</svg>`;
-const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>`;
+const STAR_SVG = icon('star');
 
 // The poster uses faces the shelf does not: Fraunces 300 and 400. Loaded
 // here, not in shelf.html's <link>, so a shelf without the flag requests
@@ -62,19 +60,15 @@ const esc = s => String(s)
 
 /**
  * @param {object} ctx
- * @param {HTMLElement} ctx.shelfEl     the card grid (#shelf)
- * @param {HTMLElement} ctx.toolbarEl   where "Plan a night" goes (the filter/sort bar)
+ * @param {HTMLElement} ctx.barEl       the Game Night selection bar (#gnBar)
+ * @param {HTMLElement} ctx.beforeEl    the bar's Continue button; Share goes before it
+ * @param {() => string[]} ctx.getSelectedIds  the shelf's picks, bggIds in selection order
  * @param {() => object[]} ctx.getGames legacy-shaped games currently loaded
  * @param {() => object|null} ctx.getProfile  the shelf's profile (owner)
  * @param {() => Promise<object|null>} ctx.getViewer  the signed-in user, if any
- * @returns {{ onRender: () => void, isSelecting: () => boolean }}
+ * @returns {{ onSelection: () => void, reset: () => void }}
  */
-export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewer }) {
-  // The whole of select mode's state. bggIds are strings on this shelf, in
-  // the order they were picked — that order is the strip's order.
-  const sel = { picked: [], headline: null };
-  let selecting = false;
-
+export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames, getProfile, getViewer }) {
   if (!document.querySelector(`link[href="${POSTER_FONTS_HREF}"]`)) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -84,171 +78,31 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
 
   const gameById = id => getGames().find(g => g.bggId === id) || null;
 
-  // ---- entry point ----
-
-  const planBtn = document.createElement('button');
-  planBtn.className = 'icon-btn plan-btn';
-  planBtn.id = 'planNightBtn';
-  planBtn.type = 'button';
-  planBtn.setAttribute('aria-pressed', 'false');
-  planBtn.textContent = 'Plan a night';
-  toolbarEl.appendChild(planBtn);
-  planBtn.addEventListener('click', () => (selecting ? exit() : enter()));
-
-  // ---- action bar ----
-
-  const bar = document.createElement('div');
-  bar.className = 'invite-bar';
-  bar.id = 'inviteBar';
-  bar.hidden = true;
-  bar.innerHTML = `
-    <button class="invite-bar__done" id="inviteDone" type="button">Done</button>
-    <div class="invite-bar__text">
-      <b id="inviteCount" aria-live="polite"></b>
-      <small id="inviteHeadnote"></small>
-    </div>
-    <button class="invite-bar__share" id="inviteShare" type="button">Share invite</button>
-  `;
-  shelfEl.insertAdjacentElement('afterend', bar);
-  const countEl = bar.querySelector('#inviteCount');
-  const headnoteEl = bar.querySelector('#inviteHeadnote');
-  const shareInviteBtn = bar.querySelector('#inviteShare');
-  bar.querySelector('#inviteDone').addEventListener('click', exit);
-  shareInviteBtn.addEventListener('click', openSheet);
-
-  function updateBar() {
-    const n = sel.picked.length;
-    const h = sel.headline ? gameById(sel.headline) : null;
-    countEl.textContent = `${n} game${n === 1 ? '' : 's'} picked`;
-    headnoteEl.textContent = h ? `Headline: ${h.title}` : 'Pick at least one';
+  // The host's choice of headline; null means "the first pick". Validated
+  // against the current picks every time it is read.
+  let headlineId = null;
+  const picks = () => getSelectedIds();
+  function headlineOf(ids) {
+    return ids.includes(headlineId) ? headlineId : (ids[0] ?? null);
   }
 
-  // ---- tiles ----
+  // ---- entry: Share in the selection bar ----
 
-  function wrapCard(card) {
-    const id = card.dataset.id;
-    const g = gameById(id);
-    if (!g) return;
-    const tile = document.createElement('div');
-    tile.className = 'inv-tile';
-    tile.dataset.id = id;
-    card.parentNode.insertBefore(tile, card);
-    tile.appendChild(card);
-    // The pick overlay covers the card and owns its taps; the card drops out
-    // of the tab order so keyboard users meet pick and star, nothing else.
-    card.setAttribute('tabindex', '-1');
-    card.setAttribute('aria-hidden', 'true');
-    tile.insertAdjacentHTML('beforeend', `
-      <button class="pick" type="button" aria-pressed="false" aria-label="Add ${esc(g.title)}">
-        <span class="art-zone"><span class="pip">${CHECK_SVG}</span><span class="tag">Headline</span></span>
-      </button>
-      <button class="star" type="button" aria-pressed="false" aria-label="Make ${esc(g.title)} the headline">${STAR_SVG}</button>
-    `);
-  }
+  const shareBtn = document.createElement('button');
+  shareBtn.className = 'gn-bar__share';
+  shareBtn.id = 'gnBarShare';
+  shareBtn.type = 'button';
+  shareBtn.setAttribute('aria-label', 'Share invite');
+  shareBtn.innerHTML = icon('share');
+  shareBtn.disabled = true;
+  barEl.classList.add('has-share');
+  barEl.insertBefore(shareBtn, beforeEl);
+  shareBtn.addEventListener('click', openSheet);
 
-  function unwrapCard(tile) {
-    const card = tile.querySelector('.game-card');
-    if (card) {
-      card.removeAttribute('tabindex');
-      card.removeAttribute('aria-hidden');
-      tile.parentNode.insertBefore(card, tile);
-    }
-    tile.remove();
-  }
-
-  function syncTile(tile) {
-    const id = tile.dataset.id;
-    const g = gameById(id);
-    const on = sel.picked.includes(id);
-    const head = on && sel.headline === id;
-    tile.classList.toggle('on', on);
-    tile.classList.toggle('head', head);
-    const pick = tile.querySelector('.pick');
-    pick.setAttribute('aria-pressed', String(on));
-    if (g) pick.setAttribute('aria-label', `${on ? 'Remove' : 'Add'} ${g.title}`);
-    tile.querySelector('.star').setAttribute('aria-pressed', String(head));
-  }
-
-  // Wraps whatever cards the grid currently holds — called on entry and after
-  // every re-render while selecting (filters and search stay live).
-  function decorate() {
-    shelfEl.querySelectorAll('.game-card[data-id]').forEach(card => {
-      if (!card.parentElement.classList.contains('inv-tile')) wrapCard(card);
-    });
-    shelfEl.querySelectorAll('.inv-tile').forEach(syncTile);
-  }
-
-  function undecorate() {
-    shelfEl.querySelectorAll('.inv-tile').forEach(unwrapCard);
-  }
-
-  shelfEl.addEventListener('click', (e) => {
-    if (!selecting) return;
-    const star = e.target.closest('.star');
-    if (star) { setHeadline(star.closest('.inv-tile').dataset.id); return; }
-    const pick = e.target.closest('.pick');
-    if (pick) togglePick(pick.closest('.inv-tile').dataset.id);
-  });
-
-  // ---- selection ----
-
-  function togglePick(id) {
-    if (sel.picked.includes(id)) sel.picked = sel.picked.filter(x => x !== id);
-    else sel.picked = [...sel.picked, id];
-    // The first pick is the headline until a star says otherwise; losing the
-    // headline promotes the earliest remaining pick.
-    if (!sel.picked.includes(sel.headline)) sel.headline = sel.picked[0] ?? null;
-    selectionChanged();
-  }
-
-  function setHeadline(id) {
-    if (!sel.picked.includes(id)) return;
-    sel.headline = id;
-    selectionChanged();
-  }
-
-  function selectionChanged() {
-    shelfEl.querySelectorAll('.inv-tile').forEach(syncTile);
-    updateBar();
+  function onSelection() {
+    shareBtn.disabled = picks().length === 0;
     if (sheetOpen) { syncRows(); ensureNight(); renderPreview(); }
   }
-
-  // ---- mode ----
-
-  function enter() {
-    if (selecting) return;
-    selecting = true;
-    document.body.classList.add('is-selecting');
-    planBtn.setAttribute('aria-pressed', 'true');
-    decorate();
-    bar.hidden = false;
-    updateBar();
-  }
-
-  // Leaving select mode clears the picks and the night: the state is in
-  // memory only.
-  function exit() {
-    if (!selecting) return;
-    selecting = false;
-    sel.picked = [];
-    sel.headline = null;
-    night = emptyNight();
-    when.date = ''; when.time = '';
-    venue = '';
-    undecorate();
-    document.body.classList.remove('is-selecting');
-    bar.hidden = true;
-    planBtn.setAttribute('aria-pressed', 'false');
-    planBtn.focus();
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape' || !selecting) return;
-    // An open overlay (this sheet, the filter sheet, the detail modal) owns
-    // Escape; select mode only takes it when nothing is on top.
-    if (sheetOpen || document.body.classList.contains('scroll-locked')) return;
-    exit();
-  });
 
   // ---- sheet ----
   // docs/mockups/invite-sheet-mobile.html: preview first and never cropped,
@@ -396,8 +250,8 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   });
   whereInput.addEventListener('blur', () => { if (!whereEdit.hidden) setTimeout(() => { if (!whereEdit.hidden && !whereEdit.contains(document.activeElement)) commitWhere(); }, 0); });
 
-  // Headline and games: the picks as tiles, the shelf's star treatment, so
-  // the host can move the headline without leaving the sheet.
+  // Headline and games: the picks as tiles with a star, so the host can move
+  // the headline without leaving the sheet.
   $('inviteGamesRow').addEventListener('click', () => {
     const open = picker.hidden;
     picker.hidden = !open;
@@ -406,24 +260,30 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   });
   picker.addEventListener('click', (e) => {
     const tile = e.target.closest('[data-headline]');
-    if (tile) setHeadline(tile.dataset.headline);
+    if (!tile) return;
+    headlineId = tile.dataset.headline;
+    syncRows();
+    ensureNight();
+    renderPreview();
   });
   function renderPicker() {
-    const games = sel.picked.map(gameById).filter(Boolean);
+    const ids = picks();
+    const head = headlineOf(ids);
+    const games = ids.map(gameById).filter(Boolean);
     const tiles = [...picker.querySelectorAll('.invite-pick')];
     // Same picks as last time: flip the headline in place so a tile that has
     // keyboard focus keeps it. Anything else rebuilds the grid.
     if (tiles.length && tiles.length === games.length && tiles.every((t, i) => t.dataset.headline === games[i].bggId)) {
       tiles.forEach(t => {
-        const head = t.dataset.headline === sel.headline;
-        t.classList.toggle('head', head);
-        t.setAttribute('aria-pressed', String(head));
+        const on = t.dataset.headline === head;
+        t.classList.toggle('head', on);
+        t.setAttribute('aria-pressed', String(on));
       });
       return;
     }
     picker.innerHTML = games.map(g => {
-      const head = g.bggId === sel.headline;
-      return `<button class="invite-pick${head ? ' head' : ''}" type="button" data-headline="${esc(g.bggId)}" aria-pressed="${head}" aria-label="Make ${esc(g.title)} the headline" style="--c:${esc(g.color || '')}">
+      const on = g.bggId === head;
+      return `<button class="invite-pick${on ? ' head' : ''}" type="button" data-headline="${esc(g.bggId)}" aria-pressed="${on}" aria-label="Make ${esc(g.title)} the headline" style="--c:${esc(g.color || '')}">
         ${g.image ? `<img src="${esc(g.image)}" alt="" loading="lazy">` : ''}
         <span class="invite-pick__star">${STAR_SVG}</span>
         <span class="invite-pick__tag">Headline</span>
@@ -454,16 +314,18 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     setRow('inviteWhereVal', venue, 'Add a place');
     whenInput.value = when.date ? `${when.date}T${when.time || '19:00'}` : '';
 
-    const thumbs = sel.picked.map(gameById).filter(Boolean).slice(0, 4);
+    const ids = picks();
+    const head = headlineOf(ids);
+    const thumbs = ids.map(gameById).filter(Boolean).slice(0, 4);
     $('inviteThumbs').innerHTML = thumbs.map(g =>
-      `<i class="${g.bggId === sel.headline ? 'h' : ''}" style="--c:${esc(g.color || '')}${g.image ? `;background-image:url(&quot;${esc(g.image)}&quot;)` : ''}"></i>`).join('');
+      `<i class="${g.bggId === head ? 'h' : ''}" style="--c:${esc(g.color || '')}${g.image ? `;background-image:url(&quot;${esc(g.image)}&quot;)` : ''}"></i>`).join('');
     if (!picker.hidden) renderPicker();
 
     const linkVal = $('inviteLinkVal');
     if (night.code) { linkVal.textContent = `/n/${night.code}`; linkVal.classList.remove('muted'); }
     else if (night.error) { linkVal.textContent = "Couldn't create the night. Tap to retry"; linkVal.classList.add('muted'); }
     else if (night.pending) { linkVal.textContent = 'Creating…'; linkVal.classList.add('muted'); }
-    else { linkVal.textContent = sel.picked.length ? '' : 'Pick a game first'; linkVal.classList.add('muted'); }
+    else { linkVal.textContent = ids.length ? '' : 'Pick a game first'; linkVal.classList.add('muted'); }
   }
   // A row's value, or a muted "Add a …" when the host hasn't set one — in
   // which case that line is simply not on the poster.
@@ -513,14 +375,26 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
+  // Leaving selection mode clears everything the sheet remembered: the
+  // state is in memory only.
+  function reset() {
+    headlineId = null;
+    when.date = ''; when.time = '';
+    venue = '';
+    night = emptyNight();
+    if (sheetOpen) closeSheet();
+    shareBtn.disabled = true;
+  }
+
   // ---- the night ----
 
-  // One night per selection: the key is the ordered picks plus the headline.
-  // Reopening the sheet on the same picks reuses the code; a different
-  // selection creates a new night.
+  // One night per selection: the key is the ordered picks. Reopening the
+  // sheet on the same picks reuses the code; a different selection creates a
+  // new night. The headline is not part of the key — the night does not
+  // store it, so moving it must not spend another night.
   function emptyNight() { return { key: null, code: null, pending: false, error: false }; }
   let night = emptyNight();
-  const selectionKey = () => `${sel.picked.join(',')}|${sel.headline || ''}`;
+  const selectionKey = () => picks().join(',');
 
   // The host is the signed-in viewer when there is one, else the shelf's owner.
   let hostPromise = null;
@@ -535,7 +409,8 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   async function ensureNight() {
     const key = selectionKey();
     if (night.key === key && (night.code || night.pending)) return;
-    if (!sel.picked.length) { night = { ...emptyNight(), key }; syncRows(); return; }
+    const ids = picks();
+    if (!ids.length) { night = { ...emptyNight(), key }; syncRows(); return; }
     night = { key, code: null, pending: true, error: false };
     spinnerEl.hidden = false;
     syncRows();
@@ -543,7 +418,7 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
       const [{ createGameNight }, hostName] = await Promise.all([import('./session.js'), getHost()]);
       const code = await createGameNight({
         hostName, mode: 'manual', revealDeck: true,
-        gameIds: sel.picked.slice(), ownerId: getProfile()?.id,
+        gameIds: ids, ownerId: getProfile()?.id,
       });
       if (night.key !== key) return; // the selection moved on meanwhile
       // Same key the Game Night flow sets, so /night/:code/host knows the host.
@@ -561,8 +436,10 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   // ---- preview ----
 
   function posterInputs() {
-    const headline = sel.headline ? gameById(sel.headline) : null;
-    const rest = sel.picked.filter(id => id !== sel.headline).map(gameById).filter(Boolean);
+    const ids = picks();
+    const head = headlineOf(ids);
+    const headline = head ? gameById(head) : null;
+    const rest = ids.filter(id => id !== head).map(gameById).filter(Boolean);
     return { headline, rest };
   }
 
@@ -632,8 +509,5 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     if (blob) download(blob);
   }
 
-  return {
-    onRender() { if (selecting) decorate(); },
-    isSelecting: () => selecting,
-  };
+  return { onSelection, reset };
 }

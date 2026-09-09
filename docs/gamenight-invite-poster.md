@@ -11,8 +11,8 @@ Open `docs/mockups/gamenight-invite-poster.html` in a browser first. It is the v
 ## Scope
 
 In:
-- Shelf **select mode** (multi-select + headline star) behind `?invite=1`
-- Sticky action bar with count, headline name, and "Share invite"
+- Entry from the Game Night selection mode, behind `?invite=1`
+- A Share button in the Game Night selection bar
 - Bottom sheet reusing the existing share-shelf sheet pattern: format picker (Story / Square), live preview, Share / Save PNG
 - Canvas renderer for the poster
 - Wiring to the existing game night creation so the link and QR point at a real `/n/:code`
@@ -28,24 +28,13 @@ Out (follow-up specs):
 2. Read how a game night is created today (Stage 1 RPC). Note its signature. This spec needs it to accept an ordered list of candidate ids plus a headline id. If it doesn't, extend it additively (new optional param, new nullable column `headline_game_id`), never by changing existing behaviour.
 3. Confirm which feature-flag helper the codebase uses for `?vibes=1` / `?teach=1` and use the same one.
 
-## 1. Select mode on the shelf
+## 1. Selecting the games
 
-Entry: with `?invite=1`, add a "Plan a night" button next to the existing shelf actions. Clicking it toggles `body.is-selecting`.
+There is no separate entry point. The Game Night pill's existing selection mode is where games are picked: tap the pill, tap covers, the bottom bar counts them. With `?invite=1` (or the flag on) that bar gains a **Share** button (Tabler `share`, ghost, next to Continue) that opens the invite sheet for the games already selected. It is disabled at zero picks, like the bar's other controls.
 
-While selecting:
-- Each cover tile gains an overlay `<button class="pick" aria-pressed="false" aria-label="Add {title}">`. Clicking toggles selection and flips `aria-pressed` and the label ("Remove {title}").
-- Selected tiles get the gold ring via `box-shadow: inset 0 0 0 3px var(--bgs-gold)` (never `outline`) and the check pip top-right, per mockup.
-- Selected tiles also show a star button top-left: `<button class="star" aria-label="Make {title} the headline" aria-pressed="false">`. Tabler `star` outline, 24px, `currentColor`.
-- The first selected game is the headline by default. Starring another game moves the headline. Deselecting the headline promotes the earliest remaining pick. Headline tile shows the gold "Headline" tag bottom-left.
 - Order of selection is preserved; it's the order of the strip.
-
-State lives in one object: `{ picked: number[], headline: number | null }`. Keep it in memory only; leaving select mode clears it.
-
-Action bar (sticky bottom, `--bgs-plate`, shadow as mockup):
-- Left: `<b aria-live="polite">{n} games picked</b>` and `<small>Headline: {title}</small>` (or "Pick at least one").
-- Right: "Share invite" button, gold. Disabled state is not used; with zero picks it opens the sheet with the empty poster ("Pick a game") so the host sees why.
-
-Exit: "Done" in the bar's left corner on mobile widths, or Escape. Focus returns to "Plan a night".
+- The first selected game is the headline by default. The host moves it in the sheet's "Headline and games" picker; there is no star on the shelf.
+- The invite's own state (headline, date, place, night) lives in memory only; leaving selection mode clears it.
 
 ## 2. Share sheet
 
@@ -118,16 +107,16 @@ Colours: read `--bgs-bg`, `--bgs-plate`, `--bgs-ivory`, `--bgs-gold` from `getCo
 - `docs/specs/gamenight-invite-poster.md` — this file
 - `js/invite.js` (or wherever the share-shelf module lives; match its location and naming) — select mode, sheet wiring, renderer
 - `vendor/qrcode-generator.js`
-- CSS additions in the same stylesheet as the share sheet, scoped under `.is-selecting` and `.invite-sheet`
+- CSS additions in the same stylesheet as the share sheet, scoped under `.gn-bar__share` and `.invite-sheet`
 - Supabase: additive migration only if the Stage 1 RPC needs `headline_game_id`
 
 ## Verification
 
-- [ ] `?invite=1` shows "Plan a night"; without the flag nothing changes on the shelf
-- [ ] Tap 4 covers: ring + pip on each, first one carries "Headline", bar reads "4 games picked · Headline: {title}"
-- [ ] Star the third pick: headline moves, tag moves, bar updates, preview re-renders if open
-- [ ] Deselect the headline: next earliest pick becomes headline
-- [ ] Share invite with 4 picks → sheet opens, night is created, code appears in link and QR
+- [ ] `?invite=1` adds Share to the Game Night selection bar; without the flag the bar is what it was
+- [ ] Select 4 covers: Share enables; the sheet's headline is the first pick
+- [ ] Move the headline in the sheet's picker: poster, thumbs and night key follow
+- [ ] Deselect the headline on the shelf: the next earliest pick becomes headline
+- [ ] Share with 4 picks → sheet opens, night is created, code appears in link and QR
 - [ ] Story and Square both match the mockup side by side at 100% (screenshot both, compare)
 - [ ] 7 picks → strip shows 5 tiles plus "+1"; caption "or one of these 6"
 - [ ] Night with no date and no venue → footer shows only the link and QR, no empty lines or placeholders; with one of the two set, only that line appears
@@ -135,7 +124,7 @@ Colours: read `--bgs-bg`, `--bgs-plate`, `--bgs-ivory`, `--bgs-gold` from `getCo
 - [ ] Block `/api/cover` in devtools → hero and strip fall back to curated colour plates; share still works
 - [ ] Web Share on iOS Safari and Android Chrome sends a PNG; desktop Chrome downloads it
 - [ ] Canvas is not tainted (`toBlob` succeeds) after real BGG covers load
-- [ ] Keyboard only: Tab reaches pick and star on every tile, Escape exits select mode, focus lands back on "Plan a night"
+- [ ] Keyboard only: Tab reaches Share in the bar, the sheet traps focus, Escape closes it and focus lands back on Share
 - [ ] VoiceOver: each tap announces the new count
 - [ ] `prefers-reduced-motion: reduce` — no transitions or animations fire
 - [ ] Lighthouse a11y on the shelf with select mode open stays at the current score or better
