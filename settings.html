@@ -122,17 +122,6 @@
     <div class="deal"><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deck-card back">?</div><div class="deal-ring"></div></div>
   </div>
 
-  <!-- Signed in, no BGG account connected yet ("Do this later" on /welcome). -->
-  <section class="plate" id="noProfile" hidden>
-    <h2>No collection yet</h2>
-    <p class="hint">Connect your BoardGameGeek account to get a shelf at <code>/u/&lt;your BGG username&gt;</code>. It takes about a minute.</p>
-    <div class="actions">
-      <a class="btn gold" href="/welcome">Connect your collection</a>
-      <button class="btn quiet" id="signOutBtnNoProfile" type="button">Sign out</button>
-      <button class="btn danger" id="deleteBtnNoProfile" type="button">Delete account</button>
-    </div>
-  </section>
-
   <div id="settings" hidden>
     <section class="plate">
       <h2>Your shelf</h2>
@@ -397,7 +386,6 @@ async function doSignOut() {
   location.href = '/';
 }
 $('signOutBtn').addEventListener('click', doSignOut);
-$('signOutBtnNoProfile').addEventListener('click', doSignOut);
 
 // ---- delete account ----
 // Same confirm dialog the game-night pages use for irreversible steps.
@@ -405,7 +393,6 @@ const confirmEl = $('confirm');
 const openConfirm = () => { confirmEl.classList.add('open'); $('confirmKeep').focus(); };
 const closeConfirm = () => confirmEl.classList.remove('open');
 $('deleteBtn').addEventListener('click', openConfirm);
-$('deleteBtnNoProfile').addEventListener('click', openConfirm);
 $('confirmKeep').addEventListener('click', closeConfirm);
 confirmEl.addEventListener('click', (e) => { if (e.target === confirmEl) closeConfirm(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && confirmEl.classList.contains('open')) closeConfirm(); });
@@ -443,9 +430,8 @@ try {
       renderSettings();
       updateBrowseOffer();
     } else {
-      // "Do this later" on /welcome lands here: the way back, and a way out.
-      $('sub').textContent = `Signed in as ${user.email || userDisplayName(user)}`;
-      show('noProfile', true);
+      // No BGG account connected yet: onboarding lives at /welcome.
+      location.replace('/welcome');
     }
   }
 } catch (err) {

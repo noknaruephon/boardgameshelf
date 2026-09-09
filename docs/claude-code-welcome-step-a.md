@@ -41,7 +41,7 @@ visually hidden live region announces the step change once.
 <div class="act">
   <button class="btn ghost" id="continue" type="button" disabled>Continue</button>
 </div>
-<p class="links">Just looking? <a id="browseLink" href="#">Browse an existing shelf</a><span class="dot">·</span><a id="laterLink" href="/settings">Do this later</a></p>
+<p class="links">Just looking? <a id="browseLink" href="#">Browse an existing shelf</a><span class="dot">·</span><a id="laterLink" href="/shelf">Do this later</a></p>
 ```
 
 ## State → help text and button
@@ -60,8 +60,8 @@ second button.
 
 - `#browseLink` mounts the existing shelf picker (`js/shelf-picker.js`)
   below the links, replacing the old secondary button.
-- `#laterLink` goes to `/settings`; the sign-out paragraph leaves this step
-  (sign out lives in settings).
+- `#laterLink` goes to `/shelf`, the user's own shelf, which is empty until
+  a BGG account is connected; the sign-out paragraph leaves this step.
 
 ## CSS
 
@@ -108,8 +108,8 @@ are no longer referenced are removed.
 - A real name → green border, ok text, gold "Continue to sync"; a fake
   name → red border, err text, ghost button.
 - "Browse an existing shelf" opens the picker inline; "Do this later"
-  lands on settings with no slug, and settings offers the link back to
-  `/welcome`.
+  lands on `/shelf`: the shelf page, empty, with a "Connect your
+  collection" link back to `/welcome` and a Sign out link.
 - Syncing and done states unchanged except for the new step indicator.
 - Lighthouse accessibility ≥ current.
 
@@ -126,12 +126,13 @@ are no longer referenced are removed.
   found (gold "Continue to sync", which a second press turns into the
   claim) or missing (ghost). A found name is claimed in the same press
   that verified it, as before.
-- **"Do this later" lands on Settings**, which therefore needs a state for
-  a signed-in user with no profile. The "No collection yet" card that was
-  removed earlier is back for this one entry path, with the current button
-  colours: gold Connect your collection, quiet Sign out, red Delete
-  account. Sign-in itself still lands on `/welcome`, so a fresh user never
-  sees that card unless they chose "Do this later".
+- **"Do this later" lands on `/shelf`**, a new route to the shelf page
+  meaning "my shelf". A signed-in user with a profile is redirected to
+  `/u/<slug>`; one without sees the shelf chrome with an empty state
+  ("Your shelf is empty. Connect your BoardGameGeek account and your
+  owned games will appear here."), a Connect your collection link to
+  `/welcome`, and a Sign out link. Signed-out visitors are sent to `/`.
+  Settings keeps sending users with no profile to `/welcome`.
 - **The plate stays for syncing and done.** Those states' markup is
   unchanged per the brief; each now sits in its own `.plate` while step 2
   renders with no card. `.plate` therefore remains in the CSS.
