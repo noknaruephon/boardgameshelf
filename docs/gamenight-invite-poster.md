@@ -61,9 +61,9 @@ Layout constants come from the mockup; do not eyeball them. Story values, with S
 | Region | Story | Square |
 |---|---|---|
 | Canvas | 1080 × 1920 | 1080 × 1080 |
-| Hero | 0 → 1160 | 0 → 620 |
+| Hero | 0 → body top + 120; the artwork fills whatever the text does not need | + 100 |
 | Hero fade | bottom 46% of hero, `rgba(bg,0)` → `bg` | same |
-| Body top | 1040 | 520 |
+| Body block | hangs from the bottom margin: bottom at 1920 − 88, top = that − block height | bottom at 1080 − 60 |
 | Eyebrow | Inter 400 34, ivory 70% | same |
 | Title | Fraunces 300 128, opsz 144, letter-spacing −0.02em, max width 920 | 84 |
 | Strip tiles | 150 square, radius 10, gap 22 | 104, gap 16 |
