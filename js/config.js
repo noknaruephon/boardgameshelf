@@ -17,4 +17,4 @@ export const DEFAULT_SHELF_SLUG = 'noknaruephon';
 // own button on this site, so Google's screen shows this domain rather than
 // the Supabase project address. Leave empty to fall back to the redirect flow
 // through Supabase.
-export const GOOGLE_CLIENT_ID = '';
+export const GOOGLE_CLIENT_ID = '155273334974-1ek55c13gpffo7nf3qj7nik6db17l5r0.apps.googleusercontent.com';
