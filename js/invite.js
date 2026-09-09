@@ -15,10 +15,23 @@
 
 import { registerOverlay, syncScrollLock } from './scroll-lock.js';
 import { userDisplayName } from './auth.js';
-import { renderInvitePoster } from './invite-poster.js';
+import { renderInvitePoster, NIGHT_URL_BASE } from './invite-poster.js';
 
 // Tabler "star" (outline) and "check", both on currentColor.
 const STAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg>`;
+// Tabler outline icons (3.31), 24px grid, stroke 2, currentColor.
+const ICON_PATHS = {
+  calendar: '<path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/><path d="M11 15h1"/><path d="M12 15v3"/>',
+  'map-pin': '<path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"/>',
+  star: '<path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/>',
+  link: '<path d="M9 15l6 -6"/><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>',
+  copy: '<path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"/><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"/>',
+  'chevron-right': '<path d="M9 6l6 6l-6 6"/>',
+  share: '<path d="M6 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M18 6m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M18 18m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M8.7 10.7l6.6 -3.4"/><path d="M8.7 13.3l6.6 3.4"/>',
+  x: '<path d="M18 6l-12 12"/><path d="M6 6l12 12"/>',
+};
+const icon = (name, cls = '') =>
+  `<svg class="invite-ti ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name]}</svg>`;
 const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l10 -10"/></svg>`;
 
 // The poster uses faces the shelf does not: Fraunces 300 and 400. Loaded
@@ -28,7 +41,7 @@ const POSTER_FONTS_HREF =
   'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400&display=swap';
 
 // "Sat 19 Sep, 7 pm" from the picker's YYYY-MM-DD and HH:MM; empty date → null
-// (the poster prints "Date TBC"). Minutes only when they are not :00.
+// (no date line on the poster). Minutes only when they are not :00.
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export function formatWhen(date, time) {
@@ -197,7 +210,7 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   function selectionChanged() {
     shelfEl.querySelectorAll('.inv-tile').forEach(syncTile);
     updateBar();
-    if (sheetOpen) { ensureNight(); renderPreview(); }
+    if (sheetOpen) { syncRows(); ensureNight(); renderPreview(); }
   }
 
   // ---- mode ----
@@ -220,9 +233,8 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     sel.picked = [];
     sel.headline = null;
     night = emptyNight();
-    when.decided = true; when.date = ''; when.time = '';
-    dateInput.value = ''; timeInput.value = '';
-    syncWhenUI();
+    when.date = ''; when.time = '';
+    venue = '';
     undecorate();
     document.body.classList.remove('is-selecting');
     bar.hidden = true;
@@ -239,6 +251,9 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   });
 
   // ---- sheet ----
+  // docs/mockups/invite-sheet-mobile.html: preview first and never cropped,
+  // a segmented format control under it, settings as tappable rows, one
+  // gold primary action. The scrim and panel are the filter sheet's.
 
   const scrim = document.createElement('div');
   scrim.className = 'sheet-scrim invite-scrim';
@@ -251,57 +266,75 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   sheet.setAttribute('aria-labelledby', 'inviteSheetTitle');
   sheet.innerHTML = `
     <div class="sheet-handle"></div>
-    <div class="sheet-header">
+    <div class="invite-head">
       <h2 id="inviteSheetTitle">Invite</h2>
-      <button class="reset-link" id="inviteClose" type="button">Close</button>
+      <button class="invite-icon" id="inviteClose" type="button" aria-label="Close">${icon('x')}</button>
     </div>
-    <div class="sheet-body">
-      <div class="sheet-group invite-format">
-        <span class="filter-label" id="inviteFormatLabel">Format</span>
-        <div class="segmented" role="group" aria-labelledby="inviteFormatLabel">
-          <button class="pill active" type="button" data-format="story" aria-pressed="true">Story 9:16</button>
-          <button class="pill" type="button" data-format="square" aria-pressed="false">Square 1:1</button>
+    <div class="sheet-body invite-body">
+      <div class="invite-previewwrap">
+        <div class="invite-preview" id="invitePreview">
+          <div class="invite-preview__canvas" id="inviteCanvasHolder"></div>
+          <div class="invite-spinner" id="inviteSpinner" role="status" hidden><i aria-hidden="true"></i>Creating the night…</div>
         </div>
       </div>
-      <p class="invite-error" id="inviteError" hidden>
-        Couldn't create the night.
-        <button class="invite-retry" id="inviteRetry" type="button">Try again</button>
-      </p>
-      <div class="sheet-group invite-when">
-        <div class="invite-when__head">
-          <span class="filter-label" id="inviteWhenLabel">When</span>
-          <button type="button" class="toggle-row invite-when__toggle" id="inviteWhenToggle" role="switch" aria-checked="true" aria-controls="inviteWhenInputs">
-            <span class="toggle-switch" aria-hidden="true"></span>
-            <span class="toggle-label">Date decided</span>
-          </button>
-        </div>
-        <div class="invite-when__inputs" id="inviteWhenInputs" role="group" aria-labelledby="inviteWhenLabel">
-          <input class="invite-input" id="inviteDate" type="date" aria-label="Date">
-          <input class="invite-input" id="inviteTime" type="time" step="300" aria-label="Time">
-        </div>
+      <div class="invite-seg" role="group" aria-label="Format">
+        <button type="button" data-format="story" aria-pressed="true">Story</button>
+        <button type="button" data-format="square" aria-pressed="false">Square</button>
       </div>
-      <div class="invite-preview" id="invitePreview">
-        <div class="invite-preview__canvas" id="inviteCanvasHolder"></div>
-        <div class="invite-spinner" id="inviteSpinner" role="status" hidden><i aria-hidden="true"></i>Creating the night…</div>
+      <div class="invite-rows">
+        <button class="invite-row" id="inviteWhenRow" type="button">
+          ${icon('calendar')}
+          <span class="invite-row__lab"><b>When</b><span id="inviteWhenSub"></span></span>
+          <span class="invite-row__val" id="inviteWhenVal"></span>
+          ${icon('chevron-right', 'invite-row__chev')}
+        </button>
+        <input class="invite-native" id="inviteWhenInput" type="datetime-local" step="300" tabindex="-1" aria-hidden="true">
+        <button class="invite-row" id="inviteWhereRow" type="button" aria-expanded="false" aria-controls="inviteWhereEdit">
+          ${icon('map-pin')}
+          <span class="invite-row__lab"><b>Where</b><span id="inviteWhereSub"></span></span>
+          <span class="invite-row__val" id="inviteWhereVal"></span>
+          ${icon('chevron-right', 'invite-row__chev')}
+        </button>
+        <div class="invite-edit" id="inviteWhereEdit" hidden>
+          <input class="invite-edit__input" id="inviteWhereInput" type="text" maxlength="40" autocomplete="off" placeholder="e.g. Nok's" aria-label="Place">
+          <button class="invite-edit__done" id="inviteWhereDone" type="button">Done</button>
+        </div>
+        <button class="invite-row" id="inviteGamesRow" type="button" aria-expanded="false" aria-controls="invitePicker">
+          ${icon('star')}
+          <span class="invite-row__lab"><b>Headline and games</b><span id="inviteGamesSub"></span></span>
+          <span class="invite-thumbs" id="inviteThumbs" aria-hidden="true"></span>
+          ${icon('chevron-right', 'invite-row__chev')}
+        </button>
+        <div class="invite-picker" id="invitePicker" role="group" aria-label="Pick the headline" hidden></div>
+        <button class="invite-row" id="inviteLinkRow" type="button">
+          ${icon('link')}
+          <span class="invite-row__lab"><b>Link</b><span>Friends open it to vote and RSVP</span></span>
+          <span class="invite-row__val" id="inviteLinkVal" aria-live="polite"></span>
+          ${icon('copy', 'invite-row__chev')}
+        </button>
       </div>
     </div>
-    <div class="sheet-footer invite-actions">
-      <button class="apply-btn" id="inviteShareBtn" type="button">Share</button>
-      <button class="invite-save" id="inviteSaveBtn" type="button">Save PNG</button>
+    <div class="invite-actions">
+      <button class="invite-primary" id="inviteShareBtn" type="button">${icon('share')}Share invite</button>
+      <button class="invite-secondary" id="inviteSaveBtn" type="button">Save as PNG</button>
     </div>
   `;
   document.body.append(scrim, sheet);
 
-  const holder = sheet.querySelector('#inviteCanvasHolder');
-  const spinnerEl = sheet.querySelector('#inviteSpinner');
-  const errorEl = sheet.querySelector('#inviteError');
+  const $ = id => sheet.querySelector('#' + id);
+  const holder = $('inviteCanvasHolder');
+  const spinnerEl = $('inviteSpinner');
   const formatBtns = [...sheet.querySelectorAll('[data-format]')];
+  const whenInput = $('inviteWhenInput');
+  const whereEdit = $('inviteWhereEdit');
+  const whereInput = $('inviteWhereInput');
+  const picker = $('invitePicker');
 
   let format = 'story';
-  // The picker's values, in memory only like the picks. `decided` off hides
-  // the inputs and prints "Date TBC" for a host who doesn't know yet; the
-  // values wait underneath for when they do.
-  const when = { decided: true, date: '', time: '' };
+  // What the host has decided, in memory only like the picks. Unset means
+  // that line is simply not on the poster.
+  const when = { date: '', time: '' };
+  let venue = '';
   let sheetOpen = false;
   let sheetLastFocused = null;
   let currentCanvas = null;
@@ -310,40 +343,133 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
 
   formatBtns.forEach(btn => btn.addEventListener('click', () => {
     format = btn.dataset.format;
-    formatBtns.forEach(b => {
-      const on = b === btn;
-      b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', String(on));
-    });
+    formatBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
     renderPreview();
   }));
 
-  const dateInput = sheet.querySelector('#inviteDate');
-  const timeInput = sheet.querySelector('#inviteTime');
-  const whenToggle = sheet.querySelector('#inviteWhenToggle');
-  const whenInputs = sheet.querySelector('#inviteWhenInputs');
-  function syncWhenUI() {
-    whenToggle.setAttribute('aria-checked', String(when.decided));
-    whenInputs.hidden = !when.decided;
-  }
-  whenToggle.addEventListener('click', () => { when.decided = !when.decided; syncWhenUI(); renderPreview(); });
-  dateInput.addEventListener('change', () => { when.date = dateInput.value; renderPreview(); });
-  timeInput.addEventListener('change', () => { when.time = timeInput.value; renderPreview(); });
-
-  sheet.querySelector('#inviteClose').addEventListener('click', closeSheet);
+  $('inviteClose').addEventListener('click', closeSheet);
   scrim.addEventListener('click', closeSheet);
-  sheet.querySelector('#inviteRetry').addEventListener('click', async () => {
-    night = emptyNight();
-    await ensureNight();
-    // The retry link hides itself on success, taking focus with it.
-    if (!getFocusable().includes(document.activeElement)) sheet.querySelector('#inviteShareBtn').focus();
+  $('inviteShareBtn').addEventListener('click', share);
+  $('inviteSaveBtn').addEventListener('click', savePng);
+
+  // When: the row opens the native date and time picker; the input itself is
+  // never shown. Clearing in the picker takes the line off the poster.
+  $('inviteWhenRow').addEventListener('click', () => {
+    try { whenInput.showPicker(); } catch { whenInput.focus(); whenInput.click(); }
   });
-  sheet.querySelector('#inviteShareBtn').addEventListener('click', share);
-  sheet.querySelector('#inviteSaveBtn').addEventListener('click', savePng);
+  whenInput.addEventListener('change', () => {
+    const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(whenInput.value || '');
+    when.date = m ? m[1] : '';
+    when.time = m ? m[2] : '';
+    syncRows();
+    renderPreview();
+  });
+
+  // Where: a text field folds out under the row; Done, Enter or leaving it commits.
+  function openWhere() {
+    whereEdit.hidden = false;
+    $('inviteWhereRow').setAttribute('aria-expanded', 'true');
+    whereInput.value = venue;
+    whereInput.focus();
+  }
+  function commitWhere() {
+    venue = whereInput.value.trim();
+    whereEdit.hidden = true;
+    $('inviteWhereRow').setAttribute('aria-expanded', 'false');
+    syncRows();
+    renderPreview();
+  }
+  $('inviteWhereRow').addEventListener('click', () => (whereEdit.hidden ? openWhere() : commitWhere()));
+  $('inviteWhereDone').addEventListener('click', () => { commitWhere(); $('inviteWhereRow').focus(); });
+  whereInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); commitWhere(); $('inviteWhereRow').focus(); }
+    if (e.key === 'Escape') { e.stopPropagation(); whereInput.value = venue; commitWhere(); $('inviteWhereRow').focus(); }
+  });
+  whereInput.addEventListener('blur', () => { if (!whereEdit.hidden) setTimeout(() => { if (!whereEdit.hidden && !whereEdit.contains(document.activeElement)) commitWhere(); }, 0); });
+
+  // Headline and games: the picks as tiles, the shelf's star treatment, so
+  // the host can move the headline without leaving the sheet.
+  $('inviteGamesRow').addEventListener('click', () => {
+    const open = picker.hidden;
+    picker.hidden = !open;
+    $('inviteGamesRow').setAttribute('aria-expanded', String(open));
+    if (open) renderPicker();
+  });
+  picker.addEventListener('click', (e) => {
+    const tile = e.target.closest('[data-headline]');
+    if (tile) setHeadline(tile.dataset.headline);
+  });
+  function renderPicker() {
+    const games = sel.picked.map(gameById).filter(Boolean);
+    const tiles = [...picker.querySelectorAll('.invite-pick')];
+    // Same picks as last time: flip the headline in place so a tile that has
+    // keyboard focus keeps it. Anything else rebuilds the grid.
+    if (tiles.length && tiles.length === games.length && tiles.every((t, i) => t.dataset.headline === games[i].bggId)) {
+      tiles.forEach(t => {
+        const head = t.dataset.headline === sel.headline;
+        t.classList.toggle('head', head);
+        t.setAttribute('aria-pressed', String(head));
+      });
+      return;
+    }
+    picker.innerHTML = games.map(g => {
+      const head = g.bggId === sel.headline;
+      return `<button class="invite-pick${head ? ' head' : ''}" type="button" data-headline="${esc(g.bggId)}" aria-pressed="${head}" aria-label="Make ${esc(g.title)} the headline" style="--c:${esc(g.color || '')}">
+        ${g.image ? `<img src="${esc(g.image)}" alt="" loading="lazy">` : ''}
+        <span class="invite-pick__star">${STAR_SVG}</span>
+        <span class="invite-pick__tag">Headline</span>
+        <span class="invite-pick__title">${esc(g.title)}</span>
+      </button>`;
+    }).join('') || '<p class="invite-picker__empty">Pick games on the shelf first.</p>';
+  }
+
+  // Link: copies the night's URL; while there is no code it says why, and a
+  // failed creation makes the row the retry.
+  const nightUrl = () => (night.code ? `${NIGHT_URL_BASE}${night.code}` : '');
+  let copiedTimer = null;
+  $('inviteLinkRow').addEventListener('click', async () => {
+    if (night.error) { night = emptyNight(); ensureNight(); return; }
+    if (!night.code) return;
+    try {
+      await navigator.clipboard.writeText(nightUrl());
+      const val = $('inviteLinkVal');
+      val.textContent = 'Copied';
+      clearTimeout(copiedTimer);
+      copiedTimer = setTimeout(syncRows, 1600);
+    } catch {}
+  });
+
+  function syncRows() {
+    const dateLabel = formatWhen(when.date, when.time);
+    setRow('inviteWhenVal', 'inviteWhenSub', dateLabel, 'Add a date', 'Shown on the poster', 'Not on the poster until you add one');
+    setRow('inviteWhereVal', 'inviteWhereSub', venue, 'Add a place', venue ? `Shown as "at ${venue}"` : '', 'Not on the poster until you add one');
+    whenInput.value = when.date ? `${when.date}T${when.time || '19:00'}` : '';
+
+    const headline = sel.headline ? gameById(sel.headline) : null;
+    const others = sel.picked.length - (headline ? 1 : 0);
+    $('inviteGamesSub').textContent = !headline ? 'Pick games on the shelf'
+      : others === 0 ? headline.title : `${headline.title}, plus ${others} more`;
+    const thumbs = sel.picked.map(gameById).filter(Boolean).slice(0, 4);
+    $('inviteThumbs').innerHTML = thumbs.map(g =>
+      `<i class="${g.bggId === sel.headline ? 'h' : ''}" style="--c:${esc(g.color || '')}${g.image ? `;background-image:url(&quot;${esc(g.image)}&quot;)` : ''}"></i>`).join('');
+    if (!picker.hidden) renderPicker();
+
+    const linkVal = $('inviteLinkVal');
+    if (night.code) { linkVal.textContent = `/n/${night.code}`; linkVal.classList.remove('muted'); }
+    else if (night.error) { linkVal.textContent = "Couldn't create the night. Tap to retry"; linkVal.classList.add('muted'); }
+    else if (night.pending) { linkVal.textContent = 'Creating…'; linkVal.classList.add('muted'); }
+    else { linkVal.textContent = sel.picked.length ? '' : 'Pick a game first'; linkVal.classList.add('muted'); }
+  }
+  function setRow(valId, subId, value, emptyValue, setSub, emptySub) {
+    const val = $(valId), sub = $(subId);
+    val.textContent = value || emptyValue;
+    val.classList.toggle('muted', !value);
+    sub.textContent = value ? setSub : emptySub;
+  }
 
   function getFocusable() {
-    return [...sheet.querySelectorAll('button, [tabindex]:not([tabindex="-1"])')]
-      .filter(el => !el.disabled && !el.hidden && el.offsetParent !== null);
+    return [...sheet.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])')]
+      .filter(el => !el.disabled && !el.hidden && el.tabIndex >= 0 && el.offsetParent !== null);
   }
 
   function openSheet() {
@@ -352,6 +478,7 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     scrim.classList.add('open');
     sheet.classList.add('open');
     syncScrollLock();
+    syncRows();
     getFocusable()[0]?.focus();
     ensureNight();
     renderPreview();
@@ -359,6 +486,9 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
 
   function closeSheet() {
     sheetOpen = false;
+    if (!whereEdit.hidden) commitWhere();
+    picker.hidden = true;
+    $('inviteGamesRow').setAttribute('aria-expanded', 'false');
     scrim.classList.remove('open');
     sheet.classList.remove('open');
     syncScrollLock();
@@ -399,10 +529,10 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   async function ensureNight() {
     const key = selectionKey();
     if (night.key === key && (night.code || night.pending)) return;
-    errorEl.hidden = true;
-    if (!sel.picked.length) { night = { ...emptyNight(), key }; return; }
+    if (!sel.picked.length) { night = { ...emptyNight(), key }; syncRows(); return; }
     night = { key, code: null, pending: true, error: false };
     spinnerEl.hidden = false;
+    syncRows();
     try {
       const [{ createGameNight }, hostName] = await Promise.all([import('./session.js'), getHost()]);
       const code = await createGameNight({
@@ -418,7 +548,7 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
       night = { key, code: null, pending: false, error: true };
     }
     spinnerEl.hidden = true;
-    errorEl.hidden = !night.error;
+    syncRows();
     if (sheetOpen) renderPreview();
   }
 
@@ -433,16 +563,16 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   async function renderPreview() {
     const seq = ++renderSeq;
     const { headline, rest } = posterInputs();
-    const dateLabel = when.decided ? formatWhen(when.date, when.time) : null;
+    const dateLabel = formatWhen(when.date, when.time);
     const canvas = await renderInvitePoster({
       format, headline, rest,
-      night: { code: night.code, error: night.error, dateLabel, venue: null },
+      night: { code: night.code, error: night.error, dateLabel, venue: venue || null },
     });
     if (seq !== renderSeq) return;
-    canvas.className = 'invite-canvas';
+    canvas.className = `invite-canvas ${format}`;
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label',
-      `Invite preview: ${headline ? headline.title : 'no headline yet'}, ${rest.length} other game${rest.length === 1 ? '' : 's'}, ${dateLabel || 'no date yet'}`);
+      `Invite preview: ${headline ? headline.title : 'no headline yet'}, ${rest.length} other game${rest.length === 1 ? '' : 's'}, ${dateLabel || 'no date yet'}${venue ? ` at ${venue}` : ''}`);
     holder.replaceChildren(canvas);
     currentCanvas = canvas;
     currentBlob = null;

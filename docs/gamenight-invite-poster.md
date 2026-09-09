@@ -49,15 +49,20 @@ Exit: "Done" in the bar's left corner on mobile widths, or Escape. Focus returns
 
 ## 2. Share sheet
 
-Reuse the share-shelf bottom sheet. Differences:
-- Title: "Invite"
-- Format picker: Story (default) and Square only. No Portrait.
-- Preview: the poster canvas scaled to fit the sheet width. Re-render on format change and on any selection change if the sheet is open.
-- "When": a "Date decided" switch (on by default) with a date and a time input under the format picker; switching it off hides the inputs and prints "Date TBC", for a host who isn't sure yet. The poster's date line reads "Sat 19 Sep, 7 pm" (minutes only when not :00, time optional), or "Date TBC" while empty. Re-render on change.
-- Buttons: "Share" (Web Share API with the PNG file, falls back to download) and "Save PNG". Same code paths as the shelf share.
+Mockup: `docs/mockups/invite-sheet-mobile.html` at 390px wide. Reuse the share-shelf bottom sheet (scrim, panel, scroll lock, focus trap, Escape). Differences:
+- Title "Invite" with a Tabler `x` icon button to close. Sentence case everywhere; no mono-caps eyebrow labels.
+- Preview first, at the top of the sheet, scaled to fit so the whole poster is always visible. Never cropped. Re-render on format change and on any selection change while the sheet is open.
+- Format is a segmented control (Story / Square, `aria-pressed`) directly under the preview. No "Format" label.
+- Settings are tappable rows (real buttons) with icon, label, subtext, value, chevron:
+  - **When** (calendar): tapping opens the native date/time picker; the input is never rendered inline. Value "Sat 19 Sep, 7 pm" (minutes only when not :00) and subtext "Shown on the poster"; unset reads "Add a date" with "Not on the poster until you add one".
+  - **Where** (map-pin): a short text field folds out under the row. Value "Nok's" with subtext "Shown as \"at Nok's\""; unset reads "Add a place" with the same "Not on the poster…" subtext.
+  - **Headline and games** (star): "{headline}, plus {n} more" and cover thumbs, the headline ringed gold. Tapping opens the picks as tiles with the shelf's star treatment so the host can move the headline without leaving the sheet.
+  - **Link** (link, copy icon): "/n/{code}", subtext "Friends open it to vote and RSVP". Tapping copies the full URL. While the night is being created it reads "Creating…"; if creation failed the row reads "Couldn't create the night. Tap to retry" and is the retry.
+- One primary action: "Share invite" (Tabler `share`), gold, full width. "Save as PNG" is a quiet text button beneath it. Same Web Share and PNG-download code paths as the shelf share.
 - Filename: `game-night-{code}-{story|square}.png`
+- Tabler icons: calendar, map-pin, star, link, copy, chevron-right, share, x. Outline, `currentColor`.
 
-On first open, create the night if one doesn't exist for this selection: call the Stage 1 RPC with `candidate_ids` (ordered) and `headline_game_id`. Store the returned code. Show a small inline spinner in the preview area while waiting; the QR and link render once the code arrives. If the RPC fails, render the poster without QR and with the link line replaced by "Couldn't create the night. Try again." plus a retry button in the sheet, not on the canvas.
+On first open, create the night if one doesn't exist for this selection: call the Stage 1 RPC with `candidate_ids` (ordered) and `headline_game_id`. Store the returned code. Show a small inline spinner in the preview area while waiting; the QR and link render once the code arrives. If the RPC fails, render the poster without QR and with the link line replaced by "Couldn't create the night. Try again."; the Link row is the retry, not anything on the canvas.
 
 ## 3. Poster renderer
 

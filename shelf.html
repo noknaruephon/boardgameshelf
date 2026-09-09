@@ -1237,66 +1237,150 @@
   }
   .invite-bar__done:focus-visible,.invite-bar__share:focus-visible,.plan-btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
-  /* Invite sheet: the filter sheet's scrim and panel (.sheet-scrim/.filter-sheet
-     above, reduced-motion rule included), with a format picker, the poster
-     preview and Share / Save PNG in the footer. */
-  .invite-sheet .sheet-body{padding-bottom:14px;}
-  .invite-sheet .invite-format{margin-bottom:16px;display:flex;align-items:center;gap:12px;}
-  .invite-sheet .invite-format .filter-label{margin:0;}
-  .invite-sheet .pill.active{font-weight:500;}
-  .invite-when{margin-bottom:16px;}
-  .invite-when__head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-  .invite-when .filter-label{margin:0;}
-  .invite-when__toggle{margin-top:0;}
-  .invite-when__inputs{display:flex;gap:8px;margin-top:10px;}
-  .invite-when__inputs[hidden]{display:none;}
-  .invite-input{
-    flex:1;min-width:0;
-    background:var(--bgs-bg);border:1px solid rgba(var(--bgs-gold-rgb),0.22);border-radius:10px;
-    color:var(--bgs-ivory);font-family:'Inter',sans-serif;
-    /* 16px, not smaller: iOS Safari zooms in on a smaller input and never zooms back. */
-    font-size:16px;padding:9px 11px;outline:none;
-    color-scheme:dark; /* native pickers in the site's dark palette */
+  /* Invite sheet (docs/mockups/invite-sheet-mobile.html): the filter sheet's
+     scrim and panel (.sheet-scrim/.filter-sheet above, reduced-motion rule
+     included) with the poster first and whole, a segmented format control,
+     settings as rows, and one gold action. Sentence case throughout; no
+     eyebrow labels. */
+  .invite-sheet{max-height:96vh;max-height:96svh;}
+  .invite-head{display:flex;align-items:center;justify-content:space-between;padding:0 20px 12px;flex:none;}
+  .invite-head h2{font:400 22px/1.2 'Fraunces',serif;margin:0;}
+  .invite-icon{
+    width:40px;height:40px;margin-right:-8px;border:0;border-radius:50%;
+    background:transparent;color:var(--bgs-ivory);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;
   }
-  .invite-input:focus-visible{border-color:var(--bgs-gold);}
-  .invite-preview{position:relative;min-height:120px;}
+  .invite-ti{width:22px;height:22px;flex:none;}
+  .invite-body{padding:0 20px 16px;scrollbar-width:none;}
+  .invite-body::-webkit-scrollbar{display:none;}
+
+  /* The poster, scaled to a size that keeps all of it on a phone screen. */
+  .invite-previewwrap{display:flex;justify-content:center;padding:4px 0 14px;}
+  .invite-preview{position:relative;flex:none;}
   .invite-canvas{
-    display:block;width:auto;height:auto;max-width:100%;max-height:50vh;
-    margin:0 auto;border-radius:8px;background:var(--bgs-bg);
+    display:block;height:auto;width:232px;
+    border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);background:var(--bgs-bg);
   }
+  .invite-canvas.square{width:300px;}
   /* The one animated element in the feature: rotation only, no transition. */
   .invite-spinner{
     position:absolute;top:10px;left:10px;
     display:flex;align-items:center;gap:8px;
     padding:6px 10px;border-radius:999px;
     background:rgba(var(--bgs-bg-rgb),0.72);color:var(--bgs-ivory);
-    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.02em;
+    font-family:'Inter',sans-serif;font-size:12px;
   }
   .invite-spinner[hidden]{display:none;}
   .invite-spinner i{
     width:12px;height:12px;border-radius:50%;flex:none;
     border:2px solid rgba(var(--bgs-ivory-rgb),0.3);border-top-color:var(--bgs-gold);
     animation:invite-spin 0.8s linear infinite;
-    transition:none; /* animation and transition never share an element */
+    transition:none;
   }
   @keyframes invite-spin{to{transform:rotate(360deg);}}
-  .invite-error{
-    margin:0 0 12px;font-family:'Inter',sans-serif;font-size:12.5px;color:var(--bgs-danger-hover);
+
+  .invite-seg{
+    display:flex;justify-content:center;gap:4px;padding:4px;border-radius:999px;
+    background:var(--bgs-bg);width:max-content;margin:0 auto 18px;
   }
-  .invite-error[hidden]{display:none;}
-  .invite-retry{
-    background:none;border:none;color:var(--bgs-gold);cursor:pointer;
-    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.06em;text-transform:uppercase;padding:4px 6px;
+  .invite-seg button{
+    border:0;background:transparent;color:rgba(var(--bgs-ivory-rgb),.7);
+    font:500 13px 'Inter',sans-serif;padding:8px 16px;border-radius:999px;cursor:pointer;
   }
-  .invite-actions{display:flex;gap:10px;}
-  .invite-actions .apply-btn{flex:1;width:auto;}
-  .invite-save{
-    flex:1;background:transparent;color:var(--bgs-ivory);border:none;border-radius:12px;
-    box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),0.35);
-    font-family:'Inter',sans-serif;font-size:15px;font-weight:600;padding:13px;cursor:pointer;
+  .invite-seg button[aria-pressed="true"]{background:var(--bgs-gold);color:var(--bgs-bg);}
+
+  .invite-rows{border-top:1px solid rgba(var(--bgs-ivory-rgb),.1);}
+  .invite-row{
+    display:flex;align-items:center;gap:14px;width:100%;padding:14px 0;
+    border:0;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);
+    background:transparent;color:var(--bgs-ivory);text-align:left;cursor:pointer;font:inherit;
   }
-  .invite-save:hover{box-shadow:inset 0 0 0 1px var(--bgs-gold);}
-  .invite-retry:focus-visible,.invite-save:focus-visible,#inviteClose:focus-visible,.invite-sheet .apply-btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+  .invite-row > .invite-ti{color:rgba(var(--bgs-ivory-rgb),.55);}
+  .invite-row__lab{flex:1;min-width:0;}
+  .invite-row__lab b{display:block;font:500 15px/1.3 'Inter',sans-serif;}
+  .invite-row__lab span{display:block;font:400 13px/1.3 'Inter',sans-serif;color:rgba(var(--bgs-ivory-rgb),.55);}
+  .invite-row__val{
+    font:500 14px 'IBM Plex Mono',monospace;color:var(--bgs-ivory);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%;
+  }
+  .invite-row__val.muted{color:rgba(var(--bgs-ivory-rgb),.55);font:400 14px 'Inter',sans-serif;}
+  .invite-row__chev{width:20px;height:20px;color:rgba(var(--bgs-ivory-rgb),.4);margin-left:-4px;}
+  .invite-thumbs{display:flex;gap:4px;}
+  .invite-thumbs i{
+    display:block;width:22px;height:22px;border-radius:4px;
+    background:var(--c,var(--bgs-bg)) center/cover no-repeat;
+  }
+  .invite-thumbs i.h{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  /* Rendered but never seen: the row's tap opens its native picker. */
+  .invite-native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+
+  .invite-edit{display:flex;gap:8px;padding:0 0 14px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);}
+  .invite-edit[hidden]{display:none;}
+  .invite-edit__input{
+    flex:1;min-width:0;background:var(--bgs-bg);border:1px solid rgba(var(--bgs-gold-rgb),0.22);
+    border-radius:10px;color:var(--bgs-ivory);font-family:'Inter',sans-serif;
+    /* 16px, not smaller: iOS Safari zooms in on a smaller input and never zooms back. */
+    font-size:16px;padding:9px 11px;outline:none;
+  }
+  .invite-edit__input:focus-visible{border-color:var(--bgs-gold);}
+  .invite-edit__done{
+    border:0;border-radius:10px;background:var(--bgs-gold);color:var(--bgs-bg);
+    font:500 14px 'Inter',sans-serif;padding:0 14px;cursor:pointer;
+  }
+
+  /* The headline picker: the picks as tiles with the shelf's star treatment. */
+  .invite-picker{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+    padding:0 0 14px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);
+  }
+  .invite-picker[hidden]{display:none;}
+  .invite-picker__empty{grid-column:1/-1;margin:0;font:400 13px 'Inter',sans-serif;color:rgba(var(--bgs-ivory-rgb),.55);}
+  .invite-pick{
+    position:relative;aspect-ratio:3/4;border:0;padding:0;border-radius:8px;overflow:hidden;
+    background:var(--c,var(--bgs-bg));color:var(--bgs-ivory);cursor:pointer;
+  }
+  .invite-pick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .invite-pick.head{box-shadow:inset 0 0 0 3px var(--bgs-gold);}
+  .invite-pick.head img{opacity:.85;}
+  .invite-pick__star{
+    position:absolute;left:6px;top:6px;width:22px;height:22px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(var(--bgs-bg-rgb),.75);color:var(--bgs-ivory);
+  }
+  .invite-pick__star svg{width:13px;height:13px;}
+  .invite-pick.head .invite-pick__star{background:var(--bgs-gold);color:var(--bgs-bg);}
+  .invite-pick__tag{
+    display:none;position:absolute;left:6px;bottom:6px;
+    font:500 10px 'IBM Plex Mono',monospace;background:var(--bgs-gold);color:var(--bgs-bg);
+    padding:2px 6px;border-radius:4px;
+  }
+  .invite-pick.head .invite-pick__tag{display:block;}
+  .invite-pick__title{
+    position:absolute;left:0;right:0;bottom:0;padding:22px 6px 6px;
+    font:400 11px/1.15 'Fraunces',serif;text-align:left;
+    background:linear-gradient(to bottom,rgba(var(--bgs-bg-rgb),0),rgba(var(--bgs-bg-rgb),.85));
+  }
+  .invite-pick.head .invite-pick__title{color:transparent;}
+
+  .invite-actions{
+    flex:none;display:flex;flex-direction:column;gap:8px;
+    padding:14px 20px calc(16px + env(safe-area-inset-bottom));
+    border-top:1px solid rgba(var(--bgs-ivory-rgb),.1);background:var(--bgs-plate);
+  }
+  .invite-primary{
+    width:100%;height:52px;border:0;border-radius:14px;background:var(--bgs-gold);color:var(--bgs-bg);
+    font:500 16px 'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .invite-primary .invite-ti{width:20px;height:20px;}
+  .invite-secondary{
+    width:100%;height:44px;border:0;border-radius:14px;background:transparent;
+    color:rgba(var(--bgs-ivory-rgb),.75);font:500 15px 'Inter',sans-serif;cursor:pointer;
+  }
+  .invite-secondary:hover{color:var(--bgs-ivory);}
+  .invite-icon:focus-visible,.invite-row:focus-visible,.invite-seg button:focus-visible,
+  .invite-primary:focus-visible,.invite-secondary:focus-visible,.invite-pick:focus-visible,.invite-edit__done:focus-visible{
+    outline:2px solid var(--bgs-gold);outline-offset:2px;
+  }
   @media (prefers-reduced-motion:reduce){
     .invite-spinner i{animation:none;border-top-color:var(--bgs-gold);}
   }
