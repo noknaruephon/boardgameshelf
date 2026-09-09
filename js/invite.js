@@ -284,14 +284,14 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
       <div class="invite-rows">
         <button class="invite-row" id="inviteWhenRow" type="button">
           ${icon('calendar')}
-          <span class="invite-row__lab"><b>When</b><span id="inviteWhenSub"></span></span>
+          <span class="invite-row__lab"><b>When</b></span>
           <span class="invite-row__val" id="inviteWhenVal"></span>
           ${icon('chevron-right', 'invite-row__chev')}
         </button>
         <input class="invite-native" id="inviteWhenInput" type="datetime-local" step="300" tabindex="-1" aria-hidden="true">
         <button class="invite-row" id="inviteWhereRow" type="button" aria-expanded="false" aria-controls="inviteWhereEdit">
           ${icon('map-pin')}
-          <span class="invite-row__lab"><b>Where</b><span id="inviteWhereSub"></span></span>
+          <span class="invite-row__lab"><b>Where</b></span>
           <span class="invite-row__val" id="inviteWhereVal"></span>
           ${icon('chevron-right', 'invite-row__chev')}
         </button>
@@ -301,14 +301,14 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
         </div>
         <button class="invite-row" id="inviteGamesRow" type="button" aria-expanded="false" aria-controls="invitePicker">
           ${icon('star')}
-          <span class="invite-row__lab"><b>Headline and games</b><span id="inviteGamesSub"></span></span>
+          <span class="invite-row__lab"><b>Headline and games</b></span>
           <span class="invite-thumbs" id="inviteThumbs" aria-hidden="true"></span>
           ${icon('chevron-right', 'invite-row__chev')}
         </button>
         <div class="invite-picker" id="invitePicker" role="group" aria-label="Pick the headline" hidden></div>
         <button class="invite-row" id="inviteLinkRow" type="button">
           ${icon('link')}
-          <span class="invite-row__lab"><b>Link</b><span>Friends open it to vote and RSVP</span></span>
+          <span class="invite-row__lab"><b>Link</b></span>
           <span class="invite-row__val" id="inviteLinkVal" aria-live="polite"></span>
           ${icon('copy', 'invite-row__chev')}
         </button>
@@ -441,14 +441,10 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
 
   function syncRows() {
     const dateLabel = formatWhen(when.date, when.time);
-    setRow('inviteWhenVal', 'inviteWhenSub', dateLabel, 'Add a date', 'Shown on the poster', 'Not on the poster until you add one');
-    setRow('inviteWhereVal', 'inviteWhereSub', venue, 'Add a place', venue ? `Shown as "at ${venue}"` : '', 'Not on the poster until you add one');
+    setRow('inviteWhenVal', dateLabel, 'Add a date');
+    setRow('inviteWhereVal', venue, 'Add a place');
     whenInput.value = when.date ? `${when.date}T${when.time || '19:00'}` : '';
 
-    const headline = sel.headline ? gameById(sel.headline) : null;
-    const others = sel.picked.length - (headline ? 1 : 0);
-    $('inviteGamesSub').textContent = !headline ? 'Pick games on the shelf'
-      : others === 0 ? headline.title : `${headline.title}, plus ${others} more`;
     const thumbs = sel.picked.map(gameById).filter(Boolean).slice(0, 4);
     $('inviteThumbs').innerHTML = thumbs.map(g =>
       `<i class="${g.bggId === sel.headline ? 'h' : ''}" style="--c:${esc(g.color || '')}${g.image ? `;background-image:url(&quot;${esc(g.image)}&quot;)` : ''}"></i>`).join('');
@@ -460,11 +456,12 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     else if (night.pending) { linkVal.textContent = 'Creating…'; linkVal.classList.add('muted'); }
     else { linkVal.textContent = sel.picked.length ? '' : 'Pick a game first'; linkVal.classList.add('muted'); }
   }
-  function setRow(valId, subId, value, emptyValue, setSub, emptySub) {
-    const val = $(valId), sub = $(subId);
+  // A row's value, or a muted "Add a …" when the host hasn't set one — in
+  // which case that line is simply not on the poster.
+  function setRow(valId, value, emptyValue) {
+    const val = $(valId);
     val.textContent = value || emptyValue;
     val.classList.toggle('muted', !value);
-    sub.textContent = value ? setSub : emptySub;
   }
 
   function getFocusable() {

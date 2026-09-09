@@ -53,11 +53,11 @@ Mockup: `docs/mockups/invite-sheet-mobile.html` at 390px wide. Reuse the share-s
 - Title "Invite" with a Tabler `x` icon button to close. Sentence case everywhere; no mono-caps eyebrow labels.
 - Preview first, at the top of the sheet, scaled to fit so the whole poster is always visible. Never cropped. Re-render on format change and on any selection change while the sheet is open.
 - Format is a segmented control (Story / Square, `aria-pressed`) directly under the preview. No "Format" label.
-- Settings are tappable rows (real buttons) with icon, label, subtext, value, chevron:
-  - **When** (calendar): tapping opens the native date/time picker; the input is never rendered inline. Value "Sat 19 Sep, 7 pm" (minutes only when not :00) and subtext "Shown on the poster"; unset reads "Add a date" with "Not on the poster until you add one".
-  - **Where** (map-pin): a short text field folds out under the row. Value "Nok's" with subtext "Shown as \"at Nok's\""; unset reads "Add a place" with the same "Not on the poster…" subtext.
-  - **Headline and games** (star): "{headline}, plus {n} more" and cover thumbs, the headline ringed gold. Tapping opens the picks as tiles with the shelf's star treatment so the host can move the headline without leaving the sheet.
-  - **Link** (link, copy icon): "/n/{code}", subtext "Friends open it to vote and RSVP". Tapping copies the full URL. While the night is being created it reads "Creating…"; if creation failed the row reads "Couldn't create the night. Tap to retry" and is the retry.
+- Settings are tappable rows (real buttons) with icon, label, value, chevron. No description line under the label:
+  - **When** (calendar): tapping opens the native date/time picker; the input is never rendered inline. Value "Sat 19 Sep, 7 pm" (minutes only when not :00); unset reads "Add a date", muted, and the line is not on the poster.
+  - **Where** (map-pin): a short text field folds out under the row. Value "Nok's"; unset reads "Add a place", muted, and the line is not on the poster.
+  - **Headline and games** (star): cover thumbs, the headline ringed gold. Tapping opens the picks as tiles with the shelf's star treatment so the host can move the headline without leaving the sheet.
+  - **Link** (link, copy icon): "/n/{code}". Tapping copies the full URL. While the night is being created it reads "Creating…"; if creation failed the row reads "Couldn't create the night. Tap to retry" and is the retry.
 - One primary action: "Share invite" (Tabler `share`), gold, full width. "Save as PNG" is a quiet text button beneath it. Same Web Share and PNG-download code paths as the shelf share.
 - Filename: `game-night-{code}-{story|square}.png`
 - Tabler icons: calendar, map-pin, star, link, copy, chevron-right, share, x. Outline, `currentColor`.
