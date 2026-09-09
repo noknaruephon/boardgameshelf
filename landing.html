@@ -69,8 +69,13 @@
   .btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold);}
   .btn.gold:hover{background:#ecbd5b;}
   .btn svg{width:18px;height:18px;flex:none;}
-  .gsi{display:flex;justify-content:center;min-height:44px;}
-  .gsi > div{width:100%!important;}
+  .google-wrap{position:relative;}
+  /* Google's button (an iframe, fixed 40–44px tall) stretched over the 52px
+     gold button and made transparent. It is scaled rather than resized
+     because its height is not ours to set. */
+  .gsi{position:absolute;inset:0;overflow:hidden;opacity:0;display:flex;align-items:center;justify-content:center;}
+  .gsi > div{transform:scale(1.08,1.3);transform-origin:center;}
+  .gsi > div,.gsi iframe{width:100%!important;}
 
   .or{
     display:flex;align-items:center;gap:12px;margin:18px 0 14px;
@@ -126,14 +131,18 @@
   <p class="sub">A page for your collection and a vote for your table, from any phone.</p>
 
   <section class="signin" id="signIn" aria-label="Sign in">
-    <!-- Google's own sign-in button, rendered here when a client ID is
-         configured; Google's screen then shows this site's domain. The gold
-         button below is the fallback (redirect through Supabase). -->
-    <div id="gsiBtn" class="gsi" hidden></div>
+    <!-- Google's sign-in (Google Identity Services) must render its own
+         button, so it is laid invisibly over the gold one: the gold button is
+         what people see, Google's is what receives the tap. Without a client
+         ID, or if Google's script fails, the gold button itself runs the
+         redirect flow through Supabase. -->
+    <div class="google-wrap">
     <button class="btn gold" id="googleBtn" type="button">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="currentColor" opacity=".8" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="currentColor" opacity=".6" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="currentColor" opacity=".9" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg>
       Continue with Google
     </button>
+    <div id="gsiBtn" class="gsi" hidden aria-hidden="true"></div>
+    </div>
     <div class="or">or</div>
     <form id="emailForm" class="row" novalidate>
       <input class="field" id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-label="Email" required>
@@ -208,7 +217,11 @@ async function mountGoogleButton() {
     text: 'continue_with', logo_alignment: 'left', width,
   });
   host.hidden = false;
-  googleBtn.hidden = true;
+  // Taps now go to Google's button; keep the gold one visible but out of the
+  // way for keyboard users, so Tab reaches Google's control instead.
+  googleBtn.tabIndex = -1;
+  googleBtn.setAttribute('aria-hidden', 'true');
+  host.removeAttribute('aria-hidden');
 }
 mountGoogleButton().catch((err) => { console.warn('Google button not mounted, using redirect flow:', err.message); });
 
