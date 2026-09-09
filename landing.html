@@ -30,7 +30,7 @@
   /* The fan is 181px tall once rotated and offset; the box is sized to it so
      the lowest cover sits exactly on the box's bottom edge and the headline's
      margin below is real whitespace, not a guess. */
-  .hand{position:relative;height:212px;margin:0 auto;max-width:520px;}
+  .hand{position:relative;height:212px;margin:12px auto 0;max-width:520px;}
   .hand .cover{
     position:absolute;left:50%;bottom:36px;width:132px;aspect-ratio:1/1;border-radius:6px;overflow:hidden;
     background:var(--c);border:1px solid rgba(var(--bgs-ivory-rgb),.12);
@@ -48,7 +48,7 @@
   .hand .cover:nth-child(5){--r:22deg;--y:8px}
   @media(prefers-reduced-motion:reduce){.hand .cover{transition:none}}
 
-  h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(38px,9vw,64px);line-height:1.02;letter-spacing:-.015em;margin:32px 0 14px;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(38px,9vw,64px);line-height:1.02;letter-spacing:-.015em;margin:18px 0 14px;}
   .sub{font-size:17px;line-height:1.45;color:var(--bgs-ivory-70);margin:0 auto 26px;max-width:32ch;}
 
   .signin{max-width:420px;margin:30px auto 0;text-align:left;}
