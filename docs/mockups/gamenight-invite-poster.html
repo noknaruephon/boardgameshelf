@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup: game night invite, poster layout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bgs-bg:#1a1410; --bgs-plate:#2a2019; --bgs-ivory:#f2e8d8; --bgs-gold:#c9a24b;
+    --bgs-bg-rgb:26,20,16; --bgs-ivory-rgb:242,232,216; --bgs-gold-rgb:201,162,75;
+    --ff-display:"Fraunces",Georgia,serif; --ff-ui:"Inter",system-ui,sans-serif; --ff-mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bgs-bg);color:var(--bgs-ivory);font:14px/1.5 var(--ff-ui)}
+  .page{max-width:1120px;margin:0 auto;padding:24px 20px 64px}
+  h1{font:400 26px/1.15 var(--ff-display);margin:0 0 4px}
+  .lede{color:rgba(var(--bgs-ivory-rgb),.6);margin:0 0 20px;max-width:62ch}
+
+  .bar{display:flex;flex-wrap:wrap;gap:18px 28px;padding:12px 14px;background:var(--bgs-plate);border-radius:10px;margin-bottom:22px}
+  .bar fieldset{border:0;margin:0;padding:0;display:flex;align-items:center;gap:6px}
+  .bar legend{float:left;font:500 11px/1 var(--ff-mono);color:rgba(var(--bgs-ivory-rgb),.55);margin-right:8px;letter-spacing:.02em}
+  .bar label{cursor:pointer}
+  .bar input{position:absolute;opacity:0;width:0;height:0}
+  .bar span{display:inline-block;padding:6px 10px;border-radius:6px;font-size:13px;color:rgba(var(--bgs-ivory-rgb),.75)}
+  .bar input:checked+span{background:var(--bgs-bg);color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.9)}
+  .bar input:focus-visible+span{outline:2px solid var(--bgs-gold);outline-offset:2px}
+
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;align-items:start}
+  @media (max-width:820px){.stage{grid-template-columns:1fr}}
+  .shelf h2,.preview h2{font:400 18px/1.2 var(--ff-display);margin:0 0 4px}
+  .hint{color:rgba(var(--bgs-ivory-rgb),.55);margin:0 0 14px;font-size:13px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+  .tile{position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;background:var(--c)}
+  .tile .pick{position:absolute;inset:0;border:0;padding:10px;background:transparent;color:var(--bgs-ivory);text-align:left;cursor:pointer;display:flex;align-items:flex-end;font:400 15px/1.1 var(--ff-display)}
+  .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .tile.on{box-shadow:inset 0 0 0 3px var(--bgs-gold)}
+  .tile.on .pick::after{content:"";position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--bgs-gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231a1410' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5l10 -10'/%3E%3C/svg%3E") center/16px no-repeat}
+  .tile .star{position:absolute;left:8px;top:8px;width:26px;height:26px;border-radius:50%;border:0;cursor:pointer;background:rgba(var(--bgs-bg-rgb),.75);color:var(--bgs-ivory);display:none;align-items:center;justify-content:center;padding:0}
+  .tile.on .star{display:flex}
+  .tile.on.head .star{background:var(--bgs-gold);color:var(--bgs-bg)}
+  .tile.on.head::before{content:"Headline";position:absolute;left:8px;bottom:8px;z-index:2;font:500 11px var(--ff-mono);background:var(--bgs-gold);color:var(--bgs-bg);padding:3px 7px;border-radius:4px}
+  .tile.on.head .pick{color:transparent}
+  .tile .pick:focus-visible,.tile .star:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:-4px}
+
+  .actionbar{position:sticky;bottom:12px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px 12px 18px;border-radius:12px;background:var(--bgs-plate);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .actionbar b{font:500 14px var(--ff-ui)}
+  .actionbar small{display:block;color:rgba(var(--bgs-ivory-rgb),.55);font-size:12px}
+  .btn{font:500 14px var(--ff-ui);background:var(--bgs-gold);color:var(--bgs-bg);border:0;border-radius:8px;padding:10px 16px;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.35)}
+  .out{margin-top:14px;display:flex;gap:10px}
+
+  .frame{background:var(--bgs-plate);border-radius:14px;padding:18px;display:flex;justify-content:center}
+  .canvas{position:relative;width:1080px;background:var(--bgs-bg);color:var(--bgs-ivory);transform-origin:top left;overflow:hidden;flex:none}
+  .story{height:1920px}.square{height:1080px}
+
+  .hero{position:absolute;left:0;top:0;width:1080px;overflow:hidden;background:var(--c);transition:background .4s}
+  .story .hero{height:1160px}.square .hero{height:620px}
+  .hero img{width:100%;height:100%;object-fit:cover;display:block}
+  .hero .plate{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:120px;font:400 96px/1 var(--ff-display);color:rgba(var(--bgs-ivory-rgb),.35);text-align:center}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(to bottom,rgba(var(--bgs-bg-rgb),0),var(--bgs-bg))}
+  .bgg{position:absolute;right:72px;top:72px;font:400 22px var(--ff-mono);color:var(--bgs-ivory);background:rgba(var(--bgs-bg-rgb),.55);border-radius:8px;padding:8px 14px}
+
+  .body{position:absolute;left:80px;right:80px}
+  .story .body{top:1040px}.square .body{top:520px}
+  .eyebrow{font:400 34px/1.3 var(--ff-ui);color:rgba(var(--bgs-ivory-rgb),.7);margin:0}
+  .title{font:300 128px/1 var(--ff-display);font-variation-settings:"opsz" 144,"SOFT" 30;letter-spacing:-.02em;margin:12px 0 0;max-width:920px}
+  .square .title{font-size:84px}
+  .also{display:flex;align-items:center;gap:22px;margin-top:44px}
+  .square .also{margin-top:26px;gap:16px}
+  .also .t{width:150px;height:150px;border-radius:10px;overflow:hidden;background:var(--c);flex:none;position:relative}
+  .square .also .t{width:104px;height:104px}
+  .also .t img{width:100%;height:100%;object-fit:cover;display:block}
+  .also .t span{position:absolute;inset:0;display:flex;align-items:flex-end;padding:12px;font:400 26px/1 var(--ff-display);color:rgba(var(--bgs-ivory-rgb),.85)}
+  .square .also .t span{font-size:18px;padding:8px}
+  .also .plus{display:flex;align-items:center;justify-content:center;font:500 40px var(--ff-mono);color:var(--bgs-gold);box-shadow:inset 0 0 0 3px rgba(var(--bgs-gold-rgb),.8);background:transparent}
+  .square .also .plus{font-size:28px}
+  .also .say{font:400 34px/1.35 var(--ff-ui);color:rgba(var(--bgs-ivory-rgb),.7);margin:0 0 0 8px}
+  .square .also .say{font-size:24px}
+
+  .hairline{position:absolute;left:80px;right:80px;height:2px;background:rgba(var(--bgs-gold-rgb),.8)}
+  .story .hairline{bottom:330px}.square .hairline{bottom:230px}
+  .foot{position:absolute;left:80px;right:80px;bottom:88px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px}
+  .square .foot{bottom:60px}
+  .when{font:500 44px/1.2 var(--ff-mono);margin:0}
+  .square .when{font-size:32px}
+  .who{font:400 34px/1.3 var(--ff-ui);color:rgba(var(--bgs-ivory-rgb),.7);margin:6px 0 0}
+  .square .who{font-size:24px}
+  .link{font:500 36px/1.2 var(--ff-mono);margin:22px 0 0}
+  .square .link{font-size:26px;margin-top:14px}
+  .qr{width:190px;height:190px;flex:none;background:var(--bgs-ivory);border-radius:12px;padding:14px}
+  .square .qr{width:140px;height:140px}
+  .qr i{display:block;width:100%;height:100%;background:
+    linear-gradient(var(--bgs-bg),var(--bgs-bg)) 0 0/28% 28% no-repeat,
+    linear-gradient(var(--bgs-bg),var(--bgs-bg)) 100% 0/28% 28% no-repeat,
+    linear-gradient(var(--bgs-bg),var(--bgs-bg)) 0 100%/28% 28% no-repeat,
+    repeating-linear-gradient(90deg,var(--bgs-bg) 0 6%,transparent 6% 12%) 40% 40%/50% 50% no-repeat}
+  .rm .hero{transition:none}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Game night invite, poster layout</h1>
+  <p class="lede">One headline pick fills the top of the poster; the rest ride along as a strip. The first cover you pick becomes the headline, and the star on any selected cover swaps it.</p>
+
+  <div class="bar">
+    <fieldset><legend>Format</legend>
+      <label><input type="radio" name="fmt" value="story" checked><span>Story 9:16</span></label>
+      <label><input type="radio" name="fmt" value="square"><span>Square 1:1</span></label>
+    </fieldset>
+    <fieldset><legend>Strip</legend>
+      <label><input type="radio" name="strip" value="5" checked><span>Up to 5, then +N</span></label>
+      <label><input type="radio" name="strip" value="3"><span>Up to 3, then +N</span></label>
+    </fieldset>
+    <fieldset><legend>Motion</legend>
+      <label><input type="checkbox" id="rm"><span>Reduced motion</span></label>
+    </fieldset>
+  </div>
+
+  <div class="stage">
+    <section class="shelf" aria-label="Shelf in select mode">
+      <h2>Your shelf</h2>
+      <p class="hint">Tap a cover to add it to the night. Tap the star to make it the headline.</p>
+      <div class="grid" id="shelf"></div>
+      <div class="actionbar">
+        <div><b id="count"></b><small id="headnote"></small></div>
+        <button class="btn" type="button">Share invite</button>
+      </div>
+    </section>
+
+    <section class="preview" aria-label="Invite image preview">
+      <h2>Invite</h2>
+      <p class="hint" id="dims"></p>
+      <div class="frame" id="frame">
+        <div class="canvas story" id="canvas">
+          <div class="hero" id="hero"></div>
+          <div class="bgg">Powered by BGG</div>
+          <div class="body">
+            <p class="eyebrow">We're probably playing</p>
+            <p class="title" id="title"></p>
+            <div class="also" id="also"></div>
+          </div>
+          <div class="hairline"></div>
+          <div class="foot">
+            <div>
+              <p class="when">Sat 19 Sep, 7 pm</p>
+              <p class="who">at Nok's</p>
+              <p class="link">boardgameshelf.app/n/K7QX</p>
+            </div>
+            <div class="qr" aria-hidden="true"><i></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="out">
+        <button class="btn" type="button">Share</button>
+        <button class="btn ghost" type="button">Save PNG</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const PLACEHOLDER = [
+    ['Cascadia','#3e5a4b'],['Wingspan','#5a6b7a'],['Azul','#2f5a6b'],['Brass: Birmingham','#6b3f2a'],
+    ['Ark Nova','#4a5a3a'],['Spirit Island','#4a4f7a'],['Everdell','#7a5a2b'],['Root','#8a4a2a'],
+    ['7 Wonders Duel','#5a3a5a'],['Dune: Imperium','#8a6a3a'],['Terraforming Mars','#7a3a2a'],['Ticket to Ride','#3a5a7a']
+  ].map((g,i)=>({id:i+1,title:g[0],color:g[1],image:null}));
+
+  let games = PLACEHOLDER;
+  let picked = [6,1,2,7];
+  let headline = 6;
+
+  const $ = id => document.getElementById(id);
+  const fmt = () => document.querySelector('input[name=fmt]:checked').value;
+  const stripMax = () => +document.querySelector('input[name=strip]:checked').value;
+  const byId = id => games.find(g=>g.id===id);
+  const starSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"/></svg>`;
+
+  function renderShelf(){
+    $('shelf').innerHTML='';
+    games.forEach(g=>{
+      const on = picked.includes(g.id), head = g.id===headline;
+      const t = document.createElement('div');
+      t.className = 'tile' + (on?' on':'') + (head?' head':'');
+      t.style.setProperty('--c', g.color);
+      t.innerHTML = (g.image ? `<img src="${g.image}" alt="">` : '')
+        + `<button class="pick" type="button" aria-pressed="${on}" aria-label="${on?'Remove':'Add'} ${g.title}">${g.image?'':g.title}</button>`
+        + `<button class="star" type="button" aria-label="Make ${g.title} the headline" aria-pressed="${head}">${starSvg}</button>`;
+      t.querySelector('.pick').onclick = ()=>{
+        picked = on ? picked.filter(x=>x!==g.id) : [...picked, g.id];
+        if (!picked.includes(headline)) headline = picked[0] ?? null;
+        render();
+      };
+      t.querySelector('.star').onclick = ()=>{ headline = g.id; render(); };
+      $('shelf').appendChild(t);
+    });
+  }
+
+  function renderPoster(){
+    const h = byId(headline);
+    const rest = picked.filter(id=>id!==headline).map(byId);
+    const hero = $('hero');
+    if (h){
+      hero.style.setProperty('--c', h.color);
+      hero.innerHTML = h.image ? `<img src="${h.image}" alt="">` : `<div class="plate">${h.title}</div>`;
+      $('title').textContent = h.title;
+    } else {
+      hero.style.setProperty('--c','var(--bgs-plate)');
+      hero.innerHTML = '';
+      $('title').textContent = 'Pick a game';
+    }
+    const also = $('also'); also.innerHTML='';
+    const max = stripMax();
+    rest.slice(0,max).forEach(g=>{
+      const d = document.createElement('div'); d.className='t'; d.style.setProperty('--c',g.color);
+      d.innerHTML = g.image ? `<img src="${g.image}" alt="${g.title}">` : `<span>${g.title}</span>`;
+      also.appendChild(d);
+    });
+    if (rest.length>max){
+      const d = document.createElement('div'); d.className='t plus'; d.textContent = `+${rest.length-max}`;
+      also.appendChild(d);
+    }
+    const say = document.createElement('p'); say.className='say';
+    say.textContent = rest.length===0 ? 'Bring your own if you like' : rest.length===1 ? 'or this one' : `or one of these ${rest.length}`;
+    also.appendChild(say);
+  }
+
+  function renderMeta(){
+    const n = picked.length, h = byId(headline);
+    $('count').textContent = `${n} game${n===1?'':'s'} picked`;
+    $('headnote').textContent = h ? `Headline: ${h.title}` : 'Pick at least one';
+  }
+
+  function fit(){
+    const story = fmt()==='story';
+    const H = story?1920:1080, s = story?0.25:0.333;
+    $('canvas').className = 'canvas ' + (story?'story':'square');
+    $('canvas').style.transform = `scale(${s})`;
+    $('canvas').style.marginRight = -(1080-1080*s)+'px';
+    $('canvas').style.marginBottom = -(H-H*s)+'px';
+    $('frame').style.height = H*s+36+'px';
+    $('dims').textContent = story ? '1080 × 1920, shown at 25%' : '1080 × 1080, shown at 33%';
+  }
+
+  function render(){ fit(); renderShelf(); renderPoster(); renderMeta(); }
+
+  document.querySelectorAll('.bar input').forEach(i=>i.addEventListener('change',()=>{
+    document.body.classList.toggle('rm', $('rm').checked); render();
+  }));
+
+  fetch('../../games.json').then(r=>r.ok?r.json():null).then(data=>{
+    if(!data) return;
+    const arr = Array.isArray(data)?data:(data.games||[]);
+    if(!arr.length) return;
+    games = arr.slice(0,12).map((g,i)=>({id:i+1,title:g.name||g.title,color:g.color||'#2a2019',image:g.image||g.thumbnail||null}));
+    picked=[1,2,3,4]; headline=1; render();
+  }).catch(()=>{});
+
+  render();
+</script>
+</body>
+</html>
