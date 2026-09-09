@@ -4,7 +4,7 @@ Branch: `feat/invite-poster` · Flag: `?invite=1` · Mockup: `docs/mockups/gamen
 
 ## Goal
 
-Let the host pick candidate games straight from the shelf, choose one as the headline, and share a poster-style image (Story 1080×1920, Square 1080×1080) that invites friends to a game night. The image carries the headline cover, a strip of the other candidates, date, host, the night's link, a QR, and the "Powered by BGG" badge.
+Let the host pick candidate games straight from the shelf, choose one as the headline, and share a poster-style image (Story 1080×1920, Square 1080×1080) that invites friends to a game night. The image carries the headline cover, a strip of the other candidates, date, host, the night's link, and a QR. No BGG badge on the poster; attribution lives on the `/n/:code` page the link opens.
 
 Open `docs/mockups/gamenight-invite-poster.html` in a browser first. It is the visual source of truth: type sizes, spacing, fade, copy, and the strip overflow rule are all final there. Match it, don't reinterpret it.
 
@@ -19,7 +19,7 @@ In:
 
 Out (follow-up specs):
 - OG image for `/n/:code`
-- Editing date/time/venue in the sheet (use the values the night already has; if the night has none, render "Date TBC" and "at {host}")
+- Editing date/time/venue in the sheet (use the values the night already has; if a value is missing, omit that line from the poster entirely, never render a placeholder)
 - Any change to voting stages
 
 ## Before you write code
@@ -69,7 +69,6 @@ Layout constants come from the mockup; do not eyeball them. Story values, with S
 | Canvas | 1080 × 1920 | 1080 × 1080 |
 | Hero | 0 → 1160 | 0 → 620 |
 | Hero fade | bottom 46% of hero, `rgba(bg,0)` → `bg` | same |
-| BGG badge | right 72, top 72, Plex Mono 22, ivory on `rgba(bg,.55)` pill, radius 8 | same |
 | Body top | 1040 | 520 |
 | Eyebrow | Inter 400 34, ivory 70% | same |
 | Title | Fraunces 300 128, opsz 144, letter-spacing −0.02em, max width 920 | 84 |
@@ -88,6 +87,7 @@ Copy:
 - Strip caption: 0 others → "Bring your own if you like"; 1 → "or this one"; n → "or one of these {n}"
 - Strip shows up to 5 others, then a "+{n−5}" tile. (The mockup's "up to 3" toggle was for comparison only; ship 5.)
 - Empty headline: hero is `--bgs-plate`, title "Pick a game". Only reachable with zero picks.
+- Missing date: omit the date line. Missing venue: omit the "at {host}" line. The footer's left column collapses upward so the link keeps the same baseline gap to whatever sits above it; the link and QR always render once a code exists. No "TBC", no placeholders, ever.
 
 Title wrapping: measure with `ctx.measureText`; wrap on spaces to max width; allow at most 2 lines; if a title still overflows at 2 lines, step the font size down in 8px increments to a floor of 96 (64 on Square). Long titles like "Brass: Birmingham" must never clip.
 
@@ -125,6 +125,7 @@ Colours: read `--bgs-bg`, `--bgs-plate`, `--bgs-ivory`, `--bgs-gold` from `getCo
 - [ ] Share invite with 4 picks → sheet opens, night is created, code appears in link and QR
 - [ ] Story and Square both match the mockup side by side at 100% (screenshot both, compare)
 - [ ] 7 picks → strip shows 5 tiles plus "+1"; caption "or one of these 6"
+- [ ] Night with no date and no venue → footer shows only the link and QR, no empty lines or placeholders; with one of the two set, only that line appears
 - [ ] Headline "Brass: Birmingham" wraps to 2 lines without clipping on both formats
 - [ ] Block `/api/cover` in devtools → hero and strip fall back to curated colour plates; share still works
 - [ ] Web Share on iOS Safari and Android Chrome sends a PNG; desktop Chrome downloads it
