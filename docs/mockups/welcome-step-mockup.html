@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — welcome step options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bgs-bg:#160F0A;--bgs-bg-rgb:22,15,10;--bgs-bg-radial:#241708;
+  --bgs-plate:#241A10;--bgs-plate-rgb:36,26,16;
+  --bgs-ivory:#F4EBDA;--bgs-ivory-rgb:244,235,218;
+  --bgs-ivory-70:rgba(244,235,218,0.72);--bgs-ivory-45:rgba(244,235,218,0.45);
+  --bgs-gold:#E3B04B;--bgs-gold-rgb:227,176,75;--bgs-gold-dim:rgba(227,176,75,0.62);
+  --bgs-vote-play:#8FA75A;--bgs-vote-pass:#C2604A;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:radial-gradient(ellipse at top,var(--bgs-bg-radial) 0%,var(--bgs-bg) 55%),var(--bgs-bg);color:var(--bgs-ivory);font-family:'Inter',sans-serif;min-height:100svh;-webkit-font-smoothing:antialiased}
+.bar{position:sticky;top:0;z-index:50;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:rgba(var(--bgs-bg-rgb),.92);border-bottom:1px solid rgba(var(--bgs-gold-rgb),.18);font-family:'IBM Plex Mono',monospace;font-size:12px;backdrop-filter:blur(8px)}
+.bar .lbl{color:var(--bgs-gold-dim)}
+.bar button{font:inherit;color:var(--bgs-ivory-70);background:transparent;border:1px solid rgba(var(--bgs-gold-rgb),.3);border-radius:999px;padding:5px 11px;cursor:pointer}
+.bar button[aria-pressed="true"]{color:var(--bgs-bg);background:var(--bgs-gold);border-color:var(--bgs-gold)}
+.bar .sep{width:100%;height:0}
+.opt{display:none}.opt.on{display:block}
+.wrap{max-width:520px;margin:0 auto;padding:36px 20px 80px}
+.mark{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;color:var(--bgs-gold);margin:0 0 22px}
+
+/* step indicator: mono line + 3 equal segments */
+.steps{margin:0 0 26px}
+.steps .line{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-ivory-45);margin:0 0 8px}
+.steps .line b{font-weight:500;color:var(--bgs-ivory-70)}
+.steps .segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.steps .segs i{height:3px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.12)}
+.steps .segs i.done{background:rgba(var(--bgs-gold-rgb),.45)}
+.steps .segs i.now{background:var(--bgs-gold)}
+
+h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(32px,8vw,44px);line-height:1.05;letter-spacing:-.015em;margin:0 0 10px}
+.lede{font-size:16px;line-height:1.5;color:var(--bgs-ivory-70);margin:0 0 28px;max-width:36ch}
+label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 6px}
+.field{width:100%;min-height:52px;padding:0 16px;border-radius:12px;font:400 16px 'Inter',sans-serif;color:var(--bgs-ivory);background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14)}
+.field::placeholder{color:var(--bgs-ivory-45)}
+.field:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:0 18px;border-radius:12px;font:600 16px/1 'Inter',sans-serif;cursor:pointer;border:1.5px solid rgba(var(--bgs-gold-rgb),.55);background:transparent;color:var(--bgs-gold)}
+.btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold)}
+.btn.ghost{background:transparent;color:var(--bgs-ivory-45);border-color:rgba(var(--bgs-ivory-rgb),.14);cursor:default}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.help{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:10px 0 0;min-height:20px}
+.help a,.links a{color:var(--bgs-gold-dim);text-decoration:none;border-bottom:1px solid rgba(var(--bgs-gold-rgb),.35)}
+.ok{color:var(--bgs-vote-play)}.err{color:var(--bgs-vote-pass)}
+.mono{font-family:'IBM Plex Mono',monospace}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(var(--bgs-gold-rgb),.3);border-top-color:var(--bgs-gold);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spin{animation:none}}
+.links{margin:36px 0 0;font-size:13px;color:var(--bgs-ivory-45);line-height:1.7}
+.links .dot{margin:0 8px;opacity:.5}
+
+[data-state] .s{display:none}
+[data-state="empty"] .s-empty,[data-state="checking"] .s-checking,[data-state="found"] .s-found,[data-state="missing"] .s-missing{display:block}
+[data-state="found"] .field.bgg{border-color:var(--bgs-vote-play)}
+[data-state="missing"] .field.bgg{border-color:var(--bgs-vote-pass)}
+
+/* ---- A: just the field ---- */
+#a .act{margin-top:22px}
+
+/* ---- B: the address ---- */
+#b .addr{display:flex;align-items:center;min-height:58px;border-radius:14px;padding:0 6px 0 16px;background:rgba(var(--bgs-bg-rgb),.7);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14)}
+#b .addr:focus-within{box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+#b .addr .pre{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--bgs-ivory-45);white-space:nowrap}
+#b .addr input{flex:1;min-width:0;background:transparent;border:0;color:var(--bgs-gold);font:600 18px 'IBM Plex Mono',monospace;padding:0 4px}
+#b .addr input:focus{outline:none}
+#b .addr input::placeholder{color:rgba(var(--bgs-gold-rgb),.35);font-weight:500}
+#b .addr .st{width:40px;height:40px;display:grid;place-items:center;flex:none;font-size:18px}
+#b[data-state="found"] .addr{border-color:var(--bgs-vote-play)}
+#b[data-state="missing"] .addr{border-color:var(--bgs-vote-pass)}
+#b .act{margin-top:22px}
+
+/* ---- C: confirm card ---- */
+#c .card{display:flex;gap:14px;align-items:center;padding:14px;border-radius:14px;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.3);margin-top:16px;text-align:left}
+#c .stack{position:relative;width:60px;height:54px;flex:none}
+#c .stack img{position:absolute;width:38px;height:38px;object-fit:cover;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.5)}
+#c .stack img:nth-child(1){left:0;top:14px;transform:rotate(-8deg)}
+#c .stack img:nth-child(2){left:11px;top:7px;transform:rotate(3deg)}
+#c .stack img:nth-child(3){left:22px;top:0;transform:rotate(11deg)}
+#c .card b{display:block;font-weight:600;font-size:16px}
+#c .card span{font-size:13px;color:var(--bgs-ivory-70)}
+#c .card .chg{margin-left:auto;font-size:13px;color:var(--bgs-gold-dim);background:none;border:0;padding:0;cursor:pointer;border-bottom:1px solid rgba(var(--bgs-gold-rgb),.35)}
+#c .act{margin-top:16px}
+#c .esc{margin-top:16px}
+</style>
+</head>
+<body>
+
+<div class="bar" role="toolbar" aria-label="Mockup options">
+  <span class="lbl">Option</span>
+  <button data-opt="a" aria-pressed="true">A · Just the field</button>
+  <button data-opt="b" aria-pressed="false">B · The address</button>
+  <button data-opt="c" aria-pressed="false">C · Confirm card</button>
+  <span class="sep"></span>
+  <span class="lbl">State</span>
+  <button data-state="empty" aria-pressed="true">Empty</button>
+  <button data-state="checking" aria-pressed="false">Checking</button>
+  <button data-state="found" aria-pressed="false">Found</button>
+  <button data-state="missing" aria-pressed="false">Not found</button>
+</div>
+
+<template id="steps">
+  <div class="steps" aria-label="Progress">
+    <div class="line"><b>Step 2 of 3</b><span>Your BGG name</span></div>
+    <div class="segs" aria-hidden="true"><i class="done"></i><i class="now"></i><i></i></div>
+  </div>
+</template>
+
+<!-- A -->
+<section class="opt on" id="a" data-state="empty"><div class="wrap">
+  <p class="mark">BoardgameShelf</p>
+  <div data-steps></div>
+  <h1>Connect your collection</h1>
+  <p class="lede">Your owned games come straight from BGG. Nothing to upload.</p>
+  <label for="a-bgg">BoardGameGeek username</label>
+  <input class="field bgg" id="a-bgg" placeholder="noknaruephon" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <p class="help s s-empty">Same as your BGG login. Not your email.</p>
+  <p class="help s s-checking"><span class="spin" aria-hidden="true"></span>Checking BGG…</p>
+  <p class="help ok s s-found">Found · 196 games owned. Shelf address <span class="mono">/u/noknaruephon</span></p>
+  <p class="help err s s-missing">No account by that name. It's usually a typo — usernames aren't case-sensitive.</p>
+  <div class="act">
+    <button class="btn ghost s s-empty s-checking s-missing" disabled>Continue</button>
+    <button class="btn gold s s-found">Continue to sync</button>
+  </div>
+  <p class="links">Just looking? <a href="#">Browse an existing shelf</a><span class="dot">·</span><a href="#">Do this later</a></p>
+</div></section>
+
+<!-- B -->
+<section class="opt" id="b" data-state="empty"><div class="wrap">
+  <p class="mark">BoardgameShelf</p>
+  <div data-steps></div>
+  <h1>Pick your address</h1>
+  <p class="lede">It's your BoardGameGeek username. That's all we need.</p>
+  <div class="addr">
+    <span class="pre">boardgameshelf.app/u/</span>
+    <input placeholder="yourname" aria-label="BoardGameGeek username" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <span class="st" aria-hidden="true"><span class="s s-checking"><span class="spin"></span></span><span class="s s-found ok">✓</span><span class="s s-missing err">✕</span></span>
+  </div>
+  <p class="help s s-empty">Same as your BGG login. Not your email.</p>
+  <p class="help s s-checking">Looking it up on BGG…</p>
+  <p class="help ok s s-found">That's you — 196 games owned.</p>
+  <p class="help err s s-missing">No BGG account by that name. Check the spelling on your <a href="#">BGG profile</a>.</p>
+  <div class="act">
+    <button class="btn ghost s s-empty s-checking s-missing" disabled>Build my shelf</button>
+    <button class="btn gold s s-found">Build my shelf</button>
+  </div>
+  <p class="links">Just looking? <a href="#">Browse an existing shelf</a><span class="dot">·</span><a href="#">Do this later</a></p>
+</div></section>
+
+<!-- C -->
+<section class="opt" id="c" data-state="empty"><div class="wrap">
+  <p class="mark">BoardgameShelf</p>
+  <div data-steps></div>
+  <h1>Which shelf is yours?</h1>
+  <p class="lede">Type your BoardGameGeek username and we'll find your games before you commit.</p>
+  <div class="s s-empty s-checking s-missing">
+    <label for="c-bgg">BoardGameGeek username</label>
+    <input class="field bgg" id="c-bgg" placeholder="noknaruephon" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <p class="help s s-empty">Same as your BGG login. Not your email.</p>
+    <p class="help s s-checking"><span class="spin" aria-hidden="true"></span>Finding your collection…</p>
+    <p class="help err s s-missing">No account by that name. It's usually a typo — usernames aren't case-sensitive.</p>
+  </div>
+  <div class="s s-found">
+    <div class="card">
+      <span class="stack" aria-hidden="true"><img data-c="0" alt=""><img data-c="1" alt=""><img data-c="2" alt=""></span>
+      <span><b>noknaruephon</b><span class="ok">196 games owned</span><br><span class="mono">/u/noknaruephon</span></span>
+      <button class="chg" type="button">Change</button>
+    </div>
+    <div class="act"><button class="btn gold">Sync 196 games</button></div>
+  </div>
+  <div class="esc s s-missing"><button class="btn">Browse an existing shelf instead</button></div>
+  <p class="links s s-empty s-checking s-found"><a href="#">Do this later</a></p>
+</div></section>
+
+<script>
+const covers=["https://cf.geekdo-images.com/Naw8y8J_s-8cvq1GoTON6w__original/img/8wVEVzdf5BoPvSiscnGvCAPNe2Q=/0x0/filters:format(jpeg)/pic7416519.jpg","https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg","https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg"];
+document.querySelectorAll('[data-steps]').forEach(s=>s.replaceWith(document.getElementById('steps').content.cloneNode(true)));
+document.querySelectorAll('[data-c]').forEach(im=>im.src=covers[+im.dataset.c]);
+const opts=document.querySelectorAll('.opt');
+document.querySelectorAll('.bar [data-opt]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.bar [data-opt]').forEach(x=>x.setAttribute('aria-pressed',x===b));opts.forEach(o=>o.classList.toggle('on',o.id===b.dataset.opt));window.scrollTo({top:0});}));
+document.querySelectorAll('.bar [data-state]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.bar [data-state]').forEach(x=>x.setAttribute('aria-pressed',x===b));opts.forEach(o=>o.dataset.state=b.dataset.state);}));
+</script>
+</body>
+</html>
