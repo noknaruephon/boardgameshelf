@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup: invite sheet, mobile redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+<style>
+  :root{
+    --bgs-bg:#1a1410; --bgs-plate:#2a2019; --bgs-ivory:#f2e8d8; --bgs-gold:#c9a24b;
+    --bgs-bg-rgb:26,20,16; --bgs-ivory-rgb:242,232,216; --bgs-gold-rgb:201,162,75;
+    --ff-display:"Fraunces",Georgia,serif; --ff-ui:"Inter",system-ui,sans-serif; --ff-mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#120d0a;color:var(--bgs-ivory);font:14px/1.5 var(--ff-ui)}
+  .page{max-width:1000px;margin:0 auto;padding:24px 20px 64px}
+  h1{font:400 26px/1.15 var(--ff-display);margin:0 0 4px}
+  .lede{color:rgba(var(--bgs-ivory-rgb),.6);margin:0 0 20px;max-width:62ch}
+  .bar{display:flex;flex-wrap:wrap;gap:18px 28px;padding:12px 14px;background:var(--bgs-plate);border-radius:10px;margin-bottom:22px}
+  .bar fieldset{border:0;margin:0;padding:0;display:flex;align-items:center;gap:6px}
+  .bar legend{float:left;font:500 11px/1 var(--ff-mono);color:rgba(var(--bgs-ivory-rgb),.55);margin-right:8px}
+  .bar label{cursor:pointer}.bar input{position:absolute;opacity:0;width:0;height:0}
+  .bar span{display:inline-block;padding:6px 10px;border-radius:6px;font-size:13px;color:rgba(var(--bgs-ivory-rgb),.75)}
+  .bar input:checked+span{background:var(--bgs-bg);color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.9)}
+  .bar input:focus-visible+span{outline:2px solid var(--bgs-gold);outline-offset:2px}
+
+  .stage{display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:390px;height:844px;flex:none;border-radius:44px;background:var(--bgs-bg);position:relative;overflow:hidden;box-shadow:0 0 0 10px #000,0 30px 60px rgba(0,0,0,.6)}
+  .app{padding:56px 20px 0;opacity:.35}
+  .app .eyebrow{font:500 11px var(--ff-mono);color:var(--bgs-gold);letter-spacing:.08em}
+  .app h2{font:500 26px/1.1 var(--ff-display);margin:6px 0 4px}
+  .app p{color:rgba(var(--bgs-ivory-rgb),.6);margin:0}
+  .scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bgs-plate);border-radius:24px 24px 0 0;padding:8px 20px 0;display:flex;flex-direction:column;max-height:96%}
+  .grab{width:36px;height:4px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.25);margin:0 auto 10px}
+  .head{display:flex;align-items:center;justify-content:space-between;padding:4px 0 12px}
+  .head h3{font:400 22px/1.2 var(--ff-display);margin:0}
+  .icon{width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--bgs-ivory);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:-8px}
+  .icon:focus-visible,.row:focus-visible,.seg button:focus-visible,.primary:focus-visible,.secondary:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px}
+  .icon i{font-size:22px}
+
+  .body{overflow:auto;flex:1;padding-bottom:16px;-ms-overflow-style:none;scrollbar-width:none}
+  .body::-webkit-scrollbar{display:none}
+
+  .previewwrap{display:flex;justify-content:center;padding:4px 0 14px}
+  .preview{position:relative;flex:none;border-radius:10px;overflow:hidden;box-shadow:0 12px 32px rgba(0,0,0,.5)}
+  .canvas{position:relative;width:1080px;background:var(--bgs-bg);transform-origin:top left;overflow:hidden}
+  .story{height:1920px}.square{height:1080px}
+  .hero{position:absolute;left:0;top:0;width:1080px;background:var(--c);overflow:hidden}
+  .story .hero{height:1160px}.square .hero{height:620px}
+  .hero .plate{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:120px;font:400 96px/1 var(--ff-display);color:rgba(var(--bgs-ivory-rgb),.35);text-align:center}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(to bottom,rgba(var(--bgs-bg-rgb),0),var(--bgs-bg))}
+  .pbody{position:absolute;left:80px;right:80px}
+  .story .pbody{top:1040px}.square .pbody{top:520px}
+  .peyebrow{font:400 34px/1.3 var(--ff-ui);color:rgba(var(--bgs-ivory-rgb),.7);margin:0}
+  .ptitle{font:300 128px/1 var(--ff-display);font-variation-settings:"opsz" 144,"SOFT" 30;letter-spacing:-.02em;margin:12px 0 0}
+  .square .ptitle{font-size:84px}
+  .also{display:flex;align-items:center;gap:22px;margin-top:44px}
+  .square .also{margin-top:26px;gap:16px}
+  .also .t{width:150px;height:150px;border-radius:10px;background:var(--c);flex:none;position:relative}
+  .square .also .t{width:104px;height:104px}
+  .also .t span{position:absolute;inset:0;display:flex;align-items:flex-end;padding:12px;font:400 26px/1 var(--ff-display);color:rgba(var(--bgs-ivory-rgb),.85)}
+  .square .also .t span{font-size:18px;padding:8px}
+  .also .say{font:400 34px/1.35 var(--ff-ui);color:rgba(var(--bgs-ivory-rgb),.7);margin:0 0 0 8px}
+  .square .also .say{font-size:24px}
+  .hairline{position:absolute;left:80px;right:80px;height:2px;background:rgba(var(--bgs-gold-rgb),.8)}
+  .story .hairline{bottom:330px}.square .hairline{bottom:230px}
+  .foot{position:absolute;left:80px;right:80px;bottom:88px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px}
+  .square .foot{bottom:60px}
+  .pwhen{font:500 44px/1.2 var(--ff-mono);margin:0}.square .pwhen{font-size:32px}
+  .pwho{font:400 34px/1.3 var(--ff-ui);color:rgba(var(--bgs-ivory-rgb),.7);margin:6px 0 0}.square .pwho{font-size:24px}
+  .plink{font:500 36px/1.2 var(--ff-mono);margin:22px 0 0}.square .plink{font-size:26px;margin-top:14px}
+  .qr{width:190px;height:190px;flex:none;background:var(--bgs-ivory);border-radius:12px;padding:14px}.square .qr{width:140px;height:140px}
+  .qr i{display:block;width:100%;height:100%;background:linear-gradient(var(--bgs-bg),var(--bgs-bg)) 0 0/28% 28% no-repeat,linear-gradient(var(--bgs-bg),var(--bgs-bg)) 100% 0/28% 28% no-repeat,linear-gradient(var(--bgs-bg),var(--bgs-bg)) 0 100%/28% 28% no-repeat,repeating-linear-gradient(90deg,var(--bgs-bg) 0 6%,transparent 6% 12%) 40% 40%/50% 50% no-repeat}
+
+  .seg{display:flex;justify-content:center;gap:4px;padding:4px;border-radius:999px;background:var(--bgs-bg);width:max-content;margin:0 auto 18px}
+  .seg button{border:0;background:transparent;color:rgba(var(--bgs-ivory-rgb),.7);font:500 13px var(--ff-ui);padding:8px 16px;border-radius:999px;cursor:pointer}
+  .seg button[aria-pressed=true]{background:var(--bgs-gold);color:var(--bgs-bg)}
+
+  .rows{border-top:1px solid rgba(var(--bgs-ivory-rgb),.1)}
+  .row{display:flex;align-items:center;gap:14px;width:100%;padding:14px 0;border:0;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);background:transparent;color:var(--bgs-ivory);text-align:left;cursor:pointer;font:inherit}
+  .row i.ti{font-size:22px;color:rgba(var(--bgs-ivory-rgb),.55);width:24px;text-align:center}
+  .row .lab{flex:1;min-width:0}
+  .row .lab b{display:block;font:500 15px/1.3 var(--ff-ui)}
+  .row .lab span{display:block;font:400 13px/1.3 var(--ff-ui);color:rgba(var(--bgs-ivory-rgb),.55)}
+  .row .val{font:500 14px var(--ff-mono);color:var(--bgs-ivory);white-space:nowrap}
+  .row .val.muted{color:rgba(var(--bgs-ivory-rgb),.55);font-family:var(--ff-ui);font-weight:400}
+  .row .chev{font-size:20px;color:rgba(var(--bgs-ivory-rgb),.4);margin-left:-4px}
+  .thumbs{display:flex;gap:4px}
+  .thumbs i{display:block;width:22px;height:22px;border-radius:4px;background:var(--c)}
+  .thumbs i.h{box-shadow:inset 0 0 0 2px var(--bgs-gold)}
+
+  .actions{padding:14px 0 calc(16px + env(safe-area-inset-bottom));border-top:1px solid rgba(var(--bgs-ivory-rgb),.1);display:flex;flex-direction:column;gap:8px;background:var(--bgs-plate)}
+  .primary{width:100%;height:52px;border:0;border-radius:14px;background:var(--bgs-gold);color:var(--bgs-bg);font:500 16px var(--ff-ui);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .primary i{font-size:20px}
+  .secondary{width:100%;height:44px;border:0;border-radius:14px;background:transparent;color:rgba(var(--bgs-ivory-rgb),.75);font:500 15px var(--ff-ui);cursor:pointer}
+  .secondary:hover{color:var(--bgs-ivory)}
+
+  .notes{max-width:480px;color:rgba(var(--bgs-ivory-rgb),.75)}
+  .notes h2{font:400 18px/1.2 var(--ff-display);margin:0 0 10px;color:var(--bgs-ivory)}
+  .notes ol{padding-left:20px;margin:0}
+  .notes li{margin-bottom:10px}
+  .notes b{color:var(--bgs-ivory);font-weight:500}
+  .off{display:none}
+  .rm *{transition:none!important}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Invite sheet, mobile</h1>
+  <p class="lede">Preview first, settings as tappable rows, one primary action. The poster is the whole reason the sheet exists, so it never gets cropped.</p>
+
+  <div class="bar">
+    <fieldset><legend>Date</legend>
+      <label><input type="radio" name="date" value="set" checked><span>Decided</span></label>
+      <label><input type="radio" name="date" value="tbc"><span>Not yet</span></label>
+    </fieldset>
+    <fieldset><legend>Where</legend>
+      <label><input type="radio" name="where" value="set" checked><span>Set</span></label>
+      <label><input type="radio" name="where" value="none"><span>Not set</span></label>
+    </fieldset>
+    <fieldset><legend>Motion</legend>
+      <label><input type="checkbox" id="rm"><span>Reduced motion</span></label>
+    </fieldset>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="app">
+        <div class="eyebrow">NOK · SIGN IN</div>
+        <h2>BoardgameShelf</h2>
+        <p>Browse the game, judge by its cover.</p>
+      </div>
+      <div class="scrim"></div>
+
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheettitle">
+        <div class="grab" aria-hidden="true"></div>
+        <div class="head">
+          <h3 id="sheettitle">Invite</h3>
+          <button class="icon" type="button" aria-label="Close"><i class="ti ti-x" aria-hidden="true"></i></button>
+        </div>
+
+        <div class="body">
+          <div class="previewwrap">
+            <div class="preview" id="preview">
+              <div class="canvas story" id="canvas" aria-label="Invite preview: Cascadia, 3 other games, Saturday 19 September 7 pm">
+                <div class="hero" style="--c:#3e5a4b"><div class="plate">Cascadia</div></div>
+                <div class="pbody">
+                  <p class="peyebrow">We're probably playing</p>
+                  <p class="ptitle">Cascadia</p>
+                  <div class="also">
+                    <div class="t" style="--c:#5a6b7a"><span>Wingspan</span></div>
+                    <div class="t" style="--c:#7a5a2b"><span>Everdell</span></div>
+                    <div class="t" style="--c:#8a4a2a"><span>Root</span></div>
+                    <p class="say">or one of these 3</p>
+                  </div>
+                </div>
+                <div class="hairline"></div>
+                <div class="foot">
+                  <div>
+                    <p class="pwhen" id="pwhen">Sat 19 Sep, 7 pm</p>
+                    <p class="pwho" id="pwho">at Nok's</p>
+                    <p class="plink">boardgameshelf.app/n/K7QX</p>
+                  </div>
+                  <div class="qr" aria-hidden="true"><i></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="seg" role="group" aria-label="Format">
+            <button type="button" aria-pressed="true" data-fmt="story">Story</button>
+            <button type="button" aria-pressed="false" data-fmt="square">Square</button>
+          </div>
+
+          <div class="rows">
+            <button class="row" type="button">
+              <i class="ti ti-calendar" aria-hidden="true"></i>
+              <div class="lab"><b>When</b><span id="whensub">Shown on the poster</span></div>
+              <span class="val" id="whenval">Sat 19 Sep, 7 pm</span>
+              <i class="ti ti-chevron-right chev" aria-hidden="true"></i>
+            </button>
+            <button class="row" type="button">
+              <i class="ti ti-map-pin" aria-hidden="true"></i>
+              <div class="lab"><b>Where</b><span id="wheresub">Shown as "at Nok's"</span></div>
+              <span class="val" id="whereval">Nok's</span>
+              <i class="ti ti-chevron-right chev" aria-hidden="true"></i>
+            </button>
+            <button class="row" type="button">
+              <i class="ti ti-star" aria-hidden="true"></i>
+              <div class="lab"><b>Headline and games</b><span>Cascadia, plus 3 more</span></div>
+              <span class="thumbs" aria-hidden="true"><i class="h" style="--c:#3e5a4b"></i><i style="--c:#5a6b7a"></i><i style="--c:#7a5a2b"></i><i style="--c:#8a4a2a"></i></span>
+              <i class="ti ti-chevron-right chev" aria-hidden="true"></i>
+            </button>
+            <button class="row" type="button">
+              <i class="ti ti-link" aria-hidden="true"></i>
+              <div class="lab"><b>Link</b><span>Friends open it to vote and RSVP</span></div>
+              <span class="val">/n/K7QX</span>
+              <i class="ti ti-copy chev" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" type="button"><i class="ti ti-share" aria-hidden="true"></i>Share invite</button>
+          <button class="secondary" type="button">Save as PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <h2>What changed and why</h2>
+      <ol>
+        <li><b>Preview leads.</b> The poster is the output; it sits at the top, fully visible, scaled to fit. In the screenshot it was cropped below the fold, which is the one thing a share sheet must never do.</li>
+        <li><b>Format is a segmented control under the preview.</b> It switches the thing directly above it, so the relationship is spatial rather than labelled. Drops the "FORMAT" eyebrow.</li>
+        <li><b>Settings are rows, not a form.</b> "When" is one row with a value, tapping opens the native picker. Replaces a toggle plus two native inputs that fought the design system. If the date isn't decided, the line is simply absent from the poster. Same for Where. The poster only says what the host actually knows; nothing on it is a placeholder.</li>
+        <li><b>Where and Headline rows</b> expose the two other things the poster says, so the host can fix a wrong headline here instead of closing the sheet and going back to the shelf.</li>
+        <li><b>Link row with copy</b> covers the case where the host wants to paste text into a chat instead of an image.</li>
+        <li><b>One primary action.</b> Share is gold and full width; Save PNG is a quiet text button. Two equal-weight buttons made the sheet ask a question it should already know the answer to.</li>
+        <li><b>Header</b> uses a close icon instead of "CLOSE" in mono caps. Sentence case everywhere. No eyebrow labels.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script>
+  const $ = s => document.querySelector(s);
+  function fit(){
+    const story = $('#canvas').classList.contains('story');
+    const w = story ? 232 : 300, s = w/1080, H = story?1920:1080;
+    $('#canvas').style.transform = `scale(${s})`;
+    $('#preview').style.width = w+'px';
+    $('#preview').style.height = H*s+'px';
+  }
+  document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+    $('#canvas').className = 'canvas ' + b.dataset.fmt; fit();
+  });
+  document.querySelectorAll('input[name=date]').forEach(i=>i.onchange=()=>{
+    const set = i.value==='set';
+    $('#pwhen').classList.toggle('off', !set);
+    $('#whenval').textContent = set ? 'Sat 19 Sep, 7 pm' : 'Add a date';
+    $('#whenval').classList.toggle('muted', !set);
+    $('#whensub').textContent = set ? 'Shown on the poster' : 'Not on the poster until you add one';
+  });
+  document.querySelectorAll('input[name=where]').forEach(i=>i.onchange=()=>{
+    const set = i.value==='set';
+    $('#pwho').classList.toggle('off', !set);
+    $('#whereval').textContent = set ? "Nok's" : 'Add a place';
+    $('#whereval').classList.toggle('muted', !set);
+    $('#wheresub').textContent = set ? 'Shown as "at Nok\'s"' : 'Not on the poster until you add one';
+  });
+  $('#rm').onchange = e => document.body.classList.toggle('rm', e.target.checked);
+  fit();
+</script>
+</body>
+</html>
