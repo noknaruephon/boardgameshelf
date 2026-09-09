@@ -51,7 +51,7 @@
   h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(38px,9vw,64px);line-height:1.02;letter-spacing:-.015em;margin:18px 0 14px;}
   .sub{font-size:17px;line-height:1.45;color:var(--bgs-ivory-70);margin:0 auto 26px;max-width:32ch;}
 
-  .signin{max-width:420px;margin:30px auto 0;text-align:left;}
+  .signin{max-width:420px;margin:30px auto 0;text-align:center;}
 
   .btn{
     display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
@@ -69,20 +69,24 @@
   .btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold);}
   .btn.gold:hover{background:#ecbd5b;}
   .btn svg{width:18px;height:18px;flex:none;}
-  .guest .or{margin:22px 0 14px;}
-  /* Google's rendered button: centred, as wide as the column allows (Google
-     caps it at 400px). Its height is Google's, not ours. */
-  .gsi{display:flex;justify-content:center;min-height:44px;}
-  .gsi:empty{display:none;}
-  .gsi > div{width:100%!important;}
-
-  .or{
-    display:flex;align-items:center;gap:12px;margin:18px 0 14px;
-    color:var(--bgs-ivory-45);font-family:'IBM Plex Mono',monospace;font-size:11px;
-    letter-spacing:.12em;text-transform:uppercase;
-  }
-  .or::before,.or::after{content:"";flex:1;height:1px;background:rgba(var(--bgs-ivory-rgb),.12);}
-
+  /* Google G on a white disc — decorative; the button text is the name. */
+  .g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none;}
+  .g svg{width:14px;height:14px;}
+  /* Google's rendered control, transparent over the gold button. Its iframe
+     is a fixed 40–44px tall, so it is scaled up to cover the 52px button. */
+  .google-wrap{position:relative;}
+  .gsi{position:absolute;inset:0;overflow:hidden;opacity:0;display:flex;align-items:center;justify-content:center;}
+  .gsi > div{transform:scale(1.08,1.3);transform-origin:center;}
+  .gsi > div,.gsi iframe{width:100%!important;}
+  .more{margin:18px 0 0;font-size:15px;color:var(--bgs-ivory-70);}
+  .link{background:none;border:0;padding:0;font:500 15px 'Inter',sans-serif;color:var(--bgs-gold);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(var(--bgs-gold-rgb),.4);cursor:pointer;}
+  .link:hover{text-decoration-color:var(--bgs-gold);}
+  .link:focus-visible{outline:none;border-radius:4px;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  .email{margin-top:14px;text-align:left;}
+  .guestline{margin:32px 0 0;font-size:14px;color:var(--bgs-ivory-45);}
+  .guestline a{color:var(--bgs-gold-dim);text-decoration:none;border-bottom:1px solid rgba(var(--bgs-gold-rgb),.35);}
+  .guestline a:hover{color:var(--bgs-gold);border-bottom-color:var(--bgs-gold);}
+  .guestline a:focus-visible{outline:none;border-radius:4px;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
   .field{
     width:100%;min-height:52px;padding:0 14px;border-radius:12px;
     background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
@@ -130,27 +134,35 @@
   <p class="sub">A page for your collection and a vote for your table, from any phone.</p>
 
   <section class="signin" id="signIn" aria-label="Sign in">
-    <form id="emailForm" class="row" novalidate>
-      <input class="field" id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com" aria-label="Email" required>
-      <button class="btn gold" id="emailBtn" type="submit">Send magic link</button>
-    </form>
-    <p class="msg" id="msg" aria-live="polite"></p>
-    <div class="or">or</div>
-    <!-- Google's own sign-in button (Google Identity Services), black theme.
-         Signing in from this site is what makes Google's screen name
-         boardgameshelf.vercel.app. If the script fails to load, the plain
-         button below takes over with the redirect flow through Supabase. -->
-    <div id="gsiBtn" class="gsi"></div>
-    <button class="btn" id="googleBtn" type="button" hidden>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="currentColor" opacity=".8" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="currentColor" opacity=".6" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="currentColor" opacity=".9" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg>
-      Continue with Google
-    </button>
-    <!-- Guest browsing: the public shelves, listed straight under a quiet
-         divider. Hidden until the list arrives; hidden for good if it fails. -->
-    <div class="guest" id="guest" hidden>
-      <div class="or">or browse as a guest</div>
-      <div id="pickerHost"></div>
+    <!-- One primary. Google's own sign-in control (Google Identity Services)
+         must render its own button, so it sits transparently over this gold
+         one: the gold button is what people see, Google's is what receives
+         the tap, which is what makes Google's screen name this site. If
+         Google's script cannot load, the gold button runs the redirect flow. -->
+    <div class="google-wrap">
+      <button class="btn gold" id="googleBtn" type="button">
+        <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="#EA4335" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg></span>
+        Continue with Google
+      </button>
+      <div id="gsiBtn" class="gsi" hidden aria-hidden="true"></div>
     </div>
+
+    <p class="more">Prefer email?
+      <button class="link" id="emailToggle" type="button" aria-expanded="false" aria-controls="emailPanel">Send me a sign-in link</button>
+    </p>
+
+    <div class="email" id="emailPanel" hidden>
+      <form class="row" id="emailForm" novalidate>
+        <input class="field" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required>
+        <button class="btn" id="emailBtn" type="submit">Send link</button>
+      </form>
+    </div>
+
+    <p class="msg" id="msg" aria-live="polite"></p>
+
+    <p class="guestline" id="guestLine" hidden>Just looking?
+      <a id="guestLink" href="/u/noknaruephon">Browse <span id="guestName">Nok's</span> shelf as a guest</a>
+    </p>
   </section>
 
   <section class="signin signed-in" id="signedIn" hidden>
@@ -169,12 +181,13 @@
 
 <script type="module">
 import { getUser, signInWithGoogle, signInWithGoogleCredential, makeNonce, GOOGLE_CLIENT_ID, signInWithEmail, fetchMyProfile, userDisplayName } from '/js/auth.js';
-import { mountShelfPicker } from '/js/shelf-picker.js';
+import { fetchPublicShelves } from '/js/shelf-picker.js';
 
 const msg = document.getElementById('msg');
 const say = (text, kind = '') => { msg.textContent = text; msg.className = `msg ${kind}`; };
 
-// Fallback only: shown when Google's own button cannot be rendered.
+// The gold button runs the redirect flow itself when Google's own control
+// could not be laid over it (script blocked, no client ID).
 const googleBtn = document.getElementById('googleBtn');
 googleBtn.addEventListener('click', async () => {
   googleBtn.disabled = true;
@@ -221,18 +234,40 @@ async function mountGoogleButton() {
     type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill',
     text: 'continue_with', logo_alignment: 'left', locale: 'en', width,
   });
+  host.hidden = false;
+  // Taps now land on Google's control; keep the gold button visible but out
+  // of the tab order so keyboard users reach Google's control instead.
+  googleBtn.tabIndex = -1;
+  googleBtn.setAttribute('aria-hidden', 'true');
+  host.removeAttribute('aria-hidden');
 }
-mountGoogleButton().catch((err) => {
-  console.warn('Google button not mounted, using redirect flow:', err.message);
-  googleBtn.hidden = false;
+mountGoogleButton().catch((err) => { console.warn('Google control not mounted, gold button uses the redirect flow:', err.message); });
+
+// ---- Email as progressive disclosure ----
+const emailToggle = document.getElementById('emailToggle');
+const emailPanel = document.getElementById('emailPanel');
+emailToggle.addEventListener('click', () => {
+  const open = emailPanel.hidden;
+  emailPanel.hidden = !open;
+  emailToggle.setAttribute('aria-expanded', String(open));
+  if (open) document.getElementById('email').focus();
 });
 
-// ---- Browse as a guest: the public shelves, listed under the divider ----
-// Loaded straight away so the option is simply there; if the list cannot be
-// fetched the whole block stays hidden rather than promising an empty one.
-mountShelfPicker(document.getElementById('pickerHost'), { variant: 'bare', title: 'Browse a shelf as a guest', limit: 3 })
-  .then((n) => { if (n > 0) document.getElementById('guest').hidden = false; })
-  .catch((err) => console.error('public_shelves failed', err));
+// ---- Guest line: the first public shelf, fetched after first paint ----
+// Never blocks the sign-in buttons; stays hidden if the list is empty or fails.
+const possessive = (name) => (/s$/i.test(name) ? `${name}'` : `${name}'s`);
+setTimeout(async () => {
+  try {
+    const [shelf] = await fetchPublicShelves();
+    if (!shelf?.slug) return;
+    const name = shelf.display_name || shelf.bgg_username || shelf.slug;
+    document.getElementById('guestName').textContent = possessive(name);
+    document.getElementById('guestLink').href = `/u/${encodeURIComponent(shelf.slug)}`;
+    document.getElementById('guestLine').hidden = false;
+  } catch (err) {
+    console.error('public_shelves failed', err);
+  }
+}, 0);
 
 document.getElementById('emailForm').addEventListener('submit', async (e) => {
   e.preventDefault();
