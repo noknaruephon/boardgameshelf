@@ -69,6 +69,8 @@
   .btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold);}
   .btn.gold:hover{background:#ecbd5b;}
   .btn svg{width:18px;height:18px;flex:none;}
+  .gsi{display:flex;justify-content:center;min-height:44px;}
+  .gsi > div{width:100%!important;}
 
   .or{
     display:flex;align-items:center;gap:12px;margin:18px 0 14px;
@@ -124,6 +126,10 @@
   <p class="sub">A page for your collection and a vote for your table, from any phone.</p>
 
   <section class="signin" id="signIn" aria-label="Sign in">
+    <!-- Google's own sign-in button, rendered here when a client ID is
+         configured; Google's screen then shows this site's domain. The gold
+         button below is the fallback (redirect through Supabase). -->
+    <div id="gsiBtn" class="gsi" hidden></div>
     <button class="btn gold" id="googleBtn" type="button">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="currentColor" opacity=".8" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="currentColor" opacity=".6" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="currentColor" opacity=".9" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg>
       Continue with Google
@@ -151,7 +157,7 @@
 </footer>
 
 <script type="module">
-import { getUser, signInWithGoogle, signInWithEmail, fetchMyProfile, userDisplayName } from '/js/auth.js';
+import { getUser, signInWithGoogle, signInWithGoogleCredential, makeNonce, GOOGLE_CLIENT_ID, signInWithEmail, fetchMyProfile, userDisplayName } from '/js/auth.js';
 
 const msg = document.getElementById('msg');
 const say = (text, kind = '') => { msg.textContent = text; msg.className = `msg ${kind}`; };
@@ -163,6 +169,48 @@ googleBtn.addEventListener('click', async () => {
   try { await signInWithGoogle(); }
   catch (err) { say(err.message || "Couldn't start Google sign-in.", 'err'); googleBtn.disabled = false; }
 });
+
+// ---- Google's button on this site (Google Identity Services) ----
+// Google names the site that receives the token, so the consent screen reads
+// "to continue to boardgameshelf.vercel.app" (or the verified app name)
+// instead of the Supabase project address. If the script fails to load or no
+// client ID is configured, the gold button above keeps the old redirect flow.
+async function mountGoogleButton() {
+  if (!GOOGLE_CLIENT_ID) return;
+  const host = document.getElementById('gsiBtn');
+  const { raw, hashed } = await makeNonce();
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('gsi failed to load'));
+    document.head.appendChild(s);
+  });
+  if (!window.google?.accounts?.id) throw new Error('gsi unavailable');
+  window.google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    nonce: hashed,
+    ux_mode: 'popup',
+    callback: async ({ credential }) => {
+      say('Signing you in…');
+      try {
+        await signInWithGoogleCredential(credential, raw);
+        location.replace('/welcome');
+      } catch (err) {
+        say(err.message || "Couldn't finish Google sign-in.", 'err');
+      }
+    },
+  });
+  const width = Math.min(400, Math.max(200, Math.floor(host.getBoundingClientRect().width || 360)));
+  window.google.accounts.id.renderButton(host, {
+    type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill',
+    text: 'continue_with', logo_alignment: 'left', width,
+  });
+  host.hidden = false;
+  googleBtn.hidden = true;
+}
+mountGoogleButton().catch((err) => { console.warn('Google button not mounted, using redirect flow:', err.message); });
 
 document.getElementById('emailForm').addEventListener('submit', async (e) => {
   e.preventDefault();
