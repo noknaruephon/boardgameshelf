@@ -1610,10 +1610,12 @@ const gameNightVisible =
   GAME_NIGHT_ENABLED || new URLSearchParams(location.search).has('gamenight');
 
 // ---- Game night invite poster flag ----
-// Dark: select mode, the invite sheet and the poster only exist with
-// ?invite=1. js/invite.js is imported, and builds its DOM, only when this is
-// true, so a shelf without the flag is byte-for-byte what it was.
-const INVITE_ENABLED = false;
+// Live: every visitor gets "Plan a night". The flag is now a kill switch,
+// the same shape as the Game Night one: set it back to false to pull the
+// feature without reverting anything, and ?invite=1 still reveals it while
+// it is off. js/invite.js is imported, and builds its DOM, only when this
+// is true, so a shelf with the flag off is byte-for-byte what it was.
+const INVITE_ENABLED = true;
 const inviteVisible =
   INVITE_ENABLED || new URLSearchParams(location.search).get('invite') === '1';
 let invite = null; // set by initInvite(); render() hands it every re-render
