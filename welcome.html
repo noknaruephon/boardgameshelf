@@ -166,13 +166,11 @@ import { mountShelfPicker } from '/js/shelf-picker.js';
 const $ = (id) => document.getElementById(id);
 const page = $('page');
 const SLOTS = 12;
-const DEBOUNCE_MS = 600;
 const MIN_CHARS = 3;
 
 let user = null;
 let profile = null;
 let lookup = null;         // { username, count } for the name currently in the box
-let debounce = null;
 let inflight = null;       // AbortController for the lookup in progress
 let covers = [];           // thumbnails seen this sync, in arrival order
 
@@ -206,8 +204,6 @@ const slugOf = (name) => String(name || '').trim().toLowerCase().replace(/\s+/g,
 // ---- step 2: live lookup ----
 
 function cancelLookup() {
-  clearTimeout(debounce);
-  debounce = null;
   if (inflight) { inflight.abort(); inflight = null; }
 }
 
@@ -284,12 +280,14 @@ async function check(name) {
   }
 }
 
+// Nothing is checked while typing. Continue becomes available once there is
+// a plausible name, and pressing it runs the BGG check; if the account is
+// found, the claim follows in the same press.
 $('bgg').addEventListener('input', () => {
   cancelLookup();
   const name = $('bgg').value.trim();
   resetToEmpty();
-  if (name.length < MIN_CHARS) return;
-  debounce = setTimeout(() => check(name), DEBOUNCE_MS);
+  $('continue').disabled = name.length < MIN_CHARS;
 });
 
 async function claim(username, btn, idleLabel) {
@@ -315,9 +313,16 @@ async function claim(username, btn, idleLabel) {
   }
 }
 
-$('nameForm').addEventListener('submit', (e) => {
+$('nameForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (!lookup) return;
+  const name = $('bgg').value.trim();
+  if (name.length < MIN_CHARS) return;
+  if (!lookup) {
+    // First press: verify with BGG. On success the claim runs straight away.
+    $('continue').disabled = true;
+    await check(name);
+    if (!lookup) return;              // not found, or an error was shown
+  }
   claim(lookup.username, $('continue'), page.dataset.state === 'found' ? 'Continue to sync' : 'Continue');
 });
 
