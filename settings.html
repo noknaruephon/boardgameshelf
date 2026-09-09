@@ -430,8 +430,7 @@ try {
       renderSettings();
       updateBrowseOffer();
     } else {
-      // No BGG account connected yet: onboarding lives at /welcome, which
-      // also offers guest browsing and sign-out.
+      // No BGG account connected yet: onboarding lives at /welcome.
       location.replace('/welcome');
     }
   }

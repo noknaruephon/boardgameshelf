@@ -20,11 +20,11 @@
   /* Tokens and page chrome come from css/base.css. Layout follows
      docs/claim-sync-mockup.html, option B ("Three steps"); spec in
      docs/claude-code-onboarding-steps.md. */
-  body{padding:36px 20px 80px;}
-  .wrap{max-width:560px;margin:0 auto;}
+  body{padding:0;}
+  .wrap{max-width:520px;margin:0 auto;padding:36px 20px 80px;}
   .mark{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;color:var(--bgs-gold);margin:0 0 10px;}
-  h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(34px,8vw,48px);line-height:1.05;letter-spacing:-.015em;margin:0 0 12px;}
-  .lede{font-size:16px;line-height:1.5;color:var(--bgs-ivory-70);margin:0 0 26px;max-width:36ch;}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(32px,8vw,44px);line-height:1.05;letter-spacing:-.015em;margin:0 0 10px;}
+  .lede{font-size:16px;line-height:1.5;color:var(--bgs-ivory-70);margin:0 0 28px;max-width:36ch;}
   .plate{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.22);border-radius:16px;padding:22px 20px;box-shadow:0 12px 30px -18px rgba(0,0,0,.8);}
   label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 6px;}
   .field{
@@ -46,22 +46,28 @@
   .btn[disabled]{opacity:.5;cursor:default;}
   .btn.quiet{border-color:rgba(var(--bgs-ivory-rgb),.18);background:none;color:var(--bgs-ivory-70);}
   .btn.quiet:hover{background:rgba(var(--bgs-ivory-rgb),.06);}
-  .help{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:10px 0 0;}
+  /* Not yet actionable: reads as a placeholder, never as a broken button. */
+  .btn.ghost,.btn.ghost[disabled]{background:transparent;color:var(--bgs-ivory-45);border-color:rgba(var(--bgs-ivory-rgb),.14);cursor:default;opacity:1;}
+  .act{margin-top:22px;}
+  .links{margin:36px 0 0;font-size:13px;color:var(--bgs-ivory-45);line-height:1.7;}
+  .links a{color:var(--bgs-gold-dim);text-decoration:none;border-bottom:1px solid rgba(var(--bgs-gold-rgb),.35);}
+  .links a:hover{color:var(--bgs-gold);border-bottom-color:var(--bgs-gold);}
+  .links a:focus-visible{outline:none;border-radius:4px;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  .links .dot{margin:0 8px;opacity:.5;}
+  .help{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:10px 0 0;min-height:20px;}
   .help.ok{color:var(--bgs-vote-play);}
   .help.err{color:var(--bgs-vote-pass);}
   .mono{font-family:'IBM Plex Mono',monospace;}
   .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
-  /* steps strip */
-  .steps{display:flex;gap:0;margin:0 0 22px;padding:0;list-style:none;font-size:13px;}
-  .step{flex:1;display:flex;flex-direction:column;gap:8px;color:var(--bgs-ivory-45);position:relative;}
-  .step i{display:block;height:3px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.12);}
-  .step.done{color:var(--bgs-ivory-70);}
-  .step.done i{background:rgba(var(--bgs-gold-rgb),.45);}
-  .step.now{color:var(--bgs-ivory);}
-  .step.now i{background:var(--bgs-gold);}
-  .step span{padding-right:10px;}
-  .step + .step i{margin-left:4px;}
+  /* step indicator: a mono line and three aligned bars */
+  .steps{margin:0 0 26px;}
+  .steps .line{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-ivory-45);margin:0 0 8px;}
+  .steps .line b{font-weight:500;color:var(--bgs-ivory-70);}
+  .steps .segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .steps .segs i{height:3px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.12);}
+  .steps .segs i.done{background:rgba(var(--bgs-gold-rgb),.45);}
+  .steps .segs i.now{background:var(--bgs-gold);}
 
   /* one plate, state-switched content */
   [data-state] .s{display:none;}
@@ -87,10 +93,6 @@
   .progtxt{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--bgs-ivory-70);margin:0;}
   .progtxt .ok{color:var(--bgs-vote-play);}
   .stack{margin-top:18px;display:grid;gap:10px;}
-  .skip{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:14px 0 0;text-align:center;}
-  .skip a{color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
-  .skip a:hover{color:var(--bgs-gold);}
-  .skip a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
   .retry{margin-top:14px;}
   @media(prefers-reduced-motion:reduce){
     .spin{animation:none;}
@@ -104,35 +106,31 @@
 <div class="wrap" id="page" data-state="empty">
   <p class="mark">BoardgameShelf</p>
 
-  <ol class="steps" role="list" aria-label="Progress">
-    <li class="step done" id="step1"><i aria-hidden="true"></i><span>Sign in</span><span class="sr" id="sr1">Step 1 of 3: done</span></li>
-    <li class="step now" id="step2"><i aria-hidden="true"></i><span>Your BGG name</span><span class="sr" id="sr2">Step 2 of 3: current</span></li>
-    <li class="step" id="step3"><i aria-hidden="true"></i><span>Sync</span><span class="sr" id="sr3">Step 3 of 3: upcoming</span></li>
-  </ol>
+  <div class="steps" aria-label="Progress">
+    <div class="line"><b id="stepNum">Step 2 of 3</b><span id="stepName">Your BGG name</span></div>
+    <div class="segs" aria-hidden="true"><i class="done"></i><i class="now"></i><i></i></div>
+    <p class="sr" id="stepLive" aria-live="polite"></p>
+  </div>
 
   <h1 class="s s-empty s-checking s-found s-missing">Connect your collection</h1>
   <h1 class="s s-syncing">Pulling in your games</h1>
   <h1 class="s s-done">You're on the shelf</h1>
-  <p class="lede s s-empty s-checking s-found s-missing">We only need the username. Your owned games come straight from BGG, nothing to upload.</p>
+  <p class="lede s s-empty s-checking s-found s-missing">Your owned games come straight from BGG. Nothing to upload.</p>
   <p class="lede s s-syncing">This runs once now and whenever you tap Sync in settings.</p>
   <p class="lede s s-done">Send the link to your group. They can browse and vote without signing in.</p>
 
-  <div class="plate">
-    <!-- empty / checking / found / missing -->
-    <form class="s s-empty s-checking s-found s-missing" id="nameForm" novalidate>
-      <label for="bgg">BoardGameGeek username</label>
-      <input class="field bgg" id="bgg" name="bgg" type="text" placeholder="noknaruephon" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="help">
-      <p class="help" id="help" aria-live="polite">Same as your login on boardgamegeek.com. Not your email.</p>
-      <div class="stack">
-        <button class="btn gold" id="continue" type="submit" disabled>Continue</button>
-        <button class="btn" id="claimAnyway" type="button" hidden>Claim anyway</button>
-        <button class="btn quiet" id="browseBtn" type="button">Browse an existing shelf instead</button>
-      </div>
-      <p class="skip">Not now? <a href="#" id="signOutLink">Sign out</a> — you can come back and connect your BGG account any time.</p>
-    </form>
+  <!-- step 2: just the field, no card -->
+  <form class="s s-empty s-checking s-found s-missing" id="nameForm" novalidate>
+    <label for="bgg">BoardGameGeek username</label>
+    <input class="field bgg" id="bgg" name="bgg" type="text" placeholder="noknaruephon" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" aria-describedby="bggHelp">
+    <p class="help" id="bggHelp" aria-live="polite">Same as your BGG login. Not your email.</p>
+    <div class="act">
+      <button class="btn ghost" id="continue" type="submit" disabled>Continue</button>
+    </div>
+    <p class="links">Just looking? <a id="browseLink" href="#">Browse an existing shelf</a><span class="dot">·</span><a id="laterLink" href="/shelf">Do this later</a><span class="dot" id="claimDot" hidden>·</span><a id="claimAnyway" href="#" hidden>Claim the name anyway</a></p>
+  </form>
 
-    <!-- syncing -->
-    <div class="s s-syncing">
+  <div class="plate s s-syncing">
       <div class="fill" id="fill" aria-hidden="true"></div>
       <div class="prog" id="prog"><i id="progBar"></i></div>
       <div class="progtxt" role="status" aria-live="polite"><span id="progLeft">Asking BGG for your collection…</span><span id="progRight"></span></div>
@@ -141,17 +139,15 @@
         <button class="btn" id="retry" type="button">Try again</button>
         <button class="btn quiet" id="browseBtnSync" type="button">Browse an existing shelf instead</button>
       </div>
-    </div>
+  </div>
 
-    <!-- done -->
-    <div class="s s-done">
+  <div class="plate s s-done">
       <div class="fill" id="fillDone" aria-hidden="true"></div>
       <div class="progtxt" style="margin-top:12px"><span class="ok" id="doneCount"></span><span class="mono" id="doneSlug"></span></div>
       <div class="stack">
         <a class="btn gold" id="openShelf" href="/settings">Open your shelf</a>
         <button class="btn" id="copyLink" type="button">Copy link</button>
       </div>
-    </div>
   </div>
 
   <!-- Fallback: browse a stocked shelf as a guest. Mounted on demand. -->
@@ -159,7 +155,7 @@
 </div>
 
 <script type="module">
-import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName, signOut } from '/js/auth.js';
+import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName } from '/js/auth.js';
 import { runSync, BATCH_SIZE, BATCH_SECONDS } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
 
@@ -176,14 +172,30 @@ let covers = [];           // thumbnails seen this sync, in arrival order
 
 // ---- state + steps strip ----
 
+const STEPS = {
+  name: { num: 'Step 2 of 3', name: 'Your BGG name', segs: ['done', 'now', ''] },
+  sync: { num: 'Step 3 of 3', name: 'Sync', segs: ['done', 'done', 'now'] },
+  done: { num: 'Done', name: 'Your shelf', segs: ['done', 'done', 'done'] },
+};
+let stepShown = null;
 function setSteps(stage) {
-  // stage: 'name' (step 2 current) | 'sync' (step 3 current) | 'done'
-  const s2 = stage === 'name' ? 'now' : 'done';
-  const s3 = stage === 'sync' ? 'now' : stage === 'done' ? 'done' : '';
-  $('step2').className = `step ${s2}`;
-  $('step3').className = `step ${s3}`;
-  $('sr2').textContent = `Step 2 of 3: ${s2 === 'now' ? 'current' : 'done'}`;
-  $('sr3').textContent = `Step 3 of 3: ${s3 === 'now' ? 'current' : s3 === 'done' ? 'done' : 'upcoming'}`;
+  const st = STEPS[stage];
+  $('stepNum').textContent = st.num;
+  $('stepName').textContent = st.name;
+  document.querySelectorAll('.steps .segs i').forEach((el, i) => { el.className = st.segs[i]; });
+  // Announce once per change, not on every state tick within the same step.
+  if (stepShown !== stage) {
+    stepShown = stage;
+    $('stepLive').textContent = `${st.num}: ${st.name}`;
+  }
+}
+
+// The one Continue button, restyled per state rather than swapped.
+function setButton(mode, label = 'Continue') {
+  const b = $('continue');
+  b.className = `btn ${mode === 'gold' ? 'gold' : mode === 'ghost' ? 'ghost' : ''}`.trim();
+  b.disabled = mode === 'ghost';
+  b.textContent = label;
 }
 
 function setState(state) {
@@ -193,7 +205,7 @@ function setState(state) {
 }
 
 function help(html, kind = '') {
-  const el = $('help');
+  const el = $('bggHelp');
   el.className = `help ${kind}`.trim();
   el.innerHTML = html;
 }
@@ -210,10 +222,10 @@ function cancelLookup() {
 function resetToEmpty() {
   lookup = null;
   $('claimAnyway').hidden = true;
-  $('continue').disabled = true;
-  $('continue').textContent = 'Continue';
+  $('claimDot').hidden = true;
+  setButton('ghost');
   setState('empty');
-  help('Same as your login on boardgamegeek.com. Not your email.');
+  help('Same as your BGG login. Not your email.');
 }
 
 async function check(name) {
@@ -242,15 +254,14 @@ async function check(name) {
       const slug = slugOf(lookup.username);
       const games = lookup.count === null || lookup.count === undefined
         ? 'Found.'
-        : `Found — ${lookup.count} game${lookup.count === 1 ? '' : 's'} owned.`;
-      help(`${games} Shelf address: <span class="mono">/u/${escapeHTML(slug)}</span>`, 'ok');
-      $('continue').textContent = 'Continue to sync';
-      $('continue').disabled = false;
+        : `Found · ${lookup.count} game${lookup.count === 1 ? '' : 's'} owned.`;
+      help(`${games} Shelf address <span class="mono">/u/${escapeHTML(slug)}</span>`, 'ok');
+      setButton('gold', 'Continue to sync');
       setState('found');
     } else {
       lookup = null;
-      help("We couldn't find that account. Usernames are case-insensitive, so it's usually a typo.", 'err');
-      $('continue').disabled = true;
+      help("No account by that name. It's usually a typo — usernames aren't case-sensitive.", 'err');
+      setButton('ghost');
       setState('missing');
     }
   } catch (err) {
@@ -264,15 +275,15 @@ async function check(name) {
       // away so there is something to look at.
       lookup = { username: name, count: null };
       help("BGG isn't reachable right now. Your username is saved — you can sync later from Settings.", 'err');
-      $('continue').textContent = 'Continue';
-      $('continue').disabled = false;
+      setButton('plain', 'Continue');
       setState('missing');
       showPicker();
     } else {
       lookup = null;
       help(`Couldn't check with BGG right now (${escapeHTML(err.message || 'no reply')}). You can claim the name as typed and sync later from Settings.`, 'err');
-      $('continue').disabled = true;
+      setButton('ghost');
       $('claimAnyway').hidden = false;
+      $('claimDot').hidden = false;
       setState('missing');
     }
   } finally {
@@ -287,10 +298,11 @@ $('bgg').addEventListener('input', () => {
   cancelLookup();
   const name = $('bgg').value.trim();
   resetToEmpty();
-  $('continue').disabled = name.length < MIN_CHARS;
+  if (name.length >= MIN_CHARS) setButton('plain', 'Continue');
 });
 
 async function claim(username, btn, idleLabel) {
+  const wasLink = btn.tagName === 'A';
   btn.disabled = true;
   btn.textContent = 'Saving…';
   try {
@@ -309,7 +321,7 @@ async function claim(username, btn, idleLabel) {
     help(escapeHTML(err.message || "Couldn't save that. Try again."), 'err');
   } finally {
     btn.textContent = idleLabel;
-    btn.disabled = false;
+    if (!wasLink) btn.disabled = false;
   }
 }
 
@@ -319,7 +331,7 @@ $('nameForm').addEventListener('submit', async (e) => {
   if (name.length < MIN_CHARS) return;
   if (!lookup) {
     // First press: verify with BGG. On success the claim runs straight away.
-    $('continue').disabled = true;
+    setButton('ghost');
     await check(name);
     if (!lookup) return;              // not found, or an error was shown
   }
@@ -336,26 +348,22 @@ async function showPicker() {
     pickerMounted = true;
     host.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (err) {
-    // Nothing to offer: hide the buttons rather than show an empty plate.
+    // Nothing to offer: hide the links rather than show an empty plate.
     console.error('public_shelves failed', err);
-    $('browseBtn').hidden = true;
+    $('browseLink').hidden = true;
+    $('browseLink').nextElementSibling.hidden = true;
     $('browseBtnSync').hidden = true;
   }
 }
-$('browseBtn').addEventListener('click', showPicker);
+$('browseLink').addEventListener('click', (e) => { e.preventDefault(); showPicker(); });
 $('browseBtnSync').addEventListener('click', showPicker);
 
-$('signOutLink').addEventListener('click', async (e) => {
+$('claimAnyway').addEventListener('click', (e) => {
   e.preventDefault();
-  try { await signOut(); } catch { /* fall through */ }
-  location.href = '/';
-});
-
-$('claimAnyway').addEventListener('click', () => {
   const name = $('bgg').value.trim();
   if (name.length < MIN_CHARS) return;
   cancelLookup();
-  claim(name, $('claimAnyway'), 'Claim anyway');
+  claim(name, $('claimAnyway'), 'Claim the name anyway');
 });
 
 // ---- step 3: sync with covers filling in ----

@@ -1365,7 +1365,7 @@ import { createGameModal } from '/js/game-modal.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { VIBES, applyVibes } from '/js/vibes.js';
 import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
-import { getUser } from '/js/auth.js';
+import { getUser, fetchMyProfile, signOut, userDisplayName } from '/js/auth.js';
 
 // ---- Game Night feature flag ----
 // Live: every visitor gets the Game Night pill. All four stages — session
@@ -1393,7 +1393,19 @@ function slugFromPath(){
   return m ? decodeURIComponent(m[1]).trim().toLowerCase() : '';
 }
 
+// /shelf is "my shelf": a signed-in user with a profile is sent to it, one
+// without a profile sees their own shelf empty, with the way to connect.
+const isOwnShelfRoute = location.pathname.replace(/\/$/, '') === '/shelf';
+let viewer = null;
+
 async function loadGames(){
+  if(isOwnShelfRoute){
+    viewer = await getUser();
+    if(!viewer){ location.replace('/'); throw new ShelfError('redirect'); }
+    const mine = await fetchMyProfile();
+    if(mine?.slug){ location.replace(`/u/${mine.slug}`); throw new ShelfError('redirect'); }
+    throw new ShelfError('empty-own');
+  }
   const slug = slugFromPath();
   if(!slug) throw new ShelfError('not-found');
   profile = await fetchProfileBySlug(slug);
@@ -1437,6 +1449,22 @@ function showShelfState(kind){
     const meta = document.createElement('meta');
     meta.name = 'robots'; meta.content = 'noindex';
     document.head.appendChild(meta);
+  }
+  if(kind === 'redirect') return;
+  if(kind === 'empty-own'){
+    document.title = 'Your shelf · BoardgameShelf';
+    const eyebrow = document.getElementById('shelfOwner');
+    eyebrow.textContent = userDisplayName(viewer) || 'Your shelf';
+    const a = document.createElement('a');
+    a.href = '/welcome'; a.className = 'owner-link'; a.textContent = 'Connect your collection';
+    eyebrow.append(' · ', a);
+    shelf.innerHTML = `<p class="empty-state">Your shelf is empty.<br>Connect your BoardGameGeek account and your owned games will appear here.<a href="/welcome">Connect your collection</a><a href="#" id="emptySignOut">Sign out</a></p>`;
+    document.getElementById('emptySignOut').addEventListener('click', async (e)=>{
+      e.preventDefault();
+      try { await signOut(); } catch {}
+      location.href = '/';
+    });
+    return;
   }
   if(kind === 'not-found'){
     document.title = 'Shelf not found · BoardgameShelf';
