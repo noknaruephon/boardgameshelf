@@ -49,18 +49,24 @@ Exit: "Done" in the bar's left corner on mobile widths, or Escape. Focus returns
 
 ## 2. Share sheet
 
-Reuse the share-shelf bottom sheet. Differences:
-- Title: "Invite"
-- Format picker: Story (default) and Square only. No Portrait.
-- Preview: the poster canvas scaled to fit the sheet width. Re-render on format change and on any selection change if the sheet is open.
-- Buttons: "Share" (Web Share API with the PNG file, falls back to download) and "Save PNG". Same code paths as the shelf share.
+Mockup: `docs/mockups/invite-sheet-mobile.html` at 390px wide. Reuse the share-shelf bottom sheet (scrim, panel, scroll lock, focus trap, Escape). Differences:
+- Title "Invite" with a Tabler `x` icon button to close. Sentence case everywhere; no mono-caps eyebrow labels.
+- Preview first, at the top of the sheet, scaled to fit so the whole poster is always visible. Never cropped. Re-render on format change and on any selection change while the sheet is open.
+- Format is a segmented control (Story / Square, `aria-pressed`) directly under the preview. No "Format" label.
+- Settings are tappable rows (real buttons) with icon, label, value, chevron. No description line under the label:
+  - **When** (calendar): tapping opens the native date/time picker; the input is never rendered inline. Value "Sat 19 Sep, 7 pm" (minutes only when not :00); unset reads "Add a date", muted, and the line is not on the poster.
+  - **Where** (map-pin): a short text field folds out under the row. Value "Nok's"; unset reads "Add a place", muted, and the line is not on the poster.
+  - **Headline and games** (star): cover thumbs, the headline ringed gold. Tapping opens the picks as tiles with the shelf's star treatment so the host can move the headline without leaving the sheet.
+  - **Link** (link, copy icon): "/n/{code}". Tapping copies the full URL. While the night is being created it reads "Creating…"; if creation failed the row reads "Couldn't create the night. Tap to retry" and is the retry.
+- One primary action: "Share invite" (Tabler `share`), gold, full width. "Save as PNG" is a quiet text button beneath it. Same Web Share and PNG-download code paths as the shelf share.
 - Filename: `game-night-{code}-{story|square}.png`
+- Tabler icons: calendar, map-pin, star, link, copy, chevron-right, share, x. Outline, `currentColor`.
 
-On first open, create the night if one doesn't exist for this selection: call the Stage 1 RPC with `candidate_ids` (ordered) and `headline_game_id`. Store the returned code. Show a small inline spinner in the preview area while waiting; the QR and link render once the code arrives. If the RPC fails, render the poster without QR and with the link line replaced by "Couldn't create the night. Try again." plus a retry button in the sheet, not on the canvas.
+On first open, create the night if one doesn't exist for this selection: call the Stage 1 RPC with `candidate_ids` (ordered) and `headline_game_id`. Store the returned code. Show a small inline spinner in the preview area while waiting; the QR and link render once the code arrives. If the RPC fails, render the poster without QR and with the link line replaced by "Couldn't create the night. Try again."; the Link row is the retry, not anything on the canvas.
 
 ## 3. Poster renderer
 
-`renderInvitePoster({ format, headline, rest, night, host }) → Promise<HTMLCanvasElement>`
+`renderInvitePoster({ format, headline, rest, night }) → Promise<HTMLCanvasElement>` — `night` carries `{ code, error, dateLabel }`
 
 Layout constants come from the mockup; do not eyeball them. Story values, with Square in brackets:
 
@@ -78,7 +84,6 @@ Layout constants come from the mockup; do not eyeball them. Story values, with S
 | Hairline | 2px gold 80%, bottom 330, inset 80 | bottom 230 |
 | Footer | bottom 88, inset 80 | bottom 60 |
 | Date | Plex Mono 500 44 | 32 |
-| Host line | Inter 400 34, ivory 70%, "at {host}" | 24 |
 | Link | Plex Mono 500 36, `boardgameshelf.app/n/{code}` | 26 |
 | QR | 190 square, ivory plate radius 12, 14 padding | 140 |
 
