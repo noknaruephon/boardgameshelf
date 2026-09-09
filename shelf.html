@@ -1322,6 +1322,26 @@
     color:rgba(var(--bgs-ivory-rgb),.75);font:500 15px 'Inter',sans-serif;cursor:pointer;
   }
   .invite-secondary:hover{color:var(--bgs-ivory);}
+  /* Save to Photos on iOS: the image alone, full screen, above the sheet. */
+  .invite-viewer{
+    position:fixed;inset:0;z-index:23;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+    background:rgba(var(--bgs-bg-rgb),0.96);
+  }
+  .invite-viewer[hidden]{display:none;}
+  .invite-viewer__img{
+    display:block;max-width:100%;max-height:70vh;max-height:70svh;width:auto;height:auto;
+    border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);
+    -webkit-touch-callout:default; /* the press-and-hold menu is the point */
+  }
+  .invite-viewer__hint{margin:0;font:400 14px/1.4 'Inter',sans-serif;color:var(--bgs-ivory-70);text-align:center;}
+  .invite-viewer__hint b{color:var(--bgs-ivory);font-weight:500;}
+  .invite-viewer__done{
+    height:44px;padding:0 22px;border:0;border-radius:14px;
+    background:var(--bgs-gold);color:var(--bgs-bg);font:500 15px 'Inter',sans-serif;cursor:pointer;
+  }
+  .invite-viewer__done:focus-visible,
   .invite-icon:focus-visible,.invite-row:focus-visible,.invite-seg button:focus-visible,
   .invite-primary:focus-visible,.invite-secondary:focus-visible,.invite-pick:focus-visible,.invite-edit__done:focus-visible{
     outline:2px solid var(--bgs-gold);outline-offset:2px;
