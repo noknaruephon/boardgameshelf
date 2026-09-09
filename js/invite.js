@@ -309,7 +309,7 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
         <button class="invite-row" id="inviteLinkRow" type="button">
           ${icon('link')}
           <span class="invite-row__lab"><b>Link</b></span>
-          <span class="invite-row__val" id="inviteLinkVal" aria-live="polite"></span>
+          <span class="invite-row__val mono" id="inviteLinkVal" aria-live="polite"></span>
           ${icon('copy', 'invite-row__chev')}
         </button>
       </div>

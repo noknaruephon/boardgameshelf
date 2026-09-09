@@ -1297,12 +1297,15 @@
   }
   .invite-row > .invite-ti{color:rgba(var(--bgs-ivory-rgb),.55);}
   .invite-row__lab{flex:1;min-width:0;}
-  .invite-row__lab b{display:block;font:500 15px/1.3 'Inter',sans-serif;}
+  /* Label is the primary line: ivory, medium. The value is secondary:
+     lighter weight, ivory at 70%; unset ("Add a …") drops to 45%. */
+  .invite-row__lab b{display:block;font:500 15px/1.3 'Inter',sans-serif;color:var(--bgs-ivory);}
   .invite-row__val{
-    font:500 14px 'IBM Plex Mono',monospace;color:var(--bgs-ivory);
+    font:400 14px 'Inter',sans-serif;color:var(--bgs-ivory-70);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%;
   }
-  .invite-row__val.muted{color:rgba(var(--bgs-ivory-rgb),.55);font:400 14px 'Inter',sans-serif;}
+  .invite-row__val.mono{font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  .invite-row__val.muted{color:var(--bgs-ivory-45);}
   .invite-row__chev{width:20px;height:20px;color:rgba(var(--bgs-ivory-rgb),.4);margin-left:-4px;}
   .invite-thumbs{display:flex;gap:4px;}
   .invite-thumbs i{
