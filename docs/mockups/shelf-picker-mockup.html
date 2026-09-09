@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — shelf picker options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bgs-bg:#160F0A;--bgs-bg-rgb:22,15,10;--bgs-bg-radial:#241708;
+  --bgs-plate:#241A10;--bgs-plate-rgb:36,26,16;
+  --bgs-ivory:#F4EBDA;--bgs-ivory-rgb:244,235,218;
+  --bgs-ivory-70:rgba(244,235,218,0.72);--bgs-ivory-45:rgba(244,235,218,0.45);
+  --bgs-gold:#E3B04B;--bgs-gold-rgb:227,176,75;--bgs-gold-dim:rgba(227,176,75,0.62);
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:radial-gradient(ellipse at top,var(--bgs-bg-radial) 0%,var(--bgs-bg) 55%),var(--bgs-bg);color:var(--bgs-ivory);font-family:'Inter',sans-serif;min-height:100svh;-webkit-font-smoothing:antialiased}
+.bar{position:sticky;top:0;z-index:60;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;background:rgba(var(--bgs-bg-rgb),.92);border-bottom:1px solid rgba(var(--bgs-gold-rgb),.18);font-family:'IBM Plex Mono',monospace;font-size:12px;backdrop-filter:blur(8px)}
+.bar .lbl{color:var(--bgs-gold-dim)}
+.bar button{font:inherit;color:var(--bgs-ivory-70);background:transparent;border:1px solid rgba(var(--bgs-gold-rgb),.3);border-radius:999px;padding:5px 11px;cursor:pointer}
+.bar button[aria-pressed="true"]{color:var(--bgs-bg);background:var(--bgs-gold);border-color:var(--bgs-gold)}
+.opt{display:none}.opt.on{display:block}
+.wrap{max-width:520px;margin:0 auto;padding:36px 20px 80px}
+.mark{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;color:var(--bgs-gold);margin:0 0 22px}
+.steps{margin:0 0 26px}
+.steps .line{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-ivory-45);margin:0 0 8px}
+.steps .line b{font-weight:500;color:var(--bgs-ivory-70)}
+.steps .segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.steps .segs i{height:3px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.12)}
+.steps .segs i.done{background:rgba(var(--bgs-gold-rgb),.45)}.steps .segs i.now{background:var(--bgs-gold)}
+h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(32px,8vw,44px);line-height:1.05;letter-spacing:-.015em;margin:0 0 10px}
+.lede{font-size:16px;line-height:1.5;color:var(--bgs-ivory-70);margin:0 0 28px;max-width:36ch}
+label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 6px}
+.field{width:100%;min-height:52px;padding:0 16px;border-radius:12px;font:400 16px 'Inter',sans-serif;color:var(--bgs-ivory);background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14)}
+.field::placeholder{color:var(--bgs-ivory-45)}
+.help{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:10px 0 0}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:0 18px;border-radius:12px;font:600 16px/1 'Inter',sans-serif;cursor:pointer;border:1.5px solid rgba(var(--bgs-gold-rgb),.55);background:transparent;color:var(--bgs-gold)}
+.btn.ghost{color:var(--bgs-ivory-45);border-color:rgba(var(--bgs-ivory-rgb),.14);cursor:default}
+.btn.sm{min-height:44px;font-size:14px;width:auto;padding:0 16px}
+.act{margin-top:22px}
+.links{margin:36px 0 0;font-size:13px;color:var(--bgs-ivory-45);line-height:1.7}
+.links a{color:var(--bgs-gold-dim);text-decoration:none;border-bottom:1px solid rgba(var(--bgs-gold-rgb),.35)}
+.links .dot{margin:0 8px;opacity:.5}
+.mono{font-family:'IBM Plex Mono',monospace}
+.stack{position:relative;width:60px;height:54px;flex:none}
+.stack img{position:absolute;width:38px;height:38px;object-fit:cover;border-radius:4px;box-shadow:0 4px 10px rgba(0,0,0,.5)}
+.stack img:nth-child(1){left:0;top:14px;transform:rotate(-8deg)}
+.stack img:nth-child(2){left:11px;top:7px;transform:rotate(3deg)}
+.stack img:nth-child(3){left:22px;top:0;transform:rotate(11deg)}
+
+/* ---- A: inline list, no plate ---- */
+#a .picker{margin-top:28px;padding-top:22px;border-top:1px solid rgba(var(--bgs-gold-rgb),.18)}
+#a .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);margin:0 0 6px}
+#a .row{display:flex;align-items:center;gap:14px;padding:12px 0;text-decoration:none;color:inherit;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.08)}
+#a .row:last-child{border-bottom:0}
+#a .row b{display:block;font-weight:600;font-size:15px}
+#a .row span.m{font-size:13px;color:var(--bgs-ivory-45);white-space:nowrap}
+#a .row .chev{margin-left:auto;color:var(--bgs-gold-dim);font-size:18px}
+#a .note{font-size:12px;color:var(--bgs-ivory-45);margin:10px 0 0}
+
+/* ---- B: cover-strip tiles ---- */
+#b .picker{margin-top:28px}
+#b .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);margin:0 0 10px}
+#b .tiles{display:flex;gap:12px;overflow-x:auto;margin:0 -20px;padding:2px 20px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
+#b .tiles::-webkit-scrollbar{display:none}
+#b .tile{flex:0 0 min(78vw,300px);scroll-snap-align:start;border-radius:14px;overflow:hidden;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.22);text-decoration:none;color:inherit}
+#b .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--bgs-bg)}
+#b .strip img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+#b .meta{display:flex;align-items:center;gap:10px;padding:12px 14px}
+#b .meta b{display:block;font-size:15px;font-weight:600}
+#b .meta span{font-size:12px;color:var(--bgs-ivory-45)}
+#b .meta .go{margin-left:auto;font-size:13px;color:var(--bgs-gold);white-space:nowrap}
+#b .note{font-size:12px;color:var(--bgs-ivory-45);margin:6px 0 0}
+
+/* ---- C: bottom sheet ---- */
+#c .scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40}
+#c .sheet{position:fixed;left:0;right:0;bottom:0;z-index:45;max-width:560px;margin:0 auto;background:var(--bgs-plate);border-radius:20px 20px 0 0;border:1px solid rgba(var(--bgs-gold-rgb),.22);border-bottom:0;padding:10px 20px 32px;box-shadow:0 -20px 50px rgba(0,0,0,.6)}
+#c .grab{width:36px;height:4px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.2);margin:0 auto 16px}
+#c .sheet h2{font-family:'Fraunces',serif;font-weight:500;font-size:22px;margin:0 0 4px}
+#c .sheet p{font-size:14px;color:var(--bgs-ivory-45);margin:0 0 14px}
+#c .row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:rgba(var(--bgs-ivory-rgb),.04);border:1px solid rgba(var(--bgs-ivory-rgb),.1);text-decoration:none;color:inherit}
+#c .row b{display:block;font-weight:600;font-size:15px}
+#c .row span.m{font-size:13px;color:var(--bgs-ivory-45)}
+#c .row .chev{margin-left:auto;color:var(--bgs-gold-dim);font-size:18px}
+#c .close{margin-top:14px}
+</style>
+</head>
+<body>
+
+<div class="bar" role="toolbar" aria-label="Mockup options">
+  <span class="lbl">Option</span>
+  <button data-opt="a" aria-pressed="true">A · Inline list</button>
+  <button data-opt="b" aria-pressed="false">B · Cover tiles</button>
+  <button data-opt="c" aria-pressed="false">C · Bottom sheet</button>
+</div>
+
+<template id="page">
+  <p class="mark">BoardgameShelf</p>
+  <div class="steps"><div class="line"><b>Step 2 of 3</b><span>Your BGG name</span></div><div class="segs" aria-hidden="true"><i class="done"></i><i class="now"></i><i></i></div></div>
+  <h1>Connect your collection</h1>
+  <p class="lede">Your owned games come straight from BGG. Nothing to upload.</p>
+  <label>BoardGameGeek username</label>
+  <input class="field" placeholder="noknaruephon">
+  <p class="help">Same as your BGG login. Not your email.</p>
+  <div class="act"><button class="btn ghost" disabled>Continue</button></div>
+  <p class="links">Just looking? <a href="#">Browse an existing shelf</a><span class="dot">·</span><a href="#">Do this later</a></p>
+</template>
+
+<!-- A -->
+<section class="opt on" id="a"><div class="wrap">
+  <div data-page></div>
+  <div class="picker">
+    <p class="kicker">Shelves you can browse as a guest</p>
+    <a class="row" href="#"><span class="stack" aria-hidden="true"><img data-c="0" alt=""><img data-c="1" alt=""><img data-c="2" alt=""></span><span><b>Nok.Naruephon</b><span class="m">196 games · synced 20h ago</span></span><span class="chev" aria-hidden="true">›</span></a>
+    <p class="note">Your own shelf will be here once BGG lets us sync.</p>
+  </div>
+</div></section>
+
+<!-- B -->
+<section class="opt" id="b"><div class="wrap">
+  <div data-page></div>
+  <div class="picker">
+    <p class="kicker">Have a look around first</p>
+    <div class="tiles">
+      <a class="tile" href="#">
+        <div class="strip" aria-hidden="true"><img data-c="0" alt=""><img data-c="1" alt=""><img data-c="2" alt=""><img data-c="3" alt=""></div>
+        <div class="meta"><span><b>Nok.Naruephon</b><span>196 games · synced 20h ago</span></span><span class="go">Open as guest ›</span></div>
+      </a>
+    </div>
+    <p class="note">Guest view is read-only. Your own shelf appears here after sync.</p>
+  </div>
+</div></section>
+
+<!-- C -->
+<section class="opt" id="c"><div class="wrap">
+  <div data-page></div>
+  <div class="scrim" aria-hidden="true"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="c-h">
+    <div class="grab" aria-hidden="true"></div>
+    <h2 id="c-h">Browse as a guest</h2>
+    <p>Read-only. Come back any time to connect your own collection.</p>
+    <a class="row" href="#"><span class="stack" aria-hidden="true"><img data-c="0" alt=""><img data-c="1" alt=""><img data-c="2" alt=""></span><span><b>Nok.Naruephon</b><span class="m">196 games · synced 20h ago</span></span><span class="chev" aria-hidden="true">›</span></a>
+    <div class="close"><button class="btn ghost" style="color:var(--bgs-ivory-70);cursor:pointer">Not now</button></div>
+  </div>
+</div></section>
+
+<script>
+const covers=["https://cf.geekdo-images.com/Naw8y8J_s-8cvq1GoTON6w__original/img/8wVEVzdf5BoPvSiscnGvCAPNe2Q=/0x0/filters:format(jpeg)/pic7416519.jpg","https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg","https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg","https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg"];
+document.querySelectorAll('[data-page]').forEach(p=>p.replaceWith(document.getElementById('page').content.cloneNode(true)));
+document.querySelectorAll('[data-c]').forEach(im=>im.src=covers[+im.dataset.c]);
+const opts=document.querySelectorAll('.opt');
+document.querySelectorAll('.bar [data-opt]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.bar [data-opt]').forEach(x=>x.setAttribute('aria-pressed',x===b));opts.forEach(o=>o.classList.toggle('on',o.id===b.dataset.opt));window.scrollTo({top:0});}));
+</script>
+</body>
+</html>
