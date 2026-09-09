@@ -220,8 +220,9 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
     sel.picked = [];
     sel.headline = null;
     night = emptyNight();
-    when.date = ''; when.time = '';
+    when.decided = true; when.date = ''; when.time = '';
     dateInput.value = ''; timeInput.value = '';
+    syncWhenUI();
     undecorate();
     document.body.classList.remove('is-selecting');
     bar.hidden = true;
@@ -267,8 +268,14 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
         <button class="invite-retry" id="inviteRetry" type="button">Try again</button>
       </p>
       <div class="sheet-group invite-when">
-        <span class="filter-label" id="inviteWhenLabel">When</span>
-        <div class="invite-when__inputs" role="group" aria-labelledby="inviteWhenLabel">
+        <div class="invite-when__head">
+          <span class="filter-label" id="inviteWhenLabel">When</span>
+          <button type="button" class="toggle-row invite-when__toggle" id="inviteWhenToggle" role="switch" aria-checked="true" aria-controls="inviteWhenInputs">
+            <span class="toggle-switch" aria-hidden="true"></span>
+            <span class="toggle-label">Date decided</span>
+          </button>
+        </div>
+        <div class="invite-when__inputs" id="inviteWhenInputs" role="group" aria-labelledby="inviteWhenLabel">
           <input class="invite-input" id="inviteDate" type="date" aria-label="Date">
           <input class="invite-input" id="inviteTime" type="time" step="300" aria-label="Time">
         </div>
@@ -291,7 +298,10 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   const formatBtns = [...sheet.querySelectorAll('[data-format]')];
 
   let format = 'story';
-  const when = { date: '', time: '' }; // the picker's values; in memory only, like the picks
+  // The picker's values, in memory only like the picks. `decided` off hides
+  // the inputs and prints "Date TBC" for a host who doesn't know yet; the
+  // values wait underneath for when they do.
+  const when = { decided: true, date: '', time: '' };
   let sheetOpen = false;
   let sheetLastFocused = null;
   let currentCanvas = null;
@@ -310,6 +320,13 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
 
   const dateInput = sheet.querySelector('#inviteDate');
   const timeInput = sheet.querySelector('#inviteTime');
+  const whenToggle = sheet.querySelector('#inviteWhenToggle');
+  const whenInputs = sheet.querySelector('#inviteWhenInputs');
+  function syncWhenUI() {
+    whenToggle.setAttribute('aria-checked', String(when.decided));
+    whenInputs.hidden = !when.decided;
+  }
+  whenToggle.addEventListener('click', () => { when.decided = !when.decided; syncWhenUI(); renderPreview(); });
   dateInput.addEventListener('change', () => { when.date = dateInput.value; renderPreview(); });
   timeInput.addEventListener('change', () => { when.time = timeInput.value; renderPreview(); });
 
@@ -416,7 +433,7 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   async function renderPreview() {
     const seq = ++renderSeq;
     const { headline, rest } = posterInputs();
-    const dateLabel = formatWhen(when.date, when.time);
+    const dateLabel = when.decided ? formatWhen(when.date, when.time) : null;
     const canvas = await renderInvitePoster({
       format, headline, rest,
       night: { code: night.code, error: night.error, dateLabel },

@@ -54,7 +54,7 @@ Reuse the share-shelf bottom sheet. Differences:
 - Title: "Invite"
 - Format picker: Story (default) and Square only. No Portrait.
 - Preview: the poster canvas scaled to fit the sheet width. Re-render on format change and on any selection change if the sheet is open.
-- "When": a date and a time input under the format picker. The poster's date line reads "Sat 19 Sep, 7 pm" (minutes only when not :00, time optional), or "Date TBC" while empty. Re-render on change.
+- "When": a "Date decided" switch (on by default) with a date and a time input under the format picker; switching it off hides the inputs and prints "Date TBC", for a host who isn't sure yet. The poster's date line reads "Sat 19 Sep, 7 pm" (minutes only when not :00, time optional), or "Date TBC" while empty. Re-render on change.
 - Buttons: "Share" (Web Share API with the PNG file, falls back to download) and "Save PNG". Same code paths as the shelf share.
 - Filename: `game-night-{code}-{story|square}.png`
 
