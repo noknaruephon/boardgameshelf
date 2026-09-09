@@ -282,13 +282,15 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
         <button type="button" data-format="square" aria-pressed="false">Square</button>
       </div>
       <div class="invite-rows">
-        <button class="invite-row" id="inviteWhenRow" type="button">
-          ${icon('calendar')}
-          <span class="invite-row__lab"><b>When</b></span>
-          <span class="invite-row__val" id="inviteWhenVal"></span>
-          ${icon('chevron-right', 'invite-row__chev')}
-        </button>
-        <input class="invite-native" id="inviteWhenInput" type="datetime-local" step="300" tabindex="-1" aria-hidden="true">
+        <div class="invite-row-wrap">
+          <button class="invite-row" id="inviteWhenRow" type="button" tabindex="-1" aria-hidden="true">
+            ${icon('calendar')}
+            <span class="invite-row__lab"><b>When</b></span>
+            <span class="invite-row__val" id="inviteWhenVal"></span>
+            ${icon('chevron-right', 'invite-row__chev')}
+          </button>
+          <input class="invite-native" id="inviteWhenInput" type="datetime-local" step="300" aria-label="When">
+        </div>
         <button class="invite-row" id="inviteWhereRow" type="button" aria-expanded="false" aria-controls="inviteWhereEdit">
           ${icon('map-pin')}
           <span class="invite-row__lab"><b>Where</b></span>
@@ -352,10 +354,17 @@ export function setupInvite({ shelfEl, toolbarEl, getGames, getProfile, getViewe
   $('inviteShareBtn').addEventListener('click', share);
   $('inviteSaveBtn').addEventListener('click', savePng);
 
-  // When: the row opens the native date and time picker; the input itself is
-  // never shown. Clearing in the picker takes the line off the poster.
-  $('inviteWhenRow').addEventListener('click', () => {
-    try { whenInput.showPicker(); } catch { whenInput.focus(); whenInput.click(); }
+  // When: the native datetime input lies invisibly over the row, so a tap
+  // anywhere on the row is a tap on the input and the browser opens its own
+  // picker — no showPicker() needed, which iOS Safari refuses on a hidden
+  // input. Desktop browsers only open the calendar from the input's icon,
+  // so a mouse click asks for the picker explicitly. Clearing in the picker
+  // takes the line off the poster.
+  let whenPointer = 'touch';
+  whenInput.addEventListener('pointerdown', (e) => { whenPointer = e.pointerType || 'touch'; });
+  whenInput.addEventListener('click', () => {
+    if (whenPointer !== 'mouse') return;
+    try { whenInput.showPicker?.(); } catch {}
   });
   whenInput.addEventListener('change', () => {
     const m = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(whenInput.value || '');

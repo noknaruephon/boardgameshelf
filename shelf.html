@@ -1313,8 +1313,15 @@
     background:var(--c,var(--bgs-bg)) center/cover no-repeat;
   }
   .invite-thumbs i.h{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
-  /* Rendered but never seen: the row's tap opens its native picker. */
-  .invite-native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+  /* The native picker's input covers its row, invisible: the row is what you
+     see, the input is what you tap. Keyboard focus shows on the row. */
+  .invite-row-wrap{position:relative;}
+  .invite-native{
+    position:absolute;inset:0;width:100%;height:100%;
+    margin:0;padding:0;border:0;opacity:0;cursor:pointer;
+    -webkit-appearance:none;appearance:none;font-size:16px;
+  }
+  .invite-row-wrap:has(.invite-native:focus-visible) .invite-row{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
   .invite-edit{display:flex;gap:8px;padding:0 0 14px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);}
   .invite-edit[hidden]{display:none;}
