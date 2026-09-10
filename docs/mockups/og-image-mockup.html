@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — OG image mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Tokens — approximations. Replace with the production values from the live stylesheet. */
+  :root {
+    --bgs-bg: #16110d;
+    --bgs-plate: #241b15;
+    --bgs-plate-2: #2f2419;
+    --bgs-ivory: #f2e8d5;
+    --bgs-ivory-70: rgba(242, 232, 213, .7);
+    --bgs-ivory-45: rgba(242, 232, 213, .45);
+    --bgs-gold: #cfa957;
+    --bgs-gold-rgb: 207, 169, 87;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bgs-bg); color: var(--bgs-ivory); font-family: var(--font-body); }
+  body { padding: 28px clamp(16px, 4vw, 48px) 80px; }
+
+  /* ---------- mockup chrome ---------- */
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  header h1 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin: 0; letter-spacing: -.01em; }
+  header h1 span { color: var(--bgs-ivory-45); }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .seg { display: inline-flex; background: var(--bgs-plate); border-radius: 999px; padding: 4px; }
+  .seg button { appearance: none; border: 0; background: transparent; color: var(--bgs-ivory-70); font: 500 13px/1 var(--font-body); padding: 9px 14px; border-radius: 999px; cursor: pointer; }
+  .seg button:hover { color: var(--bgs-ivory); }
+  .seg button[aria-pressed="true"] { background: var(--bgs-plate-2); color: var(--bgs-ivory); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb), .55); }
+  .seg button:focus-visible { outline: 2px solid var(--bgs-gold); outline-offset: 2px; }
+  .file { position: relative; font: 500 13px/1 var(--font-body); color: var(--bgs-ivory-70); padding: 9px 14px; border-radius: 999px; background: var(--bgs-plate); cursor: pointer; }
+  .file:hover { color: var(--bgs-ivory); }
+  .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .file:focus-within { box-shadow: 0 0 0 2px var(--bgs-gold); }
+
+  .stage { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 1180px) { .stage { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; } }
+
+  .frame-wrap { position: relative; }
+  .frame-label { display: flex; justify-content: space-between; font: 400 12px/1.4 var(--font-mono); color: var(--bgs-ivory-45); margin-bottom: 8px; }
+  .frame { position: relative; width: 100%; aspect-ratio: 1200 / 630; overflow: hidden; background: var(--bgs-plate); box-shadow: 0 30px 80px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.06); }
+  /* Design at 1200×630 and scale the whole card with a CSS variable so type is honest. */
+  .og { position: absolute; top: 0; left: 0; width: 1200px; height: 630px; transform-origin: 0 0; transform: scale(var(--s, 1)); background: var(--bgs-bg); color: var(--bgs-ivory); overflow: hidden; }
+  .og[hidden] { display: none !important; }
+
+  /* ---------- shared OG elements ---------- */
+  .og .tile { position: relative; overflow: hidden; background: var(--bgs-plate-2); }
+  .og .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .og .name { font-family: var(--font-display); font-weight: 400; font-variation-settings: "opsz" 144, "SOFT" 30; letter-spacing: -.02em; line-height: 1; margin: 0; }
+  .og .count { font-family: var(--font-body); font-weight: 400; color: var(--bgs-ivory-70); margin: 0; }
+  .og .count b { color: var(--bgs-gold); font-weight: 600; }
+  .og .url { font-family: var(--font-mono); color: var(--bgs-ivory-45); margin: 0; }
+  .og .mark { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 500; font-size: 22px; letter-spacing: -.01em; color: var(--bgs-ivory); }
+  .og .mark i { width: 10px; height: 10px; border-radius: 2px; background: var(--bgs-gold); transform: rotate(45deg); }
+
+  /* ---------- A · Full-bleed mosaic ---------- */
+  .og.a .mosaic { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(4, 1fr); gap: 4px; }
+  .og.a .scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(22,17,13,0) 30%, rgba(22,17,13,.55) 62%, rgba(22,17,13,.96) 100%); }
+  .og.a .copy { position: absolute; left: 64px; right: 64px; bottom: 56px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+  .og.a .name { font-size: 84px; }
+  .og.a .count { font-size: 26px; margin-top: 14px; }
+  .og.a .url { font-size: 18px; margin-top: 12px; }
+
+  /* ---------- B · Split ---------- */
+  .og.b { display: flex; }
+  .og.b .mosaic { width: 660px; height: 630px; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 4px; }
+  .og.b .plate { flex: 1; padding: 56px 60px 52px; background: var(--bgs-plate); display: flex; flex-direction: column; justify-content: space-between; box-shadow: inset 6px 0 0 0 var(--bgs-gold); }
+  .og.b .name { font-size: 74px; }
+  .og.b .count { font-size: 24px; margin-top: 16px; }
+  .og.b .url { font-size: 17px; }
+
+  /* ---------- C · Fanned hand ---------- */
+  .og.c { display: flex; }
+  .og.c .copy { width: 560px; padding: 64px 0 60px 64px; display: flex; flex-direction: column; justify-content: space-between; }
+  .og.c .name { font-size: 92px; }
+  .og.c .count { font-size: 26px; margin-top: 18px; }
+  .og.c .url { font-size: 18px; }
+  .og.c .hand { position: relative; flex: 1; }
+  .og.c .hand .tile { position: absolute; width: 230px; height: 322px; left: 50%; top: 50%; margin: -161px 0 0 -115px; border-radius: 10px; box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 0 0 1px rgba(242,232,213,.12); transform-origin: 50% 150%; }
+  .og.c .hand .tile:nth-child(1) { transform: rotate(-22deg) translateY(-6px); }
+  .og.c .hand .tile:nth-child(2) { transform: rotate(-11deg) translateY(-16px); }
+  .og.c .hand .tile:nth-child(3) { transform: rotate(0deg) translateY(-22px); }
+  .og.c .hand .tile:nth-child(4) { transform: rotate(11deg) translateY(-16px); }
+  .og.c .hand .tile:nth-child(5) { transform: rotate(22deg) translateY(-6px); }
+  .og.c .glow { position: absolute; inset: 0; background: radial-gradient(60% 55% at 60% 62%, rgba(var(--bgs-gold-rgb), .16), transparent 70%); }
+
+  /* ---------- link-preview context ---------- */
+  .context h2 { font: 400 12px/1.4 var(--font-mono); color: var(--bgs-ivory-45); margin: 0 0 8px; }
+  .context p { font-size: 13px; line-height: 1.5; color: var(--bgs-ivory-70); margin: 14px 0 0; }
+  .card { background: #1a1d21; border-left: 4px solid #35373b; padding: 10px 12px 12px; border-radius: 4px; font-family: "Lato", var(--font-body); color: #d1d2d3; }
+  .card .src { font-size: 13px; font-weight: 700; color: #d1d2d3; margin-bottom: 2px; }
+  .card .ttl { font-size: 15px; font-weight: 700; color: #1d9bd1; margin-bottom: 2px; }
+  .card .dsc { font-size: 14px; color: #d1d2d3; margin-bottom: 8px; }
+  .card .img { width: 100%; aspect-ratio: 1200 / 630; overflow: hidden; border-radius: 6px; position: relative; }
+  .card .img .og { --s: 1; }
+
+  .notes { margin-top: 28px; max-width: 72ch; color: var(--bgs-ivory-70); font-size: 14px; line-height: 1.6; }
+  .notes h2 { font-family: var(--font-display); font-weight: 400; font-size: 18px; color: var(--bgs-ivory); margin: 0 0 8px; }
+  .notes ul { padding-left: 18px; margin: 0; }
+  .notes li + li { margin-top: 6px; }
+  .notes code { font-family: var(--font-mono); font-size: 13px; color: var(--bgs-ivory); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>OG image <span>/ 1200 × 630, shown when a shelf link is pasted</span></h1>
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Layout">
+      <button type="button" data-layout="a" aria-pressed="true">A · Full bleed</button>
+      <button type="button" data-layout="b" aria-pressed="false">B · Split</button>
+      <button type="button" data-layout="c" aria-pressed="false">C · Hand</button>
+    </div>
+    <label class="file">Load games.json<input type="file" accept="application/json,.json"></label>
+  </div>
+</header>
+
+<div class="stage">
+  <div class="frame-wrap">
+    <div class="frame-label"><span id="frame-name">A · Full bleed</span><span>1200 × 630 · shown at <span id="scale">100%</span></span></div>
+    <div class="frame" id="frame"></div>
+  </div>
+
+  <aside class="context">
+    <h2>At link-preview size</h2>
+    <div class="card">
+      <div class="src">BoardgameShelf</div>
+      <div class="ttl">Nok's shelf — 196 games</div>
+      <div class="dsc">A board game collection on BoardgameShelf.</div>
+      <div class="img" id="thumb"></div>
+    </div>
+    <p>Most people meet this image at roughly this size, inside a chat. Judge legibility here, not in the big frame.</p>
+  </aside>
+</div>
+
+<div class="notes">
+  <h2>Notes</h2>
+  <ul>
+    <li>Covers are generated placeholders until you load <code>games.json</code>. The loader reads <code>image</code>, <code>thumbnail</code> or <code>cover</code> and <code>name</code> from each entry.</li>
+    <li>Tokens at the top of this file are approximations; swap in the production values before the spec.</li>
+    <li>The production route (<code>/api/og/[username]</code>, <code>@vercel/og</code>) is flexbox only. A and B translate directly; C's rotated cards use plain <code>transform</code>, which Satori supports.</li>
+  </ul>
+</div>
+
+<template id="tpl">
+  <!-- A -->
+  <div class="og a">
+    <div class="mosaic" data-tiles="32"></div>
+    <div class="scrim"></div>
+    <div class="copy">
+      <div>
+        <h2 class="name" data-name></h2>
+        <p class="count"><b data-count></b> games on the shelf</p>
+        <p class="url" data-url></p>
+      </div>
+    </div>
+  </div>
+  <!-- B -->
+  <div class="og b" hidden>
+    <div class="mosaic" data-tiles="16"></div>
+    <div class="plate">
+      <span class="mark"><i></i>BoardgameShelf</span>
+      <div>
+        <h2 class="name" data-name></h2>
+        <p class="count"><b data-count></b> games on the shelf</p>
+      </div>
+      <p class="url" data-url></p>
+    </div>
+  </div>
+  <!-- C -->
+  <div class="og c" hidden>
+    <div class="copy">
+      <span class="mark"><i></i>BoardgameShelf</span>
+      <div>
+        <h2 class="name" data-name></h2>
+        <p class="count"><b data-count></b> games on the shelf</p>
+      </div>
+      <p class="url" data-url></p>
+    </div>
+    <div class="hand">
+      <div class="glow"></div>
+      <div class="tiles" data-tiles="5"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+  const SHELF = { name: "Nok's shelf", count: 196, url: "boardgameshelf.vercel.app/u/noknaruephon" };
+
+  // Placeholder set — replaced by games.json when loaded.
+  const NAMES = ["Brass: Birmingham","Wingspan","Azul","Cascadia","Spirit Island","Ark Nova","Root","Terraforming Mars","Everdell","Dune: Imperium","The Crew","Concordia","Lost Ruins of Arnak","Pandemic Legacy","Gloomhaven","Codenames","7 Wonders Duel","Scythe","Great Western Trail","Viticulture","Patchwork","Splendor","Ticket to Ride","Carcassonne","Catan","Dominion","Heat","Sea Salt & Paper","Cascadia","Agricola","Twilight Imperium","Nemesis","Frosthaven","Obsession","Earth","Sky Team","Jaipur","Faraway","Voidfall","Kanban EV"];
+  const PALETTES = [["#5a2d1a","#a24a2c"],["#1c3a4a","#3b7a8c"],["#2c3d2a","#5c8a4a"],["#3d2c4d","#7a5a9c"],["#4a3a1a","#9c7a2a"],["#1e2a3a","#4a6a8a"],["#4d2a2a","#8c4a4a"],["#2a3a3a","#4a7a7a"]];
+
+  function lines(name) {
+    const words = name.split(" "), out = []; let cur = "";
+    words.forEach(w => { if ((cur + " " + w).trim().length > 13) { out.push(cur.trim()); cur = w; } else cur += " " + w; });
+    out.push(cur.trim());
+    return out.slice(0, 4).map((l, i) => `<text x="36" y="${280 + i * 36}" font-family="Fraunces,Georgia,serif" font-size="32" fill="#f2e8d5" letter-spacing="-0.5">${l.replace(/&/g,"&amp;")}</text>`).join("");
+  }
+
+  function placeholder(name, i) {
+    const [c1, c2] = PALETTES[i % PALETTES.length];
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="300" height="420" fill="url(#g)"/><circle cx="${60 + (i*37)%180}" cy="${90 + (i*53)%200}" r="${70 + (i*13)%60}" fill="rgba(255,255,255,.08)"/><rect x="24" y="24" width="252" height="372" fill="none" stroke="rgba(242,232,213,.35)" stroke-width="2"/>${lines(name)}</svg>`;
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  let games = NAMES.map((name, i) => ({ name, src: placeholder(name, i) }));
+
+  function pick(n) {
+    // deterministic spread across the collection so the mosaic isn't just the first N alphabetically
+    const step = Math.max(1, Math.floor(games.length / n));
+    const out = [];
+    for (let i = 0; i < n; i++) out.push(games[(i * step) % games.length]);
+    return out;
+  }
+
+  function build(root) {
+    root.querySelectorAll("[data-tiles]").forEach(el => {
+      const n = +el.dataset.tiles;
+      el.innerHTML = "";
+      pick(n).forEach(g => {
+        const t = document.createElement("div");
+        t.className = "tile";
+        const img = document.createElement("img");
+        img.src = g.src; img.alt = ""; img.loading = "eager";
+        t.appendChild(img); el.appendChild(t);
+      });
+    });
+    root.querySelectorAll("[data-name]").forEach(el => el.textContent = SHELF.name);
+    root.querySelectorAll("[data-count]").forEach(el => el.textContent = SHELF.count);
+    root.querySelectorAll("[data-url]").forEach(el => el.textContent = SHELF.url);
+  }
+
+  const frame = document.getElementById("frame");
+  const thumb = document.getElementById("thumb");
+  const tpl = document.getElementById("tpl");
+  let layout = "a";
+
+  function render() {
+    [frame, thumb].forEach(host => {
+      host.innerHTML = "";
+      const clone = tpl.content.cloneNode(true);
+      clone.querySelectorAll(".og").forEach(og => { og.hidden = !og.classList.contains(layout); });
+      host.appendChild(clone);
+      build(host);
+    });
+    fit();
+  }
+
+  function fit() {
+    const s = frame.clientWidth / 1200;
+    frame.querySelectorAll(".og").forEach(og => og.style.setProperty("--s", s));
+    document.getElementById("scale").textContent = Math.round(s * 100) + "%";
+    const ts = thumb.clientWidth / 1200;
+    thumb.querySelectorAll(".og").forEach(og => og.style.setProperty("--s", ts));
+  }
+
+  document.querySelectorAll("[data-layout]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      layout = btn.dataset.layout;
+      document.querySelectorAll("[data-layout]").forEach(b => b.setAttribute("aria-pressed", b === btn));
+      document.getElementById("frame-name").textContent = btn.textContent;
+      render();
+    });
+  });
+
+  document.querySelector(".file input").addEventListener("change", async e => {
+    const file = e.target.files[0]; if (!file) return;
+    try {
+      const json = JSON.parse(await file.text());
+      const list = Array.isArray(json) ? json : (json.games || json.items || []);
+      const next = list.map(g => ({ name: g.name || g.title || "", src: g.image || g.thumbnail || g.cover || g.image_url })).filter(g => g.src);
+      if (!next.length) throw new Error("No image fields found");
+      games = next;
+      SHELF.count = list.length;
+      render();
+    } catch (err) {
+      alert("Couldn't read that file: " + err.message);
+    }
+  });
+
+  window.addEventListener("resize", fit);
+  document.fonts?.ready.then(render);
+  render();
+</script>
+</body>
+</html>
