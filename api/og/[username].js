@@ -33,19 +33,29 @@ const T = {
   goldGlow: 'rgba(227,176,75,0.16)',
 };
 
-// Each asset URL is a string literal so the Edge bundler can pick it up as a
-// bundled file — a computed path would not be resolved at build time.
-const ASSETS = {
-  games: new URL('../../games.json', import.meta.url),
-  frauncesRegular: new URL('../../assets/fonts/Fraunces-Regular.ttf', import.meta.url),
-  frauncesMedium: new URL('../../assets/fonts/Fraunces-Medium.ttf', import.meta.url),
-  interRegular: new URL('../../assets/fonts/Inter-Regular.ttf', import.meta.url),
-  interSemiBold: new URL('../../assets/fonts/Inter-SemiBold.ttf', import.meta.url),
-  plexMonoRegular: new URL('../../assets/fonts/IBMPlexMono-Regular.ttf', import.meta.url),
+// games.json and the fonts are static files on this same deployment, so the
+// route fetches them from its own origin at request time instead of bundling
+// them into the function. Vercel traces every file an Edge function imports
+// or references and counts it toward the function size limit; the 445 KB
+// games.json plus five fonts on top of @vercel/og's wasm pushed the function
+// over that limit, which failed the build. Self-origin fetches are served
+// from the edge cache and cost a few milliseconds.
+const STATIC = {
+  games: '/games.json',
+  frauncesRegular: '/assets/fonts/Fraunces-Regular.ttf',
+  frauncesMedium: '/assets/fonts/Fraunces-Medium.ttf',
+  interRegular: '/assets/fonts/Inter-Regular.ttf',
+  interSemiBold: '/assets/fonts/Inter-SemiBold.ttf',
+  plexMonoRegular: '/assets/fonts/IBMPlexMono-Regular.ttf',
 };
 
-const loadBinary = (url) => fetch(url).then((r) => r.arrayBuffer());
-const loadJson = (url) => fetch(url).then((r) => r.json());
+async function loadStatic(origin, path) {
+  const res = await fetch(new URL(path, origin));
+  if (!res.ok) throw new Error(`Static asset ${path} returned ${res.status}`);
+  return res;
+}
+const loadBinary = (origin, path) => loadStatic(origin, path).then((r) => r.arrayBuffer());
+const loadJson = (origin, path) => loadStatic(origin, path).then((r) => r.json());
 
 // Satori accepts plain element objects, so no React (and no JSX transform)
 // is needed. Nested arrays of children are flattened, null/false are dropped,
@@ -228,17 +238,19 @@ export function Card({ shelf, count, covers }) {
 }
 
 export default async function handler(req) {
-  const username = decodeURIComponent(new URL(req.url).pathname.split('/').pop() || '');
+  const url = new URL(req.url);
+  const username = decodeURIComponent(url.pathname.split('/').pop() || '');
   const shelf = SHELVES[username];
   if (!shelf) return new Response('Not found', { status: 404 });
 
+  const origin = url.origin;
   const [games, fraunces, frauncesMed, inter, interSemi, mono] = await Promise.all([
-    loadJson(ASSETS.games),
-    loadBinary(ASSETS.frauncesRegular),
-    loadBinary(ASSETS.frauncesMedium),
-    loadBinary(ASSETS.interRegular),
-    loadBinary(ASSETS.interSemiBold),
-    loadBinary(ASSETS.plexMonoRegular),
+    loadJson(origin, STATIC.games),
+    loadBinary(origin, STATIC.frauncesRegular),
+    loadBinary(origin, STATIC.frauncesMedium),
+    loadBinary(origin, STATIC.interRegular),
+    loadBinary(origin, STATIC.interSemiBold),
+    loadBinary(origin, STATIC.plexMonoRegular),
   ]);
 
   const picked = pickCovers(games, COVER_COUNT);
