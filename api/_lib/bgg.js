@@ -42,7 +42,9 @@ export async function bggFetch(path, params) {
   }
   if (res.status >= 500) throw new HttpError(502, BGG_DOWN, { bgg: res.status });
   if (res.status === 401 || res.status === 403) {
-    throw new HttpError(502, 'BGG refused the request. If BGG now requires an API token, set BGG_API_TOKEN on the server.', { bgg: res.status });
+    // The token hint is for whoever runs the server, not the person syncing.
+    console.error(`BGG answered ${res.status}. If BGG now requires an API token, set BGG_API_TOKEN on the server.`);
+    throw new HttpError(502, 'BGG refused the request. Try again in a minute.', { bgg: res.status });
   }
   if (!res.ok) throw new HttpError(502, `BGG answered ${res.status}.`, { bgg: res.status });
 

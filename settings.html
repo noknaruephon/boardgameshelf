@@ -60,7 +60,7 @@
     font-family:var(--serif);font-weight:500;font-size:17px;
     color:var(--bgs-ivory-70);margin:0 0 4px;
   }
-  .linkplate + .row{margin-top:6px;}
+  .qrplate + .row{margin-top:6px;}
 
   .row{
     display:flex;align-items:center;gap:12px;
@@ -87,6 +87,19 @@
   .row:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);border-radius:8px;}
   .row[aria-disabled="true"]{opacity:.6;cursor:default;}
 
+  /* ---- share mode: Link | QR on the heading row ---- */
+  .h2row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .mode{display:flex;padding:3px;border-radius:999px;background:var(--bgs-plate);}
+  .mode button{
+    display:inline-flex;align-items:center;gap:5px;
+    height:28px;padding:0 10px;border-radius:999px;
+    font-size:12.5px;font-weight:500;color:var(--bgs-ivory-70);
+    transition:background .15s var(--ease),color .15s var(--ease);
+  }
+  .mode button svg{width:14px;height:14px;flex:none;}
+  .mode button[aria-selected="true"]{background:var(--bgs-bg);color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line-gold);}
+  .mode button:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+
   /* ---- shelf link plate ---- */
   .linkplate{
     display:flex;align-items:center;gap:10px;
@@ -94,16 +107,43 @@
     background:var(--bgs-plate);
     box-shadow:inset 0 0 0 1px var(--line-gold);   /* gold ring rule: inset box-shadow, never outline */
   }
-  .linkplate .url{
-    flex:1;min-width:0;font-family:var(--mono);font-size:14px;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  /* The slug is the part that matters, so the prefix is what gets cut:
+     the host runs right-to-left so its ellipsis lands on the left. The
+     <bdi> inside keeps the text itself left-to-right — without it the bidi
+     algorithm moves the trailing "/u/" to the far left and it is the first
+     thing cut. */
+  .linkplate .url{display:flex;min-width:0;flex:1;font-family:var(--mono);font-size:14px;}
+  .linkplate .url em{
+    flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    direction:rtl;text-align:left;
+    font-style:normal;color:var(--bgs-ivory-45);
   }
-  .linkplate .url em{font-style:normal;color:var(--bgs-ivory-45);}
+  .linkplate .url b{flex:none;font-weight:500;color:var(--bgs-ivory);}
+  /* A slug wider than the plate on its own (BGG allows 64 chars) gives way
+     at its end rather than running under Copy; the prefix is already gone. */
+  .linkplate .url b{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .linkplate .copy{
     color:var(--bgs-gold);font-weight:600;font-size:14px;flex:none;
     min-height:44px;margin:-10px -6px;padding:0 6px;border-radius:8px;
   }
   .linkplate .copy:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+
+  /* ---- QR ticket: ivory with walnut modules, never inverted — light-on-dark
+     codes fail on a lot of camera apps. 14px inside the ticket is the quiet
+     zone scanners need. ---- */
+  .qrplate{
+    margin-top:10px;padding:20px 16px 16px;border-radius:18px;
+    background:var(--bgs-plate);box-shadow:inset 0 0 0 1px var(--line-gold);
+    display:flex;flex-direction:column;align-items:center;
+  }
+  /* both panels set display:flex, which would override the hidden attribute */
+  .linkplate[hidden],.qrplate[hidden]{display:none;}
+  .ticket{width:220px;height:220px;padding:14px;border-radius:14px;background:var(--bgs-ivory);}
+  /* The page's icon rule strokes every svg in currentColor; a 1.75-unit
+     ivory stroke on 1-unit modules would paint the code out. Fill only. */
+  .ticket svg{display:block;width:100%;height:100%;fill:var(--bgs-bg);stroke:none;}
+  .ticket.is-private svg{opacity:.35;}
+  .qrhint{margin-top:12px;font-size:13px;color:var(--bgs-ivory-45);text-align:center;}
 
   /* ---- sync state pill ---- */
   .pill{
@@ -218,11 +258,22 @@
 
   <div id="settings" hidden>
     <section class="set-group" aria-labelledby="g-shelf">
-      <h2 id="g-shelf">Your shelf</h2>
+      <div class="h2row">
+        <h2 id="g-shelf">Your shelf</h2>
+        <div class="mode" id="shareMode" role="tablist" aria-label="Share as">
+          <button type="button" role="tab" id="tab-link" aria-selected="true" aria-controls="share-link" data-mode="link" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a3.5 3.5 0 0 0 5 0l4-4a3.5 3.5 0 0 0-5-5l-.5.5"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-4 4a3.5 3.5 0 0 0 5 5l.5-.5"/></svg>Link</button>
+          <button type="button" role="tab" id="tab-qr" aria-selected="false" aria-controls="share-qr" data-mode="qr" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h3v3M20 14v3M14 20h3M20 20h0"/></svg>QR</button>
+        </div>
+      </div>
 
-      <div class="linkplate">
-        <span class="url" id="shelfUrl"><em></em><span id="shelfSlug"></span></span>
+      <div class="linkplate" id="share-link" role="tabpanel" aria-labelledby="tab-link">
+        <span class="url" id="shelfUrl"><em><bdi id="shelfHost"></bdi></em><b id="shelfSlug"></b></span>
         <button type="button" class="copy" id="copyLink" data-copy="">Copy</button>
+      </div>
+
+      <div class="qrplate" id="share-qr" role="tabpanel" aria-labelledby="tab-qr" hidden>
+        <div class="ticket" id="share-qr-code" role="img" aria-label="QR code for your shelf"></div>
+        <div class="qrhint" id="qrHint">Point a camera at it</div>
       </div>
 
       <div class="row">
@@ -299,6 +350,7 @@
   <p class="empty" id="signedOut" hidden>You're signed out. <a href="/">Sign in</a> to manage a shelf.</p>
 </div>
 
+<script src="/vendor/qrcode.min.js"></script>
 <script type="module">
 import {
   getUser, getAccessToken, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
@@ -368,9 +420,10 @@ function renderSettings() {
   $('who').className = 'set-who';
   $('backLink').href = `/u/${profile.slug}`;
   show('backLink', true);
-  $('shelfUrl').querySelector('em').textContent = `${location.host}/u/`;
+  $('shelfHost').textContent = `${location.host}/u/`;
   $('shelfSlug').textContent = profile.slug;
   $('copyLink').dataset.copy = url;
+  renderQr(url);
   $('delSlug').textContent = `/u/${profile.slug}`;
 
   const hasUsername = Boolean(profile.bgg_username);
@@ -387,6 +440,71 @@ function renderSettings() {
   renderCollection();
   renderPill();
   show('settings', true);
+}
+
+// ---- share mode: Link | QR ----
+// The QR is drawn once per URL and cached; a username change gives a new
+// slug, so a new URL, so it is drawn again. Nothing else redraws it.
+const SHARE_MODE_KEY = 'bgs.shareMode';
+const QR_HINT = 'Point a camera at it';
+const QR_PRIVATE_HINT = 'Your shelf is private — scanning leads to a locked page.';
+let qrCache = { url: '', svg: '' };
+
+function buildQrSvg(url) {
+  const qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  const n = qr.getModuleCount();
+  let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg"><path d="${d}"/></svg>`;
+}
+
+function renderQr(url) {
+  const ticket = $('share-qr-code');
+  ticket.setAttribute('aria-label', `QR code for ${location.host}/u/${profile.slug}`);
+  ticket.classList.toggle('is-private', !profile.is_public);
+  $('qrHint').textContent = profile.is_public ? QR_HINT : QR_PRIVATE_HINT;
+  if (qrCache.url === url) return;
+  qrCache = { url, svg: '' };
+  if (typeof qrcode !== 'function') {
+    // vendor/qrcode.min.js did not load; the link panel still works.
+    ticket.innerHTML = '';
+    $('qrHint').textContent = 'Couldn’t draw the code. Copy the link instead.';
+    return;
+  }
+  qrCache.svg = buildQrSvg(url);
+  ticket.innerHTML = qrCache.svg;
+}
+
+const modeTabs = [...$('shareMode').querySelectorAll('[role="tab"]')];
+function setShareMode(mode, { focus = false } = {}) {
+  for (const tab of modeTabs) {
+    const on = tab.dataset.mode === mode;
+    tab.setAttribute('aria-selected', String(on));
+    tab.tabIndex = on ? 0 : -1;
+    $(tab.getAttribute('aria-controls')).hidden = !on;
+    if (on && focus) tab.focus();
+  }
+  try { localStorage.setItem(SHARE_MODE_KEY, mode); } catch { /* private mode, no storage */ }
+}
+for (const tab of modeTabs) tab.addEventListener('click', () => setShareMode(tab.dataset.mode));
+$('shareMode').addEventListener('keydown', (e) => {
+  const i = modeTabs.indexOf(document.activeElement);
+  if (i < 0) return;
+  let next = -1;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % modeTabs.length;
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + modeTabs.length) % modeTabs.length;
+  else if (e.key === 'Home') next = 0;
+  else if (e.key === 'End') next = modeTabs.length - 1;
+  if (next < 0) return;
+  e.preventDefault();
+  setShareMode(modeTabs[next].dataset.mode, { focus: true });
+});
+function restoreShareMode() {
+  let saved = null;
+  try { saved = localStorage.getItem(SHARE_MODE_KEY); } catch { /* no storage */ }
+  if (saved === 'qr') setShareMode('qr');
 }
 
 // ---- shelf link ----
@@ -627,6 +745,7 @@ try {
     profile = await fetchMyProfile();
     if (profile) {
       renderSettings();
+      restoreShareMode();
       updateBrowseOffer();
     } else {
       // No BGG account connected yet: onboarding lives at /welcome.
