@@ -1467,7 +1467,7 @@
 
   <div class="chips-row" id="chipsRow" hidden></div>
 
-  <p class="shelf-count" id="shelf-count">Loading the shelf…</p>
+  <p class="shelf-count" id="shelf-count" aria-live="polite">Loading the shelf…</p>
   <div class="shelf" id="shelf">
     <div class="game-card game-card-skeleton"><div class="art"></div><div class="plate-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
     <div class="game-card game-card-skeleton"><div class="art"></div><div class="plate-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
@@ -2837,6 +2837,9 @@ async function initBag(){
     rerender: () => render(),
     headerEl: document.querySelector('header'),
     gridEl: document.getElementById('shelf'),
+    // An active bag has no card of its own: it becomes the subject of the
+    // count line the shelf already writes.
+    countEl: document.getElementById('shelf-count'),
     // Packing borrows game night's entrance: the same gold wave, out from
     // whichever control opened it.
     runWave: runSelectionWave,

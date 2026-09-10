@@ -70,39 +70,76 @@ body.gn-selecting .bag-header-actions{display:none;}
   color:var(--bgs-ivory-45);
 }
 .bag-btn--quiet:hover{border-color:transparent;color:var(--bgs-ivory);}
-.bag-btn--small{padding:7px 13px;font-size:12.5px;}
 .bag-btn:focus-visible,
 .bag-pack-btn:focus-visible,
 .bag-add:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
-/* ---- active bag chip (packed) ---- */
+/* ---- active bag: the shelf's count line ---- */
 
-.bag-chip{
+/* An active bag is not a card of its own. The line that already says how much
+   of the shelf is showing takes the bag as its subject: "◆ Bali, October ·
+   5 of 196 on the shelf", with Edit and Unpack as text at the end of it.
+   Two classes deep so it wins over .shelf-count whatever order the sheets
+   load in — this file is appended to the head at runtime. */
+.shelf-count.shelf-count--bag{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  color:var(--bgs-ivory-70);
+}
+.shelf-count__bag{
   display:inline-flex;
   align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin:16px 0 0;
-  padding:9px 9px 9px 16px;
-  border-radius:999px;
-  background:var(--bgs-plate);
-  /* 1px gold ring, inset — the pill has no border box to paint on. */
-  box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.5);
-  max-width:100%;
-}
-.bag-chip[hidden]{display:none;}
-.bag-chip__name{
+  gap:7px;
   font-family:'Fraunces',serif;
-  font-weight:600;
-  font-size:16px;
+  font-weight:500;
+  font-size:15px;
   color:var(--bgs-ivory);
+  /* The name is the one part that can outgrow a phone: it wraps as a whole
+     rather than breaking mid-word. */
+  min-width:0;
+  overflow-wrap:break-word;
 }
-.bag-chip__meta{
+/* The wordmark's diamond, at the size of a bullet. */
+.shelf-count__diamond{
+  flex:none;
+  width:7px;
+  height:7px;
+  border-radius:1.5px;
+  background:var(--bgs-gold);
+  transform:rotate(45deg);
+}
+.shelf-count__sep{color:var(--bgs-ivory-45);}
+.shelf-count__acts{
+  margin-left:auto;
+  display:inline-flex;
+  gap:2px;
+}
+.shelf-count__act{
+  position:relative;
+  background:none;
+  border:0;
+  padding:4px 6px;
   font-family:'IBM Plex Mono',monospace;
   font-size:12px;
-  color:var(--bgs-ivory-70);
-  font-variant-numeric:tabular-nums;
+  color:var(--bgs-gold);
+  cursor:pointer;
 }
+/* The text stays small; the thing a thumb has to hit does not. */
+.shelf-count__act::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  height:32px;
+}
+.shelf-count__act--quiet{color:var(--bgs-ivory-45);}
+.shelf-count__act--quiet:hover,
+.shelf-count__act--quiet:focus-visible{color:var(--bgs-ivory);}
+.shelf-count__act:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
 /* ---- packing hint ---- */
 
@@ -283,19 +320,10 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
 }
 
 @media (max-width:560px){
-  /* A pill that has to wrap stops reading as a pill: on a phone the chip
-     becomes a plate, with the name, the coverage and the two actions each on
-     their own line. */
-  .bag-chip{
-    display:flex;
-    width:100%;
-    border-radius:14px;
-    padding:12px 14px;
-    gap:10px;
-  }
-  .bag-chip__name,
-  .bag-chip__meta{flex:0 0 100%;}
-  .bag-chip .bag-btn{flex:1;}
+  /* Narrow enough that the name and the count fill the line: the actions take
+     the next one, still ranged right. */
+  .shelf-count.shelf-count--bag{gap:4px 6px;}
+  .shelf-count__acts{margin-left:auto;}
 
   /* Three columns on a phone leave no room for both halves of the mono line:
      the playtime stays there, and the player count goes back to the card's own

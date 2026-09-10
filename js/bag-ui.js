@@ -79,11 +79,13 @@ function el(html) {
  * @param {() => void} opts.rerender the shelf's render()
  * @param {HTMLElement} opts.headerEl the page header, where the entry point goes
  * @param {HTMLElement} opts.gridEl the shelf grid
+ * @param {HTMLElement} opts.countEl the "N of 196 on the shelf" line, which an
+ *   active bag becomes the subject of
  * @param {(origin: HTMLElement) => void} [opts.runWave] the shelf's selection
  *   entrance — the gold wave out from the control that was tapped
  * @param {() => void} [opts.stopWave] cancels it when packing ends early
  */
-export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWave }) {
+export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfCountEl, runWave, stopWave }) {
   enableScope(true);
   loadStyles();
 
@@ -99,18 +101,6 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWa
   const actions = el('<div class="bag-header-actions"></div>');
   actions.appendChild(packBtn);
   headerEl.appendChild(actions);
-
-  const chip = el(`
-    <div class="bag-chip" hidden>
-      <b class="bag-chip__name"></b>
-      <span class="bag-chip__meta"></span>
-      <button class="bag-btn bag-btn--small" type="button" data-bag-edit>Edit</button>
-      <button class="bag-btn bag-btn--small bag-btn--quiet" type="button" data-bag-unpack>Unpack</button>
-    </div>
-  `);
-  headerEl.after(chip);
-  const chipName = chip.querySelector('.bag-chip__name');
-  const chipMeta = chip.querySelector('.bag-chip__meta');
 
   const hint = el('<p class="bag-hint" hidden>Tap covers to pack them. <b>The bar shows who the bag covers, and for how long.</b></p>');
   gridEl.before(hint);
@@ -169,18 +159,12 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWa
     return getGames().filter(g => draft.has(gameId(g)));
   }
 
-  function bagGames(bag) {
-    const ids = new Set(bag.game_ids);
-    return getGames().filter(g => ids.has(gameId(g)));
-  }
-
   const SUPPORTS_INERT = 'inert' in HTMLElement.prototype;
 
   function applyMode() {
     document.body.dataset.bagState = mode;
     packBtn.hidden = mode !== 'browse';
     hint.hidden = mode !== 'packing';
-    chip.hidden = mode !== 'packed';
     const packing = mode === 'packing';
     // The shelf's own selection mode: the card ring, the checkbox, the ⓘ and
     // the dimmed unpicked covers are game night's, and packing wears them
@@ -217,17 +201,40 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWa
       : 'Pack';
   }
 
-  function updateChip() {
-    const bag = activeBag();
+  // The active bag is not a card of its own: it becomes the subject of the
+  // line the shelf already writes. render() rewrites that line's text on every
+  // pass, so this runs after it and rebuilds the parts around what it wrote.
+  function decorateCount() {
+    if (!shelfCountEl) return;
+    const bag = mode === 'packed' ? activeBag() : null;
+    shelfCountEl.classList.toggle('shelf-count--bag', !!bag);
     if (!bag) return;
-    const games = bagGames(bag);
-    const cover = coverage(games);
-    chipName.textContent = bag.name;
-    const parts = [`${games.length} game${games.length === 1 ? '' : 's'}`];
-    const players = coveredPlayersLabel(cover.cells);
-    if (players) parts.push(players);
-    if (cover.minTime !== null) parts.push(timeLabel(cover.minTime, cover.maxTime));
-    chipMeta.textContent = parts.join(' · ');
+
+    const counted = shelfCountEl.textContent;      // "5 of 196 on the shelf"
+    shelfCountEl.textContent = '';
+
+    const name = el('<span class="shelf-count__bag"><i class="shelf-count__diamond" aria-hidden="true"></i></span>');
+    name.append(bag.name || 'Bag');
+    const sep = el('<span class="shelf-count__sep" aria-hidden="true">·</span>');
+    const rest = el('<span class="shelf-count__n"></span>');
+    rest.textContent = counted;
+    const acts = el('<span class="shelf-count__acts"><button type="button" class="shelf-count__act" data-bag-edit>Edit</button> <button type="button" class="shelf-count__act shelf-count__act--quiet" data-bag-unpack>Unpack</button></span>');
+    acts.querySelector('[data-bag-edit]').addEventListener('click', (ev) => {
+      const active = activeBag();
+      if (active) enterPacking(active.id, ev.currentTarget);
+    });
+    acts.querySelector('[data-bag-unpack]').addEventListener('click', unpack);
+
+    // The spaces are text nodes between flex items, so they add nothing to the
+    // layout — the gap does that — but they keep the line one readable
+    // sentence for a screen reader, which skips the aria-hidden separator.
+    shelfCountEl.append(name, ' ', sep, ' ', rest, ' ', acts);
+  }
+
+  // The Edit button is rebuilt with the line on every render, so callers that
+  // want to hand focus back to it ask for the current one.
+  function countEditBtn() {
+    return shelfCountEl?.querySelector('[data-bag-edit]') || null;
   }
 
   function enterPacking(bagId, origin) {
@@ -266,7 +273,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWa
     suspendScope(false);
     applyMode();
     rerender();
-    chip.querySelector('[data-bag-edit]').focus({ preventScroll: true });
+    countEditBtn()?.focus({ preventScroll: true });
   }
 
   function cancel() {
@@ -278,7 +285,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWa
     mode = wasEditing && activeBag() ? 'packed' : 'browse';
     applyMode();
     rerender();
-    const back = mode === 'packed' ? chip.querySelector('[data-bag-edit]') : packBtn;
+    const back = (mode === 'packed' ? countEditBtn() : packBtn) || packBtn;
     back.focus({ preventScroll: true });
   }
 
@@ -295,11 +302,6 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWa
   // ---- wiring ----
 
   packBtn.addEventListener('click', () => enterPacking(null, packBtn));
-  chip.querySelector('[data-bag-edit]').addEventListener('click', (ev) => {
-    const bag = activeBag();
-    if (bag) enterPacking(bag.id, ev.currentTarget);
-  });
-  chip.querySelector('[data-bag-unpack]').addEventListener('click', unpack);
   cancelBtn.addEventListener('click', cancel);
   commitBtn.addEventListener('click', commit);
   applyMode();
@@ -363,8 +365,8 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWa
 
     /** Called at the end of every render(), after the grid is rebuilt. */
     afterRender() {
+      decorateCount();
       if (mode !== 'packed') return;
-      updateChip();
       const add = el('<button class="bag-add" type="button" aria-label="Add more games to this bag">+ Add more</button>');
       add.addEventListener('click', (ev) => {
         const bag = activeBag();
