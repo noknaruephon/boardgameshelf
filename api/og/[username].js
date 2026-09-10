@@ -269,7 +269,7 @@ export default async function handler(req) {
       { name: 'IBM Plex Mono', data: mono, weight: 400, style: 'normal' },
     ],
     headers: {
-      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=604800',
+      'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800',
     },
   });
 }
