@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — Bag chip revision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bgs-bg: #16110d;
+    --bgs-plate: #241b15;
+    --bgs-plate-2: #2f2419;
+    --bgs-ivory: #f2e8d5;
+    --bgs-ivory-70: rgba(242,232,213,.7);
+    --bgs-ivory-45: rgba(242,232,213,.45);
+    --bgs-ivory-12: rgba(242,232,213,.12);
+    --bgs-gold: #cfa957;
+    --bgs-gold-rgb: 207,169,87;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0b0806; color: var(--bgs-ivory); font-family: var(--font-body); }
+  body { padding: 20px 16px 60px; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--bgs-gold); outline-offset: 2px; }
+
+  /* chrome */
+  .chrome { display: flex; justify-content: center; margin-bottom: 18px; }
+  .seg { display: inline-flex; background: var(--bgs-plate); border-radius: 999px; padding: 4px; }
+  .seg button { border: 0; background: transparent; color: var(--bgs-ivory-70); font: 500 13px/1 var(--font-body); padding: 9px 14px; border-radius: 999px; }
+  .seg button[aria-pressed="true"] { background: var(--bgs-plate-2); color: var(--bgs-ivory); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55); }
+
+  /* phone */
+  .phone { width: 390px; max-width: 100%; margin: 0 auto; background: var(--bgs-bg); border-radius: 36px; padding: 28px 20px 24px; box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px var(--bgs-ivory-12); }
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--bgs-ivory-45); }
+  .eyebrow b { color: var(--bgs-gold); font-weight: 400; }
+  h1 { font-family: var(--font-display); font-weight: 600; font-size: 40px; letter-spacing: -.02em; margin: 14px 0 6px; line-height: 1; }
+  .tag { color: var(--bgs-gold); font-size: 16px; margin: 0 0 20px; }
+  .search { display: flex; gap: 8px; margin: 18px 0 20px; }
+  .search .in { flex: 1; height: 44px; border-radius: 22px; box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); display: flex; align-items: center; padding: 0 16px; color: var(--bgs-ivory-45); font-size: 16px; }
+  .search .ic { width: 44px; height: 44px; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); display: grid; place-items: center; color: var(--bgs-ivory-70); }
+  .count { font-family: var(--font-mono); font-size: 13px; color: var(--bgs-gold); margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .card { background: var(--bgs-plate); border-radius: 14px; overflow: hidden; }
+  .card .cv { aspect-ratio: 3/4; background: var(--bgs-plate-2); }
+  .card .cv img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card .t { font-family: var(--font-display); font-size: 13px; font-weight: 600; padding: 8px 8px 4px; line-height: 1.2; }
+  .card .m { display: flex; justify-content: space-between; align-items: center; padding: 0 8px 8px; }
+  .card .r { font-size: 11px; color: var(--bgs-gold); padding: 3px 8px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.6); }
+  .card .p { font-size: 11px; color: var(--bgs-ivory-45); }
+  [data-bag][hidden] { display: none !important; }
+
+  /* ---- shared bag bits ---- */
+  .bag { margin-bottom: 4px; }
+  .bag[hidden] { display: none !important; }
+  .stack { display: flex; }
+  .stack img { width: 34px; height: 46px; object-fit: cover; border-radius: 4px; box-shadow: 0 6px 14px rgba(0,0,0,.6), inset 0 0 0 1px rgba(242,232,213,.14); margin-left: -12px; }
+  .stack img:first-child { margin-left: 0; }
+  .name { font-family: var(--font-display); font-weight: 500; font-size: 18px; letter-spacing: -.01em; line-height: 1.1; }
+  .meta { font-family: var(--font-mono); font-size: 12px; color: var(--bgs-ivory-70); }
+  .act { border: 0; background: transparent; color: var(--bgs-gold); font-size: 14px; font-weight: 500; padding: 6px 4px; }
+  .act.q { color: var(--bgs-ivory-45); }
+
+  /* A · Strip */
+  .bag.a { display: flex; align-items: center; gap: 14px; padding: 12px 14px 12px 12px; border-radius: 16px; background: var(--bgs-plate); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45); }
+  .bag.a .txt { flex: 1; min-width: 0; }
+  .bag.a .txt .meta { margin-top: 3px; }
+  .bag.a .acts { display: flex; flex-direction: column; align-items: flex-end; gap: 0; }
+
+  /* B · Tag */
+  .bag.b { position: relative; padding: 14px 16px 14px 18px; border-radius: 14px; background: var(--bgs-plate); box-shadow: inset 4px 0 0 0 var(--bgs-gold), inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.35); }
+  .bag.b .eyebrow { color: var(--bgs-gold); font-size: 11px; }
+  .bag.b .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
+  .bag.b .name { font-size: 22px; }
+  .bag.b .stack { margin-left: 12px; }
+  .bag.b .cov { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+  .dots { display: flex; gap: 3px; }
+  .dots span { width: 18px; height: 18px; border-radius: 4px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; color: var(--bgs-ivory-45); background: var(--bgs-plate-2); box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); }
+  .dots span.on { background: var(--bgs-gold); color: var(--bgs-bg); box-shadow: none; }
+  .bag.b .acts { display: flex; gap: 6px; margin-top: 8px; margin-left: -4px; }
+  .bag.b .acts .act::after { content: "·"; color: var(--bgs-ivory-45); margin-left: 10px; }
+  .bag.b .acts .act:last-child::after { content: ""; }
+
+  /* C · Filmstrip */
+  .bag.c { border-radius: 16px; overflow: hidden; background: var(--bgs-plate); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45); }
+  .bag.c .film { display: flex; gap: 4px; height: 76px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent); mask-image: linear-gradient(90deg, #000 70%, transparent); }
+  .bag.c .film img { height: 100%; width: 57px; object-fit: cover; display: block; flex: none; }
+  .bag.c .film img:nth-child(n+6) { opacity: .5; }
+  .bag.c .under { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px 10px; }
+  .bag.c .under .meta { margin-top: 2px; }
+  .bag.c .acts { display: flex; gap: 2px; }
+
+  /* D · Count line: the bag is the subject of the existing line */
+  .count.d { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; color: var(--bgs-ivory-70); }
+  .count.d .lead { color: var(--bgs-ivory); font-family: var(--font-display); font-size: 15px; font-weight: 500; display: inline-flex; align-items: center; gap: 7px; }
+  .count.d .lead i, .tok i { width: 7px; height: 7px; border-radius: 1.5px; background: var(--bgs-gold); transform: rotate(45deg); display: inline-block; }
+  .count.d .acts { margin-left: auto; display: inline-flex; gap: 2px; }
+  .count.d .act { font-size: 12px; font-family: var(--font-mono); padding: 4px 6px; }
+
+  /* E · Filter token: an applied-filter pill under the search row */
+  .tokens { display: flex; gap: 8px; margin: -8px 0 14px; }
+  .tok.e { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 6px 0 12px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--bgs-ivory); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55); }
+  .tok.e em { font-style: normal; font-family: var(--font-mono); font-size: 12px; color: var(--bgs-gold); }
+  .tok.e .x { width: 22px; height: 22px; border-radius: 50%; border: 0; background: transparent; color: var(--bgs-ivory-45); font-size: 16px; line-height: 1; padding: 0; }
+  .tok.e .x:hover { color: var(--bgs-ivory); background: var(--bgs-plate-2); }
+
+  /* F · Eyebrow: lives in the identity line, tap opens Edit / Unpack */
+  .tok.f { display: inline-flex; align-items: center; gap: 7px; color: var(--bgs-ivory); text-transform: none; letter-spacing: 0; font-family: var(--font-display); font-size: 14px; font-weight: 500; }
+
+  .notes { max-width: 390px; margin: 22px auto 0; font-size: 13px; line-height: 1.6; color: var(--bgs-ivory-70); }
+  .notes b { color: var(--bgs-ivory); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="seg" role="group" aria-label="Option">
+    <button type="button" data-opt="d" aria-pressed="true">D · Count line</button>
+    <button type="button" data-opt="e" aria-pressed="false">E · Filter token</button>
+    <button type="button" data-opt="f" aria-pressed="false">F · Eyebrow</button>
+    <button type="button" data-opt="cur" aria-pressed="false">Current</button>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="eyebrow">nok.naruephon · <b>Settings</b><span data-bag="f" hidden> · <span class="tok f"><i></i>Bali, October</span></span></div>
+  <h1>BoardgameShelf</h1>
+  <p class="tag">Browse the game, judge by its cover.</p>
+
+  <!-- Current, for comparison -->
+  <div class="bag" data-bag="cur" hidden style="padding:18px 14px 14px;border-radius:16px;box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.6)">
+    <div class="name" style="font-size:22px;font-weight:600">Bag</div>
+    <div class="meta" style="font-size:14px;margin:12px 0 14px">5 games · 1–4 players · 40–180 min</div>
+    <div style="display:flex;gap:8px">
+      <button type="button" style="flex:1;height:44px;border-radius:22px;background:transparent;border:0;box-shadow:inset 0 0 0 1px var(--bgs-ivory-12);color:var(--bgs-ivory);font-weight:600">Edit</button>
+      <button type="button" style="flex:1;height:44px;border-radius:22px;background:transparent;border:0;color:var(--bgs-ivory-45);font-weight:600">Unpack</button>
+    </div>
+  </div>
+
+  <div class="search">
+    <div class="in">Search titles…</div>
+    <div class="ic">≡</div>
+    <div class="ic">↑</div>
+  </div>
+  <div class="tokens" data-bag="e" hidden>
+    <span class="tok e"><i></i>Bali, October <em>5</em><button class="x" type="button" aria-label="Unpack bag">×</button></span>
+  </div>
+  <p class="count" data-count="cur">5 of 196 on the shelf</p>
+  <p class="count d" data-bag="d" hidden><span class="lead"><i></i>Bali, October</span> · 5 of 196 on the shelf <span class="acts"><button class="act" type="button">Edit</button><button class="act q" type="button">Unpack</button></span></p>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="notes">
+  <b>D</b> folds the bag into the line that already says "5 of 196" — nothing new is added to the page, one line changes meaning. Edit/Unpack are mono text at the right. <b>E</b> treats the bag as an applied filter: a token under the search row, tap the pill to edit, × to unpack. This also gives future filters (players, playtime) the same home. <b>F</b> is the quietest: the bag name sits in the identity line next to Settings; tapping it opens a small sheet with Edit / Unpack. Pair F with D's count line if you want both quiet and explicit.
+</div>
+
+<script>
+  const NAMES = ["Brass: Birmingham","Lairs","Dune: War for Arrakis","Dune: Imperium","Hegemony","Ark Nova","Root","Cascadia"];
+  const RATING = ["8.6","8.5","8.5","8.4","8.3"], PL = ["2–4","2","1–4","1–4","2–6"];
+  const PAL = [["#3a3a3a","#8c8c8c"],["#3d2c4d","#7a5a9c"],["#5a2d1a","#c26a3c"],["#1e2a3a","#4a6a8a"],["#1c3a4a","#3b7a8c"],["#2c3d2a","#5c8a4a"],["#4d2a2a","#8c4a4a"],["#4a3a1a","#9c7a2a"]];
+  const cover = (n, i) => { const [a,b] = PAL[i % PAL.length]; return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="300" height="400" fill="url(#g)"/><text x="30" y="300" font-family="Fraunces,Georgia,serif" font-size="40" fill="#f2e8d5">${n.split(":")[0].split(" ")[0]}</text></svg>`); };
+
+  document.querySelectorAll("[data-stack]").forEach(el => {
+    const n = +el.dataset.stack;
+    for (let i = 0; i < n; i++) { const img = document.createElement("img"); img.src = cover(NAMES[i % NAMES.length], i); img.alt = ""; el.appendChild(img); }
+  });
+  const grid = document.getElementById("grid");
+  NAMES.slice(0, 3).forEach((n, i) => {
+    grid.insertAdjacentHTML("beforeend", `<div class="card"><div class="cv"><img src="${cover(n, i)}" alt=""></div><div class="t">${n}</div><div class="m"><span class="r">★ ${RATING[i]}</span><span class="p">${PL[i]}</span></div></div>`);
+  });
+
+  document.querySelectorAll("[data-opt]").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll("[data-opt]").forEach(x => x.setAttribute("aria-pressed", x === b));
+    document.querySelectorAll("[data-bag]").forEach(x => x.hidden = x.dataset.bag !== b.dataset.opt);
+    document.querySelector('[data-count="cur"]').hidden = b.dataset.opt === "d";
+  }));
+  document.querySelector('[data-opt="d"]').click();
+</script>
+</body>
+</html>
