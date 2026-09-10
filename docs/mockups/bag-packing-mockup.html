@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — Bag: packing mode mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Tokens — approximations. Replace with production values. */
+  :root {
+    --bgs-bg: #16110d;
+    --bgs-plate: #241b15;
+    --bgs-plate-2: #2f2419;
+    --bgs-ivory: #f2e8d5;
+    --bgs-ivory-70: rgba(242, 232, 213, .7);
+    --bgs-ivory-45: rgba(242, 232, 213, .45);
+    --bgs-ivory-12: rgba(242, 232, 213, .12);
+    --bgs-gold: #cfa957;
+    --bgs-gold-rgb: 207, 169, 87;
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --t: 160ms ease;
+  }
+  html[data-reduced-motion="true"] { --t: 0s; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bgs-bg); color: var(--bgs-ivory); font-family: var(--font-body); }
+  body { padding-bottom: 140px; }
+  button, input { font: inherit; }
+  :focus-visible { outline: 2px solid var(--bgs-gold); outline-offset: 2px; }
+
+  /* ---------- mockup chrome (not product) ---------- */
+  .chrome { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px clamp(16px, 4vw, 40px); background: #0e0a08; box-shadow: inset 0 -1px 0 var(--bgs-ivory-12); font-size: 12px; font-family: var(--font-mono); color: var(--bgs-ivory-45); }
+  .seg { display: inline-flex; background: var(--bgs-plate); border-radius: 999px; padding: 4px; }
+  .seg button { appearance: none; border: 0; background: transparent; color: var(--bgs-ivory-70); font: 500 13px/1 var(--font-body); padding: 8px 14px; border-radius: 999px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--bgs-plate-2); color: var(--bgs-ivory); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb), .55); }
+  .chrome label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+  .file { position: relative; padding: 8px 14px; border-radius: 999px; background: var(--bgs-plate); color: var(--bgs-ivory-70); font: 500 13px/1 var(--font-body); cursor: pointer; }
+  .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* ---------- product: header ---------- */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px clamp(16px, 4vw, 40px) 8px; }
+  .mark { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 500; font-size: 20px; letter-spacing: -.01em; }
+  .mark i { width: 9px; height: 9px; border-radius: 2px; background: var(--bgs-gold); transform: rotate(45deg); }
+  .top .sub { font-size: 14px; color: var(--bgs-ivory-45); margin-left: 12px; }
+  .btn { appearance: none; border: 0; cursor: pointer; border-radius: 999px; padding: 10px 16px; font-weight: 500; font-size: 14px; background: var(--bgs-plate-2); color: var(--bgs-ivory); box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); }
+  .btn:hover { box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb), .6); }
+  .btn.primary { background: var(--bgs-gold); color: var(--bgs-bg); box-shadow: none; }
+  .btn.primary:disabled { opacity: .4; cursor: default; }
+  .btn.quiet { background: transparent; box-shadow: none; color: var(--bgs-ivory-70); }
+  .btn.quiet:hover { color: var(--bgs-ivory); box-shadow: none; }
+
+  /* Active-bag chip (Packed state) */
+  .chip { display: none; align-items: center; gap: 14px; margin: 8px clamp(16px, 4vw, 40px) 0; padding: 10px 10px 10px 16px; border-radius: 999px; background: var(--bgs-plate); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb), .5); font-size: 14px; width: max-content; max-width: 100%; }
+  .chip b { font-family: var(--font-display); font-weight: 500; font-size: 16px; }
+  .chip .meta { color: var(--bgs-ivory-70); }
+  .chip .btn { padding: 6px 12px; font-size: 13px; }
+  body[data-state="packed"] .chip { display: inline-flex; }
+
+  /* Packing hint */
+  .hint { display: none; padding: 10px clamp(16px, 4vw, 40px) 0; font-size: 14px; color: var(--bgs-ivory-70); }
+  .hint b { color: var(--bgs-ivory); font-weight: 500; }
+  body[data-state="packing"] .hint { display: block; }
+
+  /* ---------- product: grid ---------- */
+  .grid { display: grid; gap: 14px; padding: 20px clamp(16px, 4vw, 40px); grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .game { position: relative; border-radius: 8px; overflow: hidden; background: var(--bgs-plate-2); aspect-ratio: 3 / 4; padding: 0; border: 0; cursor: pointer; color: inherit; text-align: left; -webkit-tap-highlight-color: transparent; }
+  .game img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Ring lives on the button via inset box-shadow (never outline: it paints beneath children) */
+  .game::after { content: ""; position: absolute; inset: 0; border-radius: 8px; pointer-events: none; box-shadow: inset 0 0 0 0 var(--bgs-gold); transition: box-shadow var(--t); }
+  .game .check { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--bgs-gold); color: var(--bgs-bg); display: grid; place-items: center; transform: scale(0); transition: transform var(--t); }
+  .game .check svg { width: 16px; height: 16px; }
+  .game .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 10px 8px; font-size: 12px; color: var(--bgs-ivory); background: linear-gradient(180deg, transparent, rgba(22,17,13,.9)); font-weight: 500; }
+  .game .cap small { display: block; color: var(--bgs-ivory-70); font-weight: 400; font-family: var(--font-mono); font-size: 11px; margin-top: 2px; }
+
+  body[data-state="packing"] .game[aria-pressed="true"]::after { box-shadow: inset 0 0 0 3px var(--bgs-gold); }
+  body[data-state="packing"] .game[aria-pressed="true"] .check { transform: scale(1); }
+  body[data-state="packing"] .game[aria-pressed="false"] img { opacity: .78; }
+  body[data-state="packing"] .game[aria-pressed="false"]:hover img { opacity: 1; }
+  body[data-state="packed"] .game[aria-pressed="false"] { display: none; }
+  .add-more { display: none; border-radius: 8px; aspect-ratio: 3 / 4; border: 1px dashed rgba(var(--bgs-gold-rgb), .5); background: transparent; color: var(--bgs-ivory-70); cursor: pointer; font-size: 14px; }
+  .add-more:hover { color: var(--bgs-ivory); border-style: solid; }
+  body[data-state="packed"] .add-more { display: block; }
+
+  /* ---------- product: coverage bar ---------- */
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 14px clamp(16px, 4vw, 40px) max(16px, env(safe-area-inset-bottom)); background: rgba(36,27,21,.96); backdrop-filter: blur(12px); box-shadow: 0 -1px 0 var(--bgs-ivory-12), 0 -20px 60px rgba(0,0,0,.5); transform: translateY(110%); transition: transform 220ms ease; }
+  html[data-reduced-motion="true"] .bar { transition: none; }
+  body[data-state="packing"] .bar { transform: translateY(0); }
+  .bar .row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .bar .name { flex: 1 1 200px; min-width: 160px; }
+  .bar .name input { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--bgs-ivory-12); padding: 6px 0; color: var(--bgs-ivory); font-family: var(--font-display); font-size: 22px; font-weight: 400; letter-spacing: -.01em; }
+  .bar .name input::placeholder { color: var(--bgs-ivory-45); }
+  .bar .name input:focus { outline: 0; border-bottom-color: var(--bgs-gold); }
+  .cov { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .cov .lab { font-size: 12px; color: var(--bgs-ivory-45); margin-bottom: 6px; }
+  .cov .val { font-size: 15px; color: var(--bgs-ivory); font-variant-numeric: tabular-nums; }
+  .cov .val b { font-family: var(--font-display); font-size: 22px; font-weight: 500; }
+  .dots { display: flex; gap: 5px; align-items: flex-end; }
+  .dots span { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--bgs-ivory-45); background: var(--bgs-plate-2); box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); transition: background var(--t), color var(--t); }
+  .dots span.on { background: var(--bgs-gold); color: var(--bgs-bg); box-shadow: none; }
+  .gaps { display: flex; gap: 8px; flex-wrap: wrap; }
+  .gaps span { font-size: 13px; padding: 5px 10px; border-radius: 999px; color: var(--bgs-ivory); background: rgba(var(--bgs-gold-rgb), .14); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb), .5); }
+  .gaps span::before { content: "•"; color: var(--bgs-gold); margin-right: 6px; }
+  .gaps:empty::before { content: "Covered"; font-size: 13px; color: var(--bgs-ivory-45); }
+  .bar .actions { display: flex; gap: 8px; margin-left: auto; }
+</style>
+</head>
+<body data-state="packing">
+
+<div class="chrome">
+  <div class="seg" role="group" aria-label="State">
+    <button type="button" data-state-btn="browse" aria-pressed="false">Browsing</button>
+    <button type="button" data-state-btn="packing" aria-pressed="true">Packing</button>
+    <button type="button" data-state-btn="packed" aria-pressed="false">Packed</button>
+  </div>
+  <span>bag · packing mode · ?bag=1</span>
+  <label><input type="checkbox" id="rm"> reduced motion</label>
+  <label class="file">Load games.json<input type="file" accept=".json,application/json"></label>
+</div>
+
+<header class="top">
+  <div><span class="mark"><i></i>BoardgameShelf</span><span class="sub" id="count-sub">196 games</span></div>
+  <div id="top-actions">
+    <button class="btn" id="pack-btn" type="button">Pack a bag</button>
+  </div>
+</header>
+
+<div class="chip">
+  <b id="chip-name">Bali, October</b>
+  <span class="meta" id="chip-meta">12 games · 2–6 players · 15–120 min</span>
+  <button class="btn" type="button" data-go="packing">Edit</button>
+  <button class="btn quiet" type="button" data-go="browse">Unpack</button>
+</div>
+
+<p class="hint">Tap covers to pack them. <b>The bar shows who and how long the bag covers.</b></p>
+
+<div class="grid" id="grid"></div>
+
+<div class="bar" aria-hidden="false">
+  <div class="row">
+    <div class="name"><input id="bag-name" type="text" placeholder="Name the bag" value="Bali, October" aria-label="Bag name"></div>
+    <div class="cov">
+      <div><div class="lab">Games</div><div class="val"><b id="c-count">0</b></div></div>
+      <div><div class="lab">Players</div><div class="dots" id="c-dots"></div></div>
+      <div><div class="lab">Playtime</div><div class="val" id="c-time">—</div></div>
+      <div><div class="lab">Gaps</div><div class="gaps" id="c-gaps"></div></div>
+    </div>
+    <div class="actions">
+      <button class="btn quiet" type="button" data-go="browse">Cancel</button>
+      <button class="btn primary" type="button" id="pack-commit" data-go="packed">Pack 0 games</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Placeholder data with plausible BGG stats — replaced by games.json when loaded.
+  const SEED = [
+    ["Brass: Birmingham",2,4,60,120],["Wingspan",1,5,40,70],["Azul",2,4,30,45],["Cascadia",1,4,30,45],
+    ["Spirit Island",1,4,90,120],["Ark Nova",1,4,90,150],["Root",2,4,60,90],["Terraforming Mars",1,5,120,120],
+    ["Everdell",1,4,40,80],["Dune: Imperium",1,4,60,120],["The Crew",2,5,20,20],["Concordia",2,5,100,100],
+    ["Lost Ruins of Arnak",1,4,30,120],["Codenames",2,8,15,15],["7 Wonders Duel",2,2,30,30],["Scythe",1,5,90,115],
+    ["Patchwork",2,2,15,30],["Splendor",2,4,30,30],["Ticket to Ride",2,5,30,60],["Carcassonne",2,5,30,45],
+    ["Heat",1,6,30,60],["Sea Salt & Paper",2,4,30,30],["Jaipur",2,2,30,30],["Sky Team",2,2,15,15],
+    ["Faraway",2,6,15,30],["Just One",3,7,20,20],["Skull",3,6,15,45],["That's Not a Hat",3,8,15,15],
+    ["Hanabi",2,5,25,25],["Love Letter",2,4,20,20],["Deep Sea Adventure",2,6,30,30],["Obsession",1,4,30,90]
+  ];
+  const PALETTES = [["#5a2d1a","#a24a2c"],["#1c3a4a","#3b7a8c"],["#2c3d2a","#5c8a4a"],["#3d2c4d","#7a5a9c"],["#4a3a1a","#9c7a2a"],["#1e2a3a","#4a6a8a"],["#4d2a2a","#8c4a4a"],["#2a3a3a","#4a7a7a"]];
+  const PRESELECT = new Set(["Cascadia","The Crew","Codenames","7 Wonders Duel","Patchwork","Heat","Sea Salt & Paper","Sky Team","Faraway","Just One","Skull","Azul"]);
+
+  function lines(name) {
+    const words = name.split(" "), out = []; let cur = "";
+    words.forEach(w => { if ((cur + " " + w).trim().length > 13) { out.push(cur.trim()); cur = w; } else cur += " " + w; });
+    out.push(cur.trim());
+    return out.slice(0, 4).map((l, i) => `<text x="36" y="${250 + i * 36}" font-family="Fraunces,Georgia,serif" font-size="32" fill="#f2e8d5">${l.replace(/&/g,"&amp;")}</text>`).join("");
+  }
+  function placeholder(name, i) {
+    const [c1, c2] = PALETTES[i % PALETTES.length];
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="300" height="400" fill="url(#g)"/><circle cx="${60+(i*37)%180}" cy="${80+(i*53)%160}" r="${60+(i*13)%60}" fill="rgba(255,255,255,.08)"/>${lines(name)}</svg>`;
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  let games = SEED.map(([name,minP,maxP,minT,maxT], i) => ({ id: "g"+i, name, minP, maxP, minT, maxT, src: placeholder(name, i), packed: PRESELECT.has(name) }));
+
+  const grid = document.getElementById("grid");
+  const CHECK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>`;
+
+  function renderGrid() {
+    grid.innerHTML = "";
+    games.forEach(g => {
+      const b = document.createElement("button");
+      b.className = "game"; b.type = "button"; b.dataset.id = g.id;
+      b.setAttribute("aria-pressed", g.packed);
+      b.setAttribute("aria-label", `${g.name}, ${g.minP === g.maxP ? g.minP : g.minP + "–" + g.maxP} players, ${g.minT === g.maxT ? g.minT : g.minT + "–" + g.maxT} minutes`);
+      b.innerHTML = `<img src="${g.src}" alt=""><span class="check">${CHECK}</span><span class="cap">${g.name}<small>${g.minP === g.maxP ? g.minP : g.minP + "–" + g.maxP}p · ${g.minT === g.maxT ? g.minT : g.minT + "–" + g.maxT} min</small></span>`;
+      b.addEventListener("click", () => {
+        if (document.body.dataset.state === "browse") return; // in Browsing the tile opens the modal (not mocked)
+        g.packed = !g.packed; b.setAttribute("aria-pressed", g.packed); update();
+      });
+      grid.appendChild(b);
+    });
+    const add = document.createElement("button");
+    add.className = "add-more"; add.type = "button"; add.textContent = "+ Add more";
+    add.addEventListener("click", () => setState("packing"));
+    grid.appendChild(add);
+    update();
+  }
+
+  function coverage(sel) {
+    const covers = n => sel.some(g => g.minP <= n && (n >= 8 ? g.maxP >= 8 : g.maxP >= n));
+    const dots = [1,2,3,4,5,6,7,8].map(covers);
+    const minT = sel.length ? Math.min(...sel.map(g => g.minT)) : null;
+    const maxT = sel.length ? Math.max(...sel.map(g => g.maxT)) : null;
+    const gaps = [];
+    if (sel.length) {
+      if (!covers(2)) gaps.push("Nothing for 2 players");
+      if (!covers(5)) gaps.push("Nothing for 5 players");
+      if (!sel.some(g => g.maxT <= 30)) gaps.push("Nothing under 30 min");
+    }
+    return { dots, minT, maxT, gaps };
+  }
+
+  function update() {
+    const sel = games.filter(g => g.packed);
+    const c = coverage(sel);
+    document.getElementById("c-count").textContent = sel.length;
+    document.getElementById("c-dots").innerHTML = c.dots.map((on, i) => `<span class="${on ? "on" : ""}">${i === 7 ? "8+" : i + 1}</span>`).join("");
+    document.getElementById("c-time").textContent = sel.length ? `${c.minT}–${c.maxT} min` : "—";
+    document.getElementById("c-gaps").innerHTML = c.gaps.map(t => `<span>${t}</span>`).join("");
+    const commit = document.getElementById("pack-commit");
+    commit.textContent = sel.length ? `Pack ${sel.length} game${sel.length === 1 ? "" : "s"}` : "Pack";
+    commit.disabled = !sel.length;
+    // chip
+    const on = c.dots.map((v, i) => v ? i + 1 : null).filter(Boolean);
+    const players = on.length ? `${on[0]}–${on[on.length-1] === 8 ? "8+" : on[on.length-1]} players` : "";
+    document.getElementById("chip-name").textContent = document.getElementById("bag-name").value || "Unnamed bag";
+    document.getElementById("chip-meta").textContent = sel.length ? `${sel.length} games · ${players} · ${c.minT}–${c.maxT} min` : "Empty";
+    document.getElementById("count-sub").textContent = document.body.dataset.state === "packed" ? `${sel.length} of ${games.length} games` : `${games.length} games`;
+  }
+
+  function setState(s) {
+    document.body.dataset.state = s;
+    document.querySelectorAll("[data-state-btn]").forEach(b => b.setAttribute("aria-pressed", b.dataset.stateBtn === s));
+    document.getElementById("pack-btn").style.display = s === "browse" ? "" : "none";
+    document.querySelector(".bar").setAttribute("aria-hidden", s !== "packing");
+    update();
+  }
+
+  document.querySelectorAll("[data-state-btn]").forEach(b => b.addEventListener("click", () => setState(b.dataset.stateBtn)));
+  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => setState(b.dataset.go)));
+  document.getElementById("pack-btn").addEventListener("click", () => setState("packing"));
+  document.getElementById("bag-name").addEventListener("input", update);
+  document.getElementById("rm").addEventListener("change", e => document.documentElement.dataset.reducedMotion = e.target.checked);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { document.getElementById("rm").checked = true; document.documentElement.dataset.reducedMotion = "true"; }
+
+  document.querySelector(".file input").addEventListener("change", async e => {
+    const file = e.target.files[0]; if (!file) return;
+    try {
+      const json = JSON.parse(await file.text());
+      const list = Array.isArray(json) ? json : (json.games || json.items || []);
+      const next = list.map((g, i) => ({
+        id: String(g.id ?? g.objectid ?? i), name: g.name || g.title || "",
+        minP: +(g.minplayers ?? g.min_players ?? g.minPlayers ?? 2), maxP: +(g.maxplayers ?? g.max_players ?? g.maxPlayers ?? 4),
+        minT: +(g.minplaytime ?? g.min_playtime ?? g.playingtime ?? g.playtime ?? 30), maxT: +(g.maxplaytime ?? g.max_playtime ?? g.playingtime ?? g.playtime ?? 30),
+        src: g.image || g.thumbnail || g.cover || placeholder(g.name || "", i), packed: false
+      })).filter(g => g.name);
+      if (!next.length) throw new Error("No games found");
+      games = next;
+      renderGrid();
+    } catch (err) { alert("Couldn't read that file: " + err.message); }
+  });
+
+  renderGrid();
+  setState("packing");
+</script>
+</body>
+</html>
