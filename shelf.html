@@ -1594,14 +1594,15 @@ const inviteVisible =
 let invite = null; // set by initInvite(); told about every selection change
 
 // ---- Bag feature flag ----
-// Stage 1 of the bag: pack a named subset of the shelf, see what it covers,
-// and browse the shelf as if the bag were the collection. Same shape as the
-// flags above — a kill switch read once at module load, with the query
-// parameter as the way in while it is off. No flag in this project persists
-// itself to storage, so this one doesn't either: the ?bag=1 link is what
-// carries it. With it off js/bag-ui.js is never imported, nothing is added to
-// the page, and the bags key is never written.
-const BAG_ENABLED = false;
+// Live: every visitor gets "Pack a bag" — pack a named subset of the shelf,
+// see what it covers, and browse the shelf as if the bag were the collection.
+// Same shape as the flags above, a kill switch rather than a curtain: set it
+// back to false to pull the feature without reverting anything, and ?bag=1
+// still reveals it while it is off. No flag in this project persists itself to
+// storage, so this one doesn't either — the link carries it. With it off
+// js/bag-ui.js is never imported, nothing is added to the page, and the bags
+// key is never written.
+const BAG_ENABLED = true;
 const bagVisible =
   BAG_ENABLED || new URLSearchParams(location.search).get('bag') === '1';
 let bag = null; // set by initBag(); owns packing mode and the coverage bar
