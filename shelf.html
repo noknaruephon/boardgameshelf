@@ -1567,6 +1567,7 @@ import {
 import { createGameModal } from '/js/game-modal.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { VIBES, applyVibes } from '/js/vibes.js';
+import { scopedGames } from '/js/shelf-scope.js';
 import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
 import { getUser, fetchMyProfile, signOut, userDisplayName } from '/js/auth.js';
 
@@ -1591,6 +1592,19 @@ const INVITE_ENABLED = true;
 const inviteVisible =
   INVITE_ENABLED || new URLSearchParams(location.search).get('invite') === '1';
 let invite = null; // set by initInvite(); told about every selection change
+
+// ---- Bag feature flag ----
+// Stage 1 of the bag: pack a named subset of the shelf, see what it covers,
+// and browse the shelf as if the bag were the collection. Same shape as the
+// flags above — a kill switch read once at module load, with the query
+// parameter as the way in while it is off. No flag in this project persists
+// itself to storage, so this one doesn't either: the ?bag=1 link is what
+// carries it. With it off js/bag-ui.js is never imported, nothing is added to
+// the page, and the bags key is never written.
+const BAG_ENABLED = false;
+const bagVisible =
+  BAG_ENABLED || new URLSearchParams(location.search).get('bag') === '1';
+let bag = null; // set by initBag(); owns packing mode and the coverage bar
 
 let games = [];
 // The profile whose shelf this is. Set by loadGames(); game nights started
@@ -1651,7 +1665,7 @@ function renderOwner(){
     eyebrow.append(' · ', a);
   }).catch(()=>{});
   // The expansions switch only earns its place on a shelf that has some.
-  const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
+  const hasExpansions = visibleGames().some(g => g.subtype === 'boardgameexpansion');
   document.getElementById('expansionsToggle').style.display = hasExpansions ? '' : 'none';
 }
 
@@ -1704,15 +1718,28 @@ const state = {
 };
 let draftFilters = { ...DEFAULT_FILTERS };
 
+// The one place the shelf decides which games it is looking at. With a bag
+// packed, scopedGames() narrows the list to that bag; with no bag — or the bag
+// flag off — it hands back the whole shelf untouched. The grid, the header
+// count, the search, the filter sheet's live counts and the sort all read
+// through here, so the rule lives in exactly one place. Stage 2 points game
+// night and share-as-image at the same function.
+function visibleGames(){
+  return scopedGames(games);
+}
+
 
 function render(){
   const shelf = document.getElementById('shelf');
   const countEl = document.getElementById('shelf-count');
   shelf.innerHTML = "";
 
-  let filtered = applyFilters(games, state.filters, state.search);
+  let filtered = applyFilters(visibleGames(), state.filters, state.search);
   filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? a.bggRating - b.bggRating : b.bggRating - a.bggRating);
 
+  // The denominator stays the whole shelf even while a bag is packed, so the
+  // line reads "3 of 196 on the shelf" and says plainly how much of the
+  // collection you are looking at.
   countEl.textContent = `${filtered.length} of ${games.length} on the shelf`;
 
   // Cached for the tray's "hidden by filters" tags. Only what's *filtered* can
@@ -1731,6 +1758,7 @@ function render(){
       render();
     });
     if(gameNightVisible && state.selectionMode) updateGnBar();
+    if(bag) bag.afterRender();
     return;
   }
 
@@ -1753,7 +1781,14 @@ function render(){
         </div>
       </div>
     `;
+    if(bag) bag.decorateCard(el, g);
     el.addEventListener('click', (ev)=>{
+      // Packing mode turns the whole tile into a toggle: no modal, no
+      // game-night selection — you are picking what goes in the bag.
+      if(bag && bag.packing()){
+        bag.toggleGame(g, el);
+        return;
+      }
       if(gameNightVisible && state.selectionMode){
         if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
         toggleSelect(g);
@@ -1768,6 +1803,7 @@ function render(){
   // so the tray's "hidden by filters" tags need to stay in sync with every
   // re-render, not just the ones that came from toggling a selection.
   if(gameNightVisible && state.selectionMode) updateGnBar();
+  if(bag) bag.afterRender();
 }
 
 // The detail modal itself lives in js/game-modal.js + css/game-modal.css, shared
@@ -1887,7 +1923,7 @@ function syncModeUI(){
 function syncVibePills(){
   vibePills.querySelectorAll('.pill').forEach(p=>{
     const k = p.dataset.vibe;
-    const n = applyFilters(games, { ...draftFilters, mode:'vibe', vibe:k }, state.search).length;
+    const n = applyFilters(visibleGames(), { ...draftFilters, mode:'vibe', vibe:k }, state.search).length;
     const isActive = draftFilters.vibe === k;
     p.classList.toggle('active', isActive);
     p.setAttribute('aria-pressed', String(isActive));
@@ -1929,7 +1965,7 @@ function updateLiveCount(){
   });
   playersGroupLabel.textContent = `Players — ${playersLabel(draftFilters)}`;
   syncVibePills();
-  const liveCount = applyFilters(games, draftFilters, state.search).length;
+  const liveCount = applyFilters(visibleGames(), draftFilters, state.search).length;
   applyBtn.textContent = `Show ${liveCount} game${liveCount===1?'':'s'}`;
 }
 
@@ -2756,6 +2792,22 @@ async function initInvite(){
   });
 }
 
+// ---- Bag (behind ?bag=1) ----
+
+// Built only when the flag is on, so with it off js/bag-ui.js is never
+// fetched, no bag DOM exists and localStorage is never touched. Runs before
+// the first render() so a shelf that boots with a bag already packed renders
+// scoped from the start, rather than flashing the whole collection.
+async function initBag(){
+  const { setupBag } = await import('/js/bag-ui.js');
+  bag = setupBag({
+    getGames: () => games,
+    rerender: () => render(),
+    headerEl: document.querySelector('header'),
+    gridEl: document.getElementById('shelf'),
+  });
+}
+
 // ---- Sticky bar background (only while actually pinned) ----
 
 const stickySentinel = document.getElementById('stickySentinel');
@@ -2769,6 +2821,7 @@ if('IntersectionObserver' in window){
 
 try {
   await loadGames();
+  if(bagVisible) await initBag();
   render();
   if(gameNightVisible) initGameNight();
   if(inviteVisible) await initInvite();
