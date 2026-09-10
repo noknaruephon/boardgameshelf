@@ -80,8 +80,21 @@
   .A .row .lab .s{font-size:13px;color:var(--ink-2);margin-top:2px}
   .A .row .val{font-family:var(--mono);font-size:14px;color:var(--ink-2)}
   .A .chev{color:var(--ink-3)}
+  .A .h2row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .A .mode{display:flex;background:var(--bgs-plate);border-radius:var(--r-pill);padding:3px}
+  .A .mode button{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:var(--r-pill);font-size:12.5px;font-weight:500;color:var(--ink-2);transition:background .15s var(--ease),color .15s var(--ease)}
+  .A .mode button svg{width:14px;height:14px}
+  .A .mode button[aria-selected="true"]{background:var(--bgs-bg);color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line-gold)}
+  .A .url{display:flex;min-width:0}
+  .A .url em{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:rtl;text-align:left}
+  .A .url b{flex:none;font-weight:500;color:var(--bgs-ivory)}
+  .A .qrplate{margin-top:10px;padding:20px 16px 16px;border-radius:var(--r-plate);background:var(--bgs-plate);box-shadow:inset 0 0 0 1px var(--line-gold);display:flex;flex-direction:column;align-items:center}
+  .A .qrplate[hidden],.A .linkplate[hidden]{display:none}
+  .A .ticket{width:220px;height:220px;padding:14px;border-radius:14px;background:var(--bgs-ivory)}
+  .A .ticket svg{width:100%;height:100%;display:block}
+  .A .qrhint{margin-top:12px;font-size:13px;color:var(--ink-3)}
   .A .linkplate{display:flex;align-items:center;gap:10px;margin-top:10px;padding:12px 14px;border-radius:var(--r-ctl);background:var(--bgs-plate);box-shadow:inset 0 0 0 1px var(--line-gold)}
-  .A .linkplate .url{flex:1;font-family:var(--mono);font-size:14px;color:var(--bgs-ivory);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .A .linkplate .url{flex:1;font-family:var(--mono);font-size:14px;color:var(--bgs-ivory)}
   .A .linkplate .url em{font-style:normal;color:var(--ink-3)}
   .A .linkplate button{color:var(--bgs-gold);font-weight:600;font-size:14px}
   .A .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--r-pill);background:rgba(var(--bgs-gold-rgb),.12);color:var(--bgs-gold);font-family:var(--mono);font-size:12px}
@@ -123,10 +136,20 @@
   </div>
 
   <div class="group">
-    <h2>Your shelf</h2>
-    <div class="linkplate">
-      <span class="url"><em>boardgameshelf.app/u/</em>noknaruephon</span>
+    <div class="h2row">
+      <h2>Your shelf</h2>
+      <div class="mode" role="tablist" aria-label="Share as">
+        <button role="tab" aria-selected="true" data-mode="link"><svg viewBox="0 0 24 24"><path d="M10 14a3.5 3.5 0 0 0 5 0l4-4a3.5 3.5 0 0 0-5-5l-.5.5"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-4 4a3.5 3.5 0 0 0 5 5l.5-.5"/></svg>Link</button>
+        <button role="tab" aria-selected="false" data-mode="qr"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h3v3M20 14v3M14 20h3M20 20h0"/></svg>QR</button>
+      </div>
+    </div>
+    <div class="linkplate" data-panel="link">
+      <span class="url"><em>boardgameshelf.vercel.app/u/</em><b>noknaruephon</b></span>
       <button>Copy</button>
+    </div>
+    <div class="qrplate" data-panel="qr" hidden>
+      <div class="ticket" id="qr" aria-label="QR code for boardgameshelf.vercel.app/u/noknaruephon" role="img"></div>
+      <div class="qrhint">Point a camera at it</div>
     </div>
     <div class="row">
       <div class="lab"><div class="t">Public</div><div class="s">Anyone with the link can browse and start a game night</div></div>
@@ -181,7 +204,19 @@
 <p class="note" id="note-A"><b>A · Ledger.</b> Cards removed; settings become grouped rows with hairlines so the whole page fits one screen. The shelf link is the only "object" — a mono plate with inline Copy. Sync state is a pill, not a paragraph. Delete is a quiet text row, not a red button next to Sign out.</p>
 </div></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
+  (function(){
+    const url='https://boardgameshelf.vercel.app/u/noknaruephon';
+    const qr=qrcode(0,'M'); qr.addData(url); qr.make();
+    const n=qr.getModuleCount(); let d='';
+    for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(qr.isDark(r,c))d+=`M${c} ${r}h1v1h-1z`;
+    document.getElementById('qr').innerHTML=`<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges"><path d="${d}" fill="#1a1510"/></svg>`;
+  })();
+  document.querySelectorAll('.mode button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.mode button').forEach(x=>x.setAttribute('aria-selected',x===b));
+    document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==b.dataset.mode);
+  }));
   document.querySelectorAll('.toggle').forEach(t=>t.addEventListener('click',()=>{
     t.setAttribute('aria-checked',t.getAttribute('aria-checked')!=='true');
   }));
