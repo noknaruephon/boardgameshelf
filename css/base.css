@@ -23,6 +23,11 @@
   /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim */
   --bgs-gold-dim:rgba(227,176,75,0.62);
   --bgs-icon-gold:#e2b463;
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line:rgba(244,235,218,0.10);
+  --line-gold:rgba(227,176,75,0.22);
   /* destructive actions — cancelling a game night */
   --bgs-danger:#A8503A;
   --bgs-danger-hover:#C2705A;
