@@ -1732,8 +1732,8 @@ let draftFilters = { ...DEFAULT_FILTERS };
 // packed, scopedGames() narrows the list to that bag; with no bag — or the bag
 // flag off — it hands back the whole shelf untouched. The grid, the header
 // count, the search, the filter sheet's live counts and the sort all read
-// through here, so the rule lives in exactly one place. Stage 2 points game
-// night and share-as-image at the same function.
+// through here, so the rule lives in exactly one place. Game Night's pool
+// reads through it too; share-as-image follows in Stage 2.
 function visibleGames(){
   return scopedGames(games);
 }
@@ -2191,8 +2191,11 @@ let gnRandomBtn = null;
 
 let gnSessionModPromise = null;
 
+// What Game Night is allowed to draw from: the games on screen, filters and
+// search included. With a bag packed that is the bag, so Random — and a single
+// card's re-roll — can only turn up something you actually packed.
 function gnPool(){
-  return applyFilters(games, state.filters, state.search);
+  return applyFilters(visibleGames(), state.filters, state.search);
 }
 
 // Kept in sync by render(); see the note there.
