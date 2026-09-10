@@ -1198,6 +1198,34 @@
     border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);background:var(--bgs-bg);
   }
   .invite-canvas.square{width:300px;}
+  /* Poster-shaped placeholder while fonts and covers arrive. Same shimmer as
+     the shelf's card skeleton; the hero block animates, nothing transitions. */
+  .invite-skeleton{
+    position:relative;display:block;margin:0 auto;overflow:hidden;
+    width:232px;height:412px;border-radius:10px;
+    background:var(--bgs-bg);box-shadow:0 12px 32px rgba(0,0,0,.5);
+  }
+  .invite-skeleton.square{width:300px;height:300px;}
+  .invite-skeleton[hidden]{display:none;}
+  .invite-skeleton__hero{
+    position:absolute;left:0;right:0;top:0;height:64%;
+    background:linear-gradient(100deg, var(--bgs-plate) 30%, rgba(var(--bgs-ivory-rgb),0.08) 50%, var(--bgs-plate) 70%);
+    background-size:250% 100%;
+    animation:shimmer 1.7s ease-in-out infinite;
+  }
+  .invite-skeleton.square .invite-skeleton__hero{height:58%;}
+  .invite-skeleton__text{
+    position:absolute;left:17px;right:17px;bottom:19px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .invite-skeleton.square .invite-skeleton__text{left:22px;right:22px;bottom:17px;}
+  .invite-skeleton__line{display:block;height:8px;border-radius:4px;background:rgba(var(--bgs-ivory-rgb),0.08);}
+  .invite-skeleton__line.eyebrow{width:42%;}
+  .invite-skeleton__line.title{height:22px;width:70%;border-radius:6px;}
+  .invite-skeleton__strip{display:flex;gap:5px;margin-top:4px;}
+  .invite-skeleton__strip i{display:block;width:32px;height:32px;border-radius:3px;background:rgba(var(--bgs-ivory-rgb),0.08);}
+  .invite-skeleton.square .invite-skeleton__strip i{width:29px;height:29px;}
+  @media (prefers-reduced-motion:reduce){ .invite-skeleton__hero{animation:none;} }
 
   .invite-seg{
     display:flex;justify-content:center;gap:4px;padding:4px;border-radius:999px;

@@ -128,6 +128,15 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames }) {
     <div class="sheet-body invite-body">
       <div class="invite-previewwrap">
         <div class="invite-preview" id="invitePreview">
+          <div class="invite-skeleton story" id="inviteSkeleton" aria-hidden="true">
+            <i class="invite-skeleton__hero"></i>
+            <span class="invite-skeleton__text">
+              <i class="invite-skeleton__line eyebrow"></i>
+              <i class="invite-skeleton__line title"></i>
+              <span class="invite-skeleton__strip"><i></i><i></i><i></i></span>
+            </span>
+          </div>
+          <span class="sr-only" id="inviteBusy" role="status"></span>
           <div class="invite-preview__canvas" id="inviteCanvasHolder"></div>
         </div>
       </div>
@@ -187,6 +196,21 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames }) {
 
   const $ = id => sheet.querySelector('#' + id);
   const holder = $('inviteCanvasHolder');
+  const skeleton = $('inviteSkeleton');
+  const busy = $('inviteBusy');
+
+  // A poster-shaped placeholder while the fonts and covers arrive: on open
+  // and on a format change, when there is no poster of the right shape to
+  // show. Other re-renders (a date, a place, the headline) keep the previous
+  // poster on screen until the new one is ready.
+  function showSkeleton(fmt) {
+    holder.replaceChildren();
+    currentCanvas = null;
+    currentBlob = null;
+    skeleton.className = `invite-skeleton ${fmt}`;
+    skeleton.hidden = false;
+    busy.textContent = 'Drawing the poster…';
+  }
   const formatBtns = [...sheet.querySelectorAll('[data-format]')];
   const whenInput = $('inviteWhenInput');
   const whereEdit = $('inviteWhereEdit');
@@ -205,8 +229,10 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames }) {
   let renderSeq = 0;
 
   formatBtns.forEach(btn => btn.addEventListener('click', () => {
+    if (btn.dataset.format === format) return;
     format = btn.dataset.format;
     formatBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    showSkeleton(format);
     renderPreview();
   }));
 
@@ -331,6 +357,7 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames }) {
     sheet.classList.add('open');
     syncScrollLock();
     syncRows();
+    showSkeleton(format);
     getFocusable()[0]?.focus();
     renderPreview();
   }
@@ -393,6 +420,8 @@ export function setupInvite({ barEl, beforeEl, getSelectedIds, getGames }) {
     canvas.setAttribute('aria-label',
       `Invite preview: ${headline ? headline.title : 'no headline yet'}, ${rest.length} other game${rest.length === 1 ? '' : 's'}, ${dateLabel || 'no date yet'}${venue ? ` at ${venue}` : ''}`);
     holder.replaceChildren(canvas);
+    skeleton.hidden = true;
+    busy.textContent = '';
     currentCanvas = canvas;
     currentBlob = null;
     // Made now rather than on tap so Share can call navigator.share() while
