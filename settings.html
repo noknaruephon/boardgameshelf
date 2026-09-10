@@ -14,108 +14,202 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/confirm-dialog.css">
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
-  /* Tokens and page chrome come from css/base.css. */
-  body{padding:32px 20px 80px;}
+  /* Tokens and page chrome come from css/base.css. Muted ink is --bgs-ivory-70
+     and --bgs-ivory-45; hairlines are --line and --line-gold. The mockup's
+     sampled palette (docs/mockups/settings-ledger.html) is deliberately not
+     copied here. */
+  :root{
+    --serif:'Fraunces',Georgia,serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --ease:cubic-bezier(.2,.7,.2,1);
+  }
+  body{padding:28px 20px calc(40px + env(safe-area-inset-bottom));}
   .wrap{max-width:560px;margin:0 auto;}
-  .eyebrow{
-    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.14em;
-    text-transform:uppercase;color:var(--bgs-gold);margin:0 0 10px;
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;}
+  svg{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
+  [hidden]{display:none!important;}
+
+  /* ---- header ---- */
+  .set-head{padding-bottom:22px;}
+  .set-back{
+    display:inline-flex;align-items:center;gap:4px;
+    margin:0 0 18px -4px;padding:6px 8px 6px 4px;border-radius:8px;
+    font-size:14px;font-weight:500;color:var(--bgs-ivory-70);text-decoration:none;
   }
-  .eyebrow a{color:inherit;text-decoration:none;}
+  .set-back svg{width:16px;height:16px;flex:none;}
+  .set-back:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .brand{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--bgs-gold);font-weight:500;
+  }
   h1{
-    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,5vw,44px);
-    margin:0 0 8px;letter-spacing:-0.01em;
+    font-family:var(--serif);font-weight:600;font-size:36px;line-height:1;
+    margin:14px 0 6px;letter-spacing:-.01em;
   }
-  .sub{color:var(--bgs-gold);font-size:15px;margin:0 0 24px;max-width:50ch;line-height:1.5;}
-  .sub a{color:inherit;}
-
-  .plate{
-    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.22);
-    border-radius:16px;padding:20px;margin:0 0 14px;
-    box-shadow:0 12px 30px -18px rgba(0,0,0,.8);
+  .set-who{
+    font-size:15px;color:var(--bgs-ivory-70);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
-  .plate h2{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:0 0 6px;}
-  .plate .hint{color:var(--bgs-ivory-70);font-size:14px;line-height:1.5;margin:0 0 14px;}
-  .plate .hint code{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--bgs-ivory);}
+  .set-who.err{color:var(--bgs-vote-pass);white-space:normal;}
 
-  .btn{
-    display:inline-flex;align-items:center;justify-content:center;gap:10px;
-    min-height:44px;padding:0 18px;border-radius:12px;cursor:pointer;
-    font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
-    border:1.5px solid rgba(var(--bgs-gold-rgb),.55);
-    background:rgba(var(--bgs-gold-rgb),.1);color:var(--bgs-ivory);
-    text-decoration:none;transition:background .15s ease,transform .1s ease;
+  /* ---- groups and rows ---- */
+  .set-group{margin-top:22px;}
+  .set-group h2{
+    font-family:var(--serif);font-weight:500;font-size:17px;
+    color:var(--bgs-ivory-70);margin:0 0 4px;
   }
-  .btn:hover{background:rgba(var(--bgs-gold-rgb),.18);}
-  .btn:active{transform:scale(.985);}
-  .btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;}
-  .btn[disabled]{opacity:.55;cursor:default;transform:none;}
-  .btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold);}
-  .btn.gold:hover{background:#ecbd5b;}
-  .btn.quiet{border-color:rgba(var(--bgs-ivory-rgb),.18);background:none;color:var(--bgs-ivory-70);}
-  .btn.danger{border-color:rgba(168,80,58,.6);background:none;color:var(--bgs-danger-hover);}
-  .btn.block{display:flex;width:100%;}
+  .linkplate + .row{margin-top:6px;}
 
-  label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 6px;}
+  .row{
+    display:flex;align-items:center;gap:12px;
+    min-height:56px;padding:10px 0;
+    border-bottom:1px solid var(--line);
+    width:100%;text-align:left;color:inherit;text-decoration:none;
+    background:none;border-left:0;border-right:0;border-top:0;border-radius:0;
+  }
+  /* The visually last row loses its hairline. `:last-child` alone misses the
+     case where hidden siblings (the username form, the browse fallback)
+     follow it, so a row with no visible following sibling counts as last. */
+  .row:last-child{border-bottom:0;}
+  .row:not(:has(~ :not([hidden]))){border-bottom:0;}   /* own rule: a browser without :has() must keep the line above */
+  .row .lab{flex:1;min-width:0;display:block;}
+  .row .lab .t{display:block;font-size:16px;font-weight:500;}
+  .row .lab .s{display:block;font-size:13px;color:var(--bgs-ivory-70);margin-top:2px;}
+  .row .lab .s.err{color:var(--bgs-vote-pass);}
+  .row .val{
+    font-family:var(--mono);font-size:14px;color:var(--bgs-ivory-70);
+    max-width:50%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .row .val.add{color:var(--bgs-gold);font-weight:600;}
+  .row .chev{width:18px;height:18px;color:var(--bgs-ivory-45);flex:none;}
+  .row:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);border-radius:8px;}
+  .row[aria-disabled="true"]{opacity:.6;cursor:default;}
+
+  /* ---- shelf link plate ---- */
+  .linkplate{
+    display:flex;align-items:center;gap:10px;
+    margin-top:10px;padding:12px 14px;border-radius:12px;
+    background:var(--bgs-plate);
+    box-shadow:inset 0 0 0 1px var(--line-gold);   /* gold ring rule: inset box-shadow, never outline */
+  }
+  .linkplate .url{
+    flex:1;min-width:0;font-family:var(--mono);font-size:14px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .linkplate .url em{font-style:normal;color:var(--bgs-ivory-45);}
+  .linkplate .copy{
+    color:var(--bgs-gold);font-weight:600;font-size:14px;flex:none;
+    min-height:44px;margin:-10px -6px;padding:0 6px;border-radius:8px;
+  }
+  .linkplate .copy:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+
+  /* ---- sync state pill ---- */
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;flex:none;
+    padding:4px 10px;border-radius:999px;
+    background:rgba(var(--bgs-gold-rgb),.12);color:var(--bgs-gold);
+    font-family:var(--mono);font-size:12px;white-space:nowrap;
+  }
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--bgs-gold);}
+  /* The pulse lives on ::before and nothing else animates or transitions
+     there — WebKit drops a transition that shares an element with an animation. */
+  .pill.is-syncing::before{animation:bgs-pulse 1s ease-in-out infinite;}
+  .pill.is-stale{background:rgba(var(--bgs-ivory-rgb),.08);color:var(--bgs-ivory-70);}
+  .pill.is-stale::before{background:var(--bgs-ivory-45);}
+  @keyframes bgs-pulse{50%{opacity:.3;}}
+
+  /* ---- public switch ---- */
+  .toggle{
+    position:relative;width:46px;height:26px;border-radius:999px;
+    background:var(--bgs-gold);flex:none;
+    transition:background .2s var(--ease);
+  }
+  .toggle::after{
+    content:"";position:absolute;top:3px;left:23px;width:20px;height:20px;
+    border-radius:50%;background:var(--bgs-bg);
+    transition:left .2s var(--ease);   /* transition only — no animation on this element (WebKit) */
+  }
+  .toggle[aria-checked="false"]{background:rgba(var(--bgs-ivory-rgb),.16);}
+  .toggle[aria-checked="false"]::after{left:3px;background:var(--bgs-ivory-45);}
+  .toggle:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-ivory);}
+
+  /* ---- change-username form (the existing inline flow, under its row) ---- */
+  .edit{padding:10px 0 16px;border-bottom:1px solid var(--line);}
+  .edit:not(:has(~ :not([hidden]))){border-bottom:0;}
   .field{
     width:100%;min-height:46px;padding:0 14px;border-radius:12px;
     background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
     color:var(--bgs-ivory);font:inherit;font-size:15px;
   }
   .field:focus{outline:none;border-color:var(--bgs-gold);}
-  .field[readonly]{color:var(--bgs-ivory-70);border-style:dashed;}
-  .inline-edit{display:flex;gap:10px;align-items:center;}
-  .inline-edit .field{flex:1;min-width:0;}
-  .row{display:flex;flex-direction:column;gap:12px;}
-  .slug-preview{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--bgs-gold-dim);margin:6px 0 0;}
+  .slug-preview{font-family:var(--mono);font-size:13px;color:var(--bgs-gold-dim);margin:6px 0 0;min-height:1.2em;}
   .slug-preview b{color:var(--bgs-gold);font-weight:600;}
-
-  .msg{margin:10px 0 0;font-size:14px;line-height:1.45;color:var(--bgs-ivory-70);min-height:1.2em;}
+  .edit .hint{font-size:13px;line-height:1.5;color:var(--bgs-ivory-70);margin:10px 0 0;}
+  .edit .acts{display:flex;gap:8px;margin-top:14px;}
+  .edit .acts .btn{flex:1;}
+  .msg{margin:8px 0 0;font-size:13px;line-height:1.45;color:var(--bgs-ivory-70);}
+  .msg:empty{display:none;}
   .msg.ok{color:var(--bgs-vote-play);}
   .msg.err{color:var(--bgs-vote-pass);}
 
-  /* Visibility switch — same shape as the filter sheet's toggle rows. */
-  .toggle-row{
-    display:flex;align-items:center;gap:12px;width:100%;padding:8px 0;
-    background:none;border:0;color:var(--bgs-ivory);font:inherit;font-size:15px;
-    text-align:left;cursor:pointer;
+  /* ---- buttons (form and sheet) ---- */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    height:44px;padding:0 18px;border-radius:12px;
+    font-weight:600;font-size:15px;
+    transition:transform .12s var(--ease),background .15s var(--ease);
   }
-  .toggle-switch{
-    position:relative;flex:none;width:42px;height:24px;border-radius:999px;
-    background:rgba(var(--bgs-ivory-rgb),.16);transition:background .15s ease;
-  }
-  .toggle-switch::after{
-    content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
-    background:var(--bgs-ivory);transition:transform .15s ease;
-  }
-  .toggle-row[aria-checked="true"] .toggle-switch{background:var(--bgs-gold);}
-  .toggle-row[aria-checked="true"] .toggle-switch::after{transform:translateX(18px);background:var(--bgs-bg);}
-  .toggle-row:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;border-radius:8px;}
-  .toggle-text small{display:block;color:var(--bgs-ivory-45);font-size:13px;margin-top:2px;}
+  .btn:active{transform:scale(.98);}
+  .btn:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .btn[disabled]{opacity:.55;cursor:default;transform:none;}
+  .btn-gold{background:var(--bgs-gold);color:var(--bgs-bg);}
+  .btn-quiet{box-shadow:inset 0 0 0 1px var(--line);color:var(--bgs-ivory);}
+  .btn-rust{background:var(--bgs-danger-hover);color:var(--bgs-bg);}
+  .btn-rust:focus-visible{box-shadow:inset 0 0 0 2px var(--bgs-ivory);}
 
-  /* Sync progress */
-  .progress{height:6px;border-radius:999px;background:rgba(var(--bgs-ivory-rgb),.1);overflow:hidden;margin:14px 0 8px;}
-  .progress > i{display:block;height:100%;width:0;background:var(--bgs-gold);transition:width .25s ease;}
-  .progress.indeterminate > i{width:35%;animation:bgs-slide 1.2s ease-in-out infinite;}
-  @keyframes bgs-slide{0%{transform:translateX(-100%);}100%{transform:translateX(300%);}}
-  @media (prefers-reduced-motion:reduce){.progress.indeterminate > i{animation:none;width:100%;opacity:.5;}}
-  .sync-line{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--bgs-ivory-70);margin:0;}
-  .sync-line b{color:var(--bgs-ivory);font-weight:500;}
-  .last-synced{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-gold-dim);margin:12px 0 0;}
-  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
-  .empty{color:var(--bgs-ivory-70);font-size:15px;line-height:1.5;}
-  [hidden]{display:none!important;}
+  /* ---- delete, at the foot ---- */
+  .set-danger{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);}
+  .set-danger .rust{
+    display:block;min-height:44px;padding:10px 6px;margin-left:-6px;border-radius:8px;
+    font-size:14px;font-weight:500;color:var(--bgs-danger-hover);opacity:.85;
+  }
+  .set-danger .rust:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .set-danger .hint{margin:2px 0 0;font-size:12.5px;line-height:1.5;color:var(--bgs-ivory-45);}
+
+  /* ---- confirm sheet ---- */
+  .scrim{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;}
+  .sheet{
+    width:100%;max-width:560px;margin:0 auto;
+    padding:22px 20px calc(32px + env(safe-area-inset-bottom));
+    background:var(--bgs-plate);border-radius:24px 24px 0 0;
+    box-shadow:inset 0 0 0 1px var(--line-gold);
+  }
+  .sheet h2{font-family:var(--serif);font-size:22px;font-weight:600;margin:0 0 8px;}
+  .sheet p{font-size:14.5px;line-height:1.5;color:var(--bgs-ivory-70);margin:0;}
+  .sheet .mono{font-family:var(--mono);color:var(--bgs-ivory);}
+  .sheet .acts{display:flex;gap:8px;margin-top:18px;}
+  .sheet .acts .btn{flex:1;}
+
+  .empty{color:var(--bgs-ivory-70);font-size:15px;line-height:1.5;margin:22px 0 0;}
+  .empty a{color:var(--bgs-gold);}
+
+  @media (prefers-reduced-motion:reduce){
+    .toggle,.toggle::after,.btn{transition:none;}
+    .pill.is-syncing::before{animation:none;}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <p class="eyebrow"><a href="/">BoardgameShelf</a></p>
+  <header class="set-head">
+    <a class="set-back" id="backLink" href="/" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Back to shelf
+    </a>
+    <div class="brand">BoardgameShelf</div>
     <h1>Settings</h1>
-    <p class="sub" id="sub">Loading…</p>
+    <div class="set-who" id="who">Loading…</div>
   </header>
 
   <div id="loading" class="deal-wrap" aria-label="Loading">
@@ -123,80 +217,86 @@
   </div>
 
   <div id="settings" hidden>
-    <section class="plate">
-      <h2>Your shelf</h2>
-      <p class="hint">Share this link. Anyone who opens it can browse, filter, and start a game night from your games.</p>
-      <div class="actions">
-        <a class="btn gold" id="shelfLink" href="/">Open shelf</a>
-        <button class="btn quiet" id="copyLink" type="button">Copy link</button>
+    <section class="set-group" aria-labelledby="g-shelf">
+      <h2 id="g-shelf">Your shelf</h2>
+
+      <div class="linkplate">
+        <span class="url" id="shelfUrl"><em></em><span id="shelfSlug"></span></span>
+        <button type="button" class="copy" id="copyLink" data-copy="">Copy</button>
       </div>
-      <p class="msg" id="linkMsg" aria-live="polite"></p>
+
+      <div class="row">
+        <span class="lab" id="lbl-public"><span class="t">Public</span><span class="s" id="publicHint">Anyone with the link can browse and start a game night</span></span>
+        <button type="button" class="toggle" id="publicToggle" role="switch" aria-checked="true" aria-labelledby="lbl-public"></button>
+      </div>
     </section>
 
-    <section class="plate">
-      <h2>BGG account</h2>
-      <label for="bggRo">BGG username</label>
-      <div class="inline-edit" id="bggView">
-        <input class="field" id="bggRo" type="text" readonly>
-        <button class="btn quiet" id="bggEdit" type="button">Change</button>
-      </div>
-      <form class="row" id="bggForm" hidden novalidate>
-        <div>
-          <input class="field" id="bggNew" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Your BGG username" aria-label="New BGG username">
-          <p class="slug-preview" id="bggNewPreview" aria-live="polite"></p>
-        </div>
-        <p class="hint" style="margin:0">Your shelf address changes with it, so links you've already shared will stop working. Sync again afterwards to load the right collection.</p>
-        <div class="actions">
-          <button class="btn gold" id="bggSave" type="submit">Save</button>
-          <button class="btn quiet" id="bggCancel" type="button">Cancel</button>
+    <section class="set-group" aria-labelledby="g-bgg">
+      <h2 id="g-bgg">BoardGameGeek</h2>
+
+      <button type="button" class="row" id="bggEdit" data-action="change-username">
+        <span class="lab"><span class="t">Username</span></span>
+        <span class="val" id="bggRo"></span>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+
+      <form class="edit" id="bggForm" hidden novalidate>
+        <input class="field" id="bggNew" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Your BGG username" aria-label="New BGG username">
+        <p class="slug-preview" id="bggNewPreview" aria-live="polite"></p>
+        <p class="hint">Your shelf address changes with it, so links you've already shared will stop working. Sync again afterwards to load the right collection.</p>
+        <p class="msg" id="bggMsg" aria-live="polite"></p>
+        <div class="acts">
+          <button class="btn btn-quiet" id="bggCancel" type="button">Cancel</button>
+          <button class="btn btn-gold" id="bggSave" type="submit">Save</button>
         </div>
       </form>
-      <p class="msg" id="bggMsg" aria-live="polite"></p>
-      <button class="toggle-row" id="publicToggle" type="button" role="switch" aria-checked="true" style="margin-top:14px">
-        <span class="toggle-switch" aria-hidden="true"></span>
-        <span class="toggle-text">Public shelf<small id="publicHint">Anyone with the link can see it.</small></span>
-      </button>
-      <p class="msg" id="visMsg" aria-live="polite"></p>
-    </section>
 
-    <section class="plate">
-      <h2>Sync from BGG</h2>
-      <p class="hint">Pulls the games you've marked as <b>owned</b> on BoardGameGeek. Big collections take a minute or two — the page walks BGG twenty games at a time.</p>
-      <button class="btn block" id="syncBtn" type="button">Sync collection</button>
-      <div id="syncPanel" hidden>
-        <div class="progress" id="progress"><i id="progressBar"></i></div>
-        <p class="sync-line"><span id="syncStep">Asking BGG for your collection…</span><b id="syncCount"></b></p>
+      <div class="row">
+        <span class="lab"><span class="t">Collection</span><span class="s" id="collectionHint"></span></span>
+        <span class="pill" id="sync-state" aria-live="polite"></span>
       </div>
-      <p class="msg" id="syncMsg" aria-live="polite"></p>
-      <p class="last-synced" id="lastSynced"></p>
-      <div class="actions" id="browseWrap" hidden style="margin-top:14px">
-        <button class="btn quiet" id="browseBtn" type="button">Browse an existing shelf</button>
-      </div>
+
+      <button type="button" class="row" id="syncBtn" data-action="sync">
+        <span class="lab"><span class="t">Sync now</span><span class="s" id="syncHint">Pulls owned games. Takes a minute or two for big shelves.</span></span>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11A8 8 0 1 0 18 16"/><path d="M20 4v7h-7"/></svg>
+      </button>
+
+      <!-- fallback while this shelf is empty: browse a stocked one instead -->
+      <button type="button" class="row" id="browseBtn" hidden>
+        <span class="lab"><span class="t">Browse an existing shelf</span><span class="s">Look through a public collection while yours is empty.</span></span>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
       <div id="pickerHost" hidden></div>
     </section>
 
-    <section class="plate">
-      <div class="actions">
-        <button class="btn quiet" id="signOutBtn" type="button">Sign out</button>
-        <button class="btn danger" id="deleteBtn" type="button">Delete account</button>
-      </div>
-      <p class="hint" style="margin:12px 0 0">Deleting removes your shelf, your synced collection and your sign-in. It can't be undone.</p>
-      <p class="msg" id="deleteMsg" aria-live="polite"></p>
+    <section class="set-group" aria-labelledby="g-account">
+      <h2 id="g-account">Account</h2>
+      <button type="button" class="row" id="signOutBtn" data-action="signout">
+        <span class="lab"><span class="t">Sign out</span><span class="s" id="signedWith"></span></span>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"/><path d="M9 12h12l-3-3m0 6 3-3"/></svg>
+      </button>
     </section>
+
+    <footer class="set-danger">
+      <button type="button" class="rust" id="deleteBtn" data-action="delete">Delete account…</button>
+      <p class="hint">Removes your shelf, synced collection and sign-in. You'll be asked to confirm.</p>
+      <p class="msg" id="deleteMsg" aria-live="polite"></p>
+    </footer>
   </div>
 
-  <div class="confirm" id="confirm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="confirm__panel">
-      <h3 id="confirmTitle">Delete your account?</h3>
-      <p id="confirmBody">Your shelf, synced collection and sign-in are removed for good. Game nights already running keep their votes.</p>
-      <div class="confirm__row">
-        <button class="confirm__keep" id="confirmKeep" type="button">Keep it</button>
-        <button class="confirm__end" id="confirmDelete" type="button">Delete</button>
+  <!-- confirm sheet, hidden until Delete is tapped -->
+  <div class="scrim" id="delete-scrim" hidden>
+    <div class="sheet" id="deleteSheet" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+      <h2 id="delete-title">Delete your account?</h2>
+      <p>This removes your shelf at <span class="mono" id="delSlug"></span>, <span id="delCount">your synced games</span> and your sign-in. It can't be undone.</p>
+      <div class="acts">
+        <button type="button" class="btn btn-quiet" id="confirmKeep" data-action="delete-cancel">Keep my account</button>
+        <button type="button" class="btn btn-rust" id="confirmDelete" data-action="delete-confirm">Delete account</button>
       </div>
     </div>
   </div>
 
-  <p class="empty" id="signedOut" hidden>You're signed out. <a href="/" style="color:var(--bgs-gold)">Sign in</a> to manage a shelf.</p>
+  <p class="empty" id="signedOut" hidden>You're signed out. <a href="/">Sign in</a> to manage a shelf.</p>
 </div>
 
 <script type="module">
@@ -206,52 +306,122 @@ import {
 import { runSync } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
 import { supabase } from '/js/supabase.js';
+import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 
 const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
 const show = (id, on) => { $(id).hidden = !on; };
 
+const PUBLIC_HINT = 'Anyone with the link can browse and start a game night';
+const PRIVATE_HINT = 'Only you can see it while signed in';
+const SYNC_HINT = 'Pulls owned games. Takes a minute or two for big shelves.';
+const NO_USERNAME_HINT = 'Add your BGG username first';
+
 let user = null;
 let profile = null;
 
-function relTime(iso) {
-  if (!iso) return 'Never synced';
+/** `D MMM`, with the year only when it isn't this year. Fixed English
+    month names: locale short months vary ("Sept", "Sep.") and the pill
+    has room for three letters. */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function syncDate(iso) {
   const t = new Date(iso);
-  const mins = Math.round((Date.now() - t.getTime()) / 60000);
-  if (mins < 1) return 'Synced just now';
-  if (mins < 60) return `Synced ${mins} min ago`;
-  const hrs = Math.round(mins / 60);
-  if (hrs < 24) return `Synced ${hrs} h ago`;
-  return `Synced ${t.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+  const text = `${t.getDate()} ${MONTHS[t.getMonth()]}`;
+  return t.getFullYear() === new Date().getFullYear() ? text : `${text} ${t.getFullYear()}`;
+}
+
+function setPill(state, text) {
+  const pill = $('sync-state');
+  pill.classList.toggle('is-syncing', state === 'syncing');
+  pill.classList.toggle('is-stale', state === 'stale');
+  pill.textContent = text;
+}
+
+function setSyncEnabled(on) {
+  $('syncBtn').setAttribute('aria-disabled', String(!on));
+}
+
+function signedWith() {
+  const provider = user?.app_metadata?.provider;
+  if (provider === 'google') return 'Signed in with Google';
+  if (provider === 'email') return `Signed in as ${user.email}`;
+  return user?.email ? `Signed in as ${user.email}` : 'Signed in';
+}
+
+/** The Collection row's helper text and the sheet's game count. The pill is
+    renderPill()'s: a failed sync must keep saying so after the count refreshes. */
+function renderCollection() {
+  const hint = $('collectionHint');
+  if (!profile.last_synced_at) hint.textContent = 'Sync to pull your games';
+  else hint.textContent = ownGameCount === null ? '' : `${ownGameCount} owned game${ownGameCount === 1 ? '' : 's'}`;
+  $('delCount').textContent = ownGameCount ? `your ${ownGameCount} synced games` : 'your synced games';
+}
+
+function renderPill() {
+  if (!profile.last_synced_at) setPill('stale', 'Not synced');
+  else setPill('', `Synced ${syncDate(profile.last_synced_at)}`);
 }
 
 function renderSettings() {
-  $('sub').textContent = profile.display_name ? `${profile.display_name} · /u/${profile.slug}` : `/u/${profile.slug}`;
-  $('shelfLink').href = `/u/${profile.slug}`;
-  $('bggRo').value = profile.bgg_username;
+  const url = `${location.origin}/u/${profile.slug}`;
+  $('who').textContent = profile.display_name || userDisplayName(user) || `/u/${profile.slug}`;
+  $('who').className = 'set-who';
+  $('backLink').href = `/u/${profile.slug}`;
+  show('backLink', true);
+  $('shelfUrl').querySelector('em').textContent = `${location.host}/u/`;
+  $('shelfSlug').textContent = profile.slug;
+  $('copyLink').dataset.copy = url;
+  $('delSlug').textContent = `/u/${profile.slug}`;
+
+  const hasUsername = Boolean(profile.bgg_username);
+  const val = $('bggRo');
+  val.textContent = hasUsername ? profile.bgg_username : 'Add';
+  val.classList.toggle('add', !hasUsername);
+  setSyncEnabled(hasUsername);
+  if (!hasUsername) $('syncHint').textContent = NO_USERNAME_HINT;
+  else if ($('syncHint').textContent === NO_USERNAME_HINT) $('syncHint').textContent = SYNC_HINT;
+
   $('publicToggle').setAttribute('aria-checked', String(profile.is_public));
-  $('publicHint').textContent = profile.is_public ? 'Anyone with the link can see it.' : 'Only you can see it while signed in.';
-  $('lastSynced').textContent = relTime(profile.last_synced_at);
+  $('publicHint').textContent = profile.is_public ? PUBLIC_HINT : PRIVATE_HINT;
+  $('signedWith').textContent = signedWith();
+  renderCollection();
+  renderPill();
   show('settings', true);
 }
 
 // ---- shelf link ----
+let copiedTimer = 0;
 $('copyLink').addEventListener('click', async () => {
-  const url = `${location.origin}/u/${profile.slug}`;
-  try { await navigator.clipboard.writeText(url); say($('linkMsg'), 'Copied.', 'ok'); }
-  catch { say($('linkMsg'), url); }
+  const btn = $('copyLink');
+  const url = btn.dataset.copy;
+  try {
+    await navigator.clipboard.writeText(url);
+    btn.textContent = 'Copied';
+    clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  } catch {
+    // No clipboard access (older WebKit, non-secure context): select the
+    // address so a long-press or ⌘C still gets it.
+    const range = document.createRange();
+    range.selectNodeContents($('shelfUrl'));
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
 });
 
 // ---- change BGG username ----
 function showBggForm(on) {
-  show('bggView', !on);
+  show('bggEdit', !on);
   show('bggForm', on);
   if (on) {
-    $('bggNew').value = profile.bgg_username;
+    $('bggNew').value = profile.bgg_username || '';
     $('bggNewPreview').textContent = '';
     say($('bggMsg'), '');
     $('bggNew').focus();
     $('bggNew').select();
+  } else {
+    $('bggEdit').focus();
   }
 }
 $('bggEdit').addEventListener('click', () => showBggForm(true));
@@ -273,9 +443,11 @@ $('bggForm').addEventListener('submit', async (e) => {
     if (result.error === 'taken') { say($('bggMsg'), `“${next}” is already claimed on this site.`, 'err'); return; }
     if (result.error === 'invalid') { say($('bggMsg'), 'That username can’t be used as a link.', 'err'); return; }
     profile = result.profile;
+    ownGameCount = null;
     renderSettings();
     showBggForm(false);
-    say($('bggMsg'), `Saved. Your shelf is now /u/${profile.slug} — sync to load its games.`, 'ok');
+    $('syncHint').textContent = `Saved. Your shelf is now /u/${profile.slug} — sync to load its games.`;
+    updateBrowseOffer();
   } catch (err) {
     say($('bggMsg'), err.message || "Couldn't save that. Try again.", 'err');
   } finally {
@@ -287,13 +459,14 @@ $('bggForm').addEventListener('submit', async (e) => {
 $('publicToggle').addEventListener('click', async () => {
   const next = !profile.is_public;
   $('publicToggle').setAttribute('aria-checked', String(next));
+  $('publicHint').classList.remove('err');
   try {
     profile = await updateMyProfile({ is_public: next });
     renderSettings();
-    say($('visMsg'), next ? 'Your shelf is public.' : 'Your shelf is private.', 'ok');
-  } catch (err) {
+  } catch {
     $('publicToggle').setAttribute('aria-checked', String(profile.is_public));
-    say($('visMsg'), err.message || "Couldn't change that.", 'err');
+    $('publicHint').textContent = 'Couldn’t update — try again';
+    $('publicHint').classList.add('err');
   }
 });
 
@@ -301,30 +474,27 @@ $('publicToggle').addEventListener('click', async () => {
 // The loop lives in js/sync.js (shared with /welcome); this is only the wiring.
 const syncHandlers = {
   onStep(text, { waiting }) {
-    $('progress').classList.toggle('indeterminate', waiting);
-    $('syncStep').textContent = text;
-    if (waiting) $('syncCount').textContent = '';
+    $('syncHint').textContent = text;
+    if (waiting) setPill('syncing', 'Syncing…');
   },
   onProgress(done, total) {
-    $('progressBar').style.width = total ? `${Math.round((done / total) * 100)}%` : '100%';
-    $('syncCount').textContent = total ? `${done} of ${total}` : '';
+    setPill('syncing', total ? `Syncing ${done} / ${total}` : 'Syncing…');
   },
   async onDone(r) {
-    $('progressBar').style.width = '100%';
     profile = await fetchMyProfile();
-    renderSettings();
     ownGameCount = null;
-    updateBrowseOffer();
+    await updateBrowseOffer();
+    renderSettings();
     const parts = [`${r.total} owned`];
     if (r.fetched) parts.push(`${r.fetched} updated`);
     if (r.removed) parts.push(`${r.removed} removed`);
     if (r.skipped) parts.push(`${r.skipped} skipped`);
-    say($('syncMsg'), `Synced — ${parts.join(', ')}.`, 'ok');
+    $('syncHint').textContent = `Done — ${parts.join(', ')}.`;
   },
   onError(message) {
-    say($('syncMsg'), message, 'err');
-    $('syncStep').textContent = 'Stopped';
-    $('progress').classList.remove('indeterminate');
+    setPill('stale', 'Sync failed');
+    $('syncHint').textContent = message;
+    $('syncHint').classList.add('err');
     ownGameCount = null;
     updateBrowseOffer({ syncFailed: true });
   },
@@ -332,14 +502,12 @@ const syncHandlers = {
 
 $('syncBtn').addEventListener('click', async () => {
   const btn = $('syncBtn');
-  btn.disabled = true;
-  btn.textContent = 'Syncing…';
-  show('syncPanel', true);
-  $('progressBar').style.width = '0%';
-  say($('syncMsg'), '');
+  if (btn.getAttribute('aria-disabled') === 'true') return;
+  setSyncEnabled(false);
+  $('syncHint').classList.remove('err');
+  setPill('syncing', 'Syncing…');
   await runSync(syncHandlers);
-  btn.disabled = false;
-  btn.textContent = 'Sync collection';
+  setSyncEnabled(Boolean(profile?.bgg_username));
 });
 
 // ---- fallback: browse a stocked shelf ----
@@ -363,8 +531,9 @@ async function updateBrowseOffer({ syncFailed = false } = {}) {
     console.error('count own games failed', err);
     ownGameCount = 0;
   }
+  if (profile) renderCollection();
   const offer = ownGameCount === 0 && (!profile?.last_synced_at || syncFailed);
-  show('browseWrap', offer);
+  show('browseBtn', offer);
   if (!offer) show('pickerHost', false);
 }
 let pickerMounted = false;
@@ -376,7 +545,7 @@ $('browseBtn').addEventListener('click', async () => {
     pickerMounted = true;
   } catch (err) {
     console.error('public_shelves failed', err);
-    show('browseWrap', false);
+    show('browseBtn', false);
   }
 });
 
@@ -388,16 +557,45 @@ async function doSignOut() {
 $('signOutBtn').addEventListener('click', doSignOut);
 
 // ---- delete account ----
-// Same confirm dialog the game-night pages use for irreversible steps.
-const confirmEl = $('confirm');
-const openConfirm = () => { confirmEl.classList.add('open'); $('confirmKeep').focus(); };
-const closeConfirm = () => confirmEl.classList.remove('open');
+// Bottom sheet: focus lands on "Keep my account", stays inside the sheet, and
+// returns to the Delete button on close. Background scroll is locked through
+// the shared js/scroll-lock.js like every other overlay on the site.
+const scrim = $('delete-scrim');
+const sheet = $('deleteSheet');
+let sheetLastFocused = null;
+registerOverlay(() => !scrim.hidden);
+const openConfirm = () => {
+  sheetLastFocused = document.activeElement;
+  scrim.hidden = false;
+  syncScrollLock();
+  $('confirmKeep').focus();
+};
+const closeConfirm = () => {
+  if (scrim.hidden) return;
+  scrim.hidden = true;
+  syncScrollLock();
+  (sheetLastFocused || $('deleteBtn')).focus();
+};
 $('deleteBtn').addEventListener('click', openConfirm);
 $('confirmKeep').addEventListener('click', closeConfirm);
-confirmEl.addEventListener('click', (e) => { if (e.target === confirmEl) closeConfirm(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && confirmEl.classList.contains('open')) closeConfirm(); });
+scrim.addEventListener('click', (e) => { if (e.target === scrim) closeConfirm(); });
+document.addEventListener('keydown', (e) => {
+  if (scrim.hidden) return;
+  if (e.key === 'Escape') { e.preventDefault(); closeConfirm(); return; }
+  if (e.key !== 'Tab') return;
+  const focusables = [...sheet.querySelectorAll('button:not([disabled])')];
+  if (!focusables.length) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  else if (!sheet.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+});
 
+let deleting = false;
 $('confirmDelete').addEventListener('click', async () => {
+  if (deleting) return;
+  deleting = true;
   const btn = $('confirmDelete');
   btn.disabled = true;
   btn.textContent = 'Deleting…';
@@ -412,7 +610,8 @@ $('confirmDelete').addEventListener('click', async () => {
     closeConfirm();
     say($('deleteMsg'), err.message, 'err');
     btn.disabled = false;
-    btn.textContent = 'Delete';
+    btn.textContent = 'Delete account';
+    deleting = false;
   }
 });
 
@@ -422,7 +621,7 @@ try {
   show('loading', false);
   if (!user) {
     // Magic links and OAuth both land here; without a session there is nothing to manage.
-    $('sub').textContent = '';
+    $('who').textContent = '';
     show('signedOut', true);
   } else {
     profile = await fetchMyProfile();
@@ -436,7 +635,8 @@ try {
   }
 } catch (err) {
   show('loading', false);
-  $('sub').textContent = err.message || "Couldn't load your settings. Refresh to try again.";
+  $('who').textContent = err.message || "Couldn't load your settings. Refresh to try again.";
+  $('who').className = 'set-who err';
 }
 </script>
 </body>
