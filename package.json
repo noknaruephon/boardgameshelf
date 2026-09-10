@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
+    "@vercel/og": "^1.0.2",
     "fast-xml-parser": "^4.5.0"
   }
 }
