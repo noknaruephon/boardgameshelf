@@ -688,8 +688,9 @@
     }
   }
   .gn-fab:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;}
-  /* Selection mode hands off to the bottom bar — the pill animates down and out. */
-  body.gn-selecting .gn-fab{
+  /* Selection mode hands off to the bottom bar — the pill animates down and
+     out. Packing a bag takes the same handoff. */
+  body.is-selecting .gn-fab{
     opacity:0;
     transform:translateX(-50%) translateY(14px) scale(0.9);
     pointer-events:none;
@@ -1062,38 +1063,41 @@
   }
   .gn-error.show{display:block;}
 
-  /* ---- selection overlays on the shelf card ---- */
+  /* ---- selection overlays on the shelf card ----
+     Shared: body.is-selecting is set by game night's selection mode and by the
+     bag's packing mode alike, so picking games looks and moves the same either
+     way. Only the bar at the bottom differs. */
   .sel-ring,.checkbox,.info-btn{display:none;}
-  body.gn-selecting .sel-ring{
+  body.is-selecting .sel-ring{
     display:block;
     position:absolute;inset:0;z-index:3;
     border:2px solid transparent;border-radius:10px;
     pointer-events:none;transition:border-color 0.15s ease;
   }
-  body.gn-selecting .game-card.selected .sel-ring{border-color:var(--bgs-gold);}
-  body.gn-selecting .checkbox{
+  body.is-selecting .game-card.selected .sel-ring{border-color:var(--bgs-gold);}
+  body.is-selecting .checkbox{
     display:flex;align-items:center;justify-content:center;
     position:absolute;top:6px;left:6px;z-index:4;
     width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,0.55);
     border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);backdrop-filter:blur(3px);
     transition:background 0.15s ease, border-color 0.15s ease;
   }
-  body.gn-selecting .checkbox svg{width:13px;height:13px;opacity:0;transition:opacity 0.12s ease;}
-  body.gn-selecting .game-card.selected .checkbox{background:var(--bgs-gold);border-color:var(--bgs-gold);}
-  body.gn-selecting .game-card.selected .checkbox svg{opacity:1;}
-  body.gn-selecting .info-btn{
+  body.is-selecting .checkbox svg{width:13px;height:13px;opacity:0;transition:opacity 0.12s ease;}
+  body.is-selecting .game-card.selected .checkbox{background:var(--bgs-gold);border-color:var(--bgs-gold);}
+  body.is-selecting .game-card.selected .checkbox svg{opacity:1;}
+  body.is-selecting .info-btn{
     display:flex;align-items:center;justify-content:center;
     position:absolute;top:0;right:0;z-index:4;width:40px;height:40px;
     border:none;background:transparent;cursor:pointer;padding:0;
   }
-  body.gn-selecting .info-btn i{
+  body.is-selecting .info-btn i{
     display:flex;align-items:center;justify-content:center;
     width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.55);
     border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);backdrop-filter:blur(3px);
     font-style:normal;font-size:12px;font-weight:700;color:var(--bgs-ivory-70);font-family:'Fraunces',serif;
   }
-  body.gn-selecting .info-btn:hover i{border-color:var(--bgs-gold);color:var(--bgs-gold);}
-  body.gn-selecting .game-card:not(.selected) .art img{opacity:0.62;transition:opacity 0.15s ease;}
+  body.is-selecting .info-btn:hover i{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+  body.is-selecting .game-card:not(.selected) .art img{opacity:0.62;transition:opacity 0.15s ease;}
 
   /* ---- bottom bar ---- */
   .gn-bar{
@@ -1144,14 +1148,14 @@
      animation every time, so it never advances past its first frame. */
 
   /* Each card gets --gn-d (seconds) from JS = distance from the pill. */
-  body.gn-selecting.gn-waving .checkbox,
-  body.gn-selecting.gn-waving .info-btn{
+  body.is-selecting.gn-waving .checkbox,
+  body.is-selecting.gn-waving .info-btn{
     animation:gn-pop 0.36s cubic-bezier(.2,.8,.2,1.25) both;animation-delay:var(--gn-d,0s);
   }
-  body.gn-selecting.gn-waving .game-card:not(.selected) .sel-ring{
+  body.is-selecting.gn-waving .game-card:not(.selected) .sel-ring{
     animation:gn-ring-pass 0.5s ease-out both;animation-delay:var(--gn-d,0s);
   }
-  body.gn-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:var(--gn-d,0s);}
+  body.is-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:var(--gn-d,0s);}
   @keyframes gn-pop{0%{opacity:0;transform:scale(0.4);}100%{opacity:1;transform:scale(1);}}
   @keyframes gn-ring-pass{0%{border-color:transparent;}35%{border-color:rgba(var(--bgs-gold-rgb),0.9);}100%{border-color:transparent;}}
 
@@ -1359,10 +1363,10 @@
   }
 
   @media (prefers-reduced-motion:reduce){
-    body.gn-selecting.gn-waving .checkbox,
-    body.gn-selecting.gn-waving .info-btn,
-    body.gn-selecting.gn-waving .sel-ring{animation:none;}
-    body.gn-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:0s;}
+    body.is-selecting.gn-waving .checkbox,
+    body.is-selecting.gn-waving .info-btn,
+    body.is-selecting.gn-waving .sel-ring{animation:none;}
+    body.is-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:0s;}
     .gn-random-fab,.gn-random-fab .lbl{transition:none;}
   }
 
@@ -1607,6 +1611,11 @@ const bagVisible =
   BAG_ENABLED || new URLSearchParams(location.search).get('bag') === '1';
 let bag = null; // set by initBag(); owns packing mode and the coverage bar
 
+// Game night and the bag pick games the same way, off the same card overlays:
+// a card carries them whenever either mode can be entered, and body.is-selecting
+// decides when they show.
+const selectionOverlays = gameNightVisible || bagVisible;
+
 let games = [];
 // The profile whose shelf this is. Set by loadGames(); game nights started
 // from here are scoped to it (owner_id).
@@ -1769,9 +1778,9 @@ function render(){
     el.className = 'game-card' + (isSelected ? ' selected' : '');
     el.dataset.id = g.bggId;
     el.innerHTML = `
-      ${gameNightVisible ? '<span class="sel-ring"></span>' : ''}
+      ${selectionOverlays ? '<span class="sel-ring"></span>' : ''}
       <div class="art">
-        ${gameNightVisible ? `<span class="checkbox">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
+        ${selectionOverlays ? `<span class="checkbox">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
         <img src="${g.image}" alt="${g.title} cover" loading="lazy" decoding="async" onerror="this.closest('.art').style.background='var(--bgs-plate)';this.remove()">
       </div>
       <div class="plate-body">
@@ -1784,9 +1793,10 @@ function render(){
     `;
     if(bag) bag.decorateCard(el, g);
     el.addEventListener('click', (ev)=>{
-      // Packing mode turns the whole tile into a toggle: no modal, no
-      // game-night selection — you are picking what goes in the bag.
+      // Packing turns the tile into a toggle, exactly as selection mode does:
+      // the cover picks the game, the ⓘ is the way to the details.
       if(bag && bag.packing()){
+        if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
         bag.toggleGame(g, el);
         return;
       }
@@ -2251,9 +2261,9 @@ function currentGnGameIds(){
 
 // ---- selection mode: bottom bar + tray ----
 
-// The cards carry their checkbox and info button whenever gameNightVisible is
-// true; only `body.gn-selecting` decides whether they show. So switching modes
-// is a body-class flip, not a re-render.
+// The cards carry their checkbox and info button whenever either picking mode
+// is available; only `body.is-selecting` decides whether they show. So entering
+// selection or packing is a body-class flip, not a re-render.
 // Wavefront speed, px/s — the one knob for the entrance. It sets both how fast the
 // ring travels and how far apart the card pops are staggered, which is what keeps
 // the two in step. 1900 lands the top corners of a phone viewport at ~0.44s.
@@ -2263,8 +2273,37 @@ const GN_RANDOM_LABEL_MS = 2200;
 // Half the wave dot's 12px, i.e. its radius at scale 1.
 const GN_WAVE_DOT_R = 6;
 
-function primeGnWave(){
-  const origin = document.getElementById('gnStartBtn');
+// The gold ring that travels out from whatever was tapped to start picking.
+// Either mode can be the first to need it, so it is built on demand.
+function ensureGnWave(){
+  if(gnWave) return gnWave;
+  gnWave = document.createElement('div');
+  gnWave.className = 'gn-wave';
+  gnWave.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(gnWave);
+  return gnWave;
+}
+
+// One entrance for both picking modes: measure the cards from the tapped
+// control, flip the class, send the wave. `gn-waving` is what carries the
+// per-card stagger, and it comes off once the last card has popped.
+function runSelectionWave(origin){
+  if(!origin) return;
+  ensureGnWave();
+  primeGnWave(origin);              // measure before the class flip
+  document.body.classList.add('gn-waving');
+  startGnWave(origin);
+  clearTimeout(runSelectionWave._t);
+  runSelectionWave._t = setTimeout(()=>document.body.classList.remove('gn-waving'), 800);
+}
+
+function stopSelectionWave(){
+  clearTimeout(runSelectionWave._t);
+  document.body.classList.remove('gn-waving');
+  if(gnWave) gnWave.getAnimations().forEach(a => a.cancel());
+}
+
+function primeGnWave(origin){
   if(!origin) return;
   const r = origin.getBoundingClientRect();
   const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
@@ -2283,12 +2322,11 @@ function primeGnWave(){
 // viewport corner: going further only stretches the border into a smear. A fixed
 // scale and duration cleared a phone screen in about 100ms, three times ahead of
 // the ripple and gone before it registered.
-function startGnWave(){
+function startGnWave(origin){
   if(!gnWave) return;
   gnWave.getAnimations().forEach(a => a.cancel());
   if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
 
-  const origin = document.getElementById('gnStartBtn');
   if(!origin) return;
   const r = origin.getBoundingClientRect();
   const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
@@ -2309,11 +2347,8 @@ function startGnWave(){
 
 function enterSelectionMode(){
   state.selectionMode = true;
-  primeGnWave();                       // measure before the class flip
-  document.body.classList.add('gn-selecting', 'gn-waving');
-  startGnWave();
-  clearTimeout(enterSelectionMode._wave);
-  enterSelectionMode._wave = setTimeout(()=>document.body.classList.remove('gn-waving'), 800);
+  document.body.classList.add('gn-selecting', 'is-selecting');
+  runSelectionWave(document.getElementById('gnStartBtn'));
   if(gnRandomBtn){
     gnRandomBtn.classList.add('labelled');
     clearTimeout(enterSelectionMode._label);
@@ -2326,10 +2361,9 @@ function exitSelectionMode(){
   state.selectionMode = false;
   state.selectedIds.clear();
   clearSelectedCards();
-  clearTimeout(enterSelectionMode._wave);
   clearTimeout(enterSelectionMode._label);
-  document.body.classList.remove('gn-selecting', 'gn-waving');
-  if(gnWave) gnWave.getAnimations().forEach(a => a.cancel());
+  document.body.classList.remove('gn-selecting', 'is-selecting');
+  stopSelectionWave();
   if(gnRandomBtn) gnRandomBtn.classList.remove('labelled');
   gnState.mode = null;
   closeGnTray();
@@ -2589,10 +2623,7 @@ function initGameNight(){
   gnRandomBtn.innerHTML = `${GN_ROLL_SVG}<span class="lbl">Random</span>`;
   document.body.appendChild(gnRandomBtn);
 
-  gnWave = document.createElement('div');
-  gnWave.className = 'gn-wave';
-  gnWave.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(gnWave);
+  ensureGnWave();
 
   document.body.insertAdjacentHTML('beforeend', `
     <div class="gn-toast" id="gnToast"></div>
@@ -2806,6 +2837,10 @@ async function initBag(){
     rerender: () => render(),
     headerEl: document.querySelector('header'),
     gridEl: document.getElementById('shelf'),
+    // Packing borrows game night's entrance: the same gold wave, out from
+    // whichever control opened it.
+    runWave: runSelectionWave,
+    stopWave: stopSelectionWave,
   });
 }
 

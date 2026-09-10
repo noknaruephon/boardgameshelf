@@ -5,12 +5,15 @@
    Colours are the production tokens from css/base.css. The mockup's hexes were
    approximations of them and are not used here.
 
-   Two rules worth keeping when this file grows:
-   - the selected ring is an inset box-shadow on a pseudo-element, never an
-     outline: an outline paints under the cover image and is clipped by the
-     card's overflow on iOS;
-   - no element carries an animation and a transition on the same property.
-     WebKit drops the transition when both are declared. */
+   Picking games is not styled here. Packing mode sets body.is-selecting and
+   the cards wear game night's selection overlays — the ring, the checkbox, the
+   ⓘ, the dimmed unpicked covers and the gold entrance wave — so the two modes
+   move identically. Those rules live with the rest of the shelf's card CSS in
+   shelf.html; what is left below is what the bag adds on top of them.
+
+   One rule worth keeping when this file grows: no element carries an animation
+   and a transition on the same property. WebKit drops the transition when both
+   are declared. */
 
 /* ---- entry point ---- */
 
@@ -114,41 +117,6 @@ body.gn-selecting .bag-header-actions{display:none;}
 
 /* ---- grid tiles as toggles ---- */
 
-body[data-bag-state="packing"] .game-card::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:10px;
-  pointer-events:none;
-  z-index:4;
-  box-shadow:inset 0 0 0 0 var(--bgs-gold);
-}
-body[data-bag-state="packing"] .game-card[aria-pressed="true"]::after{
-  box-shadow:inset 0 0 0 3px var(--bgs-gold);
-}
-body[data-bag-state="packing"] .game-card[aria-pressed="false"] .art img{opacity:0.78;}
-body[data-bag-state="packing"] .game-card[aria-pressed="false"]:hover .art img{opacity:1;}
-
-.bag-check{
-  position:absolute;
-  top:8px;
-  right:8px;
-  z-index:5;
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  background:var(--bgs-gold);
-  color:var(--bgs-bg);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  transform:scale(0);
-  transition:transform 160ms cubic-bezier(.2,.8,.3,1);
-}
-body[data-bag-state="packing"] .bag-check{display:flex;}
-body[data-bag-state="packing"] .game-card[aria-pressed="true"] .bag-check{transform:scale(1);}
-.bag-check svg{width:16px;height:16px;}
-
 /* The mono line the packing caption adds: player count and playtime together,
    which is what you are judging while you pack. The card's own players span
    would say the first half of it twice. */
@@ -190,7 +158,7 @@ body[data-bag-state="packing"] .game-card .players{display:none;}
   -webkit-backdrop-filter:blur(10px);
   backdrop-filter:blur(10px);
   border-top:1px solid rgba(var(--bgs-gold-rgb),0.25);
-  transform:translateY(110%);
+  transform:translateY(100%);
   /* visibility keeps the bar's controls out of the tab order while it is down,
      which is what aria-hidden on the same element promises. It flips at the
      end of the slide out, and immediately on the way in. */
@@ -345,7 +313,6 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
 @media (prefers-reduced-motion:reduce){
   .bag-bar,
   body[data-bag-state="packing"] .bag-bar,
-  .bag-check,
   .bag-dot{transition:none;}
 }
 

@@ -19,8 +19,6 @@ import { enableScope, suspendScope, activeBag } from './shelf-scope.js';
 
 const STYLESHEET = '/css/bag.css';
 
-const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-
 const gameId = g => String(g.bggId);
 
 // The shelf collapses a range whose ends match ("30m", not "30–30m"); the bag
@@ -81,8 +79,11 @@ function el(html) {
  * @param {() => void} opts.rerender the shelf's render()
  * @param {HTMLElement} opts.headerEl the page header, where the entry point goes
  * @param {HTMLElement} opts.gridEl the shelf grid
+ * @param {(origin: HTMLElement) => void} [opts.runWave] the shelf's selection
+ *   entrance — the gold wave out from the control that was tapped
+ * @param {() => void} [opts.stopWave] cancels it when packing ends early
  */
-export function setupBag({ getGames, rerender, headerEl, gridEl }) {
+export function setupBag({ getGames, rerender, headerEl, gridEl, runWave, stopWave }) {
   enableScope(true);
   loadStyles();
 
@@ -181,6 +182,10 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
     hint.hidden = mode !== 'packing';
     chip.hidden = mode !== 'packed';
     const packing = mode === 'packing';
+    // The shelf's own selection mode: the card ring, the checkbox, the ⓘ and
+    // the dimmed unpicked covers are game night's, and packing wears them
+    // unchanged. Only the bar at the bottom is the bag's own.
+    document.body.classList.toggle('is-selecting', packing);
     bar.setAttribute('aria-hidden', String(!packing));
     // The bar's visibility takes the slide's 220ms to catch up, and its
     // controls are tabbable for as long as it is still on screen. inert closes
@@ -225,7 +230,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
     chipMeta.textContent = parts.join(' · ');
   }
 
-  function enterPacking(bagId) {
+  function enterPacking(bagId, origin) {
     editingId = bagId || null;
     const existing = editingId ? bagStore.get(editingId) : null;
     // Only ids the shelf still carries make it into the draft, so a game
@@ -238,6 +243,9 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
     applyMode();
     rerender();
     updateBar();
+    // The wave measures the cards it is about to sweep, so it runs on the
+    // grid packing mode just rendered.
+    runWave?.(origin || packBtn);
     // Focus lands on the bar itself rather than the name field: on iOS
     // focusing the input would throw the keyboard over the grid you came to tap.
     bar.focus({ preventScroll: true });
@@ -245,6 +253,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
 
   function commit() {
     if (!draft.size) return;
+    stopWave?.();
     const saved = bagStore.save({
       id: editingId || undefined,
       name: nameInput.value.trim() || 'Bag',
@@ -261,6 +270,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
   }
 
   function cancel() {
+    stopWave?.();
     const wasEditing = !!editingId;
     editingId = null;
     draft = new Set();
@@ -273,6 +283,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
   }
 
   function unpack() {
+    stopWave?.();
     // The bag itself stays: unpacking is putting it down, not throwing it away.
     bagStore.setActive(null);
     mode = 'browse';
@@ -283,10 +294,10 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
 
   // ---- wiring ----
 
-  packBtn.addEventListener('click', () => enterPacking(null));
-  chip.querySelector('[data-bag-edit]').addEventListener('click', () => {
+  packBtn.addEventListener('click', () => enterPacking(null, packBtn));
+  chip.querySelector('[data-bag-edit]').addEventListener('click', (ev) => {
     const bag = activeBag();
-    if (bag) enterPacking(bag.id);
+    if (bag) enterPacking(bag.id, ev.currentTarget);
   });
   chip.querySelector('[data-bag-unpack]').addEventListener('click', unpack);
   cancelBtn.addEventListener('click', cancel);
@@ -308,16 +319,20 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
     /** Turns one freshly rendered grid tile into a packing toggle. */
     decorateCard(cardEl, game) {
       if (mode !== 'packing') {
+        cardEl.classList.remove('selected');
         cardEl.removeAttribute('aria-pressed');
         return;
       }
       const packed = draft.has(gameId(game));
+      // `.selected` is the shelf's selected-card class: the ring, the filled
+      // checkbox and the full-strength cover all follow it, the same as they
+      // do while game night is picking.
+      cardEl.classList.toggle('selected', packed);
       cardEl.setAttribute('aria-pressed', String(packed));
       cardEl.setAttribute(
         'aria-label',
         `${game.title}, ${range(game.players)} players, ${range(game.time)} minutes`
       );
-      cardEl.insertAdjacentHTML('beforeend', `<span class="bag-check" aria-hidden="true">${CHECK_SVG}</span>`);
       const body = cardEl.querySelector('.plate-body');
       if (body) {
         // Player count and playtime, the two things you are weighing while you
@@ -339,7 +354,10 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
       const packed = !draft.has(id);
       if (packed) draft.add(id);
       else draft.delete(id);
-      if (cardEl) cardEl.setAttribute('aria-pressed', String(packed));
+      if (cardEl) {
+        cardEl.classList.toggle('selected', packed);
+        cardEl.setAttribute('aria-pressed', String(packed));
+      }
       updateBar();
     },
 
@@ -348,9 +366,9 @@ export function setupBag({ getGames, rerender, headerEl, gridEl }) {
       if (mode !== 'packed') return;
       updateChip();
       const add = el('<button class="bag-add" type="button" aria-label="Add more games to this bag">+ Add more</button>');
-      add.addEventListener('click', () => {
+      add.addEventListener('click', (ev) => {
         const bag = activeBag();
-        enterPacking(bag ? bag.id : null);
+        enterPacking(bag ? bag.id : null, ev.currentTarget);
       });
       gridEl.appendChild(add);
     },
