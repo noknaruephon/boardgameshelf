@@ -1,6 +1,7 @@
-/* Bag — packing mode, the coverage bar and the packed shelf.
-   Loaded by js/bag-ui.js, which only runs behind the ?bag=1 flag, so a shelf
-   without the flag never fetches this file.
+/* Bag — packing mode, the coverage bar, the Bags row, and the bag page header.
+   Loaded by js/bag-ui.js behind the ?bag=1 flag, and by shelf.html on every
+   /bag/<id> page (those are not gated: a shared link has to work for someone
+   who has never seen the flag).
 
    Colours are the production tokens from css/base.css. The mockup's hexes were
    approximations of them and are not used here.
@@ -36,7 +37,8 @@
   border-color:rgba(var(--bgs-gold-rgb),0.6);
   color:var(--bgs-ivory);
 }
-.bag-pack-btn[hidden]{display:none;}
+.bag-pack-btn[hidden],
+.bag-header-actions[hidden]{display:none;}
 /* Game night owns the bottom of the screen while it is selecting; one packing
    flow at a time. */
 body.gn-selecting .bag-header-actions{display:none;}
@@ -71,38 +73,12 @@ body.gn-selecting .bag-header-actions{display:none;}
 }
 .bag-btn--quiet:hover{border-color:transparent;color:var(--bgs-ivory);}
 .bag-btn:focus-visible,
-.bag-pack-btn:focus-visible,
-.bag-add:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+.bag-pack-btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
-/* ---- active bag: the shelf's count line ---- */
+/* ---- the wordmark's diamond, at the size of a bullet ---- */
 
-/* An active bag is not a card of its own. The line that already says how much
-   of the shelf is showing takes the bag as its subject: "◆ Bali, October ·
-   5 of 196 on the shelf", with Edit and Unpack as text at the end of it.
-   Two classes deep so it wins over .shelf-count whatever order the sheets
-   load in — this file is appended to the head at runtime. */
-.shelf-count.shelf-count--bag{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  flex-wrap:wrap;
-  color:var(--bgs-ivory-70);
-}
-.shelf-count__bag{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  font-family:'Fraunces',serif;
-  font-weight:500;
-  font-size:15px;
-  color:var(--bgs-ivory);
-  /* The name is the one part that can outgrow a phone: it wraps as a whole
-     rather than breaking mid-word. */
-  min-width:0;
-  overflow-wrap:break-word;
-}
-/* The wordmark's diamond, at the size of a bullet. */
-.shelf-count__diamond{
+.bag-diamond{
+  display:inline-block;
   flex:none;
   width:7px;
   height:7px;
@@ -110,36 +86,141 @@ body.gn-selecting .bag-header-actions{display:none;}
   background:var(--bgs-gold);
   transform:rotate(45deg);
 }
-.shelf-count__sep{color:var(--bgs-ivory-45);}
-.shelf-count__acts{
-  margin-left:auto;
-  display:inline-flex;
-  gap:2px;
+
+/* ---- Bags row (shelf, once there is a bag) ---- */
+
+.bags-row{margin:18px 0 0;}
+.bags-row[hidden]{display:none;}
+.bags-row__label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--bgs-ivory-45);
+  margin:0 0 8px;
 }
-.shelf-count__act{
-  position:relative;
-  background:none;
+/* Bleeds to the page edge so the last pill can scroll out under the gutter. */
+.bags-row__scroll{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin:0 -20px;
+  padding:0 20px 6px;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.bags-row__scroll::-webkit-scrollbar{display:none;}
+.bags-row__pill{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  height:30px;
+  padding:0 12px;
+  border-radius:999px;
   border:0;
-  padding:4px 6px;
+  background:transparent;
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  text-decoration:none;
+  white-space:nowrap;
+  cursor:pointer;
+  box-shadow:inset 0 0 0 1px var(--line);
+}
+.bags-row__pill:hover,
+.bags-row__pill:focus-visible{box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.55);outline:none;}
+.bags-row__pill--new{color:var(--bgs-gold);}
+.bags-row__count{
+  font-style:normal;
   font-family:'IBM Plex Mono',monospace;
   font-size:12px;
-  color:var(--bgs-gold);
+  color:var(--bgs-ivory-45);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---- bag page header (/bag/<id>) ---- */
+
+.bag-eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.bag-eyebrow .bag-diamond{margin-right:2px;}
+/* The one way back, in the quietest text on the page. The 32px tap target
+   comes from the box, and the negative margin gives the line its measure back
+   so the eyebrow stays one line tall. */
+.bag-eyebrow__from{
+  display:inline-flex;
+  align-items:center;
+  min-height:32px;
+  margin:-10px 0;
+  color:var(--bgs-ivory-45);
+  text-decoration:none;
+  text-transform:none;
+  letter-spacing:0.14em;
+}
+.bag-eyebrow__from:hover,
+.bag-eyebrow__from:focus-visible{color:var(--bgs-ivory);}
+
+.bag-cov-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin:10px 0 14px;
+}
+.bag-cov-row .bag-dots{gap:3px;}
+.bag-dot--small{
+  width:18px;height:18px;
+  border-radius:4px;
+  font-size:10px;
+}
+.bag-cov-row__meta{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--bgs-ivory-70);
+  font-variant-numeric:tabular-nums;
+}
+
+.bag-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 4px;
+}
+.bag-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:36px;
+  padding:0 16px;
+  border-radius:999px;
+  border:0;
+  background:transparent;
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:500;
   cursor:pointer;
+  box-shadow:inset 0 0 0 1px var(--line);
 }
-/* The text stays small; the thing a thumb has to hit does not. */
-.shelf-count__act::before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:50%;
-  transform:translateY(-50%);
-  height:32px;
+.bag-pill svg{width:16px;height:16px;}
+.bag-pill--gold{
+  color:var(--bgs-gold);
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.6);
 }
-.shelf-count__act--quiet{color:var(--bgs-ivory-45);}
-.shelf-count__act--quiet:hover,
-.shelf-count__act--quiet:focus-visible{color:var(--bgs-ivory);}
-.shelf-count__act:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+.bag-pill--gold:hover{box-shadow:inset 0 0 0 1px var(--bgs-gold);}
+.bag-pill--quiet{
+  box-shadow:none;
+  color:var(--bgs-ivory-70);
+  padding:0 10px;
+}
+.bag-pill--quiet:hover{color:var(--bgs-ivory);}
+.bag-pill:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
 /* ---- packing hint ---- */
 
@@ -165,24 +246,6 @@ body.gn-selecting .bag-header-actions{display:none;}
   white-space:nowrap;
 }
 body[data-bag-state="packing"] .game-card .players{display:none;}
-
-/* ---- "+ Add more" tile (packed) ---- */
-
-.bag-add{
-  border:1px dashed rgba(var(--bgs-gold-rgb),0.5);
-  border-radius:10px;
-  background:transparent;
-  color:var(--bgs-ivory-70);
-  font:inherit;
-  font-family:'Inter',sans-serif;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-  /* Grid items stretch to the row by default, so the tile matches the cards
-     beside it without a height of its own. */
-  padding:20px 10px;
-}
-.bag-add:hover{border-style:solid;color:var(--bgs-ivory);}
 
 /* ---- coverage bar (packing) ---- */
 
@@ -307,6 +370,14 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
 .bag-gap::before{content:"•";color:var(--bgs-gold);margin-right:6px;}
 
 .bag-bar__actions{display:flex;gap:8px;margin-left:auto;}
+.bag-bar__error{
+  flex:0 0 100%;
+  margin:0;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  color:var(--bgs-danger-hover);
+}
+.bag-bar__error[hidden]{display:none;}
 
 /* Screen-reader-only, for the spoken version of the player cells. */
 .bag-sr{
@@ -320,11 +391,6 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
 }
 
 @media (max-width:560px){
-  /* Narrow enough that the name and the count fill the line: the actions take
-     the next one, still ranged right. */
-  .shelf-count.shelf-count--bag{gap:4px 6px;}
-  .shelf-count__acts{margin-left:auto;}
-
   /* Three columns on a phone leave no room for both halves of the mono line:
      the playtime stays there, and the player count goes back to the card's own
      meta row rather than being truncated in the middle. */

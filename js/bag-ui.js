@@ -1,21 +1,25 @@
-// Bag — the packing UI.
+// Bag — the packing UI on the shelf.
 //
-// Three states, and the shelf's body carries the current one as
-// data-bag-state so the CSS can follow:
+// Two states, and the shelf's body carries the current one as data-bag-state
+// so the CSS can follow:
 //
-//   browse ──"Pack a bag"──▶ packing ──"Pack N games"──▶ packed ──"Unpack"──▶ browse
-//                              │ ▲                          │
-//                          Cancel └───────── "Edit" ────────┘
+//   browse ──"Pack a bag" / "+ Pack a bag"──▶ packing ──"Pack N games"──▶ /bag/<id>
+//                                               │
+//                                             Cancel ──▶ browse (or back to the bag being edited)
+//
+// A packed bag is a page of its own (/bag/<id>, routed inside shelf.html), so
+// nothing here is "active": the shelf always shows the whole collection, and
+// this module adds the way in — the Bags row, the entry button, the coverage
+// bar — and the save that ends on the bag's page.
 //
 // Loaded only when the ?bag=1 flag is on: with it off this module is never
-// fetched, so no button, bar or chip exists and localStorage is untouched.
+// fetched, so no row, button or bar exists and localStorage is untouched.
 //
 // Field names are the shelf's own (games.json → shelf-data.js): `bggId`,
-// `players: [min, max]`, `time: [min, max]` — there is no minplayers or
-// maxplaytime on these objects.
+// `players: [min, max]`, `time: [min, max]`.
 
-import { bagStore } from './bag-store.js';
-import { enableScope, suspendScope, activeBag } from './shelf-scope.js';
+import { bagStore, migrateLegacyBags } from './bag-store.js';
+import { coverage, coveredPlayersLabel, timeLabel, cellsHTML } from './bag-coverage.js';
 
 const STYLESHEET = '/css/bag.css';
 
@@ -25,39 +29,12 @@ const gameId = g => String(g.bggId);
 // reads the same way.
 const range = ([lo, hi]) => (lo === hi ? `${lo}` : `${lo}–${hi}`);
 
-/**
- * Player and playtime cover for a set of games.
- * The 8th cell stands for "8 or more", so a 12-player party game lights it.
- */
-function coverage(games) {
-  const covers = n => games.some(g => g.players[0] <= n && (n >= 8 ? g.players[1] >= 8 : g.players[1] >= n));
-  const cells = [1, 2, 3, 4, 5, 6, 7, 8].map(covers);
-  const minTime = games.length ? Math.min(...games.map(g => g.time[0])) : null;
-  const maxTime = games.length ? Math.max(...games.map(g => g.time[1])) : null;
-  // Gaps only mean something once something is packed: an empty bag is not
-  // "missing" anything yet.
-  const gaps = [];
-  if (games.length) {
-    if (!cells[1]) gaps.push('Nothing for 2 players');
-    if (!cells[4]) gaps.push('Nothing for 5 players');
-    if (!games.some(g => g.time[1] <= 30)) gaps.push('Nothing under 30 min');
-  }
-  return { cells, minTime, maxTime, gaps };
-}
-
-function coveredPlayersLabel(cells) {
-  const on = cells.map((covered, i) => (covered ? i + 1 : 0)).filter(Boolean);
-  if (!on.length) return '';
-  const lowest = on[0];
-  const highest = on[on.length - 1];
-  const top = highest === 8 ? '8+' : String(highest);
-  return lowest === highest ? `${top} players` : `${lowest}–${top} players`;
-}
-
-function timeLabel(minTime, maxTime) {
-  if (minTime === null) return '—';
-  return minTime === maxTime ? `${minTime} min` : `${minTime}–${maxTime} min`;
-}
+const SAVE_ERRORS = {
+  NO_TOKEN: 'This browser can’t edit that bag — only the one that packed it can.',
+  FORBIDDEN: 'That bag wouldn’t accept the change: the edit key here doesn’t match.',
+  NOT_FOUND: 'That bag is gone. Pack it again to make a new one.',
+  UNAVAILABLE: 'Couldn’t reach the shelf to save. Check the connection and try again.',
+};
 
 function loadStyles() {
   if (document.querySelector(`link[href="${STYLESHEET}"]`)) return;
@@ -75,25 +52,23 @@ function el(html) {
 
 /**
  * @param {object} opts
- * @param {() => Array<object>} opts.getGames every game on the shelf, unscoped
+ * @param {() => Array<object>} opts.getGames every game on the shelf
  * @param {() => void} opts.rerender the shelf's render()
  * @param {HTMLElement} opts.headerEl the page header, where the entry point goes
  * @param {HTMLElement} opts.gridEl the shelf grid
- * @param {HTMLElement} opts.countEl the "N of 196 on the shelf" line, which an
- *   active bag becomes the subject of
+ * @param {HTMLElement} opts.taglineEl the line the Bags row goes under
+ * @param {string} opts.ownerSlug whose shelf this is: bags are packed for it
  * @param {(origin: HTMLElement) => void} [opts.runWave] the shelf's selection
  *   entrance — the gold wave out from the control that was tapped
  * @param {() => void} [opts.stopWave] cancels it when packing ends early
  */
-export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfCountEl, runWave, stopWave }) {
-  enableScope(true);
+export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, ownerSlug, runWave, stopWave }) {
   loadStyles();
 
-  // A bag left active from a previous visit boots straight into Packed. An
-  // active id whose bag is gone is cleared by activeBag() on the way past.
-  let mode = activeBag() ? 'packed' : 'browse';
-  let draft = new Set();   // bggIds; in-memory until "Pack N games"
-  let editingId = null;    // the bag being edited; null while creating one
+  let mode = 'browse';
+  let draft = new Set();    // bggIds; in-memory until "Pack N games"
+  let editing = null;       // the bag being edited (public shape); null while creating one
+  let saving = false;
 
   // ---- DOM ----
 
@@ -101,6 +76,17 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   const actions = el('<div class="bag-header-actions"></div>');
   actions.appendChild(packBtn);
   headerEl.appendChild(actions);
+
+  // The Bags row: shown once there is a bag to show, and then the entry
+  // point moves into it as "+ Pack a bag".
+  const row = el(`
+    <section class="bags-row" hidden aria-label="Bags">
+      <p class="bags-row__label">Bags</p>
+      <div class="bags-row__scroll"></div>
+    </section>
+  `);
+  const rowScroll = row.querySelector('.bags-row__scroll');
+  (taglineEl || headerEl).after(row);
 
   const hint = el('<p class="bag-hint" hidden>Tap covers to pack them. <b>The bar shows who the bag covers, and for how long.</b></p>');
   gridEl.before(hint);
@@ -134,6 +120,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
           <button class="bag-btn bag-btn--quiet" type="button" data-bag-cancel>Cancel</button>
           <button class="bag-btn bag-btn--primary" type="button" data-bag-commit disabled>Pack</button>
         </div>
+        <p class="bag-bar__error" data-bag-error role="alert" hidden></p>
       </div>
     </div>
   `);
@@ -147,11 +134,45 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   const gapsEl = bar.querySelector('[data-bag-gaps]');
   const commitBtn = bar.querySelector('[data-bag-commit]');
   const cancelBtn = bar.querySelector('[data-bag-cancel]');
+  const errorEl = bar.querySelector('[data-bag-error]');
 
-  dotsEl.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8]
-    .map(n => `<span class="bag-dot" data-n="${n}">${n === 8 ? '8+' : n}</span>`)
-    .join('');
+  dotsEl.innerHTML = cellsHTML([false, false, false, false, false, false, false, false]);
   const dots = Array.from(dotsEl.querySelectorAll('.bag-dot'));
+
+  // ---- the Bags row ----
+
+  function renderBagsRow(bags) {
+    rowScroll.innerHTML = '';
+    for (const bag of bags) {
+      const a = el('<a class="bags-row__pill"><i class="bag-diamond" aria-hidden="true"></i></a>');
+      a.href = `/bag/${encodeURIComponent(bag.id)}`;
+      a.append(bag.name);
+      const n = el('<em class="bags-row__count"></em>');
+      n.textContent = String(bag.game_ids.length);
+      a.append(' ', n);
+      a.setAttribute('aria-label', `${bag.name}, ${bag.game_ids.length} game${bag.game_ids.length === 1 ? '' : 's'}`);
+      rowScroll.appendChild(a);
+    }
+    const add = el('<button class="bags-row__pill bags-row__pill--new" type="button">+ Pack a bag</button>');
+    add.addEventListener('click', () => enterPacking(null, add));
+    rowScroll.appendChild(add);
+    // With a row on the page the entry point lives there, not in the header.
+    row.hidden = bags.length === 0;
+    actions.hidden = bags.length > 0;
+  }
+
+  // Stage 1's local bags are packed again into the shelf first, so they show
+  // up in the row on the same visit. Neither step is allowed to take the
+  // shelf down: a row that fails to load is simply a row that stays hidden.
+  const bagsReady = (async () => {
+    try { await migrateLegacyBags(ownerSlug); } catch { /* reported by the store */ }
+    try {
+      renderBagsRow(await bagStore.list(ownerSlug));
+    } catch (err) {
+      console.warn('[bag] could not list bags', err);
+      renderBagsRow([]);
+    }
+  })();
 
   // ---- state ----
 
@@ -163,7 +184,6 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   function applyMode() {
     document.body.dataset.bagState = mode;
-    packBtn.hidden = mode !== 'browse';
     hint.hidden = mode !== 'packing';
     const packing = mode === 'packing';
     // The shelf's own selection mode: the card ring, the checkbox, the ⓘ and
@@ -175,6 +195,16 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     // controls are tabbable for as long as it is still on screen. inert closes
     // that window where the browser has it; visibility closes it everywhere else.
     if (SUPPORTS_INERT) bar.inert = !packing;
+  }
+
+  function showError(code) {
+    errorEl.textContent = SAVE_ERRORS[code] || SAVE_ERRORS.UNAVAILABLE;
+    errorEl.hidden = false;
+  }
+
+  function clearError() {
+    errorEl.hidden = true;
+    errorEl.textContent = '';
   }
 
   function updateBar() {
@@ -195,58 +225,23 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
       gapsEl.classList.toggle('is-clear', selected.length > 0);
       gapsEl.textContent = selected.length ? 'Covered' : '';
     }
-    commitBtn.disabled = selected.length === 0;
-    commitBtn.textContent = selected.length
-      ? `Pack ${selected.length} game${selected.length === 1 ? '' : 's'}`
-      : 'Pack';
+    commitBtn.disabled = saving || selected.length === 0;
+    commitBtn.textContent = saving
+      ? 'Packing…'
+      : selected.length
+        ? `${editing ? 'Save' : 'Pack'} ${selected.length} game${selected.length === 1 ? '' : 's'}`
+        : 'Pack';
   }
 
-  // The active bag is not a card of its own: it becomes the subject of the
-  // line the shelf already writes. render() rewrites that line's text on every
-  // pass, so this runs after it and rebuilds the parts around what it wrote.
-  function decorateCount() {
-    if (!shelfCountEl) return;
-    const bag = mode === 'packed' ? activeBag() : null;
-    shelfCountEl.classList.toggle('shelf-count--bag', !!bag);
-    if (!bag) return;
-
-    const counted = shelfCountEl.textContent;      // "5 of 196 on the shelf"
-    shelfCountEl.textContent = '';
-
-    const name = el('<span class="shelf-count__bag"><i class="shelf-count__diamond" aria-hidden="true"></i></span>');
-    name.append(bag.name || 'Bag');
-    const sep = el('<span class="shelf-count__sep" aria-hidden="true">·</span>');
-    const rest = el('<span class="shelf-count__n"></span>');
-    rest.textContent = counted;
-    const acts = el('<span class="shelf-count__acts"><button type="button" class="shelf-count__act" data-bag-edit>Edit</button> <button type="button" class="shelf-count__act shelf-count__act--quiet" data-bag-unpack>Unpack</button></span>');
-    acts.querySelector('[data-bag-edit]').addEventListener('click', (ev) => {
-      const active = activeBag();
-      if (active) enterPacking(active.id, ev.currentTarget);
-    });
-    acts.querySelector('[data-bag-unpack]').addEventListener('click', unpack);
-
-    // The spaces are text nodes between flex items, so they add nothing to the
-    // layout — the gap does that — but they keep the line one readable
-    // sentence for a screen reader, which skips the aria-hidden separator.
-    shelfCountEl.append(name, ' ', sep, ' ', rest, ' ', acts);
-  }
-
-  // The Edit button is rebuilt with the line on every render, so callers that
-  // want to hand focus back to it ask for the current one.
-  function countEditBtn() {
-    return shelfCountEl?.querySelector('[data-bag-edit]') || null;
-  }
-
-  function enterPacking(bagId, origin) {
-    editingId = bagId || null;
-    const existing = editingId ? bagStore.get(editingId) : null;
+  function enterPacking(bag, origin) {
+    editing = bag || null;
     // Only ids the shelf still carries make it into the draft, so a game
     // dropped by a sync leaves the bag on the next save.
     const known = new Set(getGames().map(gameId));
-    draft = new Set((existing ? existing.game_ids : []).filter(id => known.has(id)));
-    nameInput.value = existing ? existing.name : '';
+    draft = new Set((editing ? editing.game_ids : []).filter(id => known.has(id)));
+    nameInput.value = editing ? editing.name : '';
+    clearError();
     mode = 'packing';
-    suspendScope(true); // pick from the whole shelf, not from the bag
     applyMode();
     rerender();
     updateBar();
@@ -258,45 +253,43 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     bar.focus({ preventScroll: true });
   }
 
-  function commit() {
-    if (!draft.size) return;
+  // Saving ends on the bag's own page. Until the navigation lands the bar
+  // stays up with everything still selected, so a failure loses nothing.
+  async function commit() {
+    if (!draft.size || saving) return;
     stopWave?.();
-    const saved = bagStore.save({
-      id: editingId || undefined,
-      name: nameInput.value.trim() || 'Bag',
-      game_ids: Array.from(draft),
-    });
-    bagStore.setActive(saved.id);
-    editingId = null;
-    draft = new Set();
-    mode = 'packed';
-    suspendScope(false);
-    applyMode();
-    rerender();
-    countEditBtn()?.focus({ preventScroll: true });
+    saving = true;
+    clearError();
+    updateBar();
+    const payload = { name: nameInput.value.trim() || 'Bag', game_ids: Array.from(draft) };
+    try {
+      const saved = editing
+        ? await bagStore.update(editing.id, payload)
+        : await bagStore.create({ ...payload, owner: ownerSlug });
+      location.href = `/bag/${encodeURIComponent(saved.id)}`;
+    } catch (err) {
+      saving = false;
+      updateBar();
+      showError(err?.code);
+      console.warn('[bag] save failed', err);
+    }
   }
 
   function cancel() {
     stopWave?.();
-    const wasEditing = !!editingId;
-    editingId = null;
+    const back = editing;
+    editing = null;
     draft = new Set();
-    suspendScope(false);
-    mode = wasEditing && activeBag() ? 'packed' : 'browse';
-    applyMode();
-    rerender();
-    const back = (mode === 'packed' ? countEditBtn() : packBtn) || packBtn;
-    back.focus({ preventScroll: true });
-  }
-
-  function unpack() {
-    stopWave?.();
-    // The bag itself stays: unpacking is putting it down, not throwing it away.
-    bagStore.setActive(null);
+    clearError();
+    if (back) {
+      // Editing came from the bag's page; Cancel goes back there unchanged.
+      location.href = `/bag/${encodeURIComponent(back.id)}`;
+      return;
+    }
     mode = 'browse';
     applyMode();
     rerender();
-    packBtn.focus({ preventScroll: true });
+    (actions.hidden ? rowScroll.querySelector('.bags-row__pill--new') : packBtn)?.focus({ preventScroll: true });
   }
 
   // ---- wiring ----
@@ -304,6 +297,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   packBtn.addEventListener('click', () => enterPacking(null, packBtn));
   cancelBtn.addEventListener('click', cancel);
   commitBtn.addEventListener('click', commit);
+  nameInput.addEventListener('input', clearError);
   applyMode();
 
   // ---- what the shelf calls ----
@@ -314,8 +308,21 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
       return mode === 'packing';
     },
 
-    mode() {
-      return mode;
+    /** Resolves once the Bags row has loaded (or given up). */
+    bagsReady,
+
+    /**
+     * Opens packing with an existing bag's games selected and its name in
+     * the input; the shelf calls this for /?bag=1&edit=<id>. Save rewrites
+     * the same bag and returns to its page.
+     */
+    startEdit(bag, origin) {
+      if (!bag || !bagStore.canEdit(bag.id)) {
+        console.warn('[bag] no edit key for this bag in this browser');
+        return false;
+      }
+      enterPacking(bag, origin || packBtn);
+      return true;
     },
 
     /** Turns one freshly rendered grid tile into a packing toggle. */
@@ -361,18 +368,6 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
         cardEl.setAttribute('aria-pressed', String(packed));
       }
       updateBar();
-    },
-
-    /** Called at the end of every render(), after the grid is rebuilt. */
-    afterRender() {
-      decorateCount();
-      if (mode !== 'packed') return;
-      const add = el('<button class="bag-add" type="button" aria-label="Add more games to this bag">+ Add more</button>');
-      add.addEventListener('click', (ev) => {
-        const bag = activeBag();
-        enterPacking(bag ? bag.id : null, ev.currentTarget);
-      });
-      gridEl.appendChild(add);
     },
   };
 }

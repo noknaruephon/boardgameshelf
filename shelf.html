@@ -1571,7 +1571,8 @@ import {
 import { createGameModal } from '/js/game-modal.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { VIBES, applyVibes } from '/js/vibes.js';
-import { scopedGames } from '/js/shelf-scope.js';
+import { bagStore } from '/js/bag-store.js';
+import { coverage as bagCoverage, timeLabel as bagTimeLabel, cellsHTML as bagCellsHTML } from '/js/bag-coverage.js';
 import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
 import { getUser, fetchMyProfile, signOut, userDisplayName } from '/js/auth.js';
 
@@ -1611,10 +1612,19 @@ const bagVisible =
   BAG_ENABLED || new URLSearchParams(location.search).get('bag') === '1';
 let bag = null; // set by initBag(); owns packing mode and the coverage bar
 
+// /bag/<id>: a bag's own page. It is routed here rather than to a page of its
+// own so it shares the grid, the filters, the search and the modal. Not
+// gated by the flag — a shared link has to work for someone who has never
+// seen it. Game Night is hidden on it this stage (it would start a lobby over
+// the whole shelf, which is not what the page shows).
+const bagRouteId = (location.pathname.match(/^\/bag\/([a-z0-9]{8})\/?$/i) || [])[1]?.toLowerCase() || '';
+const isBagRoute = !!bagRouteId;
+let pageBag = null; // the bag this page is, on /bag/<id>
+
 // Game night and the bag pick games the same way, off the same card overlays:
 // a card carries them whenever either mode can be entered, and body.is-selecting
-// decides when they show.
-const selectionOverlays = gameNightVisible || bagVisible;
+// decides when they show. A bag page enters neither.
+const selectionOverlays = !isBagRoute && (gameNightVisible || bagVisible);
 
 let games = [];
 // The profile whose shelf this is. Set by loadGames(); game nights started
@@ -1622,7 +1632,7 @@ let games = [];
 let profile = null;
 
 class ShelfError extends Error {
-  constructor(kind){ super(kind); this.kind = kind; } // 'not-found' | 'private'
+  constructor(kind){ super(kind); this.kind = kind; } // 'not-found' | 'private' | 'bag-not-found'
 }
 
 // /u/<slug>: the slug is the BGG username lowercased, and is compared to
@@ -1644,6 +1654,22 @@ async function loadGames(){
     const mine = await fetchMyProfile();
     if(mine?.slug){ location.replace(`/u/${mine.slug}`); throw new ShelfError('redirect'); }
     throw new ShelfError('empty-own');
+  }
+  if(isBagRoute){
+    pageBag = await bagStore.get(bagRouteId);
+    if(!pageBag) throw new ShelfError('bag-not-found');
+    // A bag whose shelf has since gone private reads as missing too: the
+    // page would have nothing to show for it.
+    profile = await fetchProfileBySlug(pageBag.owner);
+    if(!profile) throw new ShelfError('bag-not-found');
+    const packed = new Set(pageBag.game_ids);
+    // Ids the shelf no longer carries just match nothing; the page counts
+    // what it renders. (Stage 4 adds proposals as a second list — they are
+    // not part of what a bag *holds*, so they will not land here.)
+    games = (await fetchShelfGames(profile.id)).filter(g => packed.has(String(g.bggId)));
+    applyVibes(games);
+    renderBagHeader();
+    return;
   }
   const slug = slugFromPath();
   if(!slug) throw new ShelfError('not-found');
@@ -1673,9 +1699,112 @@ function renderOwner(){
     else if(user.id === profile.id){ a.href = '/settings'; a.textContent = 'Settings'; }
     else { a.href = '/welcome'; a.textContent = 'Your shelf'; }
     eyebrow.append(' · ', a);
+    if(bagVisible){
+      const share = document.createElement('a');
+      share.href = '#'; share.className = 'owner-link'; share.textContent = 'Share';
+      share.addEventListener('click', (e)=>{ e.preventDefault(); shareShelf(share); });
+      eyebrow.append(' · ', share);
+    }
   }).catch(()=>{});
   // The expansions switch only earns its place on a shelf that has some.
-  const hasExpansions = visibleGames().some(g => g.subtype === 'boardgameexpansion');
+  const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
+  document.getElementById('expansionsToggle').style.display = hasExpansions ? '' : 'none';
+}
+
+// The share sheet is fetched the first time something is shared, so a shelf
+// that never shares never loads it.
+async function openShare(opts){
+  const { openShareSheet } = await import('/js/share-sheet.js');
+  return openShareSheet(opts);
+}
+function shareShelf(opener){
+  return openShare({
+    url: `${location.origin}/u/${encodeURIComponent(profile.slug)}`,
+    title: 'Share this shelf',
+    subtitle: `${games.length} games · read-only`,
+    opener,
+  });
+}
+function shareBag(opener){
+  return openShare({
+    url: `${location.origin}/bag/${encodeURIComponent(pageBag.id)}`,
+    title: 'Share this bag',
+    subtitle: 'Anyone with the link can browse it',
+    opener,
+  });
+}
+
+function setMeta(property, content){
+  let m = document.querySelector(`meta[property="${property}"]`);
+  if(!m){ m = document.createElement('meta'); m.setAttribute('property', property); document.head.appendChild(m); }
+  m.setAttribute('content', content);
+}
+
+const BAG_SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M8 7l4-4 4 4"/></svg>';
+
+// The bag page wears the shelf's skeleton — eyebrow, H1, the tagline slot,
+// the search row, the count line, the grid — with the bag's own words in it.
+// Mockup: docs/mockups/bag-page-mockup.html, "Bag page".
+function renderBagHeader(){
+  const name = pageBag.name || 'Bag';
+  const ownerName = profile.display_name || profile.bgg_username || profile.slug;
+  document.title = `${name} · BoardgameShelf`;
+  // Set for the share sheets that read the live page; a crawler sees none of
+  // this until a bag OG route exists, and og:image stays the shelf's.
+  setMeta('og:title', `${name} · a bag from ${ownerName}'s shelf`);
+  setMeta('og:image', `${location.origin}/api/og/${encodeURIComponent(profile.slug)}`);
+
+  // The header styles live in bag.css, which js/bag-ui.js only loads behind
+  // the flag; a bag page needs them regardless.
+  if(!document.querySelector('link[href="/css/bag.css"]')){
+    const link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = '/css/bag.css';
+    document.head.appendChild(link);
+  }
+
+  const eyebrow = document.getElementById('shelfOwner');
+  eyebrow.classList.add('bag-eyebrow');
+  eyebrow.textContent = '';
+  const mark = document.createElement('span');
+  mark.innerHTML = '<i class="bag-diamond" aria-hidden="true"></i> Bag';
+  const from = document.createElement('a');
+  from.className = 'bag-eyebrow__from';
+  from.href = `/u/${encodeURIComponent(profile.slug)}`;
+  from.textContent = `from ${ownerName}`;
+  eyebrow.append(mark, ' · ', from);
+
+  document.querySelector('header h1').textContent = name;
+
+  // Coverage sits where the tagline was: the eight player cells and the
+  // meta line, the same rule the packing bar uses.
+  const cover = bagCoverage(games);
+  const cov = document.createElement('div');
+  cov.className = 'bag-cov-row';
+  const meta = `${games.length} game${games.length === 1 ? '' : 's'} · ${bagTimeLabel(cover.minTime, cover.maxTime)}`;
+  cov.innerHTML = `<div class="bag-dots" aria-hidden="true">${bagCellsHTML(cover.cells, { small: true })}</div><span class="bag-cov-row__meta">${meta}</span>`;
+  cov.setAttribute('aria-label', `${meta}. Player counts covered: ${
+    cover.cells.map((on, i) => on ? (i === 7 ? '8 or more' : String(i + 1)) : '').filter(Boolean).join(', ') || 'none'}`);
+  document.querySelector('header .sub').replaceWith(cov);
+
+  // Share is the one gold action; Edit shows only where the edit key is.
+  const acts = document.createElement('div');
+  acts.className = 'bag-actions';
+  const share = document.createElement('button');
+  share.type = 'button'; share.className = 'bag-pill bag-pill--gold';
+  share.innerHTML = `${BAG_SHARE_ICON}Share`;
+  share.addEventListener('click', ()=> shareBag(share));
+  acts.appendChild(share);
+  if(bagStore.canEdit(pageBag.id)){
+    const edit = document.createElement('a');
+    edit.className = 'bag-pill bag-pill--quiet';
+    edit.href = `/u/${encodeURIComponent(profile.slug)}?bag=1&edit=${encodeURIComponent(pageBag.id)}`;
+    edit.textContent = 'Edit';
+    acts.appendChild(edit);
+  }
+  cov.after(acts);
+
+  document.getElementById('search').placeholder = 'Search this bag…';
+  const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
   document.getElementById('expansionsToggle').style.display = hasExpansions ? '' : 'none';
 }
 
@@ -1684,7 +1813,7 @@ function showShelfState(kind){
   document.getElementById('shelf-count').textContent = '';
   // .filter-sort-bar is display:flex, which would beat the hidden attribute.
   document.getElementById('filterSortBar').style.display = 'none';
-  if(kind === 'not-found' || kind === 'private'){
+  if(kind === 'not-found' || kind === 'private' || kind === 'bag-not-found'){
     const meta = document.createElement('meta');
     meta.name = 'robots'; meta.content = 'noindex';
     document.head.appendChild(meta);
@@ -1711,6 +1840,12 @@ function showShelfState(kind){
     shelf.innerHTML = `<p class="empty-state">There's no shelf at <code>/u/${slugFromPath() || '…'}</code>.<br>The address is a BGG username, lowercased.<a href="/">Go to the front page</a></p>`;
     return;
   }
+  if(kind === 'bag-not-found'){
+    document.title = 'Bag not found · BoardgameShelf';
+    document.getElementById('shelfOwner').textContent = 'Bag';
+    shelf.innerHTML = `<p class="empty-state">This bag doesn't exist.<br>It may have been unpacked, or the link is missing a character.<a href="/">Go to the front page</a></p>`;
+    return;
+  }
   if(kind === 'private'){
     document.title = 'Private shelf · BoardgameShelf';
     document.getElementById('shelfOwner').textContent = slugFromPath();
@@ -1728,29 +1863,21 @@ const state = {
 };
 let draftFilters = { ...DEFAULT_FILTERS };
 
-// The one place the shelf decides which games it is looking at. With a bag
-// packed, scopedGames() narrows the list to that bag; with no bag — or the bag
-// flag off — it hands back the whole shelf untouched. The grid, the header
-// count, the search, the filter sheet's live counts and the sort all read
-// through here, so the rule lives in exactly one place. Game Night's pool
-// reads through it too; share-as-image follows in Stage 2.
-function visibleGames(){
-  return scopedGames(games);
-}
-
-
 function render(){
   const shelf = document.getElementById('shelf');
   const countEl = document.getElementById('shelf-count');
   shelf.innerHTML = "";
 
-  let filtered = applyFilters(visibleGames(), state.filters, state.search);
+  let filtered = applyFilters(games, state.filters, state.search);
   filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? a.bggRating - b.bggRating : b.bggRating - a.bggRating);
 
-  // The denominator stays the whole shelf even while a bag is packed, so the
-  // line reads "3 of 196 on the shelf" and says plainly how much of the
-  // collection you are looking at.
-  countEl.textContent = `${filtered.length} of ${games.length} on the shelf`;
+  // On a bag page `games` is the bag, so the line says how much of it is
+  // showing; "5 games in this bag" until a search or filter narrows it.
+  countEl.textContent = isBagRoute
+    ? (filtered.length === games.length
+        ? `${games.length} game${games.length === 1 ? '' : 's'} in this bag`
+        : `${filtered.length} of ${games.length} in this bag`)
+    : `${filtered.length} of ${games.length} on the shelf`;
 
   // Cached for the tray's "hidden by filters" tags. Only what's *filtered* can
   // change it, and every such change comes through here — so selection toggles
@@ -1768,7 +1895,6 @@ function render(){
       render();
     });
     if(gameNightVisible && state.selectionMode) updateGnBar();
-    if(bag) bag.afterRender();
     return;
   }
 
@@ -1814,7 +1940,6 @@ function render(){
   // so the tray's "hidden by filters" tags need to stay in sync with every
   // re-render, not just the ones that came from toggling a selection.
   if(gameNightVisible && state.selectionMode) updateGnBar();
-  if(bag) bag.afterRender();
 }
 
 // The detail modal itself lives in js/game-modal.js + css/game-modal.css, shared
@@ -1934,7 +2059,7 @@ function syncModeUI(){
 function syncVibePills(){
   vibePills.querySelectorAll('.pill').forEach(p=>{
     const k = p.dataset.vibe;
-    const n = applyFilters(visibleGames(), { ...draftFilters, mode:'vibe', vibe:k }, state.search).length;
+    const n = applyFilters(games, { ...draftFilters, mode:'vibe', vibe:k }, state.search).length;
     const isActive = draftFilters.vibe === k;
     p.classList.toggle('active', isActive);
     p.setAttribute('aria-pressed', String(isActive));
@@ -1976,7 +2101,7 @@ function updateLiveCount(){
   });
   playersGroupLabel.textContent = `Players — ${playersLabel(draftFilters)}`;
   syncVibePills();
-  const liveCount = applyFilters(visibleGames(), draftFilters, state.search).length;
+  const liveCount = applyFilters(games, draftFilters, state.search).length;
   applyBtn.textContent = `Show ${liveCount} game${liveCount===1?'':'s'}`;
 }
 
@@ -2192,10 +2317,10 @@ let gnRandomBtn = null;
 let gnSessionModPromise = null;
 
 // What Game Night is allowed to draw from: the games on screen, filters and
-// search included. With a bag packed that is the bag, so Random — and a single
-// card's re-roll — can only turn up something you actually packed.
+// search included, so Random — and a single card's re-roll — can only turn
+// up something you can see.
 function gnPool(){
-  return applyFilters(visibleGames(), state.filters, state.search);
+  return applyFilters(games, state.filters, state.search);
 }
 
 // Kept in sync by render(); see the note there.
@@ -2830,9 +2955,9 @@ async function initInvite(){
 // ---- Bag (behind ?bag=1) ----
 
 // Built only when the flag is on, so with it off js/bag-ui.js is never
-// fetched, no bag DOM exists and localStorage is never touched. Runs before
-// the first render() so a shelf that boots with a bag already packed renders
-// scoped from the start, rather than flashing the whole collection.
+// fetched, no Bags row, button or bar exists and localStorage is never
+// touched. Bag pages themselves are not built here: /bag/<id> is a route of
+// this page (see isBagRoute) and works with the flag off.
 async function initBag(){
   const { setupBag } = await import('/js/bag-ui.js');
   bag = setupBag({
@@ -2840,14 +2965,26 @@ async function initBag(){
     rerender: () => render(),
     headerEl: document.querySelector('header'),
     gridEl: document.getElementById('shelf'),
-    // An active bag has no card of its own: it becomes the subject of the
-    // count line the shelf already writes.
-    countEl: document.getElementById('shelf-count'),
+    taglineEl: document.querySelector('header .sub'),
+    ownerSlug: profile.slug,
     // Packing borrows game night's entrance: the same gold wave, out from
     // whichever control opened it.
     runWave: runSelectionWave,
     stopWave: stopSelectionWave,
   });
+}
+
+// /u/<slug>?bag=1&edit=<id>: a bag page's Edit lands here, and packing opens
+// with that bag's games selected. Without the edit key for it in this
+// browser the page just shows the shelf, and the address is tidied.
+async function openBagEdit(){
+  const editId = new URLSearchParams(location.search).get('edit');
+  if(!editId || !bag) return;
+  let target = null;
+  try { target = await bagStore.get(editId); } catch { /* falls through */ }
+  if(!target || !bag.startEdit(target)){
+    history.replaceState(null, '', location.pathname);
+  }
 }
 
 // ---- Sticky bar background (only while actually pinned) ----
@@ -2863,10 +3000,13 @@ if('IntersectionObserver' in window){
 
 try {
   await loadGames();
-  if(bagVisible) await initBag();
+  if(bagVisible && !isBagRoute) await initBag();
   render();
-  if(gameNightVisible) initGameNight();
-  if(inviteVisible) await initInvite();
+  // A bag page shows no Game Night this stage (Stage 3 brings it back scoped
+  // to the bag); the invite sheet hangs off its bar, so it goes with it.
+  if(gameNightVisible && !isBagRoute) initGameNight();
+  if(inviteVisible && !isBagRoute) await initInvite();
+  await openBagEdit();
 } catch (err) {
   showShelfState(err instanceof ShelfError ? err.kind : 'error');
 }

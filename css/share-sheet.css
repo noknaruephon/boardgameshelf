@@ -1,0 +1,154 @@
+/* Share sheet — the one bottom sheet for sharing a shelf or a bag.
+   Loaded by js/share-sheet.js the first time something is shared.
+   Colours are the production tokens from css/base.css.
+
+   The sheet and the scrim each carry one transition and no animation, so
+   WebKit never has to pick between the two on the same property. */
+
+.share-scrim{
+  position:fixed;
+  inset:0;
+  z-index:40;
+  background:rgba(0,0,0,0.55);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 200ms ease;
+}
+.share-scrim.is-open{opacity:1;pointer-events:auto;}
+
+.share-sheet{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:41;
+  max-width:560px;
+  margin:0 auto;
+  padding:12px 20px max(20px, env(safe-area-inset-bottom));
+  border-radius:24px 24px 0 0;
+  background:var(--bgs-plate);
+  color:var(--bgs-ivory);
+  box-shadow:0 -1px 0 var(--line), 0 -30px 80px rgba(0,0,0,0.6);
+  transform:translateY(105%);
+  /* visibility keeps the sheet's controls out of the tab order while it is
+     down; it flips at the end of the slide out and at once on the way in. */
+  visibility:hidden;
+  transition:transform 200ms cubic-bezier(.2,.8,.3,1), visibility 0s linear 200ms;
+}
+.share-sheet.is-open{
+  transform:translateY(0);
+  visibility:visible;
+  transition:transform 200ms cubic-bezier(.2,.8,.3,1), visibility 0s;
+}
+
+.share-sheet__grab{
+  width:36px;height:4px;
+  border-radius:2px;
+  background:var(--line);
+  margin:0 auto 16px;
+}
+.share-sheet__title{
+  font-family:'Fraunces',serif;
+  font-weight:500;
+  font-size:20px;
+  margin:0 0 2px;
+  letter-spacing:-0.01em;
+}
+.share-sheet__sub{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--bgs-ivory-45);
+  margin:0 0 16px;
+  font-variant-numeric:tabular-nums;
+}
+
+/* The plate is sized before the code arrives, so nothing shifts when it does. */
+.share-sheet__qr{
+  width:188px;height:188px;
+  margin:0 auto 16px;
+  padding:12px;
+  background:var(--bgs-ivory);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+}
+.share-sheet__qr svg{
+  width:164px;height:164px;
+  display:block;
+  fill:var(--bgs-bg);
+}
+.share-sheet__qr.is-missing{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  text-align:center;
+  color:var(--bgs-bg);
+}
+
+.share-sheet__url{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  height:44px;
+  padding:0 6px 0 14px;
+  border-radius:22px;
+  box-shadow:inset 0 0 0 1px var(--line);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;
+  color:var(--bgs-ivory-70);
+}
+.share-sheet__url span{
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.share-sheet__copy{
+  flex:none;
+  height:32px;
+  padding:0 12px;
+  border-radius:16px;
+  border:0;
+  background:rgba(var(--bgs-ivory-rgb),0.08);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  min-width:72px;
+}
+.share-sheet__copy:hover{background:rgba(var(--bgs-ivory-rgb),0.14);}
+
+.share-sheet__row{display:flex;gap:8px;margin-top:10px;}
+.share-sheet__btn{
+  flex:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:44px;
+  padding:0 16px;
+  border-radius:999px;
+  border:0;
+  background:transparent;
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  box-shadow:inset 0 0 0 1px var(--line);
+}
+.share-sheet__btn:hover{box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.55);}
+.share-sheet__btn svg{width:16px;height:16px;}
+.share-sheet__btn--gold{
+  background:var(--bgs-gold);
+  color:var(--bgs-bg);
+  font-weight:600;
+  box-shadow:none;
+}
+.share-sheet__btn--gold:hover{box-shadow:none;}
+.share-sheet__btn[hidden]{display:none;}
+.share-sheet button:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+
+@media (prefers-reduced-motion:reduce){
+  .share-scrim,
+  .share-sheet,
+  .share-sheet.is-open{transition:none;}
+}
