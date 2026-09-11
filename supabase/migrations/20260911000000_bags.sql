@@ -21,10 +21,16 @@ create extension if not exists pgcrypto;
 -- Eight characters of [a-z0-9], drawn from pgcrypto's randomness. (The spec
 -- sketched encode(..., 'base32'); Postgres has no base32 encoding, so the
 -- alphabet is applied by hand.) Used as the column default and by bag_create.
+--
+-- search_path includes `extensions`: on Supabase that is where pgcrypto's
+-- gen_random_bytes and digest live, and a function that pins its path to
+-- `public` alone cannot see them. A database without that schema ignores
+-- the entry, so the same file runs anywhere.
 create or replace function bag_new_id()
 returns text
 language sql
 volatile
+set search_path = public, extensions
 as $$
   select string_agg(
     substr('abcdefghijklmnopqrstuvwxyz0123456789', (get_byte(gen_random_bytes(1), 0) % 36) + 1, 1),
@@ -70,7 +76,7 @@ create or replace function bag_create(p_name text, p_game_ids text[], p_owner te
 returns table (id text, edit_token text)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_id    text;
@@ -107,7 +113,7 @@ returns table (id text, owner text, name text, game_ids text[], created_at times
 language sql
 stable
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
   select b.id, b.owner, b.name, b.game_ids, b.created_at, b.updated_at
   from bags b
@@ -121,7 +127,7 @@ returns table (id text, owner text, name text, game_ids text[], created_at times
 language sql
 stable
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
   select b.id, b.owner, b.name, b.game_ids, b.created_at, b.updated_at
   from bags b
@@ -137,7 +143,7 @@ create or replace function bag_update(p_id text, p_token text, p_name text, p_ga
 returns table (id text, owner text, name text, game_ids text[], created_at timestamptz, updated_at timestamptz)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_hash text;
@@ -169,7 +175,7 @@ create or replace function bag_delete(p_id text, p_token text)
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_hash text;
