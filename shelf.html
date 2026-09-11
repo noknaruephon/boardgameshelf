@@ -1755,10 +1755,12 @@ function renderBagHeader(){
   setMeta('og:image', `${location.origin}/api/og/${encodeURIComponent(profile.slug)}`);
 
   // The header styles live in bag.css, which js/bag-ui.js only loads behind
-  // the flag; a bag page needs them regardless.
-  if(!document.querySelector('link[href="/css/bag.css"]')){
+  // the flag; a bag page needs them regardless. The confirm dialog is the
+  // one the game-night pages ask with before an irreversible step.
+  for(const href of ['/css/bag.css', '/css/confirm-dialog.css']){
+    if(document.querySelector(`link[href="${href}"]`)) continue;
     const link = document.createElement('link');
-    link.rel = 'stylesheet'; link.href = '/css/bag.css';
+    link.rel = 'stylesheet'; link.href = href;
     document.head.appendChild(link);
   }
 
@@ -1800,12 +1802,83 @@ function renderBagHeader(){
     edit.href = `/u/${encodeURIComponent(profile.slug)}?bag=1&edit=${encodeURIComponent(pageBag.id)}`;
     edit.textContent = 'Edit';
     acts.appendChild(edit);
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'bag-pill bag-pill--quiet bag-pill--danger';
+    del.textContent = 'Delete';
+    del.addEventListener('click', ()=> confirmDeleteBag(del));
+    acts.appendChild(del);
   }
   cov.after(acts);
+  // Where a failed delete says so; empty until then.
+  const note = document.createElement('p');
+  note.className = 'bag-actions__error';
+  note.setAttribute('role', 'alert');
+  note.hidden = true;
+  acts.after(note);
 
   document.getElementById('search').placeholder = 'Search this bag…';
   const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
   document.getElementById('expansionsToggle').style.display = hasExpansions ? '' : 'none';
+}
+
+// Deleting a bag asks first, in the same dialog the game-night pages use.
+// Only the browser holding the edit key ever sees the button; the database
+// checks the key again on the way through. The games are untouched — a bag
+// is a list, not the shelf — so the copy says so.
+let bagConfirm = null;
+function confirmDeleteBag(opener){
+  if(!bagConfirm){
+    bagConfirm = document.createElement('div');
+    bagConfirm.className = 'confirm';
+    bagConfirm.id = 'bagConfirm';
+    bagConfirm.setAttribute('role', 'dialog');
+    bagConfirm.setAttribute('aria-modal', 'true');
+    bagConfirm.setAttribute('aria-labelledby', 'bagConfirmTitle');
+    bagConfirm.innerHTML = `
+      <div class="confirm__panel">
+        <h3 id="bagConfirmTitle">Delete this bag?</h3>
+        <p>Anyone with the link will find nothing there. The games stay on the shelf.</p>
+        <div class="confirm__row">
+          <button class="confirm__keep" type="button" data-bag-keep>Keep it</button>
+          <button class="confirm__end" type="button" data-bag-delete>Delete</button>
+        </div>
+      </div>`;
+    document.body.appendChild(bagConfirm);
+    registerOverlay(() => bagConfirm.classList.contains('open'));
+    const close = ()=>{
+      bagConfirm.classList.remove('open');
+      syncScrollLock();
+      bagConfirm._opener?.focus({ preventScroll: true });
+    };
+    bagConfirm.querySelector('[data-bag-keep]').addEventListener('click', close);
+    bagConfirm.addEventListener('click', (e)=>{ if(e.target === bagConfirm) close(); });
+    bagConfirm.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ e.preventDefault(); close(); } });
+    bagConfirm.querySelector('[data-bag-delete]').addEventListener('click', async ()=>{
+      const btn = bagConfirm.querySelector('[data-bag-delete]');
+      btn.disabled = true; btn.textContent = 'Deleting…';
+      try {
+        await bagStore.remove(pageBag.id);
+        // Back to the shelf the bag came from; its Bags row no longer lists it.
+        location.href = `/u/${encodeURIComponent(profile.slug)}`;
+      } catch (err) {
+        btn.disabled = false; btn.textContent = 'Delete';
+        close();
+        const note = document.querySelector('.bag-actions__error');
+        note.textContent = err?.code === 'FORBIDDEN' || err?.code === 'NO_TOKEN'
+          ? 'This browser’s edit key for the bag doesn’t match, so it can’t be deleted from here.'
+          : err?.code === 'NOT_FOUND'
+            ? 'This bag is already gone.'
+            : 'Couldn’t reach the shelf to delete it. Check the connection and try again.';
+        note.hidden = false;
+        console.warn('[bag] delete failed', err);
+      }
+    });
+  }
+  bagConfirm._opener = opener;
+  bagConfirm.classList.add('open');
+  syncScrollLock();
+  bagConfirm.querySelector('[data-bag-keep]').focus({ preventScroll: true });
 }
 
 function showShelfState(kind){

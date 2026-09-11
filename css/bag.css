@@ -220,6 +220,17 @@ body.gn-selecting .bag-header-actions{display:none;}
   padding:0 10px;
 }
 .bag-pill--quiet:hover{color:var(--bgs-ivory);}
+/* Delete reads as the quiet pill until it is meant: then the shelf's danger
+   colour, the one cancelling a game night uses. */
+.bag-pill--danger:hover,
+.bag-pill--danger:focus-visible{color:var(--bgs-danger-hover);}
+.bag-actions__error{
+  margin:0 0 10px;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  color:var(--bgs-danger-hover);
+}
+.bag-actions__error[hidden]{display:none;}
 .bag-pill:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 
 /* ---- packing hint ---- */
