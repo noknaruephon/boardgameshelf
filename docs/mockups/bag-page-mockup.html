@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — Bag page, Bags row, Share sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bgs-bg: #16110d; --bgs-plate: #241b15; --bgs-plate-2: #2f2419;
+    --bgs-ivory: #f2e8d5; --bgs-ivory-70: rgba(242,232,213,.7); --bgs-ivory-45: rgba(242,232,213,.45); --bgs-ivory-12: rgba(242,232,213,.12);
+    --bgs-gold: #cfa957; --bgs-gold-rgb: 207,169,87;
+    --font-display: "Fraunces", Georgia, serif; --font-body: "Inter", system-ui, sans-serif; --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --t: 200ms ease;
+  }
+  html[data-reduced-motion="true"] { --t: 0s; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0b0806; color: var(--bgs-ivory); font-family: var(--font-body); }
+  body { padding: 20px 16px 60px; }
+  button { font: inherit; cursor: pointer; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--bgs-gold); outline-offset: 2px; }
+
+  .chrome { display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; font: 12px var(--font-mono); color: var(--bgs-ivory-45); }
+  .seg { display: inline-flex; background: var(--bgs-plate); border-radius: 999px; padding: 4px; }
+  .seg button { border: 0; background: transparent; color: var(--bgs-ivory-70); font: 500 13px/1 var(--font-body); padding: 9px 14px; border-radius: 999px; }
+  .seg button[aria-pressed="true"] { background: var(--bgs-plate-2); color: var(--bgs-ivory); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55); }
+  .chrome label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+
+  .phone { position: relative; width: 390px; max-width: 100%; height: 780px; margin: 0 auto; background: var(--bgs-bg); border-radius: 36px; padding: 28px 20px 24px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6), inset 0 0 0 1px var(--bgs-ivory-12); }
+  .screen { position: absolute; inset: 0; padding: 28px 20px 90px; overflow: auto; }
+  .screen[hidden] { display: none !important; }
+
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--bgs-ivory-45); display: flex; gap: 8px; flex-wrap: wrap; }
+  .eyebrow b, .eyebrow a.g { color: var(--bgs-gold); font-weight: 400; text-decoration: none; }
+  .eyebrow a.q { text-decoration: none; }
+  .eyebrow a.q:hover { color: var(--bgs-ivory); }
+  h1 { font-family: var(--font-display); font-weight: 600; font-size: 40px; letter-spacing: -.02em; margin: 14px 0 6px; line-height: 1; }
+  .tag { color: var(--bgs-gold); font-size: 16px; margin: 0 0 18px; }
+  .search { display: flex; gap: 8px; margin: 16px 0 18px; }
+  .search .in { flex: 1; height: 44px; border-radius: 22px; box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); display: flex; align-items: center; padding: 0 16px; color: var(--bgs-ivory-45); font-size: 16px; }
+  .search .ic { width: 44px; height: 44px; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); display: grid; place-items: center; color: var(--bgs-ivory-70); }
+  .count { font-family: var(--font-mono); font-size: 13px; color: var(--bgs-gold); margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .card { background: var(--bgs-plate); border-radius: 14px; overflow: hidden; }
+  .card .cv { aspect-ratio: 3/4; background: var(--bgs-plate-2); }
+  .card .cv img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card .t { font-family: var(--font-display); font-size: 13px; font-weight: 600; padding: 8px 8px 4px; line-height: 1.2; }
+  .card .m { display: flex; justify-content: space-between; align-items: center; padding: 0 8px 8px; }
+  .card .r { font-size: 11px; color: var(--bgs-gold); padding: 3px 8px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.6); }
+  .card .p { font-size: 11px; color: var(--bgs-ivory-45); }
+  .fab { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); height: 46px; padding: 0 22px; border-radius: 999px; border: 0; background: rgba(36,27,21,.9); backdrop-filter: blur(10px); color: var(--bgs-gold); font-weight: 600; font-size: 16px; box-shadow: inset 0 0 0 1.5px var(--bgs-gold), 0 12px 30px rgba(0,0,0,.5); }
+  .diamond { width: 7px; height: 7px; border-radius: 1.5px; background: var(--bgs-gold); transform: rotate(45deg); display: inline-block; flex: none; }
+
+  /* ---- Bags row on the shelf ---- */
+  .bags { display: flex; gap: 8px; overflow-x: auto; margin: 0 -20px 4px; padding: 0 20px 6px; scrollbar-width: none; }
+  .bags::-webkit-scrollbar { display: none; }
+  .bags a, .bags button { flex: none; display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--bgs-ivory); text-decoration: none; background: transparent; border: 0; box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); }
+  .bags a em { font-style: normal; font-family: var(--font-mono); font-size: 12px; color: var(--bgs-ivory-45); }
+  .bags a:hover, .bags button:hover { box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55); }
+  .bags button { color: var(--bgs-gold); }
+  .bags-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--bgs-ivory-45); margin: 0 0 8px; }
+
+  /* ---- Bag page header ---- */
+  .cov { display: flex; align-items: center; gap: 12px; margin: 10px 0 14px; flex-wrap: wrap; }
+  .dots { display: flex; gap: 3px; }
+  .dots span { width: 18px; height: 18px; border-radius: 4px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; color: var(--bgs-ivory-45); background: var(--bgs-plate-2); box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); }
+  .dots span.on { background: var(--bgs-gold); color: var(--bgs-bg); box-shadow: none; }
+  .cov .meta { font-family: var(--font-mono); font-size: 12px; color: var(--bgs-ivory-70); }
+  .acts { display: flex; gap: 8px; align-items: center; }
+  .pill { height: 36px; padding: 0 16px; border-radius: 999px; border: 0; background: transparent; color: var(--bgs-ivory); font-weight: 500; font-size: 14px; box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); display: inline-flex; align-items: center; gap: 8px; }
+  .pill.gold { color: var(--bgs-gold); box-shadow: inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.6); }
+  .pill.q { box-shadow: none; color: var(--bgs-ivory-70); padding: 0 10px; }
+  .pill svg { width: 16px; height: 16px; }
+
+  /* ---- Share sheet ---- */
+  .scrim { position: absolute; inset: 0; background: rgba(0,0,0,.55); opacity: 0; pointer-events: none; transition: opacity var(--t); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px max(20px, env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0; background: var(--bgs-plate); box-shadow: 0 -1px 0 var(--bgs-ivory-12), 0 -30px 80px rgba(0,0,0,.6); transform: translateY(105%); transition: transform var(--t); }
+  .phone[data-sheet="open"] .scrim { opacity: 1; pointer-events: auto; }
+  .phone[data-sheet="open"] .sheet { transform: translateY(0); }
+  .sheet .grab { width: 36px; height: 4px; border-radius: 2px; background: var(--bgs-ivory-12); margin: 0 auto 16px; }
+  .sheet h2 { font-family: var(--font-display); font-weight: 500; font-size: 20px; margin: 0 0 2px; }
+  .sheet .sub { font-family: var(--font-mono); font-size: 12px; color: var(--bgs-ivory-45); margin: 0 0 16px; }
+  .qr { width: 188px; height: 188px; margin: 0 auto 16px; padding: 12px; background: var(--bgs-ivory); border-radius: 14px; display: grid; place-items: center; }
+  .qr img, .qr canvas { width: 164px !important; height: 164px !important; display: block; }
+  .url { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 6px 0 14px; border-radius: 22px; box-shadow: inset 0 0 0 1px var(--bgs-ivory-12); font-family: var(--font-mono); font-size: 13px; color: var(--bgs-ivory-70); }
+  .url span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .url button { height: 32px; padding: 0 12px; border-radius: 16px; border: 0; background: var(--bgs-plate-2); color: var(--bgs-ivory); font-size: 13px; font-weight: 500; }
+  .sheet .row { display: flex; gap: 8px; margin-top: 10px; }
+  .sheet .row .pill { flex: 1; justify-content: center; height: 44px; }
+  .sheet .row .pill.gold { background: var(--bgs-gold); color: var(--bgs-bg); box-shadow: none; }
+
+  .notes { max-width: 390px; margin: 22px auto 0; font-size: 13px; line-height: 1.6; color: var(--bgs-ivory-70); }
+  .notes b { color: var(--bgs-ivory); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="seg" role="group" aria-label="Screen">
+    <button type="button" data-scr="shelf" aria-pressed="true">Shelf · Bags row</button>
+    <button type="button" data-scr="bag" aria-pressed="false">Bag page</button>
+    <button type="button" data-scr="share" aria-pressed="false">Share sheet</button>
+  </div>
+  <label><input type="checkbox" id="rm"> reduced motion</label>
+</div>
+
+<div class="phone" id="phone" data-sheet="closed">
+
+  <!-- ===== Shelf ===== -->
+  <div class="screen" data-screen="shelf">
+    <div class="eyebrow"><span>nok.naruephon</span><span>·</span><b>Settings</b><span>·</span><a class="g" href="#" data-open-sheet="shelf">Share</a></div>
+    <h1>BoardgameShelf</h1>
+    <p class="tag">Browse the game, judge by its cover.</p>
+
+    <p class="bags-label">Bags</p>
+    <div class="bags">
+      <a href="#" data-goto="bag"><i class="diamond"></i>Bali, October <em>5</em></a>
+      <a href="#"><i class="diamond"></i>Cabin weekend <em>8</em></a>
+      <button type="button">+ Pack a bag</button>
+    </div>
+
+    <div class="search"><div class="in">Search titles…</div><div class="ic">≡</div><div class="ic">↑</div></div>
+    <p class="count">196 on the shelf</p>
+    <div class="grid" data-grid="6"></div>
+  </div>
+
+  <!-- ===== Bag page ===== -->
+  <div class="screen" data-screen="bag" hidden>
+    <div class="eyebrow"><span><i class="diamond"></i>&nbsp; Bag</span><span>·</span><a class="q" href="#" data-goto="shelf">from nok.naruephon</a></div>
+    <h1>Bali, October</h1>
+    <div class="cov">
+      <div class="dots"><span class="on">1</span><span class="on">2</span><span class="on">3</span><span class="on">4</span><span>5</span><span>6</span><span>7</span><span>8+</span></div>
+      <span class="meta">5 games · 40–180 min</span>
+    </div>
+    <div class="acts">
+      <button class="pill gold" type="button" data-open-sheet="bag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M8 7l4-4 4 4"/></svg>Share</button>
+      <button class="pill q" type="button">Edit</button>
+    </div>
+
+    <div class="search"><div class="in">Search this bag…</div><div class="ic">≡</div><div class="ic">↑</div></div>
+    <p class="count">5 games in this bag</p>
+    <div class="grid" data-grid="5"></div>
+  </div>
+
+  <button class="fab" type="button" id="fab">🎲&nbsp; Game Night</button>
+
+  <!-- ===== Share sheet (shared component; contents swap) ===== -->
+  <div class="scrim" data-close-sheet></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title">
+    <div class="grab"></div>
+    <h2 id="sh-title">Share this bag</h2>
+    <p class="sub" id="sh-sub">Anyone with the link can browse it</p>
+    <div class="qr" id="qr"></div>
+    <div class="url"><span id="sh-url">boardgameshelf.vercel.app/bag/k7m2p4qx</span><button type="button" id="copy">Copy</button></div>
+    <div class="row">
+      <button class="pill gold" type="button">Share…</button>
+      <button class="pill" type="button" data-close-sheet>Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="notes">
+  <b>Shelf</b> gains a Bags row under the tagline: existing bags as quiet pills with their count, plus "+ Pack a bag." Share lives in the eyebrow next to Settings. <b>Bag page</b> reuses the shelf layout wholesale: the eyebrow says "◆ Bag · from nok.naruephon" — that "from" is the only link back, in the quietest text on the page. The bag name is the H1; coverage sits where the tagline was; Share is the one gold action, Edit is quiet and only renders for the packing device. Game Night is the same floating pill, scoped to the bag in Stage 2. <b>Share sheet</b> is one component for both pages: real QR, the URL with Copy, and the native share sheet. The QR here is generated live from the URL shown.
+</div>
+
+<script>
+  const NAMES = ["Brass: Birmingham","Lairs","Dune: War for Arrakis","Dune: Imperium","Hegemony","Ark Nova","Root","Cascadia"];
+  const RATING = ["8.6","8.5","8.5","8.4","8.3","8.5","8.1","7.9"], PL = ["2–4","2","1–4","1–4","2–6","1–4","2–4","1–4"];
+  const PAL = [["#3a3a3a","#8c8c8c"],["#3d2c4d","#7a5a9c"],["#5a2d1a","#c26a3c"],["#1e2a3a","#4a6a8a"],["#1c3a4a","#3b7a8c"],["#2c3d2a","#5c8a4a"],["#4d2a2a","#8c4a4a"],["#4a3a1a","#9c7a2a"]];
+  const cover = (n, i) => { const [a,b] = PAL[i % PAL.length]; return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="300" height="400" fill="url(#g)"/><text x="30" y="300" font-family="Fraunces,Georgia,serif" font-size="40" fill="#f2e8d5">${n.split(":")[0].split(" ")[0]}</text></svg>`); };
+  document.querySelectorAll("[data-grid]").forEach(g => {
+    NAMES.slice(0, +g.dataset.grid).forEach((n, i) => g.insertAdjacentHTML("beforeend", `<div class="card"><div class="cv"><img src="${cover(n, i)}" alt=""></div><div class="t">${n}</div><div class="m"><span class="r">★ ${RATING[i]}</span><span class="p">${PL[i]}</span></div></div>`));
+  });
+
+  const phone = document.getElementById("phone");
+  const URLS = { bag: "https://boardgameshelf.vercel.app/bag/k7m2p4qx", shelf: "https://boardgameshelf.vercel.app" };
+  let qr;
+  function openSheet(kind) {
+    document.getElementById("sh-title").textContent = kind === "bag" ? "Share this bag" : "Share this shelf";
+    document.getElementById("sh-sub").textContent = kind === "bag" ? "Anyone with the link can browse it" : "196 games · read-only";
+    document.getElementById("sh-url").textContent = URLS[kind].replace("https://", "");
+    const box = document.getElementById("qr"); box.innerHTML = "";
+    if (window.QRCode) qr = new QRCode(box, { text: URLS[kind], width: 164, height: 164, colorDark: "#16110d", colorLight: "#f2e8d5", correctLevel: QRCode.CorrectLevel.M });
+    else box.textContent = "QR";
+    phone.dataset.sheet = "open";
+  }
+  function show(name) {
+    document.querySelectorAll("[data-screen]").forEach(s => s.hidden = s.dataset.screen !== name);
+    document.querySelectorAll("[data-scr]").forEach(b => b.setAttribute("aria-pressed", b.dataset.scr === name || (name === "bag" && b.dataset.scr === "share" && phone.dataset.sheet === "open")));
+  }
+  document.querySelectorAll("[data-scr]").forEach(b => b.addEventListener("click", () => {
+    if (b.dataset.scr === "share") { show("bag"); openSheet("bag"); }
+    else { phone.dataset.sheet = "closed"; show(b.dataset.scr); }
+    document.querySelectorAll("[data-scr]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  }));
+  document.querySelectorAll("[data-goto]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); phone.dataset.sheet = "closed"; show(a.dataset.goto); document.querySelectorAll("[data-scr]").forEach(x => x.setAttribute("aria-pressed", x.dataset.scr === a.dataset.goto)); }));
+  document.querySelectorAll("[data-open-sheet]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); openSheet(b.dataset.openSheet); }));
+  document.querySelectorAll("[data-close-sheet]").forEach(b => b.addEventListener("click", () => phone.dataset.sheet = "closed"));
+  document.getElementById("copy").addEventListener("click", e => { navigator.clipboard?.writeText("https://" + document.getElementById("sh-url").textContent); e.target.textContent = "Copied"; setTimeout(() => e.target.textContent = "Copy", 1200); });
+  document.getElementById("rm").addEventListener("change", e => document.documentElement.dataset.reducedMotion = e.target.checked);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { document.getElementById("rm").checked = true; document.documentElement.dataset.reducedMotion = "true"; }
+</script>
+</body>
+</html>
