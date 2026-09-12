@@ -1,7 +1,11 @@
-// Share sheet — one component for "share this shelf" and "share this bag".
+// Bottom sheets — the scaffold, and the share sheet built on it.
 //
-// A bottom sheet with the QR code, the address with Copy, the native share
-// sheet where the browser has one, and Done. Spec: docs/bag-stage2-spec.md §7.
+// createBottomSheet() is the one bottom-sheet mechanism on the site: scrim,
+// slide, focus trap, Escape/scrim/Done dismissal, focus back to the opener.
+// The share sheet (QR code, the address with Copy, the native share sheet
+// where the browser has one) and the shelf's Bags sheet (js/bag-ui.js) are
+// both built on it, so they can never drift apart. Spec: docs/bag-stage2-spec.md
+// §7 and docs/bag-shelf-header-spec.md §4.
 //
 // The QR is drawn by vendor/qrcode.min.js (qrcode-generator, MIT), the same
 // encoder settings.html already uses — nothing is fetched from a QR service
@@ -16,11 +20,84 @@ const COPIED_MS = 1200;
 
 const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M8 7l4-4 4 4"/></svg>';
 
-let sheet = null;       // built on first open
-let scrim = null;
-let opener = null;      // focus goes back here on close
 let copiedTimer = 0;
 let qrLoading = null;
+
+/**
+ * One bottom sheet: built once, opened many times. The caller owns what goes
+ * inside `body`; the scaffold owns everything about being a sheet.
+ *
+ * @param {object} opts
+ * @param {string} opts.className   added to the sheet, for the caller's styles
+ * @param {string} opts.titleId     id of the element that names the dialog
+ * @param {string} opts.bodyHTML    the sheet's contents, under the grab handle
+ * @param {(sheet: HTMLElement) => void} [opts.onClose]
+ */
+export function createBottomSheet({ className = '', titleId, bodyHTML, onClose }) {
+  loadStyles();
+  let opener = null;
+
+  const scrim = document.createElement('div');
+  scrim.className = 'bsheet-scrim';
+
+  const el = document.createElement('div');
+  el.className = `bsheet ${className}`.trim();
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-modal', 'true');
+  if (titleId) el.setAttribute('aria-labelledby', titleId);
+  el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `<div class="bsheet__grab" aria-hidden="true"></div>${bodyHTML}`;
+
+  const isOpen = () => el.classList.contains('is-open');
+
+  const focusable = () =>
+    Array.from(el.querySelectorAll('button:not([hidden]), [href], input, [tabindex]:not([tabindex="-1"])'))
+      .filter(x => !x.disabled && x.offsetParent !== null);
+
+  function close() {
+    if (!isOpen()) return;
+    scrim.classList.remove('is-open');
+    el.classList.remove('is-open');
+    el.setAttribute('aria-hidden', 'true');
+    syncScrollLock();
+    const back = opener;
+    opener = null;
+    onClose?.(el);
+    if (back && typeof back.focus === 'function' && document.contains(back)) back.focus({ preventScroll: true });
+  }
+
+  function open(from = null, { focus = null } = {}) {
+    opener = from || document.activeElement;
+    el.setAttribute('aria-hidden', 'false');
+    scrim.classList.add('is-open');
+    el.classList.add('is-open');
+    syncScrollLock();
+    const target = focus || focusable()[0];
+    target?.focus({ preventScroll: true });
+  }
+
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const items = focusable();
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  scrim.addEventListener('click', close);
+  el.querySelectorAll('[data-sheet-close]').forEach(b => b.addEventListener('click', close));
+
+  document.body.append(scrim, el);
+  registerOverlay(isOpen);
+
+  return { el, open, close, isOpen };
+}
+
+// ---- the share sheet ----
+
+let share = null;       // { el, open, close } — built on first open
 
 function loadOnce(tag, attrs, ready) {
   return new Promise(resolve => {
@@ -61,60 +138,29 @@ function qrSvg(url) {
 }
 
 function build() {
-  scrim = document.createElement('div');
-  scrim.className = 'share-scrim';
-  scrim.addEventListener('click', close);
-
-  sheet = document.createElement('div');
-  sheet.className = 'share-sheet';
-  sheet.setAttribute('role', 'dialog');
-  sheet.setAttribute('aria-modal', 'true');
-  sheet.setAttribute('aria-labelledby', 'shareSheetTitle');
-  sheet.setAttribute('aria-hidden', 'true');
-  sheet.innerHTML = `
-    <div class="share-sheet__grab" aria-hidden="true"></div>
-    <h2 class="share-sheet__title" id="shareSheetTitle"></h2>
-    <p class="share-sheet__sub" data-share-sub></p>
-    <div class="share-sheet__qr" data-share-qr role="img"></div>
-    <div class="share-sheet__url">
-      <span data-share-url></span>
-      <button type="button" class="share-sheet__copy" data-share-copy>Copy</button>
-    </div>
-    <div class="share-sheet__row">
-      <button type="button" class="share-sheet__btn share-sheet__btn--gold" data-share-native>${SHARE_ICON}Share…</button>
-      <button type="button" class="share-sheet__btn" data-share-done>Done</button>
-    </div>
-  `;
-  sheet.querySelector('[data-share-done]').addEventListener('click', close);
-  sheet.querySelector('[data-share-copy]').addEventListener('click', copy);
-  sheet.querySelector('[data-share-native]').addEventListener('click', shareNative);
-  sheet.addEventListener('keydown', onKeydown);
-
-  document.body.append(scrim, sheet);
-  registerOverlay(isOpen);
-}
-
-function isOpen() {
-  return !!sheet && sheet.classList.contains('is-open');
-}
-
-function focusable() {
-  return Array.from(sheet.querySelectorAll('button:not([hidden]), [href], input, [tabindex]:not([tabindex="-1"])'))
-    .filter(el => !el.disabled && el.offsetParent !== null);
-}
-
-function onKeydown(e) {
-  if (e.key === 'Escape') { e.preventDefault(); close(); return; }
-  if (e.key !== 'Tab') return;
-  const items = focusable();
-  if (!items.length) return;
-  const first = items[0];
-  const last = items[items.length - 1];
-  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  share = createBottomSheet({
+    className: 'share-sheet',
+    titleId: 'shareSheetTitle',
+    bodyHTML: `
+      <h2 class="bsheet__title" id="shareSheetTitle"></h2>
+      <p class="share-sheet__sub" data-share-sub></p>
+      <div class="share-sheet__qr" data-share-qr role="img"></div>
+      <div class="share-sheet__url">
+        <span data-share-url></span>
+        <button type="button" class="share-sheet__copy" data-share-copy>Copy</button>
+      </div>
+      <div class="share-sheet__row">
+        <button type="button" class="share-sheet__btn share-sheet__btn--gold" data-share-native>${SHARE_ICON}Share…</button>
+        <button type="button" class="share-sheet__btn" data-share-done data-sheet-close>Done</button>
+      </div>
+    `,
+  });
+  share.el.querySelector('[data-share-copy]').addEventListener('click', copy);
+  share.el.querySelector('[data-share-native]').addEventListener('click', shareNative);
 }
 
 async function copy() {
+  const sheet = share.el;
   const btn = sheet.querySelector('[data-share-copy]');
   const url = sheet.dataset.url;
   try {
@@ -134,7 +180,7 @@ async function copy() {
 }
 
 async function shareNative() {
-  const { url, title } = sheet.dataset;
+  const { url, title } = share.el.dataset;
   try {
     await navigator.share({ url, title });
   } catch {
@@ -151,9 +197,8 @@ async function shareNative() {
  * @param {HTMLElement} [opts.opener] gets focus back on close
  */
 export async function openShareSheet({ url, title, subtitle, opener: from = null }) {
-  loadStyles();
-  if (!sheet) build();
-  opener = from || document.activeElement;
+  if (!share) build();
+  const sheet = share.el;
 
   sheet.dataset.url = url;
   sheet.dataset.title = title;
@@ -168,11 +213,7 @@ export async function openShareSheet({ url, title, subtitle, opener: from = null
   qr.innerHTML = '';
   qr.classList.remove('is-missing');
 
-  sheet.setAttribute('aria-hidden', 'false');
-  scrim.classList.add('is-open');
-  sheet.classList.add('is-open');
-  syncScrollLock();
-  sheet.querySelector('[data-share-done]').focus({ preventScroll: true });
+  share.open(from, { focus: sheet.querySelector('[data-share-done]') });
 
   // Drawn after the sheet is on its way up, so a slow script never holds the
   // sheet back; the plate is sized already, so nothing shifts when it lands.
@@ -183,16 +224,5 @@ export async function openShareSheet({ url, title, subtitle, opener: from = null
 }
 
 export function closeShareSheet() {
-  close();
-}
-
-function close() {
-  if (!isOpen()) return;
-  scrim.classList.remove('is-open');
-  sheet.classList.remove('is-open');
-  sheet.setAttribute('aria-hidden', 'true');
-  syncScrollLock();
-  const back = opener;
-  opener = null;
-  if (back && typeof back.focus === 'function' && document.contains(back)) back.focus({ preventScroll: true });
+  share?.close();
 }

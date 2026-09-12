@@ -1,11 +1,11 @@
-/* Share sheet — the one bottom sheet for sharing a shelf or a bag.
-   Loaded by js/share-sheet.js the first time something is shared.
-   Colours are the production tokens from css/base.css.
+/* Bottom sheets — the scaffold every sheet on the site shares (.bsheet), and
+   the share sheet's own parts. Loaded by js/share-sheet.js the first time a
+   sheet is built. Colours are the production tokens from css/base.css.
 
    The sheet and the scrim each carry one transition and no animation, so
    WebKit never has to pick between the two on the same property. */
 
-.share-scrim{
+.bsheet-scrim{
   position:fixed;
   inset:0;
   z-index:40;
@@ -14,9 +14,9 @@
   pointer-events:none;
   transition:opacity 200ms ease;
 }
-.share-scrim.is-open{opacity:1;pointer-events:auto;}
+.bsheet-scrim.is-open{opacity:1;pointer-events:auto;}
 
-.share-sheet{
+.bsheet{
   position:fixed;
   left:0;right:0;bottom:0;
   z-index:41;
@@ -33,25 +33,27 @@
   visibility:hidden;
   transition:transform 200ms cubic-bezier(.2,.8,.3,1), visibility 0s linear 200ms;
 }
-.share-sheet.is-open{
+.bsheet.is-open{
   transform:translateY(0);
   visibility:visible;
   transition:transform 200ms cubic-bezier(.2,.8,.3,1), visibility 0s;
 }
 
-.share-sheet__grab{
+.bsheet__grab{
+  flex:none;
   width:36px;height:4px;
   border-radius:2px;
   background:var(--line);
   margin:0 auto 16px;
 }
-.share-sheet__title{
+.bsheet__title{
   font-family:'Fraunces',serif;
   font-weight:500;
   font-size:20px;
   margin:0 0 2px;
   letter-spacing:-0.01em;
 }
+.bsheet button:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
 .share-sheet__sub{
   font-family:'IBM Plex Mono',monospace;
   font-size:12px;
@@ -145,10 +147,8 @@
 }
 .share-sheet__btn--gold:hover{box-shadow:none;}
 .share-sheet__btn[hidden]{display:none;}
-.share-sheet button:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
-
 @media (prefers-reduced-motion:reduce){
-  .share-scrim,
-  .share-sheet,
-  .share-sheet.is-open{transition:none;}
+  .bsheet-scrim,
+  .bsheet,
+  .bsheet.is-open{transition:none;}
 }

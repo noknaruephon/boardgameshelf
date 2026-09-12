@@ -480,6 +480,26 @@
   .empty-state code{font-family:'IBM Plex Mono',monospace;font-size:0.95em;}
   .owner-link{color:var(--bgs-gold);text-decoration:none;}
   .owner-link:hover{text-decoration:underline;text-underline-offset:3px;}
+  /* Settings as a gear at the right end of the owner line. A 44px target
+     around an 18px icon; pulled up so the icon centres on the text without
+     making the row taller, and out past the gutter so the icon's edge, not
+     the target's, sits flush with it. */
+  .owner-gear{
+    float:right;
+    width:44px;height:44px;
+    margin:-14px -12px 0 0;
+    padding:0;
+    border:0;
+    border-radius:12px;
+    background:transparent;
+    color:var(--bgs-gold);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+  .owner-gear svg{width:18px;height:18px;}
+  .owner-gear:hover,
+  .owner-gear:focus-visible{background:var(--bgs-plate);outline:none;}
+  .owner-gear:focus-visible{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
   @media (max-width:400px){ .mode-tab em{display:none;} }
 
   @media (prefers-reduced-motion:reduce){
@@ -1467,7 +1487,7 @@
 
   <div class="chips-row" id="chipsRow" hidden></div>
 
-  <p class="shelf-count" id="shelf-count" aria-live="polite">Loading the shelf…</p>
+  <p class="shelf-count" id="shelf-count"><span id="shelf-count-text" aria-live="polite">Loading the shelf…</span></p>
   <div class="shelf" id="shelf">
     <div class="game-card game-card-skeleton"><div class="art"></div><div class="plate-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
     <div class="game-card game-card-skeleton"><div class="art"></div><div class="plate-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
@@ -1693,18 +1713,23 @@ function renderOwner(){
   // Owner: Settings. Signed-in guest: their own shelf (/welcome routes to it,
   // or to the connect screen if they have none yet). Signed out: Sign in.
   getUser().then(user => {
+    if(user && user.id === profile.id){
+      // The owner's Settings: a gear at the right end of the line, going
+      // where the Settings word used to.
+      const gear = document.createElement('button');
+      gear.type = 'button';
+      gear.className = 'owner-gear';
+      gear.setAttribute('aria-label', 'Settings');
+      gear.innerHTML = GEAR_ICON;
+      gear.addEventListener('click', ()=>{ location.href = '/settings'; });
+      eyebrow.appendChild(gear);
+      return;
+    }
     const a = document.createElement('a');
     a.className = 'owner-link';
     if(!user){ a.href = '/'; a.textContent = 'Sign in'; }
-    else if(user.id === profile.id){ a.href = '/settings'; a.textContent = 'Settings'; }
     else { a.href = '/welcome'; a.textContent = 'Your shelf'; }
     eyebrow.append(' · ', a);
-    if(bagVisible){
-      const share = document.createElement('a');
-      share.href = '#'; share.className = 'owner-link'; share.textContent = 'Share';
-      share.addEventListener('click', (e)=>{ e.preventDefault(); shareShelf(share); });
-      eyebrow.append(' · ', share);
-    }
   }).catch(()=>{});
   // The expansions switch only earns its place on a shelf that has some.
   const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
@@ -1716,14 +1741,6 @@ function renderOwner(){
 async function openShare(opts){
   const { openShareSheet } = await import('/js/share-sheet.js');
   return openShareSheet(opts);
-}
-function shareShelf(opener){
-  return openShare({
-    url: `${location.origin}/u/${encodeURIComponent(profile.slug)}`,
-    title: 'Share this shelf',
-    subtitle: `${games.length} games · read-only`,
-    opener,
-  });
 }
 function shareBag(opener){
   return openShare({
@@ -1739,6 +1756,8 @@ function setMeta(property, content){
   if(!m){ m = document.createElement('meta'); m.setAttribute('property', property); document.head.appendChild(m); }
   m.setAttribute('content', content);
 }
+
+const GEAR_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
 
 const BAG_SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M8 7l4-4 4 4"/></svg>';
 
@@ -1938,19 +1957,20 @@ let draftFilters = { ...DEFAULT_FILTERS };
 
 function render(){
   const shelf = document.getElementById('shelf');
-  const countEl = document.getElementById('shelf-count');
+  const countEl = document.getElementById('shelf-count-text');
   shelf.innerHTML = "";
 
   let filtered = applyFilters(games, state.filters, state.search);
   filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? a.bggRating - b.bggRating : b.bggRating - a.bggRating);
 
-  // On a bag page `games` is the bag, so the line says how much of it is
-  // showing; "5 games in this bag" until a search or filter narrows it.
+  // The shelf states one fact, the size of the collection; the filter sheet
+  // and the empty state say how much of it a search left. On a bag page
+  // `games` is the bag, and the line says how much of it is showing.
   countEl.textContent = isBagRoute
     ? (filtered.length === games.length
         ? `${games.length} game${games.length === 1 ? '' : 's'} in this bag`
         : `${filtered.length} of ${games.length} in this bag`)
-    : `${filtered.length} of ${games.length} on the shelf`;
+    : `${games.length} on the shelf`;
 
   // Cached for the tray's "hidden by filters" tags. Only what's *filtered* can
   // change it, and every such change comes through here — so selection toggles
@@ -3038,7 +3058,8 @@ async function initBag(){
     rerender: () => render(),
     headerEl: document.querySelector('header'),
     gridEl: document.getElementById('shelf'),
-    taglineEl: document.querySelector('header .sub'),
+    // The bags control takes the right-hand end of the count line.
+    countEl: document.getElementById('shelf-count'),
     ownerSlug: profile.slug,
     // Packing borrows game night's entrance: the same gold wave, out from
     // whichever control opened it.

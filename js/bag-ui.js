@@ -9,8 +9,9 @@
 //
 // A packed bag is a page of its own (/bag/<id>, routed inside shelf.html), so
 // nothing here is "active": the shelf always shows the whole collection, and
-// this module adds the way in — the Bags row, the entry button, the coverage
-// bar — and the save that ends on the bag's page.
+// this module adds the way in — the "N bags" control on the count line, the
+// Bags sheet it opens, the coverage bar — and the save that ends on the bag's
+// page. Spec: docs/bag-shelf-header-spec.md.
 //
 // Loaded only when the ?bag=1 flag is on: with it off this module is never
 // fetched, so no row, button or bar exists and localStorage is untouched.
@@ -20,6 +21,7 @@
 
 import { bagStore, migrateLegacyBags } from './bag-store.js';
 import { coverage, coveredPlayersLabel, timeLabel, cellsHTML } from './bag-coverage.js';
+import { createBottomSheet } from './share-sheet.js';
 
 const STYLESHEET = '/css/bag.css';
 
@@ -56,13 +58,14 @@ function el(html) {
  * @param {() => void} opts.rerender the shelf's render()
  * @param {HTMLElement} opts.headerEl the page header, where the entry point goes
  * @param {HTMLElement} opts.gridEl the shelf grid
- * @param {HTMLElement} opts.taglineEl the line the Bags row goes under
+ * @param {HTMLElement} opts.countEl the "196 on the shelf" line; the bags
+ *   control takes its right-hand end
  * @param {string} opts.ownerSlug whose shelf this is: bags are packed for it
  * @param {(origin: HTMLElement) => void} [opts.runWave] the shelf's selection
  *   entrance — the gold wave out from the control that was tapped
  * @param {() => void} [opts.stopWave] cancels it when packing ends early
  */
-export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, ownerSlug, runWave, stopWave }) {
+export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfCountEl, ownerSlug, runWave, stopWave }) {
   loadStyles();
 
   let mode = 'browse';
@@ -72,21 +75,32 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, owne
 
   // ---- DOM ----
 
-  const packBtn = el('<button class="bag-pack-btn" type="button">Pack a bag</button>');
-  const actions = el('<div class="bag-header-actions"></div>');
-  actions.appendChild(packBtn);
-  headerEl.appendChild(actions);
-
-  // The Bags row: shown once there is a bag to show, and then the entry
-  // point moves into it as "+ Pack a bag".
-  const row = el(`
-    <section class="bags-row" hidden aria-label="Bags">
-      <p class="bags-row__label">Bags</p>
-      <div class="bags-row__scroll"></div>
-    </section>
+  // The one way in: the right-hand end of the count line. With bags it reads
+  // "◆ N bags ▾" and opens the Bags sheet; with none it reads "◆ Pack a bag"
+  // and opens packing straight away.
+  const packBtn = el(`
+    <button class="shelf-bags-btn" type="button" aria-haspopup="dialog" aria-expanded="false">
+      <i class="bag-diamond" aria-hidden="true"></i><span class="shelf-bags-btn__label">Pack a bag</span><span class="shelf-bags-btn__caret" aria-hidden="true" hidden>▾</span>
+    </button>
   `);
-  const rowScroll = row.querySelector('.bags-row__scroll');
-  (taglineEl || headerEl).after(row);
+  const packLabel = packBtn.querySelector('.shelf-bags-btn__label');
+  const packCaret = packBtn.querySelector('.shelf-bags-btn__caret');
+  shelfCountEl.classList.add('shelf-count--with-bags');
+  shelfCountEl.appendChild(packBtn);
+  let bags = [];
+
+  // The Bags sheet: the same scaffold as the share sheet, rows of bags with
+  // a cover stack, and "+ Pack a bag" last.
+  const sheet = createBottomSheet({
+    className: 'bags-sheet',
+    titleId: 'bagsSheetTitle',
+    bodyHTML: `
+      <h2 class="bsheet__title" id="bagsSheetTitle">Bags</h2>
+      <div class="bags-sheet__list" data-bags-list></div>
+    `,
+    onClose: () => packBtn.setAttribute('aria-expanded', 'false'),
+  });
+  const sheetList = sheet.el.querySelector('[data-bags-list]');
 
   const hint = el('<p class="bag-hint" hidden>Tap covers to pack them. <b>The bar shows who the bag covers, and for how long.</b></p>');
   gridEl.before(hint);
@@ -139,39 +153,71 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, owne
   dotsEl.innerHTML = cellsHTML([false, false, false, false, false, false, false, false]);
   const dots = Array.from(dotsEl.querySelectorAll('.bag-dot'));
 
-  // ---- the Bags row ----
+  // ---- the bags control and sheet ----
 
-  function renderBagsRow(bags) {
-    rowScroll.innerHTML = '';
+  function bagGames(bag) {
+    const ids = new Set(bag.game_ids);
+    return getGames().filter(g => ids.has(gameId(g)));
+  }
+
+  function renderControl() {
+    const n = bags.length;
+    packLabel.textContent = n ? `${n} bag${n === 1 ? '' : 's'}` : 'Pack a bag';
+    packCaret.hidden = n === 0;
+    if (n) packBtn.setAttribute('aria-haspopup', 'dialog');
+    else packBtn.removeAttribute('aria-haspopup');
+  }
+
+  function renderSheet() {
+    sheetList.innerHTML = '';
     for (const bag of bags) {
-      const a = el('<a class="bags-row__pill"><i class="bag-diamond" aria-hidden="true"></i></a>');
+      const games = bagGames(bag);
+      const cover = coverage(games);
+      const a = el('<a class="bags-sheet__row"></a>');
       a.href = `/bag/${encodeURIComponent(bag.id)}`;
-      a.append(bag.name);
-      const n = el('<em class="bags-row__count"></em>');
-      n.textContent = String(bag.game_ids.length);
-      a.append(' ', n);
-      a.setAttribute('aria-label', `${bag.name}, ${bag.game_ids.length} game${bag.game_ids.length === 1 ? '' : 's'}`);
-      rowScroll.appendChild(a);
+      // The first three covers, the grid's own thumbnails, so they are
+      // already in the browser's cache.
+      const stack = el('<span class="bags-stack" aria-hidden="true"></span>');
+      for (const g of games.slice(0, 3)) {
+        const img = document.createElement('img');
+        img.src = g.image; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+        img.addEventListener('error', () => img.remove());
+        stack.appendChild(img);
+      }
+      const txt = el('<span class="bags-sheet__txt"><span class="bags-sheet__name"></span><span class="bags-sheet__meta"></span></span>');
+      txt.querySelector('.bags-sheet__name').textContent = bag.name;
+      const parts = [`${games.length} game${games.length === 1 ? '' : 's'}`];
+      const players = coveredPlayersLabel(cover.cells);
+      if (players) parts.push(players.replace(' players', ' p'));
+      if (cover.minTime !== null) parts.push(timeLabel(cover.minTime, cover.maxTime));
+      txt.querySelector('.bags-sheet__meta').textContent = parts.join(' · ');
+      a.append(stack, txt, el('<span class="bags-sheet__chev" aria-hidden="true">›</span>'));
+      sheetList.appendChild(a);
     }
-    const add = el('<button class="bags-row__pill bags-row__pill--new" type="button">+ Pack a bag</button>');
-    add.addEventListener('click', () => enterPacking(null, add));
-    rowScroll.appendChild(add);
-    // With a row on the page the entry point lives there, not in the header.
-    row.hidden = bags.length === 0;
-    actions.hidden = bags.length > 0;
+    const add = el('<button class="bags-sheet__row bags-sheet__row--new" type="button">+ Pack a bag</button>');
+    add.addEventListener('click', () => { sheet.close(); enterPacking(null, packBtn); });
+    sheetList.appendChild(add);
+  }
+
+  function openBags() {
+    if (!bags.length) { enterPacking(null, packBtn); return; }
+    packBtn.setAttribute('aria-expanded', 'true');
+    sheet.open(packBtn);
   }
 
   // Stage 1's local bags are packed again into the shelf first, so they show
-  // up in the row on the same visit. Neither step is allowed to take the
-  // shelf down: a row that fails to load is simply a row that stays hidden.
+  // up in the sheet on the same visit. Neither step is allowed to take the
+  // shelf down: a list that fails to load is simply "Pack a bag".
   const bagsReady = (async () => {
     try { await migrateLegacyBags(ownerSlug); } catch { /* reported by the store */ }
     try {
-      renderBagsRow(await bagStore.list(ownerSlug));
+      bags = await bagStore.list(ownerSlug);
     } catch (err) {
       console.warn('[bag] could not list bags', err);
-      renderBagsRow([]);
+      bags = [];
     }
+    renderControl();
+    renderSheet();
   })();
 
   // ---- state ----
@@ -185,6 +231,8 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, owne
   function applyMode() {
     document.body.dataset.bagState = mode;
     hint.hidden = mode !== 'packing';
+    // The way in steps aside while you are already packing.
+    packBtn.hidden = mode === 'packing';
     const packing = mode === 'packing';
     // The shelf's own selection mode: the card ring, the checkbox, the ⓘ and
     // the dimmed unpicked covers are game night's, and packing wears them
@@ -225,7 +273,10 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, owne
       gapsEl.classList.toggle('is-clear', selected.length > 0);
       gapsEl.textContent = selected.length ? 'Covered' : '';
     }
-    commitBtn.disabled = saving || selected.length === 0;
+    // A bag needs a name before it can be packed: the page it becomes is
+    // titled with it, and the sheet lists it by it.
+    const named = nameInput.value.trim().length > 0;
+    commitBtn.disabled = saving || selected.length === 0 || !named;
     commitBtn.textContent = saving
       ? 'Packing…'
       : selected.length
@@ -256,12 +307,12 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, owne
   // Saving ends on the bag's own page. Until the navigation lands the bar
   // stays up with everything still selected, so a failure loses nothing.
   async function commit() {
-    if (!draft.size || saving) return;
+    if (!draft.size || saving || !nameInput.value.trim()) return;
     stopWave?.();
     saving = true;
     clearError();
     updateBar();
-    const payload = { name: nameInput.value.trim() || 'Bag', game_ids: Array.from(draft) };
+    const payload = { name: nameInput.value.trim(), game_ids: Array.from(draft) };
     try {
       const saved = editing
         ? await bagStore.update(editing.id, payload)
@@ -289,15 +340,15 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, owne
     mode = 'browse';
     applyMode();
     rerender();
-    (actions.hidden ? rowScroll.querySelector('.bags-row__pill--new') : packBtn)?.focus({ preventScroll: true });
+    packBtn.focus({ preventScroll: true });
   }
 
   // ---- wiring ----
 
-  packBtn.addEventListener('click', () => enterPacking(null, packBtn));
+  packBtn.addEventListener('click', openBags);
   cancelBtn.addEventListener('click', cancel);
   commitBtn.addEventListener('click', commit);
-  nameInput.addEventListener('input', clearError);
+  nameInput.addEventListener('input', () => { clearError(); updateBar(); });
   applyMode();
 
   // ---- what the shelf calls ----
@@ -308,7 +359,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, taglineEl, owne
       return mode === 'packing';
     },
 
-    /** Resolves once the Bags row has loaded (or given up). */
+    /** Resolves once the bags list has loaded (or given up). */
     bagsReady,
 
     /**
