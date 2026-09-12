@@ -93,8 +93,9 @@ On completion: set `last_synced_at`, reload shelf data.
 `shelf.html` fetches the profile by slug, then `user_games` joined to `games`
 for that user, via the anon key (RLS handles visibility).
 
-- Covers use `thumbnail_url` with `loading="lazy"` and a neutral placeholder
-  on error.
+- Covers use `loading="lazy"` and a neutral placeholder on error. (Originally
+  `thumbnail_url`; changed to `image_url` after launch because BGG's ~200px
+  thumbnail is blurry on phones, and its signed URLs offer no middle size.)
 - Private shelf → "This shelf is private".
 - Unknown slug → 404 page.
 - Keep the current filter behaviour; expansions
