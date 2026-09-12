@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./covers/**)",
+      "Read(./assets/**)",
+      "Read(./AppIcon_assets/**)",
+      "Read(./vendor/**)",
+      "Read(./docs/mockups/**)",
+      "Read(./games.json)",
+      "Read(./package-lock.json)",
+      "Read(./.env)",
+      "Read(./.env.local)"
+    ]
+  },
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "70"
+  }
+}
