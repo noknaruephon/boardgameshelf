@@ -80,8 +80,10 @@ export function toLegacyGame(ug) {
     weightScore,
     bggRating: num(g.bgg_rating, 0),
     color: x.color || '#241A10',
-    // The grid hotlinks BGG's thumbnail; the modal prefers the full image.
-    image: g.thumbnail_url || g.image_url || '',
+    // Both use BGG's full cover. Its thumbnail is ~200px, which is blurry on
+    // a phone at 2–3× density, and BGG signs each size into the URL so no
+    // middle size can be derived. The thumbnail is only a fallback.
+    image: g.image_url || g.thumbnail_url || '',
     imageLarge: g.image_url || g.thumbnail_url || '',
     blurb: x.blurb || blurbFromDescription(g.description),
     why: Array.isArray(x.why) ? x.why : [],
