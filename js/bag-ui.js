@@ -32,6 +32,8 @@ const gameId = g => String(g.bggId);
 const range = ([lo, hi]) => (lo === hi ? `${lo}` : `${lo}–${hi}`);
 
 const SAVE_ERRORS = {
+  NO_GAMES: 'Pick at least one game to pack.',
+  NO_NAME: 'Name the bag before packing it.',
   NO_TOKEN: 'This browser can’t edit that bag — only the one that packed it can.',
   FORBIDDEN: 'That bag wouldn’t accept the change: the edit key here doesn’t match.',
   NOT_FOUND: 'That bag is gone. Pack it again to make a new one.',
@@ -273,10 +275,9 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
       gapsEl.classList.toggle('is-clear', selected.length > 0);
       gapsEl.textContent = selected.length ? 'Covered' : '';
     }
-    // A bag needs a name before it can be packed: the page it becomes is
-    // titled with it, and the sheet lists it by it.
-    const named = nameInput.value.trim().length > 0;
-    commitBtn.disabled = saving || selected.length === 0 || !named;
+    // Pack stays live: pressing it with nothing picked, or no name, says so
+    // in the bar rather than sitting dimmed with no reason showing.
+    commitBtn.disabled = saving;
     commitBtn.textContent = saving
       ? 'Packing…'
       : selected.length
@@ -307,7 +308,15 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   // Saving ends on the bag's own page. Until the navigation lands the bar
   // stays up with everything still selected, so a failure loses nothing.
   async function commit() {
-    if (!draft.size || saving || !nameInput.value.trim()) return;
+    if (saving) return;
+    // A bag needs games, and a name: the page it becomes is titled with it,
+    // and the sheet lists it by it. Say which is missing, games first.
+    if (!draft.size) { showError('NO_GAMES'); return; }
+    if (!nameInput.value.trim()) {
+      showError('NO_NAME');
+      nameInput.focus();
+      return;
+    }
     stopWave?.();
     saving = true;
     clearError();
@@ -418,6 +427,8 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
         cardEl.classList.toggle('selected', packed);
         cardEl.setAttribute('aria-pressed', String(packed));
       }
+      // Picking a game answers "pick at least one game".
+      if (packed) clearError();
       updateBar();
     },
   };
