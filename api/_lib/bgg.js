@@ -26,8 +26,15 @@ export async function bggFetch(path, params) {
   const url = new URL(BASE + path);
   for (const [k, v] of Object.entries(params)) url.searchParams.set(k, String(v));
 
-  const headers = { 'User-Agent': USER_AGENT, Accept: 'application/xml' };
-  if (process.env.BGG_API_TOKEN) headers.Authorization = `Bearer ${process.env.BGG_API_TOKEN}`;
+  // BGG's XML API requires a registered application token. Refuse to call
+  // without one rather than send an unauthenticated request BGG rejects
+  // anyway — and say so plainly, without naming the variable to the browser.
+  const token = (process.env.BGG_API_TOKEN || '').trim();
+  if (!token) {
+    console.error('BGG_API_TOKEN is not set; refusing to call BGG.');
+    throw new HttpError(500, "This site isn't fully set up to talk to BGG yet. The site owner needs to finish configuring it.", { bgg: 'no-token' });
+  }
+  const headers = { 'User-Agent': USER_AGENT, Accept: 'application/xml', Authorization: `Bearer ${token}` };
 
   let res;
   try {
@@ -43,7 +50,7 @@ export async function bggFetch(path, params) {
   if (res.status >= 500) throw new HttpError(502, BGG_DOWN, { bgg: res.status });
   if (res.status === 401 || res.status === 403) {
     // The token hint is for whoever runs the server, not the person syncing.
-    console.error(`BGG answered ${res.status}. If BGG now requires an API token, set BGG_API_TOKEN on the server.`);
+    console.error(`BGG answered ${res.status}: the BGG_API_TOKEN on the server was rejected.`);
     throw new HttpError(502, 'BGG refused the request. Try again in a minute.', { bgg: res.status });
   }
   if (!res.ok) throw new HttpError(502, `BGG answered ${res.status}.`, { bgg: res.status });

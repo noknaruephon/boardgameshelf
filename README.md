@@ -99,4 +99,4 @@ so treat it as a one-shot.
 
 See [`.env.example`](.env.example). On Vercel, add `SUPABASE_URL` and
 `SUPABASE_SERVICE_ROLE_KEY` under Project → Settings → Environment Variables;
-`BGG_API_TOKEN` is optional.
+plus `BGG_API_TOKEN`, the token BGG issues for the XML API. It is required: without it the sync and username check refuse to run.

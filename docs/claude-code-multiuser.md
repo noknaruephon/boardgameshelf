@@ -257,7 +257,8 @@ so the owner's shelf is unaffected until a real sync updates them.
 ### 11.9 BGG API token
 
 BGG has announced that XML API access will require a registered application
-token. `BGG_API_TOKEN` is optional in `.env`; when set it is sent as
+token. `BGG_API_TOKEN` is required in `.env` (it was optional until BGG
+issued one): it is sent as
 `Authorization: Bearer …` on every BGG request. Nothing else changes.
 
 ### 11.10 Fast path on re-sync
