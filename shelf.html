@@ -632,13 +632,14 @@
   .shelf-footer__wordmark{
     font:italic 500 22px/1 'Fraunces',serif;letter-spacing:-.01em;color:var(--bgs-ivory);
   }
-  /* Existing "Powered by BGG" asset, scaled to 18px tall and otherwise untouched. */
+  /* Existing "Powered by BGG" asset, scaled to 24px tall and otherwise untouched.
+     Never dimmed: BGG's API terms want the logo legible wherever their data
+     is shown, so no opacity on rest or hover. */
   .shelf-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;flex:none;}
-  .shelf-footer .bgg-badge--small{height:18px;opacity:.72;transition:opacity .18s ease;}
-  .shelf-footer .bgg-badge--small:hover{opacity:1;}
-  .shelf-footer .bgg-badge--small img{display:block;height:18px;width:auto;}
+  .shelf-footer .bgg-badge--small{height:24px;}
+  .shelf-footer .bgg-badge--small img{display:block;height:24px;width:auto;}
   .shelf-footer .bgg-badge:focus-visible{
-    outline:none;opacity:1;
+    outline:none;
     box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
   }
   .shelf-footer__links{display:flex;gap:18px;margin:14px 0 20px;font:500 13px/1 'Inter',sans-serif;}
