@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cf.geekdo-images.com" crossorigin>
 <link rel="dns-prefetch" href="https://cf.geekdo-images.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/game-modal.css">
 <script defer src="/_vercel/insights/script.js"></script>
@@ -615,49 +615,44 @@
   .game-card-skeleton .skeleton-line.short{ width:60%; }
 
 
-  footer{
+  /* Footer colophon (docs/footer-redesign-spec.md, Option A). Left-aligned,
+     owned by the wordmark; the BGG badge sits opposite it. Shares the grid's
+     960px cap so the top rule lines up with the shelf above it. Bottom
+     padding clears the Game Night FAB: --fab-clearance = .gn-fab height (46px)
+     + its bottom offset (16px + safe-area) + 16px breathing room. */
+  .shelf-footer{
+    --fab-clearance:calc(78px + env(safe-area-inset-bottom));
     max-width:960px;
     margin:40px auto 0;
-    font-family:'IBM Plex Mono',monospace;
-    text-align:center;
+    border-top:1px solid rgba(var(--bgs-ivory-rgb),.10);
+    padding:22px 0 calc(22px + var(--fab-clearance));
+    text-align:left;
   }
-  footer .primary{
-    font-size:12px;
-    letter-spacing:0.015em;
-    color:var(--bgs-gold-dim);
-    margin:0 0 7px;
-    line-height:1.55;
+  .shelf-footer__row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .shelf-footer__wordmark{
+    font:italic 500 22px/1 'Fraunces',serif;letter-spacing:-.01em;color:var(--bgs-ivory);
   }
-  footer .secondary{
-    font-size:11px;
-    letter-spacing:0.015em;
-    color:rgba(var(--bgs-gold-rgb),0.4);
-    margin:0;
-    line-height:1.55;
+  /* Existing "Powered by BGG" asset, scaled to 18px tall and otherwise untouched. */
+  .shelf-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;flex:none;}
+  .shelf-footer .bgg-badge--small{height:18px;opacity:.72;transition:opacity .18s ease;}
+  .shelf-footer .bgg-badge--small:hover{opacity:1;}
+  .shelf-footer .bgg-badge--small img{display:block;height:18px;width:auto;}
+  .shelf-footer .bgg-badge:focus-visible{
+    outline:none;opacity:1;
+    box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
   }
-  /* "Powered by BGG" attribution. The footer shares the grid's 960px cap, so
-     the rule sits on footer itself and lines up with the shelf above it.
-     No hover opacity: BGG's guidelines want the logo fully legible. */
-  footer{
-    padding-top:24px;
-    border-top:1px solid rgba(var(--bgs-gold-rgb),0.18);
+  .shelf-footer__links{display:flex;gap:18px;margin:14px 0 20px;font:500 13px/1 'Inter',sans-serif;}
+  .shelf-footer__links a{color:rgba(var(--bgs-ivory-rgb),.52);text-decoration:none;border-radius:3px;}
+  .shelf-footer__links a:hover{color:var(--bgs-ivory);}
+  .shelf-footer__links a:focus-visible{
+    outline:none;color:var(--bgs-ivory);
+    box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
   }
-  footer .bgg-badge{
-    display:inline-block;
-    line-height:0;
-    margin:0;
-    border-radius:4px;
+  .shelf-footer__legal{
+    margin:0;font:400 11px/1.55 'IBM Plex Mono',monospace;
+    color:rgba(var(--bgs-ivory-rgb),.36);
   }
-  footer .bgg-badge img{ display:block; }
-  footer .bgg-badge:focus-visible{
-    outline:none;
-    box-shadow:0 0 0 2px var(--bgs-bg), 0 0 0 4px var(--bgs-gold);
-  }
-  footer .legal{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.015em;color:rgba(var(--bgs-gold-rgb),.4);margin:14px 0 0;}
-  footer .legal a{color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
-  footer .legal a:hover{color:var(--bgs-gold);}
-  footer .legal a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
-  footer .copyright{margin-top:8px;line-height:1.55;}
+  .shelf-footer__legal + .shelf-footer__legal{margin-top:2px;}
 
   /* ==== Game Night (Stage 1: session creation) ==== */
 
@@ -1505,12 +1500,19 @@
   </div>
 </div>
 
-<footer>
-<a class="bgg-badge" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
-  <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33" loading="lazy">
-</a>
-  <p class="legal"><a href="/privacy">Privacy policy</a> · <a href="/terms">Terms of service</a></p>
-  <p class="legal copyright">© 2026 Naruephon Nateprachar. All rights reserved.<br>Game data and images courtesy of BoardGameGeek. Board game names and artwork belong to their respective publishers.</p>
+<footer class="shelf-footer">
+  <div class="shelf-footer__row">
+    <span class="shelf-footer__wordmark">BoardgameShelf</span>
+    <a class="bgg-badge bgg-badge--small" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
+      <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33" loading="lazy">
+    </a>
+  </div>
+  <nav class="shelf-footer__links" aria-label="Legal">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </nav>
+  <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar. All rights reserved.</p>
+  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 
 <!-- The game detail modal is created at runtime by js/game-modal.js. -->
