@@ -80,8 +80,8 @@ Markup, added as a sibling immediately after the pill (inside the wordmark wrapp
 
 ```html
 <div class="bgs-beta-tip" role="tooltip" id="bgs-beta-tip" hidden>
-  BoardgameShelf is in beta — things will change and get better.
-  <a href="" target="_blank" rel="noopener" class="bgs-beta-tip__link">Tell me what's off →</a>
+  We’re still in beta and actively improving. If something isn’t working as expected, we’d love to know.
+  <a href="" target="_blank" rel="noopener" class="bgs-beta-tip__link">Give feedback →</a>
 </div>
 ```
 
@@ -162,8 +162,8 @@ Commit message: `feat(header): beta tooltip with feedback link`
 ## Copy (final)
 
 - Pill: `Beta`
-- Tooltip: `BoardgameShelf is in beta — things will change and get better.`
-- Link: `Tell me what's off →`
+- Tooltip: `We’re still in beta and actively improving. If something isn’t working as expected, we’d love to know.`
+- Link: `Give feedback →`
 
 ## Deviations from the mockup
 
