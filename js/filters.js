@@ -1,11 +1,13 @@
 import { VIBES } from './vibes.js';
 
-// showExpansions: expansions (subtype = boardgameexpansion) are hidden until the
-// filter sheet's "Show expansions" switch is on.
+// showExpansions: expansions (subtype = boardgameexpansion) are hidden unless
+// the shelf owner turned "Show expansions" on in Settings. It is carried here
+// so applyFilters can see it, but it is not a filter the viewer set, so it
+// counts for neither isFilterActive nor activeGroupCount.
 export const DEFAULT_FILTERS = { minPlayers:1, maxPlayers:11, mode:"vibe", vibe:null, time:"any", weight:"any", bestFit:false, showExpansions:false };
 
 export function isFilterActive(filters){
-  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any" || filters.bestFit || filters.vibe !== null || !!filters.showExpansions;
+  return filters.minPlayers !== 1 || filters.maxPlayers !== 11 || filters.time !== "any" || filters.weight !== "any" || filters.bestFit || filters.vibe !== null;
 }
 export function activeGroupCount(filters){
   let n = 0;
@@ -16,7 +18,6 @@ export function activeGroupCount(filters){
     if(filters.weight !== "any") n++;
   }
   if(filters.bestFit) n++;
-  if(filters.showExpansions) n++;
   return n;
 }
 export function playersLabel(filters){

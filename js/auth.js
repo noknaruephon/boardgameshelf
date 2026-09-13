@@ -85,7 +85,7 @@ export function slugify(username) {
 const SLUG_RE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 export const isValidSlug = (slug) => SLUG_RE.test(slug);
 
-const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, is_public, last_synced_at, created_at';
+const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, is_public, show_expansions, last_synced_at, created_at';
 
 /** The signed-in user's own profile row, or null before they have claimed one. */
 export async function fetchMyProfile() {

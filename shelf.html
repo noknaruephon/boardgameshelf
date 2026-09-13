@@ -1568,12 +1568,6 @@
       </div>
     </div>
     </div>
-    <div class="sheet-group">
-      <button type="button" class="toggle-row" id="expansionsToggle" role="switch" aria-checked="false">
-        <span class="toggle-switch" aria-hidden="true"></span>
-        <span class="toggle-label">Show expansions</span>
-      </button>
-    </div>
   </div>
   <div class="sheet-footer">
     <button class="apply-btn" id="applyBtn" type="button">Show 196 games</button>
@@ -1682,6 +1676,7 @@ async function loadGames(){
     // page would have nothing to show for it.
     profile = await fetchProfileBySlug(pageBag.owner);
     if(!profile) throw new ShelfError('bag-not-found');
+    state.filters.showExpansions = !!profile.show_expansions;
     const packed = new Set(pageBag.game_ids);
     // Ids the shelf no longer carries just match nothing; the page counts
     // what it renders. (Stage 4 adds proposals as a second list — they are
@@ -1700,6 +1695,7 @@ async function loadGames(){
     const status = await fetchShelfStatus(slug);
     throw new ShelfError(status === 'private' ? 'private' : 'not-found');
   }
+  state.filters.showExpansions = !!profile.show_expansions;
   games = await fetchShelfGames(profile.id);
   applyVibes(games);
   renderOwner();
@@ -1731,9 +1727,6 @@ function renderOwner(){
     else { a.href = '/welcome'; a.textContent = 'Your shelf'; }
     eyebrow.append(' · ', a);
   }).catch(()=>{});
-  // The expansions switch only earns its place on a shelf that has some.
-  const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
-  document.getElementById('expansionsToggle').style.display = hasExpansions ? '' : 'none';
 }
 
 // The share sheet is fetched the first time something is shared, so a shelf
@@ -1837,8 +1830,6 @@ function renderBagHeader(){
   acts.after(note);
 
   document.getElementById('search').placeholder = 'Search this bag…';
-  const hasExpansions = games.some(g => g.subtype === 'boardgameexpansion');
-  document.getElementById('expansionsToggle').style.display = hasExpansions ? '' : 'none';
 }
 
 // Deleting a bag asks first, in the same dialog the game-night pages use.
@@ -1946,14 +1937,18 @@ function showShelfState(kind){
   }
   shelf.innerHTML = `<p class="empty-state">Couldn't load the collection. Try refreshing.</p>`;
 }
+// "Show expansions" is the owner's Settings choice, read off the profile once
+// it loads. It rides inside `filters` so applyFilters sees it, but it is not
+// a filter: resets keep it, the sheet does not show it, chips do not list it.
+const freshFilters = () => ({ ...DEFAULT_FILTERS, showExpansions: !!profile?.show_expansions });
 const state = {
-  filters: { ...DEFAULT_FILTERS },
+  filters: freshFilters(),
   search: "",
   sort: "off", // 'off' (ascending, default) | 'desc'
   selectionMode: false,
   selectedIds: new Set(), // bggId strings, in selection order — persists across filter changes
 };
-let draftFilters = { ...DEFAULT_FILTERS };
+let draftFilters = freshFilters();
 
 function render(){
   const shelf = document.getElementById('shelf');
@@ -1990,7 +1985,7 @@ function render(){
     shelf.innerHTML = `<p class="empty-state">Nothing on the shelf for that.<br>Try another vibe, or widen the player count.<button type="button" id="emptyReset">Clear filters</button></p>`;
     const emptyReset = document.getElementById('emptyReset');
     if(emptyReset) emptyReset.addEventListener('click', ()=>{
-      state.filters = { ...DEFAULT_FILTERS };
+      state.filters = freshFilters();
       render();
     });
     if(gameNightVisible && state.selectionMode) updateGnBar();
@@ -2096,9 +2091,6 @@ function renderChips(){
   if(state.filters.bestFit){
     chips.push({ key:'bestFit', label: 'Recommended counts only' });
   }
-  if(state.filters.showExpansions){
-    chips.push({ key:'showExpansions', label: 'Expansions shown' });
-  }
   if(chips.length===0){
     row.hidden = true;
     row.innerHTML = '';
@@ -2116,7 +2108,6 @@ function renderChips(){
       const key = btn.closest('.chip').dataset.key;
       if(key==='players'){ state.filters.minPlayers = 1; state.filters.maxPlayers = 11; }
       else if(key==='bestFit'){ state.filters.bestFit = false; }
-      else if(key==='showExpansions'){ state.filters.showExpansions = false; }
       else if(key==='vibe'){ state.filters.vibe = null; }
       else state.filters[key] = 'any';
       render();
@@ -2135,7 +2126,6 @@ const numberCueRow = document.getElementById('numberCueRow');
 const playersGroupLabel = document.getElementById('playersGroupLabel');
 const applyBtn = document.getElementById('applyBtn');
 const bestFitToggle = document.getElementById('bestFitToggle');
-const expansionsToggle = document.getElementById('expansionsToggle');
 const modeTabs = document.getElementById('modeTabs');
 const vibePills = document.getElementById('vibePills');
 const vibeHint = document.getElementById('vibeHint');
@@ -2184,7 +2174,6 @@ function syncSheetUI(){
     });
   });
   bestFitToggle.setAttribute('aria-checked', String(draftFilters.bestFit));
-  expansionsToggle.setAttribute('aria-checked', String(!!draftFilters.showExpansions));
   updateLiveCount();
 }
 
@@ -2236,12 +2225,6 @@ numberCueRow.addEventListener('click', (e)=>{
 bestFitToggle.addEventListener('click', ()=>{
   draftFilters.bestFit = !draftFilters.bestFit;
   bestFitToggle.setAttribute('aria-checked', String(draftFilters.bestFit));
-  updateLiveCount();
-});
-
-expansionsToggle.addEventListener('click', ()=>{
-  draftFilters.showExpansions = !draftFilters.showExpansions;
-  expansionsToggle.setAttribute('aria-checked', String(draftFilters.showExpansions));
   updateLiveCount();
 });
 
@@ -2320,7 +2303,7 @@ registerOverlay(isSheetOpen);
 document.getElementById('filterBtn').addEventListener('click', openSheet);
 sheetScrim.addEventListener('click', closeSheet);
 document.getElementById('resetLink').addEventListener('click', ()=>{
-  draftFilters = { ...DEFAULT_FILTERS };
+  draftFilters = freshFilters();
   syncSheetUI();
 });
 applyBtn.addEventListener('click', ()=>{

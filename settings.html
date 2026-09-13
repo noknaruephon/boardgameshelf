@@ -280,6 +280,10 @@
         <span class="lab" id="lbl-public"><span class="t">Public</span><span class="s" id="publicHint">Anyone with the link can browse and start a game night</span></span>
         <button type="button" class="toggle" id="publicToggle" role="switch" aria-checked="true" aria-labelledby="lbl-public"></button>
       </div>
+      <div class="row">
+        <span class="lab" id="lbl-expansions"><span class="t">Show expansions</span><span class="s" id="expansionsHint">Expansions you own appear on the shelf and count toward it</span></span>
+        <button type="button" class="toggle" id="expansionsToggle" role="switch" aria-checked="false" aria-labelledby="lbl-expansions"></button>
+      </div>
     </section>
 
     <section class="set-group" aria-labelledby="g-bgg">
@@ -366,6 +370,8 @@ const show = (id, on) => { $(id).hidden = !on; };
 
 const PUBLIC_HINT = 'Anyone with the link can browse and start a game night';
 const PRIVATE_HINT = 'Only you can see it while signed in';
+const EXPANSIONS_ON_HINT = 'Expansions you own appear on the shelf and count toward it';
+const EXPANSIONS_OFF_HINT = 'Only base games show. Expansions stay synced, just out of sight';
 const SYNC_HINT = 'Pulls owned games. Takes a minute or two for big shelves.';
 const NO_USERNAME_HINT = 'Add your BGG username first';
 
@@ -436,6 +442,8 @@ function renderSettings() {
 
   $('publicToggle').setAttribute('aria-checked', String(profile.is_public));
   $('publicHint').textContent = profile.is_public ? PUBLIC_HINT : PRIVATE_HINT;
+  $('expansionsToggle').setAttribute('aria-checked', String(!!profile.show_expansions));
+  $('expansionsHint').textContent = profile.show_expansions ? EXPANSIONS_ON_HINT : EXPANSIONS_OFF_HINT;
   $('signedWith').textContent = signedWith();
   renderCollection();
   renderPill();
@@ -585,6 +593,21 @@ $('publicToggle').addEventListener('click', async () => {
     $('publicToggle').setAttribute('aria-checked', String(profile.is_public));
     $('publicHint').textContent = 'Couldn’t update — try again';
     $('publicHint').classList.add('err');
+  }
+});
+
+// ---- expansions ----
+$('expansionsToggle').addEventListener('click', async () => {
+  const next = !profile.show_expansions;
+  $('expansionsToggle').setAttribute('aria-checked', String(next));
+  $('expansionsHint').classList.remove('err');
+  try {
+    profile = await updateMyProfile({ show_expansions: next });
+    renderSettings();
+  } catch {
+    $('expansionsToggle').setAttribute('aria-checked', String(!!profile.show_expansions));
+    $('expansionsHint').textContent = 'Couldn’t update — try again';
+    $('expansionsHint').classList.add('err');
   }
 });
 

@@ -11,7 +11,7 @@ import { DEFAULT_SHELF_SLUG } from './config.js';
 
 const PAGE = 1000; // PostgREST's default max rows per request
 
-const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, is_public, last_synced_at';
+const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, is_public, show_expansions, last_synced_at';
 
 /** @returns {Promise<object|null>} null when unknown — or private and not yours */
 export async function fetchProfileBySlug(slug) {
