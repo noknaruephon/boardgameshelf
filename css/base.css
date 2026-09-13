@@ -230,3 +230,59 @@ body.scroll-locked{
   outline:none;
   box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
 }
+
+/* Beta tooltip, built by js/beta-tag.js as the pill's next sibling inside
+   .bgs-wordmark, so it positions against the wordmark. Transition only —
+   never an animation on this element too; WebKit drops a transition that
+   fights an animation. The pill's uppercase mono styling is reset here since
+   the wordmark's italic serif would otherwise cascade in. */
+.bgs-beta-tip{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:0;
+  z-index:30;
+  width:max-content;
+  max-width:260px;
+  padding:10px 12px;
+  border:1px solid rgba(var(--bgs-gold-rgb),0.25);
+  border-radius:8px;
+  background:var(--bgs-plate);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  font-style:normal;
+  font-weight:400;
+  font-size:13px;
+  line-height:1.45;
+  letter-spacing:0;
+  text-transform:none;
+  text-align:left;
+  opacity:0;
+  transform:translateY(-4px);
+  transition:opacity 120ms ease-out,transform 120ms ease-out;
+  pointer-events:none;
+}
+.bgs-beta-tip.is-open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+/* Would overflow the right edge of the viewport: hang from the wordmark's
+   right edge instead. */
+.bgs-beta-tip.is-flipped{left:auto;right:0;}
+/* Two classes: the legal pages' own `.mark a{color:inherit;text-decoration:none}`
+   would otherwise win over the link styling. */
+.bgs-beta-tip .bgs-beta-tip__link{
+  display:block;
+  margin-top:6px;
+  color:var(--bgs-gold);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  border-radius:3px;
+}
+.bgs-beta-tip .bgs-beta-tip__link:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+@media (prefers-reduced-motion:reduce){
+  .bgs-beta-tip{transition:none;transform:none;}
+}
