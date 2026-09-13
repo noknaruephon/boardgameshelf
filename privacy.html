@@ -12,7 +12,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <script type="module" src="/js/beta-tag.js"></script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -32,8 +32,7 @@
   strong{color:var(--bgs-ivory);font-weight:500;}
   a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
   a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
-  footer{max-width:640px;margin:44px auto 0;padding:24px 0 0;border-top:1px solid rgba(var(--bgs-gold-rgb),.18);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-gold-dim);}
-  footer .copyright{margin:12px 0 0;line-height:1.55;color:rgba(var(--bgs-gold-rgb),.4);}
+  .shelf-footer{max-width:640px;}
 </style>
 </head>
 <body>
@@ -78,8 +77,19 @@
   <h2>Contact</h2>
   <p><a href="mailto:nok.naruephon@gmail.com">nok.naruephon@gmail.com</a></p>
 </div>
-<footer><a href="/">Back to BoardgameShelf</a> · <a href="/terms">Terms of service</a>
-<p class="copyright">© 2026 Naruephon Nateprachar. All rights reserved.<br>Game data and images courtesy of BoardGameGeek. Board game names and artwork belong to their respective publishers.</p>
+<footer class="shelf-footer">
+  <div class="shelf-footer__row">
+    <span class="shelf-footer__wordmark">BoardgameShelf</span>
+    <a class="bgg-badge bgg-badge--small" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
+      <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33" loading="lazy">
+    </a>
+  </div>
+  <nav class="shelf-footer__links" aria-label="Legal">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </nav>
+  <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar. All rights reserved.</p>
+  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 </body>
 </html>

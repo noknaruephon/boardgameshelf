@@ -176,25 +176,42 @@ body.scroll-locked{
   .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
 }
 
-/* "Powered by BGG" attribution, shared by every game-night screen (the
-   shelf and landing carry their own footer rules with the same values).
-   Sits outside #screen so re-rendering the screen never removes it. The
-   badge is never tinted, dimmed or hidden: BGG's guidelines want the logo
-   fully legible wherever their data is shown. */
-.bgg-footer{
-  max-width:420px;margin:36px auto 0;padding:20px 0 0;
-  border-top:1px solid rgba(var(--bgs-gold-rgb),.18);text-align:center;
+/* Site footer colophon, shared by every page (docs/footer-redesign-spec.md,
+   Option A). Left-aligned, owned by the wordmark; the BGG badge sits
+   opposite it. Pages override max-width to match their own column, and the
+   shelf sets --fab-clearance so the Game Night FAB never covers the legal
+   lines. The badge is never tinted, dimmed or hidden: BGG's API terms want
+   the logo legible wherever their data is shown. */
+.shelf-footer{
+  max-width:960px;
+  margin:40px auto 0;
+  border-top:1px solid rgba(var(--bgs-ivory-rgb),.10);
+  padding:22px 0 calc(22px + var(--fab-clearance,0px));
+  text-align:left;
 }
-.bgg-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;}
-.bgg-footer .bgg-badge img{display:block;width:150px;height:33px;}
-.bgg-footer .bgg-badge:focus-visible{
+.shelf-footer__row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.shelf-footer__wordmark{
+  font:italic 500 22px/1 'Fraunces',serif;letter-spacing:-.01em;color:var(--bgs-ivory);
+}
+.shelf-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;flex:none;}
+.shelf-footer .bgg-badge--small{height:24px;}
+.shelf-footer .bgg-badge--small img{display:block;height:24px;width:auto;}
+.shelf-footer .bgg-badge:focus-visible{
   outline:none;
   box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
 }
-.bgg-footer .legal{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.015em;color:rgba(var(--bgs-gold-rgb),.4);margin:14px 0 0;}
-.bgg-footer .legal a{color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
-.bgg-footer .legal a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
-.bgg-footer .copyright{margin-top:8px;line-height:1.55;}
+.shelf-footer__links{display:flex;gap:18px;margin:14px 0 20px;font:500 13px/1 'Inter',sans-serif;}
+.shelf-footer__links a{color:rgba(var(--bgs-ivory-rgb),.52);text-decoration:none;border-radius:3px;}
+.shelf-footer__links a:hover{color:var(--bgs-ivory);}
+.shelf-footer__links a:focus-visible{
+  outline:none;color:var(--bgs-ivory);
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+.shelf-footer__legal{
+  margin:0;font:400 11px/1.55 'IBM Plex Mono',monospace;
+  color:rgba(var(--bgs-ivory-rgb),.36);
+}
+.shelf-footer__legal + .shelf-footer__legal{margin-top:2px;}
 
 /* Beta pill beside the wordmark (spec: docs/beta-tag-spec.md). Each page
    carries its own wordmark markup, so the pill is placed per page; the styles
