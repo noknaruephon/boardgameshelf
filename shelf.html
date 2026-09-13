@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cf.geekdo-images.com" crossorigin>
 <link rel="dns-prefetch" href="https://cf.geekdo-images.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/game-modal.css">
 <script defer src="/_vercel/insights/script.js"></script>
@@ -615,45 +615,10 @@
   .game-card-skeleton .skeleton-line.short{ width:60%; }
 
 
-  /* Footer colophon (docs/footer-redesign-spec.md, Option A). Left-aligned,
-     owned by the wordmark; the BGG badge sits opposite it. Shares the grid's
-     960px cap so the top rule lines up with the shelf above it. Bottom
-     padding clears the Game Night FAB: --fab-clearance = .gn-fab height (46px)
+  /* Footer lives in css/base.css. The shelf adds FAB clearance so the pill
+     never covers the legal lines: --fab-clearance = .gn-fab height (46px)
      + its bottom offset (16px + safe-area) + 16px breathing room. */
-  .shelf-footer{
-    --fab-clearance:calc(78px + env(safe-area-inset-bottom));
-    max-width:960px;
-    margin:40px auto 0;
-    border-top:1px solid rgba(var(--bgs-ivory-rgb),.10);
-    padding:22px 0 calc(22px + var(--fab-clearance));
-    text-align:left;
-  }
-  .shelf-footer__row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-  .shelf-footer__wordmark{
-    font:italic 500 22px/1 'Fraunces',serif;letter-spacing:-.01em;color:var(--bgs-ivory);
-  }
-  /* Existing "Powered by BGG" asset, scaled to 24px tall and otherwise untouched.
-     Never dimmed: BGG's API terms want the logo legible wherever their data
-     is shown, so no opacity on rest or hover. */
-  .shelf-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;flex:none;}
-  .shelf-footer .bgg-badge--small{height:24px;}
-  .shelf-footer .bgg-badge--small img{display:block;height:24px;width:auto;}
-  .shelf-footer .bgg-badge:focus-visible{
-    outline:none;
-    box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
-  }
-  .shelf-footer__links{display:flex;gap:18px;margin:14px 0 20px;font:500 13px/1 'Inter',sans-serif;}
-  .shelf-footer__links a{color:rgba(var(--bgs-ivory-rgb),.52);text-decoration:none;border-radius:3px;}
-  .shelf-footer__links a:hover{color:var(--bgs-ivory);}
-  .shelf-footer__links a:focus-visible{
-    outline:none;color:var(--bgs-ivory);
-    box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
-  }
-  .shelf-footer__legal{
-    margin:0;font:400 11px/1.55 'IBM Plex Mono',monospace;
-    color:rgba(var(--bgs-ivory-rgb),.36);
-  }
-  .shelf-footer__legal + .shelf-footer__legal{margin-top:2px;}
+  .shelf-footer{--fab-clearance:calc(78px + env(safe-area-inset-bottom));}
 
   /* ==== Game Night (Stage 1: session creation) ==== */
 
