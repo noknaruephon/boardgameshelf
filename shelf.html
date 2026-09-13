@@ -1458,7 +1458,7 @@
 <div class="wrap">
   <header>
     <p class="eyebrow" style="color:var(--bgs-ivory-70)" id="shelfOwner">&nbsp;</p>
-    <h1>BoardgameShelf</h1>
+    <h1 class="bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></h1>
     <p class="sub">Browse the game, judge by its cover.</p>
   </header>
 
@@ -1789,7 +1789,9 @@ function renderBagHeader(){
   from.textContent = `from ${ownerName}`;
   eyebrow.append(mark, ' · ', from);
 
-  document.querySelector('header h1').textContent = name;
+  // Replace only the wordmark text: the beta pill sits beside it inside the
+  // h1 and must survive the rename.
+  document.querySelector('header h1').firstChild.nodeValue = name;
 
   // Coverage sits where the tagline was: the eight player cells and the
   // meta line, the same rule the packing bar uses.

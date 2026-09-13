@@ -195,3 +195,38 @@ body.scroll-locked{
 .bgg-footer .legal a{color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
 .bgg-footer .legal a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
 .bgg-footer .copyright{margin-top:8px;line-height:1.55;}
+
+/* Beta pill beside the wordmark (spec: docs/beta-tag-spec.md). Each page
+   carries its own wordmark markup, so the pill is placed per page; the styles
+   live here once. A <button>, not a <span>, so the tooltip is keyboard
+   reachable. Upright and mono on purpose: the wordmark's italic serif must
+   not leak into it. Negative vertical margins cancel the pill's own height
+   against the wordmark line so the header does not grow. */
+.bgs-wordmark{position:relative;}
+.bgs-beta{
+  display:inline-block;
+  margin:-4px 0 -4px 10px;
+  padding:3px 8px;
+  border:1px solid rgba(var(--bgs-gold-rgb),0.6);
+  border-radius:999px;
+  background:transparent;
+  color:var(--bgs-gold);
+  font-family:'IBM Plex Mono',monospace;
+  font-style:normal;
+  font-weight:500;
+  font-size:11px;
+  letter-spacing:0.14em;
+  line-height:1;
+  text-transform:uppercase;
+  vertical-align:middle;
+  position:relative;
+  top:-1px;
+  cursor:default;
+  -webkit-appearance:none;
+  appearance:none;
+}
+/* Gold ring via box-shadow, same as every other focus ring on the site. */
+.bgs-beta:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
