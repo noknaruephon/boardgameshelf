@@ -1963,17 +1963,20 @@ function render(){
   let filtered = applyFilters(games, state.filters, state.search);
   filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? a.bggRating - b.bggRating : b.bggRating - a.bggRating);
 
-  // The count line tracks what is showing: the whole collection when nothing
-  // is filtering it, "x of N" once a search or filter narrows it. On a bag
-  // page `games` is the bag.
-  const all = filtered.length === games.length;
+  // The count line tracks what is showing: the whole pool when nothing is
+  // narrowing it, "x of N" once a search or filter does. Expansions only
+  // count once "Show expansions" is on; until then the pool is base games.
+  // On a bag page `games` is the bag.
+  const pool = state.filters.showExpansions ? games : games.filter(g => g.subtype !== 'boardgameexpansion');
+  const total = pool.length;
+  const all = filtered.length === total;
   countEl.textContent = isBagRoute
     ? (all
-        ? `${games.length} game${games.length === 1 ? '' : 's'} in this bag`
-        : `${filtered.length} of ${games.length} in this bag`)
+        ? `${total} game${total === 1 ? '' : 's'} in this bag`
+        : `${filtered.length} of ${total} in this bag`)
     : (all
-        ? `${games.length} on the shelf`
-        : `${filtered.length} of ${games.length} on the shelf`);
+        ? `${total} on the shelf`
+        : `${filtered.length} of ${total} on the shelf`);
 
   // Cached for the tray's "hidden by filters" tags. Only what's *filtered* can
   // change it, and every such change comes through here — so selection toggles
