@@ -194,3 +194,4 @@ body.scroll-locked{
 .bgg-footer .legal{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.015em;color:rgba(var(--bgs-gold-rgb),.4);margin:14px 0 0;}
 .bgg-footer .legal a{color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
 .bgg-footer .legal a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+.bgg-footer .copyright{margin-top:8px;line-height:1.55;}
