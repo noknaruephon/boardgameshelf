@@ -21,7 +21,7 @@ function buildTip() {
   tip.id = 'bgs-beta-tip';
   tip.setAttribute('role', 'tooltip');
   tip.hidden = true;
-  tip.append('BoardgameShelf is in beta — things will change and get better.');
+  tip.append('We’re still in beta and actively improving. If something isn’t working as expected, we’d love to know.');
   // No URL, no link: a dead link is worse than none.
   if (BETA_FEEDBACK_URL) {
     const link = document.createElement('a');
@@ -29,7 +29,7 @@ function buildTip() {
     link.href = BETA_FEEDBACK_URL;
     link.target = '_blank';
     link.rel = 'noopener';
-    link.textContent = 'Tell me what’s off →';
+    link.textContent = 'Give feedback →';
     tip.append(link);
   }
   return tip;
