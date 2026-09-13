@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — footer options</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bgs-bg:#1e1711;
+    --bgs-plate:#2a2119;
+    --bgs-ivory:#efe5d4;
+    --bgs-gold:#c9a24a;
+    --bgs-ivory-rgb:239,229,212;
+    --bgs-gold-rgb:201,162,74;
+    --line:rgba(var(--bgs-ivory-rgb),.10);
+    --muted:rgba(var(--bgs-ivory-rgb),.52);
+    --faint:rgba(var(--bgs-ivory-rgb),.36);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#120e0a;color:var(--bgs-ivory);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);border-radius:6px}
+
+  .board{display:flex;flex-direction:column;gap:56px;padding:48px 20px 96px;align-items:center}
+  .option{width:100%;max-width:390px}
+  .option h2{font:500 13px/1.4 "IBM Plex Mono",monospace;color:var(--muted);margin:0 0 6px;letter-spacing:.02em}
+  .option h2 b{color:var(--bgs-gold);font-weight:500}
+  .option p.note{font:400 13px/1.55 Inter,sans-serif;color:var(--muted);margin:0 0 16px;max-width:36ch}
+
+  .phone{background:var(--bgs-bg);border-radius:22px;padding:0 16px 22px;overflow:hidden;border:1px solid rgba(var(--bgs-ivory-rgb),.06)}
+  .stub{height:86px;position:relative}
+  .stub::before,.stub::after{content:"";position:absolute;top:0;width:calc(50% - 6px);height:70px;border-radius:0 0 14px 14px;background:var(--bgs-plate)}
+  .stub::before{left:0}.stub::after{right:0}
+
+  /* shared type roles */
+  .wordmark{font:italic 500 22px/1 Fraunces,serif;letter-spacing:-.01em;color:var(--bgs-ivory)}
+  .links{display:flex;gap:18px;font:500 13px/1 Inter,sans-serif;color:var(--muted)}
+  .links a{text-decoration:none}
+  .links a:hover{color:var(--bgs-ivory)}
+  .legal{font:400 11px/1.55 "IBM Plex Mono",monospace;color:var(--faint);margin:0}
+  .legal + .legal{margin-top:2px}
+
+  /* BGG badge lockup — real asset dropped in here */
+  .bgg{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted)}
+  .bgg .mark{width:18px;height:18px;border-radius:4px;background:#ff5100;flex:none}
+  .bgg span{font:600 11px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+  .bgg.quiet .mark{background:rgba(var(--bgs-ivory-rgb),.28)}
+
+  /* Game Night button, two weights */
+  .gn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;font:600 15px/1 Inter,sans-serif;text-decoration:none;cursor:pointer;height:48px;padding:0 22px}
+  .gn svg{width:18px;height:18px;flex:none}
+  .gn.outline{border:1.5px solid var(--bgs-gold);color:var(--bgs-gold);background:transparent}
+  .gn.solid{background:var(--bgs-gold);color:#1e1711;border:0}
+  .gn.block{width:100%}
+
+  /* ---------- A: Signature ---------- */
+  .a .top{padding:10px 0 26px}
+  .a .rule{height:1px;background:var(--line);margin:0 0 22px}
+  .a .row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .a .links{margin:14px 0 20px}
+  .a .row .bgg{align-self:center}
+
+  /* ---------- B: Plate ---------- */
+  .b .plate{background:var(--bgs-plate);border-radius:18px;padding:16px 18px 18px;margin-top:8px}
+  .b .plate .rule{height:1px;background:var(--line);margin:18px -18px 18px}
+  .b .center{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+  .b .legal{text-align:center}
+
+  /* ---------- C: Colophon ---------- */
+  .c .rule{height:1px;background:var(--line);margin:22px 0 18px}
+  .c .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .c .row .legal{color:var(--muted)}
+  .c details{margin-top:14px}
+  .c summary{list-style:none;display:inline-flex;align-items:center;gap:8px;cursor:pointer;color:var(--muted);font:500 12px/1 Inter,sans-serif;padding:2px 0}
+  .c summary::-webkit-details-marker{display:none}
+  .c summary .chev{width:12px;height:12px;transition:transform .18s ease}
+  .c details[open] summary .chev{transform:rotate(180deg)}
+  .c .credits{margin-top:12px;padding:12px 14px;border-left:2px solid rgba(var(--bgs-gold-rgb),.45);display:flex;flex-direction:column;gap:8px}
+  .c .credits .legal{color:var(--muted)}
+  .c .gnrow{display:flex;justify-content:flex-end;padding:0 0 20px}
+  @media (prefers-reduced-motion:reduce){.c summary .chev{transition:none}}
+</style>
+</head>
+<body>
+<div class="board">
+
+  <!-- ================= A ================= -->
+  <section class="option a">
+    <h2><b>A</b> · Signature</h2>
+    <p class="note">Game Night becomes the shelf's last action, above the rule. The footer itself is left-aligned and owned by the wordmark; BGG sits opposite it at the same visual weight. Legal drops to 11px mono.</p>
+    <div class="phone">
+      <div class="stub"></div>
+      <div class="top">
+        <a class="gn solid block" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/></svg>
+          Game Night
+        </a>
+      </div>
+      <div class="rule"></div>
+      <div class="row">
+        <span class="wordmark">BoardgameShelf</span>
+        <a class="bgg" href="#"><span class="mark"></span><span>Powered by BGG</span></a>
+      </div>
+      <nav class="links"><a href="#">Privacy</a><a href="#">Terms</a></nav>
+      <p class="legal">© 2026 Naruephon Nateprachar. All rights reserved.</p>
+      <p class="legal">Game data and images courtesy of BoardGameGeek.</p>
+    </div>
+  </section>
+
+  <!-- ================= B ================= -->
+  <section class="option b">
+    <h2><b>B</b> · Plate</h2>
+    <p class="note">The whole footer is one raised plate, matching the game cards above it. Game Night is the first thing on the plate, then a hairline, then the centered colophon. Reads as a deliberate end-of-page object.</p>
+    <div class="phone">
+      <div class="stub"></div>
+      <div class="plate">
+        <a class="gn outline block" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/></svg>
+          Game Night
+        </a>
+        <div class="rule"></div>
+        <div class="center">
+          <a class="bgg quiet" href="#"><span class="mark"></span><span>Powered by BGG</span></a>
+          <nav class="links"><a href="#">Privacy</a><a href="#">Terms</a></nav>
+          <div>
+            <p class="legal">© 2026 Naruephon Nateprachar</p>
+            <p class="legal">Game data and images courtesy of BoardGameGeek. Names and artwork belong to their publishers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= C ================= -->
+  <section class="option c">
+    <h2><b>C</b> · Colophon</h2>
+    <p class="note">Quietest of the three. One line carries the © and the two links; the BGG attribution and publisher note live behind a small "Credits" disclosure so the long text is available but never in the way. Game Night is a right-aligned outline pill.</p>
+    <div class="phone">
+      <div class="stub"></div>
+      <div class="gnrow">
+        <a class="gn outline" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/></svg>
+          Game Night
+        </a>
+      </div>
+      <div class="rule" style="margin-top:0"></div>
+      <div class="row">
+        <p class="legal">© 2026 Naruephon Nateprachar</p>
+        <nav class="links"><a href="#">Privacy</a><a href="#">Terms</a></nav>
+      </div>
+      <details>
+        <summary>
+          <span class="mark" style="display:inline-block;width:14px;height:14px;border-radius:3px;background:#ff5100"></span>
+          Powered by BGG · Credits
+          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="credits">
+          <p class="legal">Game data and cover images are provided by BoardGameGeek under its non-commercial API licence.</p>
+          <p class="legal">Board game names and artwork belong to their respective publishers.</p>
+          <p class="legal">All rights reserved.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
