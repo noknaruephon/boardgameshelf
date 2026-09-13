@@ -25,7 +25,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
@@ -118,18 +118,8 @@
   .signed-in{display:flex;flex-direction:column;gap:10px;}
   .signed-in h2{font-family:'Fraunces',serif;font-weight:600;font-size:20px;margin:0 0 4px;text-align:center;}
 
-  footer{max-width:960px;margin:44px auto 0;padding:24px 20px 40px;text-align:center;font-family:'IBM Plex Mono',monospace;border-top:1px solid rgba(var(--bgs-gold-rgb),.18);}
-  footer .bgg-badge{display:inline-block;line-height:0;margin:0;border-radius:4px;}
-  footer .bgg-badge img{display:block;}
-  footer .bgg-badge:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
-  footer .legal{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.015em;color:rgba(var(--bgs-gold-rgb),.4);margin:14px 0 0;}
-  footer .legal a{color:var(--bgs-gold-dim);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
-  footer .legal a:hover{color:var(--bgs-gold);}
-  footer .legal a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
-  footer .copyright{margin-top:8px;line-height:1.55;}
-  footer .primary{font-size:12px;line-height:1.55;letter-spacing:.015em;color:var(--bgs-gold-dim);margin:0 0 6px;}
-  footer .primary a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;}
-  footer .secondary{font-size:11px;line-height:1.55;letter-spacing:.015em;color:rgba(var(--bgs-gold-rgb),.4);margin:0;}
+  /* Footer lives in css/base.css; the landing body has no bottom padding. */
+  .shelf-footer{padding-bottom:40px;}
 
   [hidden]{display:none!important;}
 </style>
@@ -186,12 +176,19 @@
   </section>
 </div>
 
-<footer>
-  <a class="bgg-badge" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
-    <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33">
-  </a>
-  <p class="legal"><a href="/privacy">Privacy policy</a> · <a href="/terms">Terms of service</a></p>
-  <p class="legal copyright">© 2026 Naruephon Nateprachar. All rights reserved.<br>Game data and images courtesy of BoardGameGeek. Board game names and artwork belong to their respective publishers.</p>
+<footer class="shelf-footer">
+  <div class="shelf-footer__row">
+    <span class="shelf-footer__wordmark">BoardgameShelf</span>
+    <a class="bgg-badge bgg-badge--small" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
+      <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33" loading="lazy">
+    </a>
+  </div>
+  <nav class="shelf-footer__links" aria-label="Legal">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </nav>
+  <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar. All rights reserved.</p>
+  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 
 <script type="module">
