@@ -1963,14 +1963,17 @@ function render(){
   let filtered = applyFilters(games, state.filters, state.search);
   filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? a.bggRating - b.bggRating : b.bggRating - a.bggRating);
 
-  // The shelf states one fact, the size of the collection; the filter sheet
-  // and the empty state say how much of it a search left. On a bag page
-  // `games` is the bag, and the line says how much of it is showing.
+  // The count line tracks what is showing: the whole collection when nothing
+  // is filtering it, "x of N" once a search or filter narrows it. On a bag
+  // page `games` is the bag.
+  const all = filtered.length === games.length;
   countEl.textContent = isBagRoute
-    ? (filtered.length === games.length
+    ? (all
         ? `${games.length} game${games.length === 1 ? '' : 's'} in this bag`
         : `${filtered.length} of ${games.length} in this bag`)
-    : `${games.length} on the shelf`;
+    : (all
+        ? `${games.length} on the shelf`
+        : `${filtered.length} of ${games.length} on the shelf`);
 
   // Cached for the tray's "hidden by filters" tags. Only what's *filtered* can
   // change it, and every such change comes through here — so selection toggles
