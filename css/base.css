@@ -177,8 +177,8 @@ body.scroll-locked{
 }
 
 /* Site footer colophon, shared by every page (docs/footer-redesign-spec.md,
-   Option A, centred to match the centred pages). A stack: wordmark, BGG
-   badge under it, links, then the legal lines. Pages override max-width to
+   Option A, centred to match the centred pages). A stack: BGG badge,
+   links, then the legal lines. Pages override max-width to
    match their own column, and the shelf sets --fab-clearance so the Game
    Night FAB never covers the legal lines. The badge is never tinted, dimmed
    or hidden: BGG's API terms want the logo legible wherever their data is
@@ -190,13 +190,10 @@ body.scroll-locked{
   padding:22px 0 calc(22px + var(--fab-clearance,0px));
   text-align:center;
 }
-.shelf-footer__row{display:flex;flex-direction:column;align-items:center;gap:14px;}
-.shelf-footer__wordmark{
-  font:italic 500 22px/1 'Fraunces',serif;letter-spacing:-.01em;color:var(--bgs-ivory);
-}
+.shelf-footer__row{display:flex;justify-content:center;}
 .shelf-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;flex:none;}
-.shelf-footer .bgg-badge--small{height:24px;}
-.shelf-footer .bgg-badge--small img{display:block;height:24px;width:auto;}
+.shelf-footer .bgg-badge--small{height:28px;}
+.shelf-footer .bgg-badge--small img{display:block;height:28px;width:auto;}
 .shelf-footer .bgg-badge:focus-visible{
   outline:none;
   box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
