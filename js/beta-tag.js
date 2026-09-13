@@ -70,6 +70,12 @@ function init() {
         tip.style.left = `${VIEWPORT_GUTTER_PX - wrap.getBoundingClientRect().left}px`;
       }
     }
+    // Point the caret at the pill wherever the tooltip ended up, keeping it
+    // clear of the rounded corners.
+    const pillBox = pill.getBoundingClientRect();
+    const tipBox = tip.getBoundingClientRect();
+    const caret = Math.min(Math.max(pillBox.left + pillBox.width / 2 - tipBox.left, 14), tipBox.width - 14);
+    tip.style.setProperty('--bgs-tip-caret', `${caret}px`);
     tip.classList.add('is-open');
   }
 
