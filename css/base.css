@@ -260,10 +260,14 @@ body.scroll-locked{
   z-index:30;
   width:max-content;
   max-width:260px;
-  padding:10px 12px;
-  border:1px solid rgba(var(--bgs-gold-rgb),0.25);
-  border-radius:8px;
-  background:var(--bgs-plate);
+  padding:10px 12px 11px;
+  /* A callout, not a field: the search box is plate + faint gold hairline +
+     12px radius, so this sits on the darker page ground with a firmer gold
+     edge, a tight radius, a lifted shadow and a caret at the pill. */
+  border:1px solid rgba(var(--bgs-gold-rgb),0.45);
+  border-radius:5px;
+  background:var(--bgs-bg);
+  box-shadow:0 14px 28px -12px rgba(0,0,0,.85),0 2px 6px rgba(0,0,0,.35);
   color:var(--bgs-ivory);
   font-family:'Inter',sans-serif;
   font-style:normal;
@@ -282,6 +286,22 @@ body.scroll-locked{
   opacity:1;
   transform:translateY(0);
   pointer-events:auto;
+}
+/* Caret under the pill. js/beta-tag.js sets --bgs-tip-caret to the pill's
+   centre measured from the tooltip's left edge, so it stays under the pill
+   when the tooltip flips or is pinned to the viewport gutter. A rotated
+   square that shares the border, clipped to its top-left half by the tip. */
+.bgs-beta-tip::before{
+  content:"";
+  position:absolute;
+  top:-6px;
+  left:calc(var(--bgs-tip-caret,18px) - 5px);
+  width:10px;height:10px;
+  background:inherit;
+  border:inherit;
+  border-right:0;border-bottom:0;
+  border-radius:1px 0 0 0;
+  transform:rotate(45deg);
 }
 /* Would overflow the right edge of the viewport: hang from the wordmark's
    right edge instead. */
