@@ -21,4 +21,4 @@ export const GOOGLE_CLIENT_ID = '155273334974-1ek55c13gpffo7nf3qj7nik6db17l5r0.a
 
 // Where the beta pill's tooltip sends feedback (a Google Form or Tally link).
 // Leave empty and the tooltip shows no link at all.
-export const BETA_FEEDBACK_URL = '';
+export const BETA_FEEDBACK_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfEaiXzYwaCAT8-w84JM-DpA8Sjhsg7r75TuJuQDhPNsGcx3w/viewform';
