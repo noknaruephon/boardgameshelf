@@ -27,6 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
+<script type="module" src="/js/beta-tag.js"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
   /* Tokens and page chrome come from css/base.css. Layout follows
@@ -35,7 +36,10 @@
   body{padding:40px 20px 0;}
   .wrap{max-width:560px;margin:0 auto;text-align:center;}
 
-  .mark{font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;color:var(--bgs-gold);margin:0;}
+  /* inline-block so the beta tooltip hangs from the centred wordmark, not the
+     column's left edge; vertical-align:top keeps the line box at the mark's
+     own height, so the header does not grow. */
+  .mark{display:inline-block;vertical-align:top;font-family:'Fraunces',serif;font-style:italic;font-weight:500;font-size:17px;color:var(--bgs-gold);margin:0;}
 
   /* Five fanned covers. Decorative: the caption under them is the text.
      Transition on transform only, and no animation on the same element —
@@ -126,7 +130,7 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="mark">BoardgameShelf</p>
+  <p class="mark bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></p>
   <div class="hand" aria-hidden="true">
     <div class="cover" style="--c:#3E5C3E"><img src="https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg" alt="" loading="eager" decoding="async"></div>
     <div class="cover" style="--c:#3B4F76"><img src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" alt="" loading="eager" decoding="async"></div>

@@ -18,3 +18,7 @@ export const DEFAULT_SHELF_SLUG = 'noknaruephon';
 // the Supabase project address. Leave empty to fall back to the redirect flow
 // through Supabase.
 export const GOOGLE_CLIENT_ID = '155273334974-1ek55c13gpffo7nf3qj7nik6db17l5r0.apps.googleusercontent.com';
+
+// Where the beta pill's tooltip sends feedback (a Google Form or Tally link).
+// Leave empty and the tooltip shows no link at all.
+export const BETA_FEEDBACK_URL = '';
