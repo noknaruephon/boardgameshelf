@@ -7481,6 +7481,7 @@
     "color": "#7A3B3B",
     "image": "https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg",
     "blurb": "Give one-word clues to guide your team to your agents' words on the table — without accidentally tagging the other team's, or worse, the assassin. The word game that reveals how bad everyone is at synonyms under pressure.",
+    "blurb_th": "ให้คำใบ้คำเดียวพาทีมไปหาคำของสายลับฝ่ายคุณบนโต๊ะ โดยไม่เผลอชี้คำของอีกทีม หรือแย่กว่านั้น นักฆ่า เกมคำศัพท์ที่เผยว่าทุกคนแย่แค่ไหนเรื่องคำพ้องความหมายตอนกดดัน",
     "why": [
       "Endlessly replayable — no two games play the same",
       "Teaches in two minutes, tests you for the whole round",
@@ -7497,6 +7498,7 @@
       "8": "best"
     },
     "caption": "Give one-word clues to guide your team to your agents' words on the table.",
+    "caption_th": "ให้คำใบ้คำเดียวพาทีมไปหาคำของสายลับฝ่ายคุณ",
     "teach": {
       "beats": [
         {
@@ -7544,6 +7546,18 @@
           "caption": "Clue two words you're sure of."
         }
       ],
+      "captions_th": [
+        "หัวหน้าสายลับให้คำใบ้คำเดียวเพื่อหาคำของทีม",
+        "ทีมไหนเจอคำของตัวเองครบก่อนชนะ",
+        "โดนคำนักฆ่าแพ้ทันที",
+        "หัวหน้าสายลับพูดอะไรไม่ได้นอกจากคำใบ้",
+        "ใบ้สองคำที่มั่นใจ"
+      ],
+      "frames_th": [
+        "หนึ่งคำ หนึ่งตัวเลข",
+        "ทีมแตะคำ",
+        "ผิดสีจบตาทันที"
+      ],
       "wordCount": 46,
       "source": "generated",
       "reviewed": false
@@ -7573,6 +7587,7 @@
     "color": "#2E5C7A",
     "image": "https://cf.geekdo-images.com/Dkd1DKelqroYz21llrqJ_A__original/img/ODz-pc-p39DCJ2wl5rzSBC0gON8=/0x0/filters:format(jpeg)/pic5252922.jpg",
     "blurb": "Build out the historic Pan Am route network, ferry passengers and cargo between cities, and try to out-fly the competition. A route-building game with real airline-era flavor.",
+    "blurb_th": "สร้างเครือข่ายเส้นทางบินประวัติศาสตร์ของ Pan Am ขนผู้โดยสารและสินค้าระหว่างเมือง และพยายามบินให้เหนือกว่าคู่แข่ง เกมสร้างเส้นทางที่มีกลิ่นอายยุคสายการบินของจริง",
     "why": [
       "Historic routes and destinations give the map real personality",
       "Route-building tension over who claims which city first",
@@ -7585,6 +7600,7 @@
       "4": "best"
     },
     "caption": "Build out the historic Pan Am route network, ferry passengers and cargo between cities.",
+    "caption_th": "สร้างเครือข่ายเส้นทางบินของ Pan Am ขนผู้โดยสารระหว่างเมือง",
     "teach": {
       "beats": [
         {
@@ -7632,6 +7648,18 @@
           "caption": "Build the cheapest route Pan Am will buy soon."
         }
       ],
+      "captions_th": [
+        "สร้างเส้นทางบิน ขายให้ Pan Am ซื้อหุ้น",
+        "มูลค่าหุ้น Pan Am มากสุดชนะ",
+        "Pan Am ซื้อเส้นทางของคุณทุกรอบ",
+        "Pan Am ขยายแบบสุ่ม จับตาการ์ดเหตุการณ์",
+        "สร้างเส้นทางถูกสุดที่ Pan Am กำลังจะซื้อ"
+      ],
+      "frames_th": [
+        "วางวิศวกรเพื่อทำแอ็กชัน",
+        "สร้างเส้นทางระหว่างเมือง",
+        "ซื้อหุ้น Pan Am"
+      ],
       "wordCount": 53,
       "source": "generated",
       "reviewed": false
@@ -7661,6 +7689,7 @@
     "color": "#3E5C76",
     "image": "https://cf.geekdo-images.com/NnOxmSrIyc1bMsOdPoWZWA__original/img/KgoVCM0zl70hQK8MKLJs-Ef9CFY=/0x0/filters:format(jpeg)/pic6195589.jpg",
     "blurb": "Claim train routes across a map of Europe, complete secret destination tickets, and watch someone snake off with the connection you needed. The European map adds tunnels, ferries, and stations to the classic Ticket to Ride formula.",
+    "blurb_th": "ยึดเส้นทางรถไฟบนแผนที่ยุโรป ทำตั๋วปลายทางลับให้เสร็จ แล้วดูใครสักคนแอบคว้าจุดเชื่อมที่คุณต้องใช้ แผนที่ยุโรปเพิ่มอุโมงค์ เรือข้ามฟาก และสถานีให้สูตรคลาสสิกของ Ticket to Ride",
     "why": [
       "Tunnels and ferry routes add just enough extra tension over the original map",
       "Still the same easy-to-teach, hard-to-put-down route-claiming loop",
@@ -7674,6 +7703,7 @@
       "5": "recommended"
     },
     "caption": "Claim train routes across a map of Europe, complete secret destination tickets.",
+    "caption_th": "ยึดเส้นทางรถไฟทั่วยุโรป ทำตั๋วปลายทางลับให้เสร็จ",
     "teach": {
       "beats": [
         {
@@ -7721,6 +7751,18 @@
           "caption": "Take cards. Claim the longest route your hand covers."
         }
       ],
+      "captions_th": [
+        "ยึดเส้นทางรถไฟทั่วยุโรปเพื่อเชื่อมเมืองของคุณ",
+        "แต้มมากสุดชนะ: เส้นทาง ตั๋ว รถไฟยาวสุด สถานี",
+        "ตาละหนึ่งแอ็กชัน สถานีให้ยืมเส้นทางคนอื่นได้",
+        "อุโมงค์: เปิดสามใบ ใบที่ตรงสีคิดเพิ่ม",
+        "เก็บการ์ด ยึดเส้นทางยาวสุดที่มือครอบคลุม"
+      ],
+      "frames_th": [
+        "จั่วการ์ดรถไฟสองใบ",
+        "หรือยึดเส้นทาง: ชุดสีเดียวกัน",
+        "หรือจั่วการ์ดตั๋ว"
+      ],
       "wordCount": 56,
       "source": "generated",
       "reviewed": false
@@ -7750,6 +7792,7 @@
     "color": "#5C4463",
     "image": "https://cf.geekdo-images.com/_eLkcsjTeSbl4G-nREQWsw__original/img/2VGLIOKIN0UJThE2mRDXKgQjUY0=/0x0/filters:format(png)/pic5706121.png",
     "blurb": "A mystery unfolds as players quietly gather clues and guard secrets of their own, with nobody quite sure who to trust. Scales unusually well, from a tight duel to a full party of suspects.",
+    "blurb_th": "ปริศนาค่อยๆ คลี่ ผู้เล่นแอบเก็บเบาะแสและปกป้องความลับของตัวเอง ไม่มีใครแน่ใจว่าจะไว้ใจใคร รองรับจำนวนคนได้ดีผิดปกติ ตั้งแต่ดวลสองคนถึงปาร์ตี้ผู้ต้องสงสัยเต็มโต๊ะ",
     "why": [
       "Player count flexibility from 2 up to 8 is rare for a deduction game",
       "Hidden information rewards careful listening over loud accusations",
@@ -7766,6 +7809,7 @@
       "8": "recommended"
     },
     "caption": "A mystery unfolds as players quietly gather clues.",
+    "caption_th": "ปริศนาค่อยๆ คลี่ ผู้เล่นแอบเก็บเบาะแส",
     "teach": {
       "beats": [
         {
@@ -7813,6 +7857,18 @@
           "caption": "Push a demigod nobody else is pushing."
         }
       ],
+      "captions_th": [
+        "เทพกึ่งมนุษย์ขึ้นและตก ความภักดีของคุณเป็นความลับ",
+        "ชนะถ้าเทพลับของคุณจบตรงที่การ์ดบอก",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "เป้าหมายของคุณอาจอยากให้ใครสักคนอยู่ล่างสุด",
+        "ดันเทพที่ไม่มีใครดัน"
+      ],
+      "frames_th": [
+        "เล่นการ์ดภารกิจ",
+        "เลื่อนเทพขึ้นหรือลง",
+        "ภารกิจได้ผล แล้วนับแต้ม"
+      ],
       "wordCount": 52,
       "source": "generated",
       "reviewed": false
@@ -7835,6 +7891,7 @@
     "color": "#8B6F3E",
     "image": "https://cf.geekdo-images.com/j9RO81ihYw0_oPj6iqV_bA__original/img/-jPNsFg5d9uA7D4WGDIP3TNLHX4=/0x0/filters:format(jpeg)/pic6682376.jpg",
     "blurb": "Bet on horses, then roll dice to move them around the track — and hope the one you backed doesn't stumble at the last furlong. Rüdiger Dorn's racing game turns dice-rolling into a spectator sport.",
+    "blurb_th": "แทงม้า แล้วทอยลูกเต๋าให้มันวิ่งรอบสนาม และภาวนาว่าตัวที่แทงไว้จะไม่สะดุดโค้งสุดท้าย เกมแข่งม้าของ Rüdiger Dorn ที่เปลี่ยนการทอยลูกเต๋าเป็นกีฬาสำหรับคนดู",
     "why": [
       "Betting mechanics keep everyone invested even off their own turn",
       "Supports up to eight players without slowing down",
@@ -7852,6 +7909,7 @@
       "8": "recommended"
     },
     "caption": "Bet on horses, then roll dice to move them around the track.",
+    "caption_th": "แทงม้า แล้วทอยลูกเต๋าให้มันวิ่งรอบสนาม",
     "teach": {
       "beats": [
         {
@@ -7899,6 +7957,18 @@
           "caption": "Bet on two horses, not one."
         }
       ],
+      "captions_th": [
+        "แทงม้า ทุกคนทอยลูกเต๋าที่ทำให้ม้าวิ่ง",
+        "จบการแข่งใครเงินมากสุดชนะ",
+        "ทุกคนได้ทำอะไรทุกครั้งที่ทอย",
+        "ซื้อม้าจ่ายเยอะมากแต่กินเงินสดเกือบหมด",
+        "แทงสองตัว ไม่ใช่ตัวเดียว"
+      ],
+      "frames_th": [
+        "ทอย: ม้าตัวหนึ่งวิ่ง",
+        "แทงหรือซื้อการ์ดม้า",
+        "แข่งจบ จ่ายเงิน"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -7921,6 +7991,7 @@
     "color": "#6B2E2E",
     "image": "https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg",
     "blurb": "Four specialists race the clock to cure four diseases before outbreaks cascade out of control. The co-op that got a generation of gamers hooked on working together instead of against each other.",
+    "blurb_th": "ผู้เชี่ยวชาญสี่คนแข่งกับเวลาเพื่อรักษาโรคสี่ชนิดก่อนการระบาดจะลามจนคุมไม่อยู่ co-op ที่ทำให้นักเล่นทั้งรุ่นติดใจการช่วยกันแทนการแข่งกัน",
     "why": [
       "The game that popularized modern cooperative board gaming",
       "Escalating outbreaks create real, shared panic near the end",
@@ -7933,6 +8004,7 @@
       "4": "best"
     },
     "caption": "Four specialists race the clock to cure four diseases before outbreaks cascade out of control.",
+    "caption_th": "ผู้เชี่ยวชาญสี่คนแข่งกับเวลารักษาโรคสี่ชนิดก่อนระบาดจนคุมไม่อยู่",
     "teach": {
       "beats": [
         {
@@ -7980,6 +8052,18 @@
           "caption": "Treat cities with three cubes first."
         }
       ],
+      "captions_th": [
+        "รักษาโรคสี่ชนิดก่อนการระบาดจะท่วมโลก",
+        "รักษาครบสี่โรค แพ้ให้การระบาดหรือเวลา",
+        "รักษาต้องใช้การ์ดสีเดียวกันห้าใบที่สถานีวิจัย",
+        "การระบาดลามเป็นทอด ครบแปดแพ้",
+        "จัดการเมืองที่มีสามลูกบาศก์ก่อน"
+      ],
+      "frames_th": [
+        "สี่แอ็กชัน: เดิน รักษา สร้าง",
+        "จั่วสองใบ อาจเจอโรคระบาด",
+        "แพร่เชื้อในเมือง"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -8009,6 +8093,7 @@
     "color": "#1F4048",
     "image": "https://cf.geekdo-images.com/Dpu5nFJu4UUJ4Y50WyKueg__original/img/feQTYcCwgIg4LneCYIoaWz12Z24=/0x0/filters:format(jpeg)/pic7069368.jpg",
     "blurb": "Two submarine crews race in real time — captains plot courses, engineers track damage, radio operators track the enemy — while everyone talks over each other. Loud, chaotic, and unlike anything else on the shelf.",
+    "blurb_th": "ลูกเรือเรือดำน้ำสองลำแข่งกันแบบเรียลไทม์ กัปตันวางเส้นทาง วิศวกรคุมความเสียหาย พนักงานวิทยุตามรอยศัตรู ขณะที่ทุกคนพูดทับกันไปหมด ดัง วุ่นวาย และไม่เหมือนอะไรบนชั้นเลย",
     "why": [
       "Real-time team coordination is a genre unto itself — nobody waits their turn",
       "Asymmetric crew roles mean every player has a distinct job to master",
@@ -8025,6 +8110,7 @@
       "8": "best"
     },
     "caption": "Two submarine crews race in real time — captains plot courses.",
+    "caption_th": "ลูกเรือเรือดำน้ำสองลำแข่งกันแบบเรียลไทม์",
     "teach": {
       "beats": [
         {
@@ -8072,6 +8158,18 @@
           "caption": "Captain: move in straight lines, then break them."
         }
       ],
+      "captions_th": [
+        "เรือดำน้ำสองลำล่ากันแบบเรียลไทม์",
+        "จมอีกลำ: ความเสียหายสี่",
+        "พร้อมกันหมด พูดกันหมด ไม่มีตา",
+        "ตัดผ่านเส้นทางตัวเองแล้วเรือหยุด",
+        "กัปตัน: เดินเป็นเส้นตรงก่อน แล้วค่อยหัก"
+      ],
+      "frames_th": [
+        "กัปตันสั่งทิศทาง",
+        "พนักงานวิทยุตามรอยพวกเขา",
+        "วิศวกรพัง ยิงเมื่อชาร์จเต็ม"
+      ],
       "wordCount": 49,
       "source": "generated",
       "reviewed": false
@@ -8101,6 +8199,7 @@
     "color": "#6B4A3A",
     "image": "https://cf.geekdo-images.com/d0mFjZvwj76KOn90Zs6DKQ__original/img/HH2K65IP6cCcZ_Ip7wNjJO9KIWE=/0x0/filters:format(png)/pic9137539.png",
     "blurb": "A fast, competitive word game where quick thinking and clever wordplay matter more than vocabulary size. A big player count makes it an easy fit for a full table.",
+    "blurb_th": "เกมคำศัพท์แบบแข่งขันที่เร็ว คิดไวและเล่นคำเก่งสำคัญกว่าคลังคำใหญ่ รองรับคนเยอะ เลยลงโต๊ะเต็มได้ง่าย",
     "why": [
       "Short rounds keep the energy up even with a big group",
       "Rewards quick lateral thinking over memorized vocabulary",
@@ -8117,7 +8216,8 @@
       "9": "no_data",
       "10": "no_data"
     },
-    "caption": "A fast, competitive word game where quick thinking and clever wordplay matter more than vocabulary size."
+    "caption": "A fast, competitive word game where quick thinking and clever wordplay matter more than vocabulary size.",
+    "caption_th": "เกมคำศัพท์เร็วๆ ที่คิดไวสำคัญกว่าคลังคำใหญ่"
   },
   {
     "bggId": "449719",
@@ -8136,6 +8236,7 @@
     "color": "#5B2A3D",
     "image": "covers/mansion-of-the-vampire-front.svg",
     "blurb": "A hidden-role party game where vampires hunt in the shadows of a gothic mansion while the rest of the household tries to root them out before dawn. Fast, chatty, and built for a full table.",
+    "blurb_th": "เกมปาร์ตี้บทบาทลับที่แวมไพร์ล่าเหยื่อในเงาของคฤหาสน์โกธิก ขณะที่คนในบ้านที่เหลือพยายามขุดพวกมันออกมาก่อนรุ่งสาง เร็ว ช่างคุย และสร้างมาเพื่อโต๊ะเต็ม",
     "why": [
       "Built for a full house — plays comfortably up to 8",
       "Wraps in about half an hour, easy to run back-to-back",
@@ -8149,7 +8250,8 @@
       "7": "no_data",
       "8": "no_data"
     },
-    "caption": "A hidden-role party game where vampires hunt in the shadows of a gothic mansion."
+    "caption": "A hidden-role party game where vampires hunt in the shadows of a gothic mansion.",
+    "caption_th": "ปาร์ตี้บทบาทลับ แวมไพร์ล่าเหยื่อในคฤหาสน์โกธิก"
   },
   {
     "title": "The Resistance: Avalon",
@@ -8167,6 +8269,7 @@
     "color": "#8B3A3A",
     "image": "https://cf.geekdo-images.com/LPa6rsGcv8S0-OeNjCOAEQ__itemrep@2x/img/LWho2GMg9S2-oZaC51J90YjPLxM=/fit-in/492x600/filters:strip_icc()/pic1398895.jpg",
     "blurb": "Merlin secretly knows who the servants of Mordred are, but saying so out loud gets him killed. A tense, no-components-needed hidden-role classic for a bigger group.",
+    "blurb_th": "Merlin แอบรู้ว่าใครคือสาวกของ Mordred แต่ถ้าพูดออกมาจะโดนฆ่า เกมบทบาทลับคลาสสิกที่ตึง ไม่ต้องใช้อุปกรณ์ สำหรับกลุ่มใหญ่",
     "tag": "Hidden role classic",
     "why": [
       "No components needed beyond the card deck",
@@ -8183,6 +8286,7 @@
       "10": "recommended"
     },
     "caption": "Merlin secretly knows who the servants of Mordred are, but saying so out loud gets him killed.",
+    "caption_th": "Merlin แอบรู้ว่าใครชั่ว แต่พูดออกมาจะโดนฆ่า",
     "teach": {
       "beats": [
         {
@@ -8230,6 +8334,18 @@
           "caption": "Watch who argues against which team."
         }
       ],
+      "captions_th": [
+        "ฝ่ายดีกับฝ่ายชั่วออกภารกิจ ฝ่ายชั่วซ่อนอยู่ในหมู่คุณ",
+        "ฝ่ายดีชนะสามภารกิจ ฝ่ายชั่วชนะเมื่อล้มสามครั้งหรือฆ่า Merlin",
+        "ห้าภารกิจ Merlin รู้ว่าใครชั่วแต่ต้องซ่อนไว้",
+        "ทีมถูกปฏิเสธห้าครั้งติด: ฝ่ายชั่วชนะทันที",
+        "ดูว่าใครค้านทีมไหน"
+      ],
+      "frames_th": [
+        "หัวหน้าเลือกทีม",
+        "ทุกคนอนุมัติหรือปฏิเสธ",
+        "ทีมแอบให้ผ่านหรือล้ม"
+      ],
       "wordCount": 59,
       "source": "generated",
       "reviewed": false
@@ -8258,6 +8374,7 @@
     "color": "#3B4F76",
     "image": "https://cf.geekdo-images.com/V1sIetALz-79do1MBvgQMQ__itemrep@2x/img/IiiZenbMLOznrpS4sbwltvz34HI=/fit-in/492x600/filters:strip_icc()/pic6434013.jpg",
     "blurb": "Draw a keyword as fast as you can, then race to be first to guess it from everyone else's scribbles. Loud, silly, over in twenty minutes.",
+    "blurb_th": "วาดคำสำคัญให้เร็วที่สุด แล้วแข่งเป็นคนแรกที่ทายจากภาพขยุกขยิกของคนอื่น ดัง ฮา จบในยี่สิบนาที",
     "tag": "Party · drawing",
     "why": [
       "Fast, loud, and over in twenty minutes",
@@ -8271,7 +8388,8 @@
       "5": "best",
       "6": "recommended"
     },
-    "caption": "Draw a keyword as fast as you can, then race to be first to guess it from everyone else's scribbles."
+    "caption": "Draw a keyword as fast as you can, then race to be first to guess it from everyone else's scribbles.",
+    "caption_th": "วาดคำให้เร็วที่สุด แล้วแข่งทายจากภาพขยุกขยิกของคนอื่น"
   },
   {
     "bggId": "338957",
@@ -8290,6 +8408,7 @@
     "color": "#6B3A3A",
     "image": "https://cf.geekdo-images.com/Mw_WmNeSTRgEgiQG87YPgQ__original/img/fgw5B0oFNDZlNj6Yig97m4625lI=/0x0/filters:format(png)/pic6228356.png",
     "blurb": "A tight two-player (or solo) card game about carving up Rome's provinces before the other player locks you out. Does exactly what it says on the tin — real strategy in a lunch break.",
+    "blurb_th": "เกมการ์ดสองคน (หรือเล่นเดี่ยว) แบบแน่น เรื่องแบ่งแคว้นของโรมก่อนอีกฝ่ายจะปิดประตูใส่คุณ ทำตามที่ชื่อบอกเป๊ะ กลยุทธ์จริงในช่วงพักเที่ยง",
     "why": [
       "Genuinely finishes in about 20 minutes, ideal for a quick head-to-head",
       "Area control tension without the setup time of a bigger war game",
@@ -8301,6 +8420,7 @@
       "2": "best"
     },
     "caption": "A tight two-player (or solo) card game about carving up Rome's provinces.",
+    "caption_th": "เกมการ์ดสองคนแบบแน่น แบ่งแคว้นของโรมก่อนถูกปิดประตู",
     "teach": {
       "beats": [
         {
@@ -8348,6 +8468,18 @@
           "caption": "Place on borders touching two regions."
         }
       ],
+      "captions_th": [
+        "วางโทเค็นอิทธิพลเพื่อยึดแคว้นของโรม",
+        "ชนะเมื่อยึดแคว้นได้เกินครึ่ง",
+        "ตาละสองโทเค็น",
+        "โทเค็นมีน้ำหนักต่างกัน เส้นแบ่งตัดสินว่าใครได้",
+        "วางบนเส้นแบ่งที่ติดสองแคว้น"
+      ],
+      "frames_th": [
+        "จั่วโทเค็น",
+        "วางบนเส้นแบ่ง",
+        "เส้นแบ่งเต็ม: เสียงข้างมากได้แคว้น"
+      ],
       "wordCount": 49,
       "source": "generated",
       "reviewed": false
@@ -8369,6 +8501,7 @@
     "color": "#2E5339",
     "image": "https://cf.geekdo-images.com/4ZCV2o_OiGha0bknXDTfdA__itemrep@2x/img/ap6o1G3EAAx3y-6xLpCvyVmmRaU=/fit-in/492x600/filters:strip_icc()/pic6678381.jpg",
     "blurb": "Place real-time bets while a dice-driven horse race unfolds in front of you, then cheer or groan as your picks cross the line. Casino energy, zero gambling skill required.",
+    "blurb_th": "วางเดิมพันแบบเรียลไทม์ขณะที่การแข่งม้าขับด้วยลูกเต๋าวิ่งอยู่ตรงหน้า แล้วเชียร์หรือครางเมื่อตัวที่แทงเข้าเส้นชัย พลังคาสิโน ไม่ต้องมีทักษะพนันเลย",
     "tag": "Party · betting",
     "why": [
       "Real casino energy without any real money on the line",
@@ -8387,6 +8520,7 @@
       "9": "recommended"
     },
     "caption": "Place real-time bets while a dice-driven horse race unfolds in front.",
+    "caption_th": "วางเดิมพันเรียลไทม์ขณะที่การแข่งม้าวิ่งอยู่ตรงหน้า",
     "teach": {
       "beats": [
         {
@@ -8434,6 +8568,18 @@
           "caption": "Bet the middle horses early; they're the boring winners."
         }
       ],
+      "captions_th": [
+        "แทงม้าที่แข่งสดขณะทุกคนตะโกน",
+        "จบการแข่งสุดท้ายใครเงินมากสุดชนะ",
+        "อัตราต่อรองแย่ลงเรื่อยเมื่อการแข่งดำเนินไป",
+        "เดิมพันล็อกทันทีที่ม้าแดงเข้าเส้น",
+        "แทงม้ากลางๆ ตั้งแต่ต้น พวกมันคือผู้ชนะที่น่าเบื่อ"
+      ],
+      "frames_th": [
+        "ผู้ประกาศทอย ม้าตัวนั้นวิ่ง",
+        "แปะเดิมพันได้ทุกเมื่อ",
+        "จ่ายเงินเมื่อม้าสามตัวเข้าเส้น"
+      ],
       "wordCount": 61,
       "source": "generated",
       "reviewed": false
@@ -8456,6 +8602,7 @@
     "color": "#5A2A27",
     "image": "https://cf.geekdo-images.com/rAQ3hIXoH6xDcj41v9iqCg__original/img/7oKwNUYakx3-vHUBLHWVuFNKfl4=/0x0/filters:format(jpeg)/pic5164305.jpg",
     "blurb": "Liberals and fascists secretly vie for control of a fracturing government, with policies, votes, and increasingly paranoid accusations. Tense, talky, and built for a full table.",
+    "blurb_th": "เสรีนิยมกับฟาสซิสต์แอบชิงอำนาจในรัฐบาลที่กำลังแตก ด้วยนโยบาย การโหวต และข้อกล่าวหาที่ระแวงขึ้นเรื่อยๆ ตึง ช่างคุย และสร้างมาเพื่อโต๊ะเต็ม",
     "why": [
       "Hidden-role tension that ramps up hard as the policy track fills in",
       "Minimal setup for how much social deduction drama it generates",
@@ -8471,6 +8618,7 @@
       "10": "best"
     },
     "caption": "Liberals and fascists secretly vie for control of a fracturing government, with policies.",
+    "caption_th": "เสรีนิยมกับฟาสซิสต์แอบชิงอำนาจในรัฐบาลที่กำลังแตก",
     "teach": {
       "beats": [
         {
@@ -8518,6 +8666,18 @@
           "caption": "Track who passed which law. Claims beat feelings."
         }
       ],
+      "captions_th": [
+        "เสรีนิยมผ่านกฎหมาย ฟาสซิสต์ลับแอบดัน Hitler ขึ้นสู่อำนาจ",
+        "เสรีนิยม: ห้ากฎหมายหรือฆ่า Hitler ฟาสซิสต์: หกกฎหมายหรือเลือกเขา",
+        "กฎหมายฟาสซิสต์ปลดล็อกอำนาจประธานาธิบดี",
+        "Hitler ไม่รู้ว่าใครเป็นฟาสซิสต์ เมื่อมี 7 คนขึ้นไป",
+        "จดว่าใครผ่านกฎหมายไหน คำอ้างชนะความรู้สึก"
+      ],
+      "frames_th": [
+        "ประธานาธิบดีเลือกนายกฯ ทุกคนโหวต",
+        "ประธานาธิบดีจั่วสามกฎหมาย ทิ้งหนึ่ง",
+        "นายกฯ เลือกหนึ่งให้ผ่าน"
+      ],
       "wordCount": 61,
       "source": "generated",
       "reviewed": false
@@ -8547,6 +8707,7 @@
     "color": "#3E3A5C",
     "image": "https://cf.geekdo-images.com/BTLIJvNhaROMzo6cqP0aNw__original/img/BagaofOFwLoN8hOqY3AKd6ij7Lk=/0x0/filters:format(png)/pic7963849.png",
     "blurb": "A logic-deduction game where you track a cast of suspects moving hour by hour through 1920s Paris, piecing together where everyone was when the crime happened. Plays like a puzzle box wrapped in a mystery novel.",
+    "blurb_th": "เกมสืบสวนเชิงตรรกะ ตามรอยผู้ต้องสงสัยที่เคลื่อนไหวทีละชั่วโมงในปารีสยุค 1920 ปะติดปะต่อว่าใครอยู่ไหนตอนเกิดเหตุ เหมือนกล่องปริศนาห่อด้วยนิยายสืบสวน",
     "why": [
       "Pure deduction — no luck, just careful notetaking and logic",
       "Single-use puzzle design means every solve is one and done",
@@ -8560,6 +8721,7 @@
       "4": "recommended"
     },
     "caption": "A logic-deduction game where you track a cast of suspects moving hour by hour through 1920s Paris.",
+    "caption_th": "ตามรอยผู้ต้องสงสัยทีละชั่วโมงในปารีสยุค 1920",
     "teach": {
       "beats": [
         {
@@ -8607,6 +8769,18 @@
           "caption": "Ask about the hour and room the case describes."
         }
       ],
+      "captions_th": [
+        "อนุมานว่าใครอยู่ไหนตอนกี่โมงในโรงแรมปารีส",
+        "ใครตอบคำถามคดีถูกก่อนชนะ",
+        "ทุกคำถามเผยให้คุณคนเดียว",
+        "การ์ดคำตอบโชว์ให้ทุกคนเห็นอย่างหนึ่ง: จำนวนคน",
+        "ถามถึงชั่วโมงและห้องที่คดีระบุ"
+      ],
+      "frames_th": [
+        "ถาม: ใครอยู่ที่นี่ ชั่วโมงนี้?",
+        "การ์ดโชว์คำตอบให้คุณคนเดียว",
+        "จดไว้ อนุมานที่เหลือ"
+      ],
       "wordCount": 61,
       "source": "generated",
       "reviewed": false
@@ -8629,6 +8803,7 @@
     "color": "#4A4038",
     "image": "https://cf.geekdo-images.com/TMbEUs1GZpO96P5ubsqQew__original/img/SqRqsqHdyI0R04-efEQpIyzjbIA=/0x0/filters:format(jpeg)/pic3693999.jpg",
     "blurb": "Rebuild London after the Great Fire, playing cards from your hand to develop the city while managing the poverty they leave behind. A tight hand-management design from Martin Wallace with real teeth.",
+    "blurb_th": "ฟื้นฟูลอนดอนหลังเพลิงไหม้ใหญ่ เล่นการ์ดจากมือเพื่อพัฒนาเมือง พลางจัดการความยากจนที่มันทิ้งไว้ ดีไซน์จัดการมือแน่นๆ ของ Martin Wallace ที่มีเขี้ยวจริง",
     "why": [
       "Hand management with a genuine risk/reward poverty track",
       "Streamlined second edition trims the original's rough edges",
@@ -8641,6 +8816,7 @@
       "4": "recommended"
     },
     "caption": "Rebuild London after the Great Fire, playing cards from your hand to develop the city.",
+    "caption_th": "ฟื้นฟูลอนดอนหลังเพลิงไหม้ใหญ่ เล่นการ์ดพัฒนาเมือง",
     "teach": {
       "beats": [
         {
@@ -8688,6 +8864,18 @@
           "caption": "Play cheap cards, run early, buy boroughs."
         }
       ],
+      "captions_th": [
+        "ฟื้นฟูลอนดอน: เล่นการ์ด เดินเมือง จัดการความยากจน",
+        "แต้มมากสุดหลังหักความยากจนชนะ",
+        "เดินเมืองคว่ำการ์ดของคุณและเพิ่มความยากจน",
+        "ความยากจนกองขึ้นทุกครั้งที่เดินเมือง การ์ดน้อย ยากจนมาก",
+        "เล่นการ์ดถูกๆ เดินเมืองเร็วๆ ซื้อเขต"
+      ],
+      "frames_th": [
+        "เล่นการ์ดเข้าเมืองของคุณ",
+        "หรือเดินเมือง: เงิน แต้ม",
+        "หรือซื้อเขต จั่วการ์ด"
+      ],
       "wordCount": 58,
       "source": "generated",
       "reviewed": false
@@ -8717,6 +8905,7 @@
     "color": "#5C7A52",
     "image": "https://cf.geekdo-images.com/1YcHesB7LRvCF8i9vgH7qw__original/img/BVcGhHh0nedwcBBzu_ku-yh8LWY=/0x0/filters:format(png)/pic6009608.png",
     "blurb": "Tile by tile, zone your own town — build up industry, housing, and parks while watching how each tile quietly nudges your neighbors' reputation and income too. A sharp tile-laying economy game that rewards planning several turns ahead.",
+    "blurb_th": "จัดผังเมืองของตัวเองทีละไทล์ สร้างอุตสาหกรรม ที่อยู่อาศัย และสวน พลางดูว่าแต่ละไทล์แอบขยับชื่อเสียงและรายได้ของเพื่อนบ้านยังไงด้วย เกมวางไทล์เศรษฐกิจสุดคมที่ตอบแทนการวางแผนล่วงหน้าหลายตา",
     "why": [
       "Every tile you place shifts income and reputation tracks that ripple outward",
       "Real interaction despite feeling like a tableau-building game on your own board",
@@ -8730,6 +8919,7 @@
       "4": "recommended"
     },
     "caption": "Tile by tile, zone your own town — build up industry, housing.",
+    "caption_th": "จัดผังเมืองของตัวเองทีละไทล์ อุตสาหกรรม ที่อยู่ สวน",
     "teach": {
       "beats": [
         {
@@ -8777,6 +8967,18 @@
           "caption": "Buy income tiles first; reputation later."
         }
       ],
+      "captions_th": [
+        "สร้างชานเมือง ทุกไทล์เปลี่ยนรายได้และชื่อเสียงของคุณ",
+        "ประชากรมากสุดชนะ",
+        "ไทล์ถูกลงยิ่งวางอยู่นาน",
+        "ข้ามเส้นประชากรสีแดงแล้วรายได้และชื่อเสียงลด",
+        "ซื้อไทล์รายได้ก่อน ชื่อเสียงทีหลัง"
+      ],
+      "frames_th": [
+        "ซื้อไทล์จากตลาด",
+        "วางติดเขตของคุณ",
+        "ปรับรายได้ ชื่อเสียง ประชากร"
+      ],
       "wordCount": 50,
       "source": "generated",
       "reviewed": false
@@ -8806,6 +9008,7 @@
     "color": "#33454A",
     "image": "https://cf.geekdo-images.com/oqanBg2ZMXFEcZGXs5Xhjg__original/img/p15aOl1QDotb3QA-T7ZsWnQo2P4=/0x0/filters:format(png)/pic6222156.png",
     "blurb": "A doomed ocean liner, a Cthulhu Mythos horror circling below, and one player at the table secretly working against everyone else. Survive the crossing — or make sure nobody else does.",
+    "blurb_th": "เรือเดินสมุทรที่ถึงคราวล่ม สยองขวัญจาก Cthulhu Mythos วนอยู่ข้างล่าง และคนหนึ่งบนโต๊ะแอบทำงานต่อต้านทุกคน รอดข้ามทะเลให้ได้ หรือทำให้แน่ใจว่าไม่มีใครรอด",
     "why": [
       "Hidden traitor mechanic keeps every player a suspect until the end",
       "Miniatures and a sinking-ship board sell the slow-motion disaster",
@@ -8819,6 +9022,7 @@
       "6": "recommended"
     },
     "caption": "A doomed ocean liner, a Cthulhu Mythos horror circling below.",
+    "caption_th": "เรือเดินสมุทรที่ถึงคราวล่ม สยองขวัญ Cthulhu วนอยู่ข้างล่าง",
     "teach": {
       "beats": [
         {
@@ -8866,6 +9070,18 @@
           "caption": "Note who contributed to the failed crisis."
         }
       ],
+      "captions_th": [
+        "ผู้โดยสารปะทะ deep ones ผู้โดยสารบางคนเป็นคนทรยศ",
+        "มนุษย์ชนะเมื่อถึงฝั่ง ลูกผสมชนะเมื่อจมเรือ",
+        "กองวิกฤตซ่อนการ์ดก่อวินาศกรรม",
+        "ลูกผสมอาจได้รับการ์ดความภักดีกลางเกม",
+        "จดว่าใครใส่การ์ดในวิกฤตที่ล้มเหลว"
+      ],
+      "frames_th": [
+        "เดิน โจมตี หรือซ่อม",
+        "ใส่การ์ดลงกองวิกฤต",
+        "เปิด ผ่านหรือล้ม"
+      ],
       "wordCount": 54,
       "source": "generated",
       "reviewed": false
@@ -8894,6 +9110,7 @@
     "color": "#A9822F",
     "image": "https://cf.geekdo-images.com/o23NBqu_LBRAtRaVoOBBhQ__original/img/csj-VB0pfmq8KNUxwTYdDC2gxB4=/0x0/filters:format(jpeg)/pic403442.jpg",
     "blurb": "Trade and haggle over city blocks and shop tiles in 1960s New York, where nearly everything is up for negotiation. A pure, old-school trading game — bring your best poker face.",
+    "blurb_th": "แลกและต่อรองบล็อกเมืองกับไทล์ร้านค้าในนิวยอร์กยุค 1960 ที่แทบทุกอย่างเจรจาได้ เกมแลกเปลี่ยนสายเก่าล้วนๆ เอาหน้าโป๊กเกอร์ที่ดีที่สุดมาด้วย",
     "tag": "Negotiation classic",
     "why": [
       "A pure negotiation classic that still holds up today",
@@ -8907,6 +9124,7 @@
       "5": "best"
     },
     "caption": "Trade and haggle over city blocks and shop tiles in 1960s New York.",
+    "caption_th": "แลกและต่อรองบล็อกเมืองกับไทล์ร้านค้าในนิวยอร์กยุค 1960",
     "teach": {
       "beats": [
         {
@@ -8954,6 +9172,18 @@
           "caption": "Offer a trade before you've looked at your own cards."
         }
       ],
+      "captions_th": [
+        "แลกร้านและที่ดินเพื่อสร้างธุรกิจใหญ่ในไชน่าทาวน์",
+        "จบหกรอบใครเงินมากสุดชนะ",
+        "การแลกคือตัวเกม ทุกอย่างขายได้",
+        "เครือข่ายจ่ายเงินเมื่อไทล์ติดกันเท่านั้น",
+        "เสนอแลกก่อนจะดูการ์ดตัวเองด้วยซ้ำ"
+      ],
+      "frames_th": [
+        "จั่วที่ดินและร้าน",
+        "แลกอะไรก็ได้กับใครก็ได้",
+        "วางร้าน เครือข่ายใหญ่จ่ายมากกว่า"
+      ],
       "wordCount": 57,
       "source": "generated",
       "reviewed": false
@@ -8982,6 +9212,7 @@
     "color": "#5B3E63",
     "image": "https://cf.geekdo-images.com/Kl3NjtNKpuJNPjdBQtdsow__itemrep@2x/img/MMleplvZYMrYPO8oxgz4SRGH_VU=/fit-in/492x600/filters:strip_icc()/pic6988937.jpg",
     "blurb": "Animals campaign and bribe their way up the enclosure hierarchy toward the zoo's star exhibit, with everyone quietly counting votes. A sharp Knizia negotiation game, reborn with sharper teeth.",
+    "blurb_th": "สัตว์หาเสียงและติดสินบนไต่ลำดับกรงขึ้นไปสู่นิทรรศการดาวเด่นของสวนสัตว์ ขณะที่ทุกคนแอบนับคะแนนเสียง เกมเจรจาสุดคมของ Knizia เกิดใหม่พร้อมเขี้ยวที่คมกว่าเดิม",
     "tag": "Negotiation",
     "why": [
       "A sharp modern remake of a long-lost Knizia classic",
@@ -8997,6 +9228,7 @@
       "7": "recommended"
     },
     "caption": "Animals campaign and bribe their way up the enclosure hierarchy toward the zoo's star exhibit.",
+    "caption_th": "สัตว์หาเสียงและติดสินบนไต่ขึ้นสู่นิทรรศการดาวเด่น",
     "teach": {
       "beats": [
         {
@@ -9043,6 +9275,18 @@
           "scene": "hand-talk",
           "caption": "Buy allies early. Promises are binding."
         }
+      ],
+      "captions_th": [
+        "สัตว์โหวตกันเองเข้าสู่ผู้นำสวนสัตว์",
+        "แต้มมากสุดในหมู่สัตว์ที่เข้าไปได้ชนะ",
+        "แค่สัตว์ในห้องบนสุดที่ได้แต้ม",
+        "แค่บางตัวที่เข้าไปได้ ที่เหลือได้ศูนย์",
+        "ซื้อพันธมิตรตั้งแต่ต้น สัญญามีผลผูกมัด"
+      ],
+      "frames_th": [
+        "เจรจา: ใครขยับ ใครได้เงิน?",
+        "เลื่อนสัตว์ด้วยการโหวตกลุ่ม",
+        "ข้อตกลงมีผล เงินเปลี่ยนมือ"
       ],
       "wordCount": 56,
       "source": "generated",
