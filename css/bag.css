@@ -467,6 +467,9 @@ body[data-bag-state="packing"]{padding-bottom:calc(102px + 44px + 12px + 24px + 
   z-index:16;
   display:flex;
   align-items:flex-end;
+  /* --bag-kb is how much of the screen the keyboard covers (set from the
+     visual viewport in js/bag-ui.js); the panel sits above it. */
+  padding-bottom:var(--bag-kb, 0px);
   background:rgba(0,0,0,.6);
   opacity:0;
   transition:opacity .2s cubic-bezier(.2,.8,.2,1);

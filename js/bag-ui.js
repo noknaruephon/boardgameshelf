@@ -276,6 +276,17 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
   let closeTimer = 0;
 
+  // iOS keeps the layout viewport the same size when the keyboard comes up,
+  // so a sheet fixed to its bottom edge ends up under the keys. The visual
+  // viewport says how much of the screen the keyboard covers; the sheet
+  // gets that much bottom padding so the panel rides above it.
+  const vv = window.visualViewport;
+  function fitAboveKeyboard() {
+    if (!vv) return;
+    const covered = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+    nameStep.style.setProperty('--bag-kb', `${covered}px`);
+  }
+
   function openNaming() {
     if (!draft.size) { showError('NO_GAMES'); return; }
     clearError();
@@ -285,6 +296,9 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     // start from; reading its height forces that.
     void nameStep.offsetHeight;
     nameStep.classList.add('is-open');
+    fitAboveKeyboard();
+    vv?.addEventListener('resize', fitAboveKeyboard);
+    vv?.addEventListener('scroll', fitAboveKeyboard);
     // Focus straight from the tap on Pack, so iOS still counts it as the
     // user's gesture and shows the keyboard.
     nameInput.focus({ preventScroll: true });
@@ -294,7 +308,10 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     if (nameStep.hidden) return;
     nameStep.classList.remove('is-open');
     clearError();
-    const finish = () => { nameStep.hidden = true; };
+    vv?.removeEventListener('resize', fitAboveKeyboard);
+    vv?.removeEventListener('scroll', fitAboveKeyboard);
+    nameInput.blur();
+    const finish = () => { nameStep.hidden = true; nameStep.style.removeProperty('--bag-kb'); };
     if (REDUCED_MOTION.matches) finish();
     else closeTimer = setTimeout(finish, 280);
     // Back returns to packing with the selection intact; focus goes back to
