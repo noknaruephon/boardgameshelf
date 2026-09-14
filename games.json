@@ -3787,6 +3787,7 @@
     "spineImage": "covers/agricola-15-spine.jpg",
     "backImage": "covers/agricola-15-back.jpg",
     "blurb": "Grow a farm from a two-person shack into a proper homestead: plow, plant, and don't forget to feed your family every harvest. A worker-placement classic with real bite.",
+    "blurb_th": "ขยายฟาร์มจากกระท่อมสองคนให้เป็นไร่นาเต็มตัว ไถ ปลูก และอย่าลืมเลี้ยงครอบครัวทุกฤดูเก็บเกี่ยว worker placement คลาสสิกที่กัดจริง",
     "tag": "Worker placement · farming",
     "why": [
       "The farming game every worker-placement fan measures others against",
@@ -3801,6 +3802,7 @@
       "4": "best"
     },
     "caption": "Grow a farm from a two-person shack into a proper homestead.",
+    "caption_th": "ขยายฟาร์มจากกระท่อมสองคนให้เป็นไร่นาเต็มตัว",
     "teach": {
       "beats": [
         {
@@ -3848,6 +3850,18 @@
           "caption": "Grow your family only after you can feed it."
         }
       ],
+      "captions_th": [
+        "สร้างฟาร์ม: ไร่ สัตว์ ห้อง และเลี้ยงครอบครัว",
+        "แต้มมากสุดชนะ: ฟาร์มสมดุล ช่องว่างน้อย",
+        "ช่องละหนึ่งคน สิบสี่รอบ",
+        "เลี้ยงไม่ไหวตอนเก็บเกี่ยว? ต้องขอทาน ขอทานติดลบสามต่อครั้ง",
+        "ขยายครอบครัวหลังจากเลี้ยงไหวเท่านั้น"
+      ],
+      "frames_th": [
+        "วางคนในครอบครัวบนแอ็กชัน",
+        "รับของหรือสร้าง",
+        "เก็บเกี่ยว: เลี้ยงทุกคน"
+      ],
       "wordCount": 56,
       "source": "generated",
       "reviewed": false
@@ -3877,6 +3891,7 @@
     "color": "#3E5C3A",
     "image": "https://cf.geekdo-images.com/5Fr8QPIazZRgEMnN2bwJ0g__original/img/si2jJWDVMO-EGy-r0RR7aVjLtO8=/0x0/filters:format(jpeg)/pic4621589.jpg",
     "blurb": "Legendary archer against cryptid folk hero, each playing nothing like the other. Positioning and card timing matter more than raw stats — read your opponent or lose fast.",
+    "blurb_th": "นักธนูในตำนานปะทะฮีโร่พื้นบ้านตัวประหลาด แต่ละคนเล่นไม่เหมือนกันเลย ตำแหน่งกับจังหวะการ์ดสำคัญกว่าค่าพลังดิบ อ่านคู่ต่อสู้ให้ออก ไม่งั้นแพ้ไว",
     "why": [
       "Two wildly different playstyles packed into one small box",
       "Battlemap movement rewards spacing over brute force",
@@ -3887,6 +3902,7 @@
       "2": "best"
     },
     "caption": "Legendary archer against cryptid folk hero, each playing nothing like the other.",
+    "caption_th": "นักธนูในตำนานปะทะฮีโร่พื้นบ้านตัวประหลาด",
     "teach": {
       "beats": [
         {
@@ -3934,6 +3950,18 @@
           "caption": "Move to a space with two paths out."
         }
       ],
+      "captions_th": [
+        "เลือกนักสู้ แล้วสู้ด้วยเด็คเฉพาะตัวของเขา",
+        "ทำให้ฮีโร่ของคู่แข่งเลือดเหลือศูนย์",
+        "ตาละสองแอ็กชัน: เดิน โจมตี หรือวางแผน",
+        "พลังโจมตีซ่อนอยู่จนกว่าทั้งสองใบจะเปิด",
+        "เดินไปช่องที่มีทางออกสองทาง"
+      ],
+      "frames_th": [
+        "เดินได้ไม่เกินความเร็ว",
+        "โจมตีด้วยการ์ด",
+        "อีกฝ่ายอาจป้องกันด้วยการ์ด"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -3956,6 +3984,7 @@
     "color": "#2F3B4A",
     "image": "https://cf.geekdo-images.com/1XA2-niwTBa0HEB7hOz3Dw__original/img/MIJgG_K2IS1QT2mE0dyRFiWLSpg=/0x0/filters:format(jpeg)/pic4530974.jpg",
     "blurb": "An app-driven cooperative campaign where your party explores Middle-earth, fights Sauron's forces, and levels up between missions. The companion app runs the story and combat so the table stays focused on tactics.",
+    "blurb_th": "แคมเปญ co-op ที่แอปคุม ทีมของคุณสำรวจมิดเดิลเอิร์ธ สู้กับกองกำลังของ Sauron และอัปเลเวลระหว่างภารกิจ แอปเดินเรื่องและการต่อสู้ให้ โต๊ะเลยโฟกัสที่แทคติกได้เต็มที่",
     "why": [
       "App integration handles bookkeeping so turns move fast",
       "Persistent campaign lets characters grow across sessions",
@@ -3970,6 +3999,7 @@
       "5": "not_recommended"
     },
     "caption": "An app-driven cooperative campaign where your party explores Middle-earth.",
+    "caption_th": "แคมเปญ co-op ที่แอปคุม ทีมของคุณสำรวจมิดเดิลเอิร์ธ",
     "teach": {
       "beats": [
         {
@@ -4017,6 +4047,18 @@
           "caption": "Explore toward the objective, not the treasure."
         }
       ],
+      "captions_th": [
+        "ฮีโร่สำรวจมิดเดิลเอิร์ธ แอปเล่าเรื่อง",
+        "ชนะเมื่อทำเป้าหมายฉากเสร็จก่อนความกลัวถึงจุดสูงสุด",
+        "คนละสองแอ็กชัน แล้วถึงตาศัตรู",
+        "การสอดแนมสับเด็คใหม่ วางแผนความสำเร็จของคุณ",
+        "สำรวจไปทางเป้าหมาย ไม่ใช่ทางสมบัติ"
+      ],
+      "frames_th": [
+        "เดิน สำรวจ โต้ตอบ",
+        "ทดสอบ: จั่วการ์ดหาความสำเร็จ",
+        "แอปคุมศัตรูและเรื่องราว"
+      ],
       "wordCount": 49,
       "source": "generated",
       "reviewed": false
@@ -4046,6 +4088,7 @@
     "color": "#3E5C3E",
     "image": "https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg",
     "blurb": "Place hexagonal habitat tiles and wildlife tokens to build the most harmonious slice of Pacific Northwest wilderness, scoring for how your animals cluster and your terrain connects. Calm, tactile, and quietly clever.",
+    "blurb_th": "วางไทล์ถิ่นอาศัยหกเหลี่ยมกับโทเค็นสัตว์ป่า สร้างผืนป่าแปซิฟิกตะวันตกเฉียงเหนือที่กลมกลืนที่สุด ทำแต้มจากการที่สัตว์เกาะกลุ่มและภูมิประเทศเชื่อมกัน สงบ จับต้องได้ และฉลาดแบบเงียบๆ",
     "why": [
       "Multiple scoring cards per animal keep every game's strategy different",
       "Puzzly tile placement rewards spatial thinking without heavy rules",
@@ -4059,6 +4102,7 @@
       "4": "recommended"
     },
     "caption": "Place hexagonal habitat tiles and wildlife tokens to build the most harmonious slice of Pacific Northwest.",
+    "caption_th": "วางไทล์ถิ่นอาศัยกับโทเค็นสัตว์ป่า สร้างผืนป่าที่กลมกลืน",
     "teach": {
       "beats": [
         {
@@ -4106,6 +4150,18 @@
           "caption": "Take the pair you can place right now."
         }
       ],
+      "captions_th": [
+        "สร้างผืนป่าของคุณเองจากไทล์หกเหลี่ยมและโทเค็นสัตว์",
+        "แต้มมากสุดชนะ: รูปแบบสัตว์ บวกผืนใหญ่สุดของแต่ละภูมิประเทศ",
+        "เติมคู่ให้ครบ คนถัดไป",
+        "ไทล์ละหนึ่งสัตว์ ตลอดไป วางไม่ได้? กลับลงถุง",
+        "หยิบคู่ที่วางได้ตอนนี้เลย"
+      ],
+      "frames_th": [
+        "เลือกหนึ่งคู่",
+        "ไทล์ต้องติดแผนที่ของคุณ",
+        "สัตว์วางบนไทล์ที่ตรงกัน"
+      ],
       "wordCount": 58,
       "source": "generated",
       "reviewed": false
@@ -4136,6 +4192,7 @@
     "spineImage": "covers/age-of-steam-spine.jpg",
     "backImage": "covers/age-of-steam-back.jpg",
     "blurb": "Lay track, run trains, and go into debt doing it — a brutal, classic railroad economy game where efficiency matters more than the terrain.",
+    "blurb_th": "วางราง เดินรถ และเป็นหนี้ไปพร้อมกัน เกมเศรษฐกิจรถไฟคลาสสิกสุดโหดที่ประสิทธิภาพสำคัญกว่าภูมิประเทศ",
     "tag": "Heavy · economic railroads",
     "why": [
       "A legendary, unforgiving economic railroad design",
@@ -4152,6 +4209,7 @@
       "6": "recommended"
     },
     "caption": "Lay track, run trains, and go into debt doing it.",
+    "caption_th": "วางราง เดินรถ และเป็นหนี้ไปพร้อมกัน",
     "teach": {
       "beats": [
         {
@@ -4199,6 +4257,18 @@
           "caption": "Deliver one good early; income snowballs."
         }
       ],
+      "captions_th": [
+        "สร้างทางรถไฟ ขนสินค้าไปตามราง และอย่าถังแตก",
+        "แต้มมากสุดชนะ: รายได้ลบหนี้ บวกราง",
+        "ส่งสินค้าได้รายได้ รายได้จ่ายหนี้",
+        "พลาดจ่ายหนี้แล้วตกรอบ",
+        "ส่งสินค้าสักชิ้นตั้งแต่ต้น รายได้จะพอกพูน"
+      ],
+      "frames_th": [
+        "ประมูลลำดับตา",
+        "วางราง จ่ายต่อช่อง",
+        "ส่งสินค้าไปตามรางของคุณ"
+      ],
       "wordCount": 52,
       "source": "generated",
       "reviewed": false
@@ -4227,6 +4297,7 @@
     "color": "#6B4226",
     "image": "https://cf.geekdo-images.com/-DehugU8es22rqjlVIb1IA__itemrep@2x/img/jTiD33bBqO3BHsiIk7bkpn_XoKY=/fit-in/492x600/filters:strip_icc()/pic8139863.png",
     "blurb": "A Hearts-style trick-taking game where fairy tale princesses are trying to dodge marriage proposals instead of collect them. Fast, funny, and easy to teach.",
+    "blurb_th": "เกมกินตองสไตล์ Hearts ที่เจ้าหญิงในเทพนิยายพยายามหลบคำขอแต่งงาน ไม่ใช่เก็บสะสม เร็ว ตลก และสอนง่าย",
     "tag": "Trick-taking",
     "why": [
       "A fresh, funny spin on classic Hearts-style trick-taking",
@@ -4241,6 +4312,7 @@
       "6": "recommended"
     },
     "caption": "A Hearts-style trick-taking game where fairy tale princesses are trying to dodge marriage proposals instead.",
+    "caption_th": "กินตองสไตล์ Hearts ที่เจ้าหญิงพยายามหลบคำขอแต่งงาน",
     "teach": {
       "beats": [
         {
@@ -4288,6 +4360,18 @@
           "caption": "Lead high in a suit you'll empty."
         }
       ],
+      "captions_th": [
+        "เกมกินตองที่กินตองคือเรื่องแย่ และเจ้าหญิงแย่กว่า",
+        "จบทุกรอบใครแต้มน้อยสุดชนะ",
+        "ทุกรอบเพิ่มการ์ดกฎใหม่หนึ่งใบ",
+        "กินเจ้าหญิงแล้วแต้มทั้งตองเป็นของคุณ",
+        "ลงไพ่สูงในดอกที่คุณจะทิ้งให้หมด"
+      ],
+      "frames_th": [
+        "ลงก่อน ตามดอกถ้าทำได้",
+        "ไพ่สูงสุดของดอกที่ลงชนะ",
+        "คนชนะรับการ์ดแย่ของตองไป"
+      ],
       "wordCount": 58,
       "source": "generated",
       "reviewed": false
@@ -4310,6 +4394,7 @@
     "color": "#A85C3F",
     "image": "https://cf.geekdo-images.com/DvvSoTrB3-UMEgz2rBraHg__original/img/a70U9DGHGxiyo8WWMOb9Zd4hrxc=/0x0/filters:format(jpeg)/pic7533289.jpg",
     "blurb": "Place dice to trigger polyomino-style tile placement, build up a medieval trade empire, and chase points across half a dozen scoring paths at once. Dense and demanding, in the lineage of the big modern dice-placement euros.",
+    "blurb_th": "วางลูกเต๋าเพื่อวางไทล์แบบโพลิโอมิโน สร้างอาณาจักรการค้ายุคกลาง และไล่ล่าแต้มจากหลายเส้นทางพร้อมกัน แน่นและเรียกร้อง สายเดียวกับยูโรวางลูกเต๋าใหญ่ๆ ยุคใหม่",
     "why": [
       "Dice placement drives tile-laying in a way that rewards careful sequencing",
       "Multiple viable scoring paths keep replays feeling different",
@@ -4323,6 +4408,7 @@
       "4": "not_recommended"
     },
     "caption": "Place dice to trigger polyomino-style tile placement, build up a medieval trade empire.",
+    "caption_th": "วางลูกเต๋าเพื่อวางไทล์ สร้างอาณาจักรการค้ายุคกลาง",
     "teach": {
       "beats": [
         {
@@ -4370,6 +4456,18 @@
           "caption": "Build cheap early buildings that give ongoing goods."
         }
       ],
+      "captions_th": [
+        "ทอยลูกเต๋า วางมันเพื่อค้าขาย สร้าง และเดินกษัตริย์",
+        "แต้มมากสุดชนะ: สิ่งก่อสร้าง สัญญา และโบนัส",
+        "เลขบนเต๋าสำคัญ เต๋าที่เหลือเก็บไว้ใช้ทีหลัง",
+        "ฉบับร่าง — เช็กกฎโบนัสวงล้อให้ดี",
+        "สร้างสิ่งก่อสร้างถูกๆ ตั้งแต่ต้นที่ให้สินค้าต่อเนื่อง"
+      ],
+      "frames_th": [
+        "ทอยลูกเต๋าของคุณ",
+        "วางเต๋าบนวงล้อแอ็กชัน",
+        "รับสินค้า สร้าง หรือเดิน"
+      ],
       "wordCount": 54,
       "source": "generated",
       "reviewed": false
@@ -4399,6 +4497,7 @@
     "color": "#A6642A",
     "image": "https://cf.geekdo-images.com/9xuEX32soPb7mAcPVG2M3w__original/img/z61C5qFPNFJUElVW50vX_R8ve6A=/0x0/filters:format(png)/pic7125824.png",
     "blurb": "Build an industrial empire in India's pre-liberalization economy, navigating licenses, factories, and shifting markets. A dense economic game for players who like their capitalism with real historical texture.",
+    "blurb_th": "สร้างอาณาจักรอุตสาหกรรมในเศรษฐกิจอินเดียก่อนเปิดเสรี ฝ่าใบอนุญาต โรงงาน และตลาดที่เปลี่ยนไปมา เกมเศรษฐกิจแน่นๆ สำหรับคนที่ชอบทุนนิยมที่มีเนื้อประวัติศาสตร์จริง",
     "why": [
       "Grounded in a specific, underused slice of economic history",
       "Long-arc empire building with genuine supply-chain tension",
@@ -4412,6 +4511,7 @@
       "4": "best"
     },
     "caption": "Build an industrial empire in India's pre-liberalization economy, navigating licenses.",
+    "caption_th": "สร้างอาณาจักรอุตสาหกรรมในอินเดียก่อนเปิดเสรี",
     "teach": {
       "beats": [
         {
@@ -4459,6 +4559,18 @@
           "caption": "Open one factory and one market link first."
         }
       ],
+      "captions_th": [
+        "สร้างอาณาจักรธุรกิจอินเดีย: โรงงาน เรือ และสำนักงาน",
+        "จบเกมเงินและทรัพย์สินมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ตลาดจ่ายน้อยลงทุกครั้งที่ขายให้",
+        "เปิดโรงงานหนึ่งกับเส้นทางตลาดหนึ่งก่อน"
+      ],
+      "frames_th": [
+        "ทำแอ็กชันบนกระดาน",
+        "สร้างโรงงานหรือสำนักงาน",
+        "ส่งสินค้าไปตลาด"
+      ],
       "wordCount": 54,
       "source": "generated",
       "reviewed": false
@@ -4481,6 +4593,7 @@
     "color": "#3B5266",
     "image": "https://cf.geekdo-images.com/y7Rqd3S6J7vyVhicR1bqTQ__original/img/tQFXv1w2R-J-1cjyaKG9LAS2UOs=/0x0/filters:format(jpeg)/pic6091101.jpg",
     "blurb": "Manage a growing harbor town, converting raw resources into goods and feeding your workers along the way. Dense, deliberate, and one of Uwe Rosenberg's toughest resource-management designs.",
+    "blurb_th": "บริหารเมืองท่าที่กำลังโต แปรวัตถุดิบเป็นสินค้า และเลี้ยงคนงานไปตลอดทาง แน่น ค่อยเป็นค่อยไป และเป็นหนึ่งในเกมจัดการทรัพยากรที่โหดที่สุดของ Uwe Rosenberg",
     "why": [
       "Deep resource-processing chains reward long-term planning",
       "A genuine solo mode makes it worth owning even for one",
@@ -4495,6 +4608,7 @@
       "5": "not_recommended"
     },
     "caption": "Manage a growing harbor town, converting raw resources into goods and feeding your workers along the way.",
+    "caption_th": "บริหารเมืองท่า แปรวัตถุดิบเป็นสินค้า และเลี้ยงคนงาน",
     "teach": {
       "beats": [
         {
@@ -4542,6 +4656,18 @@
           "caption": "Grab fish and wood early; food first, then ships."
         }
       ],
+      "captions_th": [
+        "บริหารท่าเรือ: เก็บสินค้า สร้างเรือและอาคาร เลี้ยงคนงาน",
+        "จบเกมเงินและมูลค่าอาคารมากสุดชนะ",
+        "ตาละหนึ่งแอ็กชัน อาคารที่คุณมีได้ค่าเช่า",
+        "เลี้ยงไม่ไหว? กู้เงิน หนี้มีดอกเบี้ยตลอดไป",
+        "คว้าปลากับไม้ตั้งแต่ต้น อาหารก่อน แล้วค่อยเรือ"
+      ],
+      "frames_th": [
+        "หยิบกองสินค้าที่เสนอ",
+        "หรือใช้แอ็กชันของอาคาร",
+        "เลี้ยงคนของคุณตอนจบรอบ"
+      ],
       "wordCount": 63,
       "source": "generated",
       "reviewed": false
@@ -4571,6 +4697,7 @@
     "color": "#A8562E",
     "image": "https://cf.geekdo-images.com/Naw8y8J_s-8cvq1GoTON6w__original/img/8wVEVzdf5BoPvSiscnGvCAPNe2Q=/0x0/filters:format(jpeg)/pic7416519.jpg",
     "blurb": "Draft cards each round to build up a civilization's military, science, and wonders, passing the rest to your neighbor before it's gone. The reigning champion of quick multiplayer card drafting.",
+    "blurb_th": "ดราฟต์การ์ดทุกรอบเพื่อสร้างกองทัพ วิทยาศาสตร์ และสิ่งมหัศจรรย์ของอารยธรรม แล้วส่งที่เหลือให้เพื่อนข้างๆ ก่อนมันหายไป แชมป์ครองบัลลังก์เกมดราฟต์การ์ดหลายคนแบบเร็ว",
     "why": [
       "Plays up to 7 with zero downtime — everyone drafts simultaneously",
       "Refreshed second edition folds in Cities and Leaders content",
@@ -4585,6 +4712,7 @@
       "7": "recommended"
     },
     "caption": "Draft cards each round to build up a civilization's military.",
+    "caption_th": "ดราฟต์การ์ดทุกรอบ สร้างกองทัพและสิ่งมหัศจรรย์ของอารยธรรม",
     "teach": {
       "beats": [
         {
@@ -4632,6 +4760,18 @@
           "caption": "Take free resource cards first."
         }
       ],
+      "captions_th": [
+        "ดราฟต์การ์ดเพื่อขยายสิ่งมหัศจรรย์ผ่านสามยุค",
+        "แต้มมากสุดชนะ: อาคาร สิ่งมหัศจรรย์ กองทัพ วิทยาศาสตร์",
+        "สามยุค ยุคละหกใบ",
+        "กองทัพสู้แค่กับเพื่อนบ้านสองข้าง",
+        "หยิบการ์ดทรัพยากรฟรีก่อน"
+      ],
+      "frames_th": [
+        "เลือกการ์ดหนึ่งใบจากมือ",
+        "ส่งที่เหลือให้เพื่อนบ้าน",
+        "ทุกคนเปิด จ่าย สร้าง"
+      ],
       "wordCount": 49,
       "source": "generated",
       "reviewed": false
@@ -4661,6 +4801,7 @@
     "color": "#B5502E",
     "image": "https://cf.geekdo-images.com/co36SqyPYlM1QwVW6XSwyQ__original/img/ErbrDNguZzKtnCCAUiQCh1xwldc=/0x0/filters:format(jpeg)/pic8933083.jpg",
     "blurb": "A real-time dice game where everyone rolls at once, racing to build the longest run of consecutive numbers before the timer runs out. Loud, fast, and over before you've caught your breath.",
+    "blurb_th": "เกมลูกเต๋าแบบเรียลไทม์ ทุกคนทอยพร้อมกัน แข่งเรียงเลขต่อเนื่องให้ยาวที่สุดก่อนหมดเวลา ดัง เร็ว และจบก่อนจะหายเหนื่อย",
     "why": [
       "Simultaneous real-time rolling means nobody's ever waiting their turn",
       "Push-your-luck tension over when to lock in a streak",
@@ -4677,6 +4818,7 @@
       "8": "recommended"
     },
     "caption": "A real-time dice game where everyone rolls at once, racing to build the longest run of consecutive numbers.",
+    "caption_th": "เกมลูกเต๋าเรียลไทม์ ทุกคนทอยพร้อมกัน แข่งเรียงเลขต่อเนื่อง",
     "teach": {
       "beats": [
         {
@@ -4723,6 +4865,18 @@
           "scene": "hand-safe",
           "caption": "Bank early the first round."
         }
+      ],
+      "captions_th": [
+        "เกมลูกเต๋าปาร์ตี้: ทอยต่อไปเพื่อสตรีคร้อนแรง",
+        "ใครถึงแต้มเป้าหมายก่อนชนะ",
+        "ฉบับร่าง — เช็กวิธีนับแต้ม",
+        "พลาดแล้วเสียแต้มของรอบนั้นทั้งหมด",
+        "รอบแรกเก็บแต้มเร็วๆ ไว้ก่อน"
+      ],
+      "frames_th": [
+        "ทอย",
+        "เก็บหรือทอยใหม่",
+        "หยุดเพื่อเก็บแต้ม หรือลุยต่อ"
       ],
       "wordCount": 40,
       "source": "generated",
@@ -4826,6 +4980,7 @@
     "color": "#C1662F",
     "image": "https://cf.geekdo-images.com/cf0xxkevbwTGF3VUZymKjg__original/img/vkElrRCPJxy7Q3TH9olpq20egA4=/0x0/filters:format(png)/pic6398727.png",
     "blurb": "Play runs of cards you can never reorder, racing to empty your hand while scouting your rivals' sets along the way. A tiny box with a genuinely clever twist on climbing games.",
+    "blurb_th": "ลงชุดไพ่ที่ห้ามเรียงใหม่เด็ดขาด แข่งทิ้งมือให้หมด พลางสอดแนมชุดของคู่แข่งไปด้วย กล่องจิ๋วที่หักมุมเกมสายไต่แต้มได้ฉลาดจริง",
     "why": [
       "The fixed hand-order constraint makes every single card placement matter",
       "Fast, mean, and endlessly replayable at 20 minutes a round",
@@ -4839,6 +4994,7 @@
       "5": "recommended"
     },
     "caption": "Play runs of cards you can never reorder, racing to empty your hand.",
+    "caption_th": "ลงชุดไพ่ที่ห้ามเรียงใหม่ แข่งทิ้งมือให้หมด",
     "teach": {
       "beats": [
         {
@@ -4886,6 +5042,18 @@
           "caption": "Flip your hand upside down if that helps. Decide before starting."
         }
       ],
+      "captions_th": [
+        "ลงชุดเรียงหรือชุดเหมือนจากมือที่เรียงใหม่ไม่ได้",
+        "แต้มมากสุดชนะ: การ์ดที่ยึดได้ลบการ์ดที่เหลือในมือ",
+        "รอบจบเมื่อไม่มีใครชนะชุดบนโต๊ะได้",
+        "เรียงมือใหม่ไม่ได้ แทรกได้แค่การ์ดที่สอดแนมมา",
+        "จะกลับมือหัวลงก็ได้ถ้าช่วย ตัดสินใจก่อนเริ่ม"
+      ],
+      "frames_th": [
+        "โชว์: ลงชุดที่แรงกว่า",
+        "หรือสอดแนม: หยิบการ์ดจากโต๊ะ",
+        "โชว์และสอดแนมพร้อมกัน ได้ครั้งเดียว"
+      ],
       "wordCount": 64,
       "source": "generated",
       "reviewed": false
@@ -4914,6 +5082,7 @@
     "color": "#B5533C",
     "image": "https://cf.geekdo-images.com/1I9spdDMuRzgM4EVV6BRiQ__itemrep@2x/img/pCOyT8JrYa7csYKVeR0ucGO1eCg=/fit-in/492x600/filters:strip_icc()/pic8775698.jpg",
     "blurb": "Everyone's stuck on the same ship, but sailors, pirates, and a cult all want to steer it somewhere completely different. Big-group hidden-role chaos with a genuinely fun third team.",
+    "blurb_th": "ทุกคนติดอยู่บนเรือลำเดียวกัน แต่กะลาสี โจรสลัด และลัทธิต่างอยากบังคับเรือไปคนละทาง เกมบทบาทลับกลุ่มใหญ่สุดป่วน ที่ทีมที่สามสนุกจริง",
     "tag": "Social deduction · big group",
     "why": [
       "A genuinely fun third faction sets this apart from other hidden-role games",
@@ -4931,6 +5100,7 @@
       "11": "best"
     },
     "caption": "Everyone's stuck on the same ship, but sailors.",
+    "caption_th": "ทุกคนติดอยู่บนเรือลำเดียวกัน แต่อยากไปคนละทาง",
     "teach": {
       "beats": [
         {
@@ -4978,6 +5148,18 @@
           "caption": "Watch where the ship goes and who was on the crew."
         }
       ],
+      "captions_th": [
+        "กะลาสี โจรสลัด และสาวกลัทธิ แย่งกันคุมเส้นทางเรือ",
+        "กะลาสีพาไปสีน้ำเงิน โจรสลัดพาไปสีแดง สาวกลัทธิให้อาหารคราเคน",
+        "ก่อกบฏด้วยปืนเพื่อเปลี่ยนกัปตัน",
+        "บางคนยังไม่รู้ทีมของตัวเอง",
+        "ดูว่าเรือไปทางไหน และใครอยู่ในลูกเรือ"
+      ],
+      "frames_th": [
+        "กัปตันเลือกลูกเรือนำทาง",
+        "ลูกเรือลงการ์ดแบบคว่ำ",
+        "เรือเคลื่อนตามการ์ด"
+      ],
       "wordCount": 60,
       "source": "generated",
       "reviewed": false
@@ -5006,6 +5188,7 @@
     "color": "#B5533C",
     "image": "https://cf.geekdo-images.com/tyv6lPMlyU7YIUztlILQYQ__itemrep@2x/img/lQMHypGthw9PcbLsx2hiBK2n4V4=/fit-in/492x600/filters:strip_icc()/pic8587890.png",
     "blurb": "Place tiles to rebuild a ruined Celtic land, claiming castles and completing missions as the board fills in. A tight, modern Knizia tile-layer.",
+    "blurb_th": "วางไทล์ฟื้นฟูดินแดนเคลต์ที่พังทลาย ยึดปราสาทและทำภารกิจให้เสร็จขณะที่กระดานเต็มขึ้น เกมวางไทล์ของ Knizia ยุคใหม่ที่แน่นกระชับ",
     "tag": "Tile-laying",
     "why": [
       "A fresh, modern spin on classic Knizia tile-laying",
@@ -5019,6 +5202,7 @@
       "4": "recommended"
     },
     "caption": "Place tiles to rebuild a ruined Celtic land, claiming castles and completing missions as the board fills in.",
+    "caption_th": "วางไทล์ฟื้นฟูดินแดนเคลต์ ยึดปราสาท ทำภารกิจ",
     "teach": {
       "beats": [
         {
@@ -5066,6 +5250,18 @@
           "caption": "Place where you can grow next turn."
         }
       ],
+      "captions_th": [
+        "ฟื้นฟูภูมิทัศน์ด้วยไทล์ โทเค็น และเป้าหมายลับ",
+        "แต้มมากสุดชนะ: พื้นที่ที่เชื่อมกันและเป้าหมาย",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กข้อจำกัดการวาง",
+        "วางตรงที่ตาหน้าขยายต่อได้"
+      ],
+      "frames_th": [
+        "จั่วไทล์",
+        "วางบนแผนที่",
+        "รับโบนัส"
+      ],
       "wordCount": 45,
       "source": "generated",
       "reviewed": false
@@ -5088,6 +5284,7 @@
     "color": "#4B3B6B",
     "image": "https://cf.geekdo-images.com/X6HDeg8AhGXGhB8je65MTw__original/img/A2cgVhqNzUMUGg7_GJ5omWcdkt8=/0x0/filters:format(jpeg)/pic7303572.jpg",
     "blurb": "Give cryptic clues to help your team crack a numeric code — while eavesdropping to crack the other team's. One of the sharpest team word games out there, with real tension every round.",
+    "blurb_th": "ให้คำใบ้ลึกลับช่วยทีมถอดรหัสตัวเลข พลางแอบฟังเพื่อถอดรหัสของอีกทีม หนึ่งในเกมคำศัพท์แบบทีมที่คมที่สุด ตึงจริงทุกรอบ",
     "why": [
       "Consistently ranks among the best party/word games on BGG",
       "Rewards clever, deniable clue-giving over obvious ones",
@@ -5103,6 +5300,7 @@
       "8": "recommended"
     },
     "caption": "Give cryptic clues to help your team crack a numeric code — while eavesdropping to crack the other team's.",
+    "caption_th": "ให้คำใบ้ลึกลับช่วยทีมถอดรหัส พลางแอบฟังอีกทีม",
     "teach": {
       "beats": [
         {
@@ -5150,6 +5348,18 @@
           "caption": "First round, be obvious. Nobody can intercept yet."
         }
       ],
+      "captions_th": [
+        "ทีมส่งคำใบ้เข้ารหัส อีกทีมพยายามดักจับ",
+        "ดักจับได้สองครั้งชนะ สื่อสารพลาดสองครั้งแพ้",
+        "ทุกคำใบ้ช่วยศัตรูถอดคำของคุณ",
+        "ใบ้ชัดไปโดนดัก แปลกไปทีมตัวเองพลาด",
+        "รอบแรกใบ้ชัดๆ ได้ ยังไม่มีใครดักได้"
+      ],
+      "frames_th": [
+        "ให้สามคำใบ้สำหรับรหัสของคุณ",
+        "ทีมคุณเขียนรหัส",
+        "อีกทีมเดาด้วย"
+      ],
       "wordCount": 58,
       "source": "generated",
       "reviewed": false
@@ -5179,6 +5389,7 @@
     "color": "#B5533C",
     "image": "https://cf.geekdo-images.com/v_BidaaTXux6j_UJQol6Jw__original/img/RDmxiiYALGFFD3ElKLTlR5C5xa8=/0x0/filters:format(jpeg)/pic8918996.jpg",
     "blurb": "Draw a word, pass your sketchpad, the next player guesses what you drew and passes it on — by the end the group is howling at how far the drawing wandered from the original word. The 12-player pack means nobody has to sit out.",
+    "blurb_th": "วาดคำที่ได้ ส่งสมุดต่อ คนถัดไปเดาว่าวาดอะไรแล้วส่งต่อ จบเกมทั้งกลุ่มหัวเราะลั่นว่าภาพเพี้ยนจากคำเดิมไปไกลแค่ไหน แพ็ก 12 คนแปลว่าไม่มีใครต้องนั่งดู",
     "why": [
       "Telephone-meets-Pictionary format that never fails to get a room laughing",
       "Scales up to 12 without slowing down — everyone draws and guesses at once",
@@ -5196,6 +5407,7 @@
       "11": "recommended"
     },
     "caption": "Draw a word, pass your sketchpad, the next player guesses what you drew and passes it.",
+    "caption_th": "วาดคำ ส่งสมุดต่อ คนถัดไปเดาแล้วส่งต่อ",
     "teach": {
       "beats": [
         {
@@ -5243,6 +5455,18 @@
           "caption": "Draw badly on purpose. Better story."
         }
       ],
+      "captions_th": [
+        "โทรศัพท์ทอดด้วยภาพวาด: วาด เดา วาด เดา",
+        "เล่นเอาฮา จะนับแต้มก็ได้",
+        "ทุกคนวาดพร้อมกัน เปิดเผยตอนจบ",
+        "ห้ามพูด ห้ามมีตัวอักษรในภาพ",
+        "ตั้งใจวาดให้แย่ เรื่องจะสนุกกว่า"
+      ],
+      "frames_th": [
+        "วาดคำของคุณ",
+        "ส่งต่อ คนถัดไปเดา",
+        "คนถัดไปวาดจากคำเดา"
+      ],
       "wordCount": 45,
       "source": "generated",
       "reviewed": false
@@ -5271,6 +5495,7 @@
     "color": "#2A6157",
     "image": "https://cf.geekdo-images.com/b5VyYjNfAxJ4Z-Dx2UWlqg__itemrep@2x/img/WRMjcTjRqs1icMySG0dxNIkLJvc=/fit-in/492x600/filters:strip_icc()/pic7945692.jpg",
     "blurb": "Race through jungle, desert, and river tiles toward the city of gold, buying cards to build a faster expedition deck as you go. One of the friendliest deck-builders around.",
+    "blurb_th": "แข่งฝ่าไทล์ป่า ทะเลทราย และแม่น้ำไปยังเมืองทองคำ ซื้อการ์ดสร้างเด็คคณะสำรวจให้เร็วขึ้นระหว่างทาง หนึ่งใน deck building ที่เป็นมิตรที่สุด",
     "tag": "Deck-building race",
     "why": [
       "One of the friendliest deck-builders for newcomers",
@@ -5284,6 +5509,7 @@
       "4": "best"
     },
     "caption": "Race through jungle, desert, and river tiles toward the city of gold.",
+    "caption_th": "แข่งฝ่าป่า ทะเลทราย และแม่น้ำไปยังเมืองทองคำ",
     "teach": {
       "beats": [
         {
@@ -5331,6 +5557,18 @@
           "caption": "Buy a card that moves you two."
         }
       ],
+      "captions_th": [
+        "แข่งฝ่าป่าด้วยการสร้างเด็คนักสำรวจ",
+        "ใครถึง El Dorado ก่อนชนะ",
+        "แต่ละภูมิประเทศต้องใช้สัญลักษณ์ของมัน",
+        "การ์ดเขียวเดินในป่าเท่านั้น น้ำเงินสำหรับน้ำ",
+        "ซื้อการ์ดที่เดินได้สองก้าว"
+      ],
+      "frames_th": [
+        "เล่นการ์ดเดินบนภูมิประเทศ",
+        "หรือซื้อการ์ดใหม่",
+        "ทิ้ง จั่วสี่ใบ"
+      ],
       "wordCount": 50,
       "source": "generated",
       "reviewed": false
@@ -5360,6 +5598,7 @@
     "color": "#6B4226",
     "image": "https://cf.geekdo-images.com/F-J1_JTJMhg_71RFfDAe4w__original/img/v8kYC6F9MEOzXRraUKQCywAbhdk=/0x0/filters:format(png)/pic8766964.png",
     "blurb": "Two players duel with mismatched decks and shifting pillars of power, racing to tip fate before your opponent does. A tight, combative two-player battle with no filler.",
+    "blurb_th": "สองคนดวลด้วยเด็คที่ต่างกันและเสาแห่งพลังที่เปลี่ยนไปมา แข่งพลิกชะตาก่อนคู่ต่อสู้ ศึกสองคนแบบแน่นและดุ ไม่มีส่วนเกิน",
     "why": [
       "Asymmetric player powers keep every duel feeling different",
       "Fast turns keep the tension high despite the tactical depth",
@@ -5369,7 +5608,8 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "Two players duel with mismatched decks and shifting pillars of power."
+    "caption": "Two players duel with mismatched decks and shifting pillars of power.",
+    "caption_th": "สองคนดวลด้วยเด็คต่างกันและเสาแห่งพลังที่เปลี่ยนไปมา"
   },
   {
     "bggId": "12",
@@ -5388,6 +5628,7 @@
     "color": "#A67C27",
     "image": "https://cf.geekdo-images.com/k7lG683LBZdvFyS-FH-MpA__original/img/hEqkeRnhyNLxeryIIdOnAHdItfo=/0x0/filters:format(png)/pic6746812.png",
     "blurb": "Bid sun tokens against your rivals to win auctions for tiles — monuments, floods, gold — before the sun god ends the era. Knizia's auction design at its sharpest.",
+    "blurb_th": "ประมูลโทเค็นดวงอาทิตย์แข่งกับคู่แข่งเพื่อชิงไทล์ อนุสาวรีย์ น้ำท่วม ทองคำ ก่อนเทพดวงอาทิตย์จะปิดยุค ดีไซน์ประมูลของ Knizia ที่คมที่สุด",
     "why": [
       "Auction mechanic where every bid is a real gamble against unknown hands",
       "Set collection with enough scoring paths to keep strategies varied",
@@ -5401,6 +5642,7 @@
       "5": "recommended"
     },
     "caption": "Bid sun tokens against your rivals to win auctions for tiles — monuments, floods.",
+    "caption_th": "ประมูลโทเค็นดวงอาทิตย์ชิงไทล์ก่อนเทพจะปิดยุค",
     "teach": {
       "beats": [
         {
@@ -5448,6 +5690,18 @@
           "caption": "Call Ra early when the lot is small and you're behind."
         }
       ],
+      "captions_th": [
+        "ประมูลไทล์อียิปต์ แต่แต่ละรอบจบกะทันหันได้",
+        "จบสามยุคใครแต้มมากสุดชนะ",
+        "สามยุค ดวงอาทิตย์สลับกันหลังทุกการประมูล",
+        "ไทล์ Ra เต็มเมื่อไหร่ ยุคจบโดยไม่เตือน",
+        "เรียก Ra เร็วๆ ตอนกองเล็กและคุณตามหลัง"
+      ],
+      "frames_th": [
+        "จั่วไทล์ หรือเรียก Ra",
+        "ประมูล: ทุกคนเสนอดวงอาทิตย์",
+        "ดวงอาทิตย์สูงสุดรับไทล์ไป"
+      ],
       "wordCount": 59,
       "source": "generated",
       "reviewed": false
@@ -5477,6 +5731,7 @@
     "color": "#7A2E2E",
     "image": "https://cf.geekdo-images.com/EI6jGtH3CLqLiI9pfW0pTA__original/img/skAAQF86A9wjMElJOXA0EcnJmLE=/0x0/filters:format(jpeg)/pic8179997.jpg",
     "blurb": "A brutal, old-school economic game about running competing bus companies — building routes, buying and dumping stock, and timing your exit before a company's shares go worthless. Notoriously mean, and beloved for it.",
+    "blurb_th": "เกมเศรษฐกิจสายเก่าสุดโหดเรื่องบริษัทรถเมล์ที่แข่งกัน สร้างเส้นทาง ซื้อและเทหุ้น และจับจังหวะออกก่อนหุ้นบริษัทจะไร้ค่า ขึ้นชื่อเรื่องความร้าย และเป็นที่รักเพราะแบบนั้น",
     "why": [
       "Stock manipulation lets you deliberately tank a company you no longer hold",
       "One of the classic 'gamer's game' heavy euros, back in this Complete Edition",
@@ -5489,6 +5744,7 @@
       "5": "recommended"
     },
     "caption": "A brutal, old-school economic game about running competing bus companies.",
+    "caption_th": "เกมเศรษฐกิจสายเก่าสุดโหดเรื่องบริษัทรถเมล์ที่แข่งกัน",
     "teach": {
       "beats": [
         {
@@ -5536,6 +5792,18 @@
           "caption": "Grab a short line between a house and a pub."
         }
       ],
+      "captions_th": [
+        "สร้างสายรถเมล์ ขนผู้โดยสาร คุมแม้กระทั่งเวลา",
+        "แต้มมากสุดชนะ: ผู้โดยสารที่ส่งถึง",
+        "ฉบับร่าง — เช็กลำดับแอ็กชัน",
+        "หยุดเวลาคือแอ็กชันจริง และมันโหด",
+        "คว้าสายสั้นๆ ระหว่างบ้านกับผับ"
+      ],
+      "frames_th": [
+        "วางตัวนับแอ็กชัน",
+        "สร้างรางหรืออาคาร",
+        "เดินรถเมล์ของคุณ"
+      ],
       "wordCount": 47,
       "source": "generated",
       "reviewed": false
@@ -5565,6 +5833,7 @@
     "color": "#8B6239",
     "image": "https://cf.geekdo-images.com/8oCeW5kLCh_uaN2ER7ProA__original/img/59pjsC_IY0pInc4Trj1l_lwJuok=/0x0/filters:format(jpeg)/pic6491535.jpg",
     "blurb": "A long, meaty economic game set during the dawn of the automobile industry, with a runtime that rewards a group ready to settle in for the evening. Built for players who like their history dense and their turns consequential.",
+    "blurb_th": "เกมเศรษฐกิจยาวและแน่นในยุคเริ่มต้นของอุตสาหกรรมรถยนต์ เวลาเล่นที่ตอบแทนกลุ่มที่พร้อมนั่งยาวทั้งคืน สร้างมาเพื่อคนที่ชอบประวัติศาสตร์แน่นๆ และตาเล่นที่มีผลจริง",
     "why": [
       "Multi-hour runtime supports a genuinely deep single session",
       "Historical industrial theme comes through in the mechanics, not just the art",
@@ -5577,6 +5846,7 @@
       "5": "recommended"
     },
     "caption": "A long, meaty economic game set during the dawn of the automobile industry.",
+    "caption_th": "เกมเศรษฐกิจยาวและแน่นในยุคเริ่มต้นอุตสาหกรรมรถยนต์",
     "teach": {
       "beats": [
         {
@@ -5624,6 +5894,18 @@
           "caption": "Build one cheap car well."
         }
       ],
+      "captions_th": [
+        "ออกแบบรถบนตาราง แล้วขายให้ตลาดที่เปลี่ยนไปเรื่อย",
+        "เงินมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "รสนิยมตลาดเปลี่ยนทุกรอบ",
+        "สร้างรถถูกๆ หนึ่งคันให้ดี"
+      ],
+      "frames_th": [
+        "จัดวางชิ้นส่วนในโรงงาน",
+        "ตั้งราคา",
+        "ลูกค้าซื้อคันที่ตรงใจ"
+      ],
       "wordCount": 43,
       "source": "generated",
       "reviewed": false
@@ -5646,6 +5928,7 @@
     "color": "#7A6248",
     "image": "https://cf.geekdo-images.com/rGomBfj0FGrZM-w3h5HFWQ__original/img/XtVFdYXLAxdGOjQOGCkrms-hLUU=/0x0/filters:format(png)/pic8250341.png",
     "blurb": "Draft small building cards into a growing castle layout, chaining bonuses between adjacent rooms for outsized combos. A pocket-sized game with surprising depth for its short runtime.",
+    "blurb_th": "ดราฟต์การ์ดอาคารเล็กๆ เข้าผังปราสาทที่ค่อยๆ โต ต่อโบนัสระหว่างห้องที่ติดกันเป็นคอมโบใหญ่ เกมขนาดพกพาที่ลึกเกินคาดสำหรับเวลาเล่นสั้นๆ",
     "why": [
       "Combo chains reward reading the whole layout, not just your last pick",
       "Fast rounds make it easy to squeeze in twice in one sitting",
@@ -5659,6 +5942,7 @@
       "5": "not_recommended"
     },
     "caption": "Draft small building cards into a growing castle layout.",
+    "caption_th": "ดราฟต์การ์ดอาคารเล็กๆ เข้าผังปราสาทที่ค่อยๆ โต",
     "teach": {
       "beats": [
         {
@@ -5706,6 +5990,18 @@
           "caption": "Take a card that gives coins or keys."
         }
       ],
+      "captions_th": [
+        "ดราฟต์การ์ดลงตาราง 3×3 ไอคอนให้ผลกับเพื่อนบ้าน",
+        "แต้มมากสุดชนะ: แต้มการ์ดและโบนัสเหรียญ",
+        "เก้าใบ แล้วนับแต้ม",
+        "ตารางล็อกที่ 3×3 การ์ดแรกกำหนดมุม",
+        "หยิบการ์ดที่ให้เหรียญหรือกุญแจ"
+      ],
+      "frames_th": [
+        "หยิบการ์ดจากแถวไหนก็ได้",
+        "จ่าย วางลงตาราง",
+        "ผลของมันทำงาน"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -5728,6 +6024,7 @@
     "color": "#4F4A3D",
     "image": "https://cf.geekdo-images.com/b9CYiq4Vfhcu4iCzFql7CQ__original/img/tbPF-kJMOx7VEP4IUs-soNC1f6k=/0x0/filters:format(jpeg)/pic7947660.jpg",
     "blurb": "Dwarves dig for gold while secret saboteurs quietly sabotage the tunnel from within. A light hidden-role classic dressed up for its anniversary with a bigger box and better art.",
+    "blurb_th": "คนแคระขุดหาทอง ขณะที่ผู้ก่อวินาศกรรมลับแอบทำลายอุโมงค์จากข้างใน เกมบทบาทลับเบาๆ คลาสสิก แต่งตัวใหม่ฉลองครบรอบด้วยกล่องใหญ่ขึ้นและภาพสวยขึ้น",
     "why": [
       "Hidden traitor mechanic that plays great with a big, loud group",
       "Rounds are short, so a bad hand never costs you the whole night",
@@ -5747,6 +6044,7 @@
       "11": "not_recommended"
     },
     "caption": "Dwarves dig for gold while secret saboteurs quietly sabotage the tunnel from within.",
+    "caption_th": "คนแคระขุดหาทอง ผู้ก่อวินาศกรรมลับแอบทำลายอุโมงค์",
     "teach": {
       "beats": [
         {
@@ -5794,6 +6092,18 @@
           "caption": "Extend the tunnel straight toward the middle."
         }
       ],
+      "captions_th": [
+        "คนแคระขุดหาทอง ผู้ก่อวินาศกรรมแอบขวางอุโมงค์",
+        "นักขุดชนะเมื่อถึงทอง ผู้ก่อวินาศกรรมชนะถ้าไปไม่ถึง",
+        "สามรอบ ทองอยู่ใต้หนึ่งในสามใบ",
+        "ผู้ก่อวินาศกรรมลงอุโมงค์แย่ๆ แบบเนียนๆ",
+        "ต่ออุโมงค์ตรงไปทางกลาง"
+      ],
+      "frames_th": [
+        "ลงการ์ดอุโมงค์",
+        "หรือแอ็กชัน: พังเครื่องมือ แอบดู",
+        "จั่ว"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -5822,6 +6132,7 @@
     "color": "#7A6A9E",
     "image": "https://cf.geekdo-images.com/wQNNMPNOm43VMYPAPpJdEA__itemrep@2x/img/feiwuznoPc4zSMoDhXidaLWGSuo=/fit-in/492x600/filters:strip_icc()/pic8160197.jpg",
     "blurb": "Bid to build in a magnificent sky city, racing rivals across islands and factions while chasing secret objectives. A sharp spatial auction game with gorgeous, towering components.",
+    "blurb_th": "ประมูลเพื่อสร้างในเมืองลอยฟ้าอันงดงาม แข่งกับคู่แข่งข้ามเกาะและฝ่ายต่างๆ พลางไล่ตามเป้าหมายลับ เกมประมูลเชิงพื้นที่สุดคม อุปกรณ์สวยและสูงตระหง่าน",
     "tag": "Spatial auction",
     "why": [
       "Gorgeous, towering components make a real table presence",
@@ -5835,6 +6146,7 @@
       "4": "best"
     },
     "caption": "Bid to build in a magnificent sky city, racing rivals across islands and factions.",
+    "caption_th": "ประมูลเพื่อสร้างในเมืองลอยฟ้า แข่งข้ามเกาะและฝ่ายต่างๆ",
     "teach": {
       "beats": [
         {
@@ -5882,6 +6194,18 @@
           "caption": "Take a cheap spot near the middle."
         }
       ],
+      "captions_th": [
+        "ประมูลจุดสร้าง ความสูงและระยะถึงทำแต้ม",
+        "แต้มมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กกฎการประมูล",
+        "เอาจุดถูกๆ ใกล้กลาง"
+      ],
+      "frames_th": [
+        "ประมูลจุด",
+        "สร้างตรงนั้น",
+        "ทำแต้มตามระยะถึง"
+      ],
       "wordCount": 38,
       "source": "generated",
       "reviewed": false
@@ -5911,6 +6235,7 @@
     "color": "#3B6E71",
     "image": "https://cf.geekdo-images.com/BBefMnVYBDS3EbJ9fPaC8A__original/img/E2VsUBa6HUU0QKlp4eQOsbP1wUo=/0x0/filters:format(jpeg)/pic8634453.jpg",
     "blurb": "Wingspan's engine-building system, reimagined for fish and the open ocean instead of birds. Play cards to chain habitat bonuses and build an aquatic tableau over a handful of rounds.",
+    "blurb_th": "ระบบ engine building ของ Wingspan คิดใหม่สำหรับปลาและมหาสมุทรเปิดแทนนก เล่นการ์ดต่อโบนัสถิ่นอาศัยเป็นทอด สร้าง tableau ใต้น้ำในไม่กี่รอบ",
     "why": [
       "Familiar to anyone who's played Wingspan, but with its own ocean-specific twists",
       "Gorgeous fish illustrations on every card",
@@ -5925,6 +6250,7 @@
       "5": "not_recommended"
     },
     "caption": "Wingspan's engine-building system, reimagined for fish and the open ocean instead of birds.",
+    "caption_th": "Wingspan คิดใหม่สำหรับปลาและมหาสมุทรเปิดแทนนก",
     "teach": {
       "beats": [
         {
@@ -5972,6 +6298,18 @@
           "caption": "Play a cheap fish in the top row first."
         }
       ],
+      "captions_th": [
+        "Wingspan ใต้น้ำ: เล่นปลาลงถิ่นอาศัยของคุณ",
+        "แต้มมากสุดชนะ: ปลา ไข่ เป้าหมาย การ์ดโบนัส",
+        "ตาละหนึ่งแอ็กชัน แถวจะแรงขึ้นเรื่อยๆ",
+        "ปลาต้องมีอาหารและถิ่นอาศัย ไข่ใช้เล่นช่องที่สูงขึ้น",
+        "เล่นปลาถูกๆ ในแถวบนก่อน"
+      ],
+      "frames_th": [
+        "เล่นปลา",
+        "หรือใช้แถวถิ่นอาศัย",
+        "แถวทำงานจากซ้ายไปขวา"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -5994,6 +6332,7 @@
     "color": "#6B4226",
     "image": "https://cf.geekdo-images.com/V4p72l84k8FyS1-6FK7OeQ__original/img/WwV2iC3gmy9dLSkw9uZCp1B5Bjg=/0x0/filters:format(jpeg)/pic5257338.jpg",
     "blurb": "A moody, story-driven exploration through a sprawling mechanical city, where every choice pushes the narrative somewhere new. Best played slow, with someone reading the flavor text out loud.",
+    "blurb_th": "การสำรวจเมืองจักรกลใหญ่โตแบบขับด้วยเรื่องราวและบรรยากาศ ทุกทางเลือกผลักเรื่องไปที่ใหม่ เล่นช้าๆ ดีที่สุด ให้ใครสักคนอ่านข้อความบรรยายออกเสียง",
     "why": [
       "A dense, atmospheric setting that rewards close attention",
       "Choices carry real narrative weight as the story unfolds",
@@ -6007,6 +6346,7 @@
       "4": "best"
     },
     "caption": "A moody, story-driven exploration through a sprawling mechanical city.",
+    "caption_th": "การสำรวจเมืองจักรกลใหญ่โต ขับด้วยเรื่องราวและบรรยากาศ",
     "teach": {
       "beats": [
         {
@@ -6054,6 +6394,18 @@
           "caption": "Heroes: start where the people are."
         }
       ],
+      "captions_th": [
+        "จักรกลยักษ์หนึ่งตัวปะทะกบฏ เกมเรื่องราวที่มีการเดินแบบซ่อน",
+        "จักรกลชนะเมื่อทำลายเมือง ฮีโร่ชนะเมื่อชนะใจประชาชน",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "แผนของจักรกลซ่อนอยู่จนกว่าจะทำงาน",
+        "ฮีโร่: เริ่มตรงที่ประชาชนอยู่"
+      ],
+      "frames_th": [
+        "ฮีโร่เดินและทำแอ็กชัน",
+        "จักรกลเล่นแผน",
+        "เปิดเผยและทำตาม"
+      ],
       "wordCount": 52,
       "source": "generated",
       "reviewed": false
@@ -6076,6 +6428,7 @@
     "color": "#8C6239",
     "image": "https://cf.geekdo-images.com/V879Jjcv8gKWKWFn4tChKg__original/img/5_0PQDpb8vSN5u9jm5XkFp3MRwc=/0x0/filters:format(png)/pic8195970.png",
     "blurb": "A tight two-player card duel steeped in Trojan War myth, where positioning and timing matter more than raw power. Quick to learn, but the decisions bite.",
+    "blurb_th": "ดวลการ์ดสองคนแบบแน่น อิ่มด้วยตำนานสงครามทรอย ตำแหน่งกับจังหวะสำคัญกว่าพลังดิบ เรียนรู้เร็ว แต่การตัดสินใจกัดจริง",
     "why": [
       "Compact ruleset that still rewards careful sequencing",
       "Mythological framing gives every match a bit of drama",
@@ -6085,7 +6438,8 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "A tight two-player card duel steeped in Trojan War myth."
+    "caption": "A tight two-player card duel steeped in Trojan War myth.",
+    "caption_th": "ดวลการ์ดสองคนแบบแน่น อิ่มด้วยตำนานสงครามทรอย"
   },
   {
     "bggId": "165722",
@@ -6104,6 +6458,7 @@
     "color": "#2E4057",
     "image": "https://cf.geekdo-images.com/e9uHlgERIh8l7S5TVvOK8w__original/img/4ppGD7UdgpNXDKDkWSWNeS0Mzj0=/0x0/filters:format(jpeg)/pic8752466.jpg",
     "blurb": "A magnetic tabletop duel where you steer a handle under the board to knock a ball into your opponent's goal — while dodging magnets that can disqualify you instantly. Foosball's weirder, faster cousin.",
+    "blurb_th": "ดวลบนโต๊ะด้วยแม่เหล็ก บังคับด้ามใต้กระดานเพื่อตีลูกเข้าประตูคู่ต่อสู้ พลางหลบแม่เหล็กที่ทำให้ตกรอบได้ทันที ญาติของโต๊ะโกลที่แปลกและเร็วกว่า",
     "why": [
       "Real-time dexterity means matches are decided in seconds",
       "The disqualifying magnets add genuine slapstick tension",
@@ -6114,6 +6469,7 @@
       "2": "best"
     },
     "caption": "A magnetic tabletop duel where you steer a handle under the board to knock a ball into your opponent's goal.",
+    "caption_th": "ดวลแม่เหล็กบนโต๊ะ บังคับด้ามใต้กระดานตีลูกเข้าประตู",
     "teach": {
       "beats": [
         {
@@ -6161,6 +6517,18 @@
           "caption": "Stay out of the goal pit."
         }
       ],
+      "captions_th": [
+        "เกมโต๊ะแม่เหล็ก: ดีดตัวหมากเพื่อทำแต้ม",
+        "ใครถึงหกแต้มก่อนชนะ",
+        "ได้แต้มด้วยถ้าอีกฝ่ายติดบิสกิตสองชิ้น",
+        "ตกลงประตูตัวเอง? แต้มเป็นของเขา",
+        "อย่าเข้าไปในหลุมประตู"
+      ],
+      "frames_th": [
+        "เลื่อนแม่เหล็กใต้โต๊ะ",
+        "ตีลูกเข้าประตูเขา",
+        "ทำแต้ม เริ่มใหม่"
+      ],
       "wordCount": 50,
       "source": "generated",
       "reviewed": false
@@ -6190,6 +6558,7 @@
     "color": "#B08A2E",
     "image": "https://cf.geekdo-images.com/TCWH1FOU7PWnv66_gzrR2A__original/img/3Yvdfj9S1Wi6Wy_IpoP6mHxcJ3w=/0x0/filters:format(jpeg)/pic8621122.jpg",
     "blurb": "Trade and plant bean cards to build the most valuable harvests, all while never being allowed to rearrange your own hand. A negotiation classic that turns bean farming into nonstop table talk.",
+    "blurb_th": "แลกและปลูกการ์ดถั่วเพื่อเก็บเกี่ยวให้มีค่าที่สุด โดยห้ามเรียงมือตัวเองใหม่เด็ดขาด เกมเจรจาคลาสสิกที่เปลี่ยนการปลูกถั่วเป็นการต่อรองบนโต๊ะไม่หยุด",
     "why": [
       "The 'no reordering your hand' rule is a genuinely clever constraint",
       "Trading is freeform — deals happen anywhere, anytime, with anyone",
@@ -6205,6 +6574,7 @@
       "7": "recommended"
     },
     "caption": "Trade and plant bean cards to build the most valuable harvests.",
+    "caption_th": "แลกและปลูกการ์ดถั่ว เก็บเกี่ยวให้มีค่าที่สุด",
     "teach": {
       "beats": [
         {
@@ -6252,6 +6622,18 @@
           "caption": "Trade aggressively. Bad beans are worth zero."
         }
       ],
+      "captions_th": [
+        "ปลูกถั่ว แลกกัน เก็บเกี่ยวเป็นเหรียญ",
+        "จบสามรอบกอง ใครเหรียญมากสุดชนะ",
+        "เรียงมือใหม่ไม่ได้",
+        "ลำดับในมือศักดิ์สิทธิ์ เล่นจากใบหน้าสุด",
+        "แลกให้ดุ ถั่วแย่ๆ มีค่าศูนย์"
+      ],
+      "frames_th": [
+        "ปลูกการ์ดใบแรกในมือ",
+        "เปิดสองใบ แลกกับใครก็ได้",
+        "ปลูกที่เหลือ จั่วสามใบ"
+      ],
       "wordCount": 48,
       "source": "generated",
       "reviewed": false
@@ -6281,6 +6663,7 @@
     "color": "#6B4E71",
     "image": "https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg",
     "blurb": "Everyone secretly writes a one-word clue to help a guesser land the mystery word — but matching clues get erased before the guesser ever sees them. Spiel des Jahres winner and one of the easiest cooperative games to teach anyone.",
+    "blurb_th": "ทุกคนแอบเขียนคำใบ้คำเดียวช่วยคนทายให้เจอคำปริศนา แต่คำใบ้ที่ซ้ำกันถูกลบก่อนคนทายจะได้เห็น ผู้ชนะ Spiel des Jahres และหนึ่งใน co-op ที่สอนใครก็ได้ง่ายที่สุด",
     "why": [
       "Duplicate clues cancel out, so the game punishes the obvious answer",
       "Zero setup and no rules beyond a minute of explanation",
@@ -6295,6 +6678,7 @@
       "7": "best"
     },
     "caption": "Everyone secretly writes a one-word clue to help a guesser land the mystery word.",
+    "caption_th": "ทุกคนแอบเขียนคำใบ้คำเดียวช่วยคนทายหาคำปริศนา",
     "teach": {
       "beats": [
         {
@@ -6342,6 +6726,18 @@
           "caption": "Think of the second word, not the first."
         }
       ],
+      "captions_th": [
+        "ทุกคนเขียนคำใบ้ ที่ซ้ำกันถูกลบ",
+        "ทายให้ได้มากที่สุดในสิบสามใบ",
+        "ทายผิดเสียการ์ดไปด้วย",
+        "คำใบ้เหมือนกันสองอันหายทั้งคู่ ให้ต่างจากคนอื่น",
+        "คิดถึงคำที่สอง ไม่ใช่คำแรก"
+      ],
+      "frames_th": [
+        "เขียนคำใบ้คำเดียว",
+        "คำใบ้ที่ซ้ำถูกตัดออก",
+        "คนทายทายจากที่เหลือ"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -6371,6 +6767,7 @@
     "color": "#7A5C2E",
     "image": "https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg",
     "blurb": "Two players race to buy fabric pieces and tile their quilt board without leaving ugly gaps. A tight, elegant puzzle that plays in under half an hour.",
+    "blurb_th": "สองคนแข่งซื้อชิ้นผ้ามาปูกระดานผ้าห่มโดยไม่เหลือช่องว่างน่าเกลียด ปริศนาแน่นๆ สง่างาม เล่นจบในไม่ถึงครึ่งชั่วโมง",
     "why": [
       "Purpose-built two-player design with no downtime between turns",
       "Real spatial puzzle in fitting oddly-shaped pieces together",
@@ -6381,6 +6778,7 @@
       "2": "best"
     },
     "caption": "Two players race to buy fabric pieces and tile their quilt board without leaving ugly gaps.",
+    "caption_th": "สองคนแข่งซื้อชิ้นผ้าปูผ้าห่มโดยไม่เหลือช่องว่าง",
     "teach": {
       "beats": [
         {
@@ -6428,6 +6826,18 @@
           "caption": "Take patches with buttons on them."
         }
       ],
+      "captions_th": [
+        "เย็บผ้าห่มจากชิ้นผ้าที่ซื้อด้วยกระดุม",
+        "กระดุมมากสุดลบช่องว่างชนะ",
+        "หรือเดินหน้าแล้วรับกระดุมแทน",
+        "ตามหลังบนแทร็กเวลา? ได้เล่นต่อ",
+        "หยิบชิ้นผ้าที่มีกระดุมติด"
+      ],
+      "frames_th": [
+        "หยิบหนึ่งในสามชิ้นถัดไป",
+        "จ่ายกระดุม เดินเวลา",
+        "วางให้พอดีบนกระดาน"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -6457,6 +6867,7 @@
     "color": "#3B4A5C",
     "image": "https://cf.geekdo-images.com/dmFiFjc12CeVWujK5PbVNw__original/img/JslJJWJ8owc18C5p75kJf1DvdLA=/0x0/filters:format(png)/pic8250385.png",
     "blurb": "A newer strategy title with a 60-150 minute range for 2-5 players — the kind of meaty euro that rewards clearing out a full evening. Still earning its stripes but off to a strong start with reviewers.",
+    "blurb_th": "เกมกลยุทธ์ออกใหม่ เล่น 60-150 นาที สำหรับ 2-5 คน ยูโรเนื้อแน่นที่คุ้มกับการเคลียร์ทั้งคืน ยังต้องพิสูจน์ตัวเอง แต่เริ่มต้นได้แรงกับนักรีวิว",
     "why": [
       "Flexible playtime scales the experience up or down with your group",
       "Fresh enough on the shelf that it hasn't worn out its welcome yet",
@@ -6469,7 +6880,8 @@
       "4": "recommended",
       "5": "best"
     },
-    "caption": "A newer strategy title with a 60-150 minute range for 2-5 players."
+    "caption": "A newer strategy title with a 60-150 minute range for 2-5 players.",
+    "caption_th": "เกมกลยุทธ์ออกใหม่ 60-150 นาที สำหรับ 2-5 คน"
   },
   {
     "bggId": "263918",
@@ -6488,6 +6900,7 @@
     "color": "#6B4E32",
     "image": "https://cf.geekdo-images.com/y6wR0wJS_WBZYHi26_sf4A__original/img/9fZeyZuJO3BA1a0PmI2CdJfwBN4=/0x0/filters:format(png)/pic5849879.png",
     "blurb": "Draw terrain onto your own map as cards reveal what shape comes next, scoring for filling regions and satisfying secret quest cards. A flip-and-write that plays fast no matter how many are at the table.",
+    "blurb_th": "วาดภูมิประเทศลงแผนที่ของตัวเองตามรูปทรงที่การ์ดเปิดออกมา ทำแต้มจากการเติมพื้นที่และการ์ดภารกิจลับ flip-and-write ที่เล่นเร็วไม่ว่าโต๊ะจะมีกี่คน",
     "why": [
       "Scales absurdly well — technically playable with a room full of people",
       "Shared card reveals keep everyone's map racing forward in parallel",
@@ -6508,6 +6921,7 @@
       "11": "not_recommended"
     },
     "caption": "Draw terrain onto your own map as cards reveal what shape comes next, scoring for filling regions.",
+    "caption_th": "วาดภูมิประเทศลงแผนที่ตามการ์ด ทำแต้มจากการเติมพื้นที่",
     "teach": {
       "beats": [
         {
@@ -6555,6 +6969,18 @@
           "caption": "Start near the middle; ruins cost you edges."
         }
       ],
+      "captions_th": [
+        "วาดแผนที่ลงกระดาษจากการ์ดภูมิประเทศที่เปิด",
+        "แต้มมากสุดชนะ ผ่านเป้าหมายสี่ฤดู",
+        "ทุกคนวาดจากการ์ดใบเดียวกัน",
+        "การ์ดซุ่มโจมตี: เพื่อนบ้านวาดสัตว์ประหลาดลงแผนที่คุณ",
+        "เริ่มใกล้กลาง ซากปรักหักพังกินขอบของคุณ"
+      ],
+      "frames_th": [
+        "เปิดการ์ด",
+        "วาดรูปทรงลงแผนที่",
+        "นับแต้มสองเป้าหมายตอนจบฤดู"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -6584,6 +7010,7 @@
     "color": "#55524A",
     "image": "https://cf.geekdo-images.com/Ndctxvd7kBXYubeYRKRqzw__original/img/gGL8Fh-pFgTqB3lF-47ClLYLu8s=/0x0/filters:format(jpeg)/pic4258616.jpg",
     "blurb": "Design, manufacture, and market competing smartphones, chasing a fickle audience across a shifting research tree. A dense economic engine-builder for players who like reading a spreadsheet as much as a board.",
+    "blurb_th": "ออกแบบ ผลิต และทำการตลาดสมาร์ตโฟนแข่งกัน ไล่ตามลูกค้าขี้เบื่อผ่านแผนผังวิจัยที่เปลี่ยนไปเรื่อย engine building เศรษฐกิจแน่นๆ สำหรับคนที่ชอบอ่านสเปรดชีตพอๆ กับกระดาน",
     "why": [
       "Deep tech tree and market simulation rarely matched in other economic games",
       "Solo mode is robust enough to be a real single-player option",
@@ -6598,6 +7025,7 @@
       "5": "best"
     },
     "caption": "Design, manufacture, and market competing smartphones.",
+    "caption_th": "ออกแบบ ผลิต และทำการตลาดสมาร์ตโฟนแข่งกัน",
     "teach": {
       "beats": [
         {
@@ -6645,6 +7073,18 @@
           "caption": "Sell cheap into one region."
         }
       ],
+      "captions_th": [
+        "ออกแบบโทรศัพท์ ตั้งราคา ขายในภูมิภาค",
+        "เงินมากสุดชนะ",
+        "ถูกสุดขายได้ก่อนในแต่ละภูมิภาค",
+        "ไทล์สองแผ่นซ้อนกัน ส่วนที่ซ้อนกำหนดแอ็กชันของคุณ",
+        "ขายถูกๆ เข้าภูมิภาคเดียว"
+      ],
+      "frames_th": [
+        "ซ้อนไทล์วางแผนสองแผ่น",
+        "ทำแอ็กชันที่มันแสดง",
+        "ขายในที่ที่ตั้งราคาถูกต้อง"
+      ],
       "wordCount": 43,
       "source": "generated",
       "reviewed": false
@@ -6674,6 +7114,7 @@
     "color": "#2C3E50",
     "image": "https://cf.geekdo-images.com/jPVt_L1j9kUyXyVYm46cLQ__original/img/aTAdnlfGarxqbrZ8Y4uqVhPt0v4=/0x0/filters:format(png)/pic7891402.png",
     "blurb": "A tight two-player espionage duel where you're simultaneously running an operation and trying to sniff out your opponent's. Short, sharp, and built for a rematch.",
+    "blurb_th": "ดวลสายลับสองคนแบบแน่น คุณทำปฏิบัติการของตัวเองพลางสืบหาของคู่ต่อสู้ไปพร้อมกัน สั้น คม และสร้างมาให้แก้มือ",
     "why": [
       "Purpose-built for two — no awkward scaling",
       "Rounds are quick enough to play best-of-three",
@@ -6683,7 +7124,8 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "A tight two-player espionage duel where you're simultaneously running an operation."
+    "caption": "A tight two-player espionage duel where you're simultaneously running an operation.",
+    "caption_th": "ดวลสายลับสองคน ทำปฏิบัติการพลางสืบหาของคู่ต่อสู้"
   },
   {
     "title": "Intent to Kill",
@@ -6701,6 +7143,7 @@
     "color": "#4A6C6F",
     "image": "https://cf.geekdo-images.com/rLYd41kjq4ku8Yjqc7k-Ng__itemrep@2x/img/OKApLk3meJ-lZk2E23sfOBWsjBk=/fit-in/492x600/filters:strip_icc()/pic8630018.png",
     "blurb": "One player is a serial killer planning each murder around a hidden motive; the other has to catch the pattern before the fifth body drops. Tense two-player noir deduction.",
+    "blurb_th": "คนหนึ่งเป็นฆาตกรต่อเนื่องที่วางแผนฆ่าแต่ละครั้งรอบแรงจูงใจลับ อีกคนต้องจับรูปแบบให้ได้ก่อนศพที่ห้าจะล้ม เกมสืบสวนนัวร์สองคนสุดตึง",
     "tag": "2-player deduction",
     "why": [
       "Tense two-player noir cat-and-mouse",
@@ -6713,7 +7156,8 @@
       "3": "recommended",
       "4": "not_recommended"
     },
-    "caption": "One player is a serial killer planning each murder around a hidden motive."
+    "caption": "One player is a serial killer planning each murder around a hidden motive.",
+    "caption_th": "คนหนึ่งเป็นฆาตกรต่อเนื่องที่มีแรงจูงใจลับ อีกคนต้องจับให้ได้"
   },
   {
     "bggId": "103343",
@@ -6732,6 +7176,7 @@
     "color": "#4A3F3F",
     "image": "https://cf.geekdo-images.com/M_7UvwZvuxBVjxdadsa5AA__original/img/3tv6H7jX5T9rqwuI84YZKZDBGcw=/0x0/filters:format(jpeg)/pic1077906.jpg",
     "blurb": "Command a Great House across Westeros, mixing area control, hidden order tokens, and constant negotiation with players who will absolutely betray you. Long, political, and built for a table that enjoys backstabbing.",
+    "blurb_th": "บัญชาการตระกูลใหญ่ทั่วเวสเทอรอส ผสมการยึดพื้นที่ โทเค็นคำสั่งลับ และการเจรจาไม่หยุดกับผู้เล่นที่จะหักหลังคุณแน่นอน ยาว การเมือง และสร้างมาเพื่อโต๊ะที่ชอบแทงข้างหลัง",
     "why": [
       "No player elimination shortcuts — every house stays dangerous",
       "Negotiation and alliances matter as much as the map",
@@ -6745,6 +7190,7 @@
       "6": "best"
     },
     "caption": "Command a Great House across Westeros, mixing area control.",
+    "caption_th": "บัญชาการตระกูลใหญ่ทั่วเวสเทอรอส ยึดพื้นที่ เจรจา หักหลัง",
     "teach": {
       "beats": [
         {
@@ -6792,6 +7238,18 @@
           "caption": "Make a deal with your neighbour before turn one."
         }
       ],
+      "captions_th": [
+        "ตระกูลแห่งเวสเทอรอสสู้ จับมือ และหักหลังกันเพื่อปราสาท",
+        "ยึดเจ็ดปราสาทก่อนชนะ หรือมากสุดหลังสิบรอบ",
+        "สามเฟส: เวสเทอรอส วางแผน แอ็กชัน",
+        "เสบียงจำกัดขนาดกองทัพ ขยายเกินแล้วเสียทหาร",
+        "ตกลงกับเพื่อนบ้านก่อนตาแรก"
+      ],
+      "frames_th": [
+        "วางคำสั่งคว่ำหน้า",
+        "เปิด ทำการปล้นและเดินทัพ",
+        "การรบ: กำลังบวกการ์ด"
+      ],
       "wordCount": 54,
       "source": "generated",
       "reviewed": false
@@ -6820,6 +7278,7 @@
     "color": "#2A6157",
     "image": "https://cf.geekdo-images.com/wLto-xaabHwKQe_Bc4iD1Q__itemrep@2x/img/KFX9ww-ZAIKG1PacQFp8M266esg=/fit-in/492x600/filters:strip_icc()/pic3458036.png",
     "blurb": "Buy and sell paintings from five fictional artists across five auction formats, then watch prices swing wildly based on what everyone just bought. A sharp, old-school Knizia auction game.",
+    "blurb_th": "ซื้อขายภาพวาดจากศิลปินสมมติห้าคนผ่านการประมูลห้ารูปแบบ แล้วดูราคาแกว่งแรงตามสิ่งที่ทุกคนเพิ่งซื้อ เกมประมูลสายเก่าสุดคมของ Knizia",
     "tag": "Auction · bidding",
     "why": [
       "A sharp, decades-old auction design that still holds up",
@@ -6833,6 +7292,7 @@
       "5": "best"
     },
     "caption": "Buy and sell paintings from five fictional artists across five auction formats.",
+    "caption_th": "ซื้อขายภาพวาดจากศิลปินสมมติห้าคนผ่านการประมูลห้ารูปแบบ",
     "teach": {
       "beats": [
         {
@@ -6880,6 +7340,18 @@
           "caption": "Sell the artist you have most of."
         }
       ],
+      "captions_th": [
+        "ขายงานศิลปะให้กัน ราคาของศิลปินขึ้นตามยอดขาย",
+        "จบสี่รอบใครเงินมากสุดชนะ",
+        "รอบจบเมื่อศิลปินคนหนึ่งครบห้าภาพ",
+        "แค่ศิลปินสามอันดับแรกที่จ่ายเงินแต่ละรอบ",
+        "ขายศิลปินที่คุณมีมากที่สุด"
+      ],
+      "frames_th": [
+        "ลงภาพ แสดงรูปแบบประมูล",
+        "ทุกคนประมูลตามนั้น",
+        "คนชนะจ่ายให้คนขาย"
+      ],
       "wordCount": 53,
       "source": "generated",
       "reviewed": false
@@ -6909,6 +7381,7 @@
     "color": "#6B2E3A",
     "image": "https://cf.geekdo-images.com/Awopfw5_5Qyh-7YcSbtudA__original/img/GxYtTK43oCTDn2J3pyukUw07bKo=/0x0/filters:format(jpeg)/pic4870482.jpg",
     "blurb": "A slow-burn cooperative murder mystery — comb through witness statements, physical evidence, and a household's secrets to work out who killed Walton. Dense and methodical, closer to real detective work than a typical deduction game.",
+    "blurb_th": "ฆาตกรรมปริศนาแบบ co-op ที่ค่อยๆ เผยตัว ไล่อ่านคำให้การพยาน หลักฐาน และความลับของบ้านหลังนี้ เพื่อหาว่าใครฆ่า Walton แน่นและเป็นระบบ ใกล้งานนักสืบจริงมากกว่าเกมสืบสวนทั่วไป",
     "why": [
       "Real investigative logic — cross-reference clue cards like an actual case file",
       "Scales from solo play up to a full table of armchair detectives",
@@ -6926,6 +7399,7 @@
       "8": "not_recommended"
     },
     "caption": "A slow-burn cooperative murder mystery — comb through witness statements.",
+    "caption_th": "ฆาตกรรมปริศนา co-op ค่อยๆ เผยตัว ไล่อ่านคำให้การพยาน",
     "teach": {
       "beats": [
         {
@@ -6972,6 +7446,18 @@
           "scene": "hand-watch",
           "caption": "Ask for the motive first."
         }
+      ],
+      "captions_th": [
+        "แขกซักถามกันเพื่อไขคดีฆาตกรรม",
+        "ใครระบุฆาตกรและวิธีได้ก่อนชนะ",
+        "ฉบับร่าง — เช็กกฎแลกเบาะแส",
+        "กล่าวหาผิดแล้วตกรอบ",
+        "ถามหาแรงจูงใจก่อน"
+      ],
+      "frames_th": [
+        "ขอเบาะแสจากแขก",
+        "แลกการ์ดเบาะแส",
+        "กล่าวหาเมื่อมั่นใจ"
       ],
       "wordCount": 45,
       "source": "generated",
