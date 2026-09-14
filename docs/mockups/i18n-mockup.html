@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>BoardgameShelf — TH/EN mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Token names verbatim from css/base.css; hex values approximated for the mockup
+     (only --bgs-bg is confirmed, from the site's theme-color). Claude Code uses the real ones. */
+  :root{
+    --bgs-bg:#160F0A;
+    --bgs-plate:#221810;
+    --bgs-ivory:#F1E8DA;
+    --bgs-ivory-rgb:241,232,218;
+    --bgs-gold:#D2A85A;
+    --bgs-gold-rgb:210,168,90;
+    --font-display:"Fraunces",Georgia,serif;
+    --font-ui:"Inter",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+    --lh-body:1.5;
+    --lh-heading:1.2;
+    --chip-minw:0;
+  }
+  /* ---- Language swap: the only additions the feature makes to base.css ---- */
+  [data-lang="th"]{
+    --font-ui:"IBM Plex Sans Thai","Inter",system-ui,sans-serif;
+    --font-mono:"IBM Plex Mono","IBM Plex Sans Thai",ui-monospace,monospace;
+    --lh-body:1.65;
+    --lh-heading:1.4;
+    --chip-minw:15%;
+  }
+  [data-lang="th"] .display{ font-family:var(--font-ui); font-style:normal; font-weight:600; letter-spacing:0; }
+  /* ------------------------------------------------------------------------ */
+
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bgs-bg);color:var(--bgs-ivory);font-family:var(--font-ui);line-height:var(--lh-body);-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  :focus{outline:none}
+  :focus-visible{box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+
+  .mono{font-family:var(--font-mono)}
+  .display{font-family:var(--font-display);font-weight:500;line-height:var(--lh-heading)}
+
+  /* Demo bar (mockup only) */
+  .demo{position:sticky;top:0;z-index:20;background:#0d0906;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.12);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-family:"IBM Plex Mono",monospace;font-size:12px;color:rgba(var(--bgs-ivory-rgb),.7)}
+  .demo label{display:flex;gap:6px;align-items:center;cursor:pointer}
+  .demo select,.demo input{accent-color:var(--bgs-gold);font:inherit;background:var(--bgs-plate);color:var(--bgs-ivory);border:1px solid rgba(var(--bgs-ivory-rgb),.2);border-radius:4px;padding:2px 6px}
+  .demo .resolve{margin-left:auto;display:flex;gap:6px;align-items:center}
+  .demo .resolve b{font-weight:500;color:var(--bgs-gold)}
+  .demo .resolve .step{opacity:.4}
+  .demo .resolve .step.hit{opacity:1;color:var(--bgs-gold)}
+
+  /* Header */
+  .header{display:flex;align-items:center;gap:10px;padding:18px 20px;max-width:1080px;margin:0 auto}
+  .wordmark{font-family:"Fraunces",serif;font-style:italic;font-weight:500;font-size:22px;letter-spacing:-.01em;text-decoration:none}
+  .pill{font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1;padding:5px 7px 4px;border-radius:999px;color:rgba(var(--bgs-ivory-rgb),.75);border:1px solid rgba(var(--bgs-ivory-rgb),.22);letter-spacing:.02em}
+  .pill--beta{cursor:default}
+  /* Swap pill: reads the OTHER language. Same construction as Beta. */
+  .pill--lang{position:relative;min-width:34px;text-align:center}
+  .pill--lang:hover{border-color:rgba(var(--bgs-gold-rgb),.7);color:var(--bgs-gold)}
+  .pill--lang .lbl{display:inline-block;transition:opacity .16s ease}   /* transition only — never animation on the same prop */
+  .pill--lang.is-swapping .lbl{opacity:0}
+  [data-lang="th"] .pill--lang{font-family:"IBM Plex Mono",monospace}   /* label is always Latin: "EN" or "TH" */
+  .spacer{flex:1}
+  .header .icon{width:34px;height:34px;border-radius:999px;border:1px solid rgba(var(--bgs-ivory-rgb),.18);display:grid;place-items:center;color:rgba(var(--bgs-ivory-rgb),.8)}
+  .header .icon svg{width:18px;height:18px}
+
+  /* Shelf */
+  .shelf{max-width:1080px;margin:0 auto;padding:6px 20px 60px}
+  .shelf-title{display:flex;align-items:baseline;gap:12px;margin:8px 0 16px}
+  .shelf-title h1{margin:0;font-size:34px}
+  .shelf-title .count{font-family:var(--font-mono);font-size:13px;color:rgba(var(--bgs-ivory-rgb),.6)}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .search{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.12);border-radius:10px;padding:9px 12px;color:rgba(var(--bgs-ivory-rgb),.5);font-size:14px}
+  .search svg{width:16px;height:16px;opacity:.7}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.14);border-radius:10px;padding:9px 13px;font-size:14px;font-weight:500;line-height:1.2}
+  .btn svg{width:16px;height:16px}
+  .btn--gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:transparent}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .chip{font-size:13px;font-weight:500;line-height:1.2;padding:7px 12px;border-radius:999px;border:1px solid rgba(var(--bgs-ivory-rgb),.16);color:rgba(var(--bgs-ivory-rgb),.85);min-width:calc(56px + var(--chip-minw))}
+  .chip.on{background:rgba(var(--bgs-gold-rgb),.14);border-color:rgba(var(--bgs-gold-rgb),.6);color:var(--bgs-gold)}
+  .chip .n{font-family:var(--font-mono);font-size:11px;opacity:.6;margin-left:6px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:18px 14px}
+  .card{display:flex;flex-direction:column;gap:8px;text-align:left;border-radius:10px}
+  .card img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;background:var(--bgs-plate);display:block}
+  .card .t{font-size:14px;font-weight:500;line-height:1.3}
+  .card .m{font-family:var(--font-mono);font-size:11px;color:rgba(var(--bgs-ivory-rgb),.55);line-height:1.5}
+
+  /* Modal excerpt */
+  .modal-wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+  .modal-label{font-family:"IBM Plex Mono",monospace;font-size:11px;color:rgba(var(--bgs-ivory-rgb),.45);margin-bottom:8px}
+  .modal{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.1);border-radius:16px;max-width:560px;overflow:hidden}
+  .modal .hero{display:flex;gap:16px;padding:18px 18px 0}
+  .modal .hero img{width:96px;aspect-ratio:3/4;object-fit:cover;border-radius:8px}
+  .modal h2{margin:0 0 2px;font-size:26px}
+  .modal .caption{font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--bgs-gold);margin:0 0 8px;line-height:var(--lh-heading)}
+  [data-lang="th"] .modal .caption{font-family:var(--font-ui);font-style:normal;font-weight:500}
+  .modal .meta{display:flex;gap:14px;font-family:var(--font-mono);font-size:12px;color:rgba(var(--bgs-ivory-rgb),.6);flex-wrap:wrap}
+  .modal .body{padding:14px 18px 6px;font-size:15px;color:rgba(var(--bgs-ivory-rgb),.9)}
+  .modal .body p{margin:0}
+  .teach{padding:8px 18px 18px;border-top:1px solid rgba(var(--bgs-ivory-rgb),.08);margin-top:12px}
+  .teach h3{margin:12px 0 10px;font-size:17px}
+  .teach .scenes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .scene{display:flex;flex-direction:column;gap:8px}
+  .scene .pic{height:84px;border-radius:8px;background:rgba(var(--bgs-ivory-rgb),.05);display:grid;place-items:center}
+  .scene .pic svg{width:56px;height:56px;stroke:var(--bgs-gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .scene p{margin:0;font-size:13px;line-height:var(--lh-body);color:rgba(var(--bgs-ivory-rgb),.85)}
+  .modal .foot{display:flex;justify-content:flex-end;padding:10px 18px 16px;border-top:1px solid rgba(var(--bgs-ivory-rgb),.08)}
+  .fallback-note{font-family:"IBM Plex Mono",monospace;font-size:11px;color:rgba(var(--bgs-gold-rgb),.9);margin:8px 0 0;display:none}
+  .demo-fallback .fallback-note{display:block}
+
+  /* Type specimen strip */
+  .specimen{max-width:1080px;margin:0 auto;padding:0 20px 60px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  .spec{background:var(--bgs-plate);border-radius:12px;padding:16px 18px;border:1px solid rgba(var(--bgs-ivory-rgb),.08)}
+  .spec .k{font-family:"IBM Plex Mono",monospace;font-size:11px;color:rgba(var(--bgs-ivory-rgb),.45);margin-bottom:8px}
+  .spec .v{font-size:15px}
+  .spec .v.big{font-size:28px;line-height:var(--lh-heading);font-family:var(--font-display)}
+  [data-lang="th"] .spec .v.big{font-family:var(--font-ui);font-weight:600}
+  .spec .v.mono{font-family:var(--font-mono);font-size:13px}
+
+  @media (prefers-reduced-motion:reduce){ .pill--lang .lbl{transition:none} }
+  html.reduced .pill--lang .lbl{transition:none}
+  html.flag-off .pill--lang{display:none}
+  .powered{max-width:1080px;margin:0 auto;padding:0 20px 40px;font-family:"IBM Plex Mono",monospace;font-size:11px;color:rgba(var(--bgs-ivory-rgb),.4)}
+</style>
+</head>
+<body>
+
+<div class="demo">
+  <label>lang
+    <select id="d-lang"><option value="en">en</option><option value="th">th</option></select>
+  </label>
+  <label>resolve from
+    <select id="d-source"><option value="url">?lang=</option><option value="stored">localStorage</option><option value="browser">navigator.language</option><option value="none" selected>nothing (default en)</option></select>
+  </label>
+  <label><input type="checkbox" id="d-fallback"> Thai missing → EN fallback</label>
+  <label><input type="checkbox" id="d-flag"> ?i18n=1 off (pill hidden)</label>
+  <label><input type="checkbox" id="d-rm"> reduced motion</label>
+  <div class="resolve">
+    <span class="step" data-s="url">?lang</span>→<span class="step" data-s="stored">stored</span>→<span class="step" data-s="browser">browser</span>→<span class="step" data-s="none">en</span>
+    <span>= <b id="d-result">en</b></span>
+  </div>
+</div>
+
+<header class="header">
+  <a class="wordmark" href="#">BoardgameShelf</a>
+  <span class="pill pill--beta">Beta</span>
+  <span class="spacer"></span>
+  <button class="pill pill--lang" id="langpill" aria-label="Switch to Thai" title="ไทย"><span class="lbl">TH</span></button>
+  <button class="icon" aria-label="Account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></button>
+</header>
+
+<main class="shelf">
+  <div class="shelf-title">
+    <h1 class="display" data-i18n="shelf.title" data-args='{"name":"Nok"}'>Nok's shelf</h1>
+    <span class="count" data-i18n="shelf.count" data-args='{"n":196}'>196 games</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-i18n="shelf.search">Search your shelf</span></div>
+    <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span data-i18n="shelf.filters">Filters</span></button>
+    <button class="btn btn--gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg><span data-i18n="night.start">Start game night</span></button>
+  </div>
+
+  <div class="chips">
+    <button class="chip on"><span>Party</span><span class="n">31</span></button>
+    <button class="chip"><span>Bluffing</span><span class="n">18</span></button>
+    <button class="chip"><span>Co-op</span><span class="n">22</span></button>
+    <button class="chip"><span>Duel</span><span class="n">14</span></button>
+    <button class="chip"><span>Strategy</span><span class="n">47</span></button>
+    <button class="chip"><span>Family</span><span class="n">29</span></button>
+    <button class="chip"><span>Chill</span><span class="n">16</span></button>
+    <button class="chip"><span>Story</span><span class="n">9</span></button>
+    <button class="chip"><span>Others</span><span class="n">10</span></button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<section class="modal-wrap">
+  <div class="modal-label">game modal — excerpt</div>
+  <div class="modal" id="modal">
+    <div class="hero">
+      <img src="https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg" alt="">
+      <div>
+        <h2 class="display">Azul</h2>
+        <p class="caption" id="m-caption"></p>
+        <div class="meta">
+          <span data-i18n="meta.players" data-args='{"range":"2–4"}'>2–4 players</span>
+          <span data-i18n="meta.time" data-args='{"range":"30–45"}'>30–45 min</span>
+          <span data-i18n="meta.weight" data-args='{"w":"1.8"}'>weight 1.8</span>
+        </div>
+      </div>
+    </div>
+    <div class="body"><p id="m-blurb"></p><p class="fallback-note">← blurb_th missing, showing EN (silent in prod; note is mockup-only)</p></div>
+    <div class="teach">
+      <h3 class="display" data-i18n="teach.title">Teach me in 60 seconds</h3>
+      <div class="scenes" id="scenes"></div>
+    </div>
+    <div class="foot"><button class="btn" data-i18n="modal.close">Close</button></div>
+  </div>
+</section>
+
+<section class="specimen">
+  <div class="spec"><div class="k">display · Fraunces → Plex Sans Thai 600</div><div class="v big" data-i18n="spec.display">Your shelf, judged by its covers.</div></div>
+  <div class="spec"><div class="k">ui · Inter → Plex Sans Thai 400 · lh 1.5 → 1.65</div><div class="v" data-i18n="spec.body">A page for your collection and a vote for your table, from any phone.</div></div>
+  <div class="spec"><div class="k">mono meta · Plex Mono stays; Thai glyphs fall to Plex Sans Thai</div><div class="v mono" data-i18n="spec.mono">Sat 26 Sep · 19:30 · 6 going</div></div>
+</section>
+
+<div class="powered">Powered by BGG — attribution asset stays English in both languages.</div>
+
+<script>
+/* ---------- i18n runtime (what ships) ----------
+   Rule: proper nouns, game titles, usernames, mechanics/categories/vibes, BGG terms (weight)
+   and established loanwords are never translated — they have no key in th.json. ---------- */
+const DICT = {
+  en: {
+    "shelf.title":"{name}'s shelf", "shelf.count":"{n} games", "shelf.search":"Search your shelf", "shelf.filters":"Filters",
+    "night.start":"Start game night", "modal.close":"Close", "teach.title":"Teach me in 60 seconds",
+    "meta.players":"{range} players", "meta.time":"{range} min", "meta.weight":"weight {w}",
+    "pill.other":"TH", "pill.aria":"Switch to Thai", "pill.title":"ไทย",
+    "spec.display":"Your shelf, judged by its covers.", "spec.body":"A page for your collection and a vote for your table, from any phone.", "spec.mono":"Sat 26 Sep · 19:30 · 6 going"
+  },
+  th: {
+    "shelf.title":"ชั้นของ {name}", "shelf.count":"{n} เกม", "shelf.search":"ค้นหาในชั้น", "shelf.filters":"ตัวกรอง",
+    "night.start":"Start game night", "modal.close":"ปิด", "teach.title":"สอนเล่นใน 60 วินาที",
+    "meta.players":"{range} คน", "meta.time":"{range} นาที", "meta.weight":"weight {w}",
+        "pill.other":"EN", "pill.aria":"Switch to English", "pill.title":"English",
+    "spec.display":"ชั้นของคุณ ตัดสินจากหน้ากล่อง", "spec.body":"หน้าเพจสำหรับคอลเลกชันของคุณ และการโหวตสำหรับโต๊ะของคุณ จากมือถือเครื่องไหนก็ได้", "spec.mono":"เสาร์ 26 ก.ย. · 19:30 · ไป 6 คน"
+  }
+};
+const t = (lang, key, args={}) => (DICT[lang][key] ?? DICT.en[key] ?? key).replace(/\{(\w+)\}/g, (_,k)=>args[k] ?? "");
+
+/* curated content: sibling *_th fields, EN fallback when absent */
+const GAME = {
+  title:"Azul",
+  caption:"Pretty tiles, sharp elbows.",
+  caption_th:"กระเบื้องสวย เกมเดือด",
+  blurb:"Draft glazed tiles and lay them into your palace wall. Simple to teach, quietly cutthroat once everyone learns to count.",
+  blurb_th:"หยิบกระเบื้องเคลือบมาเรียงลงบนกำแพงวัง สอนง่าย แต่พอทุกคนเริ่มนับแต้มเป็นก็โหดเงียบๆ",
+  teach:{
+    captions:["Take all tiles of one colour from a factory.","Slot them into a row. Overflow drops to the floor.","A full row moves one tile onto your wall."],
+    captions_th:["หยิบกระเบื้องสีเดียวกันทั้งหมดจากโรงงาน","วางลงแถว ถ้าล้นจะตกลงพื้น","แถวที่เต็มจะย้ายกระเบื้องขึ้นกำแพงหนึ่งแผ่น"]
+  }
+};
+const pick = (obj, key, lang) => (lang==="th" && obj[key+"_th"] && !state.fallback) ? obj[key+"_th"] : obj[key];
+
+const CARDS = [
+  {t:"Azul",   img:"https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg", p:"2–4", m:"30–45"},
+  {t:"Cascadia", img:"https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg", p:"1–4", m:"30–45"},
+  {t:"Wingspan", img:"https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg", p:"1–5", m:"40–70"},
+  {t:"Heat", img:"https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg", p:"1–6", m:"30–60"},
+  {t:"Sky Team", img:"https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg", p:"2", m:"15–20"},
+];
+
+const state = { lang:"en", source:"none", fallback:false };
+
+function render(){
+  const L = state.lang;
+  document.documentElement.lang = L;
+  document.documentElement.dataset.lang = L;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const args = el.dataset.args ? JSON.parse(el.dataset.args) : {};
+    el.textContent = t(L, el.dataset.i18n, args);
+  });
+  const pill = document.getElementById("langpill");
+  pill.querySelector(".lbl").textContent = t(L,"pill.other");
+  pill.setAttribute("aria-label", t(L,"pill.aria"));
+  pill.title = t(L,"pill.title");
+
+  document.getElementById("grid").innerHTML = CARDS.map(c=>`
+    <button class="card"><img src="${c.img}" alt=""><span class="t">${c.t}</span>
+    <span class="m">${t(L,"meta.players",{range:c.p})} · ${t(L,"meta.time",{range:c.m})}</span></button>`).join("");
+
+  document.getElementById("m-caption").textContent = pick(GAME,"caption",L);
+  document.getElementById("m-blurb").textContent = pick(GAME,"blurb",L);
+  const caps = (L==="th" && GAME.teach.captions_th && !state.fallback) ? GAME.teach.captions_th : GAME.teach.captions;
+  const icons = [
+    `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="10" r="1.5"/><circle cx="15" cy="10" r="1.5"/><circle cx="12" cy="15" r="1.5"/></svg>`,
+    `<svg viewBox="0 0 24 24"><path d="M4 8h16M4 12h16M4 16h16"/><path d="M14 20l2-2 2 2"/></svg>`,
+    `<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 12h16M12 4v16"/><path d="M8 8h2v2H8z" fill="currentColor"/></svg>`];
+  document.getElementById("scenes").innerHTML = caps.map((c,i)=>`<div class="scene"><div class="pic">${icons[i]}</div><p>${c}</p></div>`).join("");
+  document.getElementById("modal").classList.toggle("demo-fallback", L==="th" && state.fallback);
+
+  /* resolution readout */
+  document.querySelectorAll(".resolve .step").forEach(s=>s.classList.toggle("hit", s.dataset.s===state.source));
+  document.getElementById("d-result").textContent = L;
+  document.getElementById("d-lang").value = L;
+}
+
+/* swap pill: crossfade label (transition on opacity only), write to localStorage, strip ?lang from URL */
+document.getElementById("langpill").addEventListener("click", ()=>{
+  const pill = document.getElementById("langpill");
+  const next = state.lang==="en" ? "th" : "en";
+  const rm = document.documentElement.classList.contains("reduced") || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const commit = ()=>{ state.lang = next; state.source="stored"; document.getElementById("d-source").value="stored"; render(); pill.classList.remove("is-swapping"); };
+  if(rm){ commit(); return; }
+  pill.classList.add("is-swapping");
+  setTimeout(commit, 160);
+});
+
+/* demo bar */
+document.getElementById("d-lang").addEventListener("change", e=>{ state.lang=e.target.value; render(); });
+document.getElementById("d-source").addEventListener("change", e=>{ state.source=e.target.value; if(state.source==="none"){state.lang="en";} render(); });
+document.getElementById("d-fallback").addEventListener("change", e=>{ state.fallback=e.target.checked; render(); });
+document.getElementById("d-flag").addEventListener("change", e=>{ document.documentElement.classList.toggle("flag-off", e.target.checked); });
+document.getElementById("d-rm").addEventListener("change", e=>{ document.documentElement.classList.toggle("reduced", e.target.checked); });
+render();
+</script>
+</body>
+</html>
