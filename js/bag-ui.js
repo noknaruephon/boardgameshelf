@@ -140,7 +140,8 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   // The naming step. Pack no longer saves: it opens this, and "Pack the bag"
   // runs the save. It lives beside the bar rather than inside it, because the
   // bar slides with a transform and a fixed sheet inside it would slide too.
-  // Commit 1 keeps it plain and hidden; the sheet styling is the next commit.
+  // A sheet over a scrim: `hidden` is the resting state, `is-open` drives the
+  // slide, so the closing slide can finish before the element leaves the page.
   const nameStep = el(`
     <div class="bag-name" role="dialog" aria-modal="true" aria-labelledby="bagNameTitle" hidden>
       <div class="bag-name__panel">
@@ -272,17 +273,30 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     if (!packing) closeNaming();
   }
 
+  const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
+  let closeTimer = 0;
+
   function openNaming() {
     if (!draft.size) { showError('NO_GAMES'); return; }
     clearError();
+    clearTimeout(closeTimer);
     nameStep.hidden = false;
+    // The element has to be laid out once before the slide has somewhere to
+    // start from; reading its height forces that.
+    void nameStep.offsetHeight;
+    nameStep.classList.add('is-open');
+    // Focus straight from the tap on Pack, so iOS still counts it as the
+    // user's gesture and shows the keyboard.
     nameInput.focus({ preventScroll: true });
   }
 
   function closeNaming() {
     if (nameStep.hidden) return;
-    nameStep.hidden = true;
+    nameStep.classList.remove('is-open');
     clearError();
+    const finish = () => { nameStep.hidden = true; };
+    if (REDUCED_MOTION.matches) finish();
+    else closeTimer = setTimeout(finish, 280);
     // Back returns to packing with the selection intact; focus goes back to
     // the pill that opened the step.
     if (mode === 'packing') commitBtn.focus({ preventScroll: true });
@@ -405,6 +419,9 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   saveBtn.addEventListener('click', commit);
   nameInput.addEventListener('input', clearError);
   nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } });
+  // Tapping the scrim, or Escape, is Back.
+  nameStep.addEventListener('click', e => { if (e.target === nameStep) closeNaming(); });
+  nameStep.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); closeNaming(); } });
   applyMode();
 
   // ---- what the shelf calls ----
