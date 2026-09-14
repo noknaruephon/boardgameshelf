@@ -2768,7 +2768,7 @@ async function handleGnStart(){
   startBtn.textContent = 'Starting…';
   try {
     const { createGameNight } = await gnSessionModPromise;
-    const code = await createGameNight({ hostName, mode, revealDeck, gameIds, ownerId: profile.id });
+    const code = await createGameNight({ hostName, mode, revealDeck, gameIds, ownerId: profile.id, bagId: isBagRoute ? bagRouteId : null });
     sessionStorage.setItem(`gamenight:${code}:name`, hostName);
     location.href = `/night/${code}/host`;
   } catch (err) {

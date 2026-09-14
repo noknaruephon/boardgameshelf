@@ -141,6 +141,8 @@ export async function fetchShelfGames(profileId) {
  * so that case falls back to the front page.
  */
 export async function shelfHrefForSession(session) {
+  // A night started from a bag page goes back to the bag.
+  if (session?.bag_id) return `/bag/${encodeURIComponent(session.bag_id)}`;
   const ownerId = session?.owner_id || null;
   if (!ownerId) return `/u/${DEFAULT_SHELF_SLUG}`;
   const { data, error } = await supabase
@@ -150,6 +152,11 @@ export async function shelfHrefForSession(session) {
     .maybeSingle();
   if (error || !data?.slug) return '/';
   return `/u/${data.slug}`;
+}
+
+/** The label for the link shelfHrefForSession points at. */
+export function backLabelForSession(session) {
+  return session?.bag_id ? 'Back to the bag' : 'Back to the shelf';
 }
 
 /**

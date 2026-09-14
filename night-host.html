@@ -197,11 +197,12 @@ import { fetchSession, joinGameNight, startVoting, cancelGameNight, sessionError
 import { joinSessionChannel, MIN_PLAYERS_TO_START } from '/js/presence.js';
 import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from '/js/waiting-room.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
-import { fetchGamesForSession, shelfHrefForSession } from '/js/shelf-data.js';
+import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
 
 const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.
 let shelfHref = '/';
+let backLabel = 'Back to the shelf';
 const confirmDialog = document.getElementById('confirm');
 const confirmBody = document.getElementById('confirmBody');
 
@@ -216,7 +217,7 @@ function renderEnded(message) {
     <div class="eyebrow">Game Night</div>
     <h1>Game night over</h1>
     <div class="ended"><p>${message}</p></div>
-    <a class="start-btn" href="${shelfHref}">Back to the shelf</a>`;
+    <a class="start-btn" href="${shelfHref}">${backLabel}</a>`;
 }
 
 const code = codeFromPath();
@@ -234,7 +235,7 @@ async function init(code) {
     renderEnded('Something went wrong loading this game night.');
     return;
   }
-  if (session) shelfHref = await shelfHrefForSession(session);
+  if (session) { shelfHref = await shelfHrefForSession(session); backLabel = backLabelForSession(session); }
 
   if (!session || session.status === 'cancelled') {
     renderEnded('That game night has ended, or the code is wrong.');
