@@ -1599,16 +1599,18 @@ let bag = null; // set by initBag(); owns packing mode and the coverage bar
 // /bag/<id>: a bag's own page. It is routed here rather than to a page of its
 // own so it shares the grid, the filters, the search and the modal. Not
 // gated by the flag — a shared link has to work for someone who has never
-// seen it. Game Night is hidden on it this stage (it would start a lobby over
-// the whole shelf, which is not what the page shows).
+// seen it. Game Night runs on it too, scoped to the bag: `games` there is the
+// bag's list, so the pool, the random pick and the lobby never see the rest
+// of the shelf. Packing does not open on a bag page; its Edit goes back to
+// the shelf.
 const bagRouteId = (location.pathname.match(/^\/bag\/([a-z0-9]{8})\/?$/i) || [])[1]?.toLowerCase() || '';
 const isBagRoute = !!bagRouteId;
 let pageBag = null; // the bag this page is, on /bag/<id>
 
 // Game night and the bag pick games the same way, off the same card overlays:
 // a card carries them whenever either mode can be entered, and body.is-selecting
-// decides when they show. A bag page enters neither.
-const selectionOverlays = !isBagRoute && (gameNightVisible || bagVisible);
+// decides when they show. A bag page can enter game night but never packing.
+const selectionOverlays = gameNightVisible || (bagVisible && !isBagRoute);
 
 let games = [];
 // The profile whose shelf this is. Set by loadGames(); game nights started
@@ -3062,8 +3064,8 @@ try {
   render();
   // A bag page shows no Game Night this stage (Stage 3 brings it back scoped
   // to the bag); the invite sheet hangs off its bar, so it goes with it.
-  if(gameNightVisible && !isBagRoute) initGameNight();
-  if(inviteVisible && !isBagRoute) await initInvite();
+  if(gameNightVisible) initGameNight();
+  if(inviteVisible) await initInvite();
   await openBagEdit();
 } catch (err) {
   showShelfState(err instanceof ShelfError ? err.kind : 'error');
