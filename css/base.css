@@ -28,6 +28,8 @@
      plate use these instead of repeating the literals */
   --line:rgba(244,235,218,0.10);
   --line-gold:rgba(227,176,75,0.22);
+  /* warning — a gap in what a bag covers (docs/bag-pack-bar-spec.md) */
+  --bgs-amber:#F0913A;
   /* destructive actions — cancelling a game night */
   --bgs-danger:#A8503A;
   --bgs-danger-hover:#C2705A;

@@ -299,17 +299,16 @@ body.gn-selecting .shelf-bags-btn{display:none;}
 }
 body[data-bag-state="packing"] .game-card .players{display:none;}
 
-/* ---- coverage bar (packing) ---- */
+/* ---- coverage bar (packing) ----
+   docs/bag-pack-bar-spec.md. A read-only bar along the bottom edge; Cancel and
+   Pack float above it as glass pills so the grid shows through. `.bag-bar` is
+   the root the slide drives; `.bag-dock__*` is the layout inside it.
+   Transitions only, never animation; rings by box-shadow, never outline. */
 
 .bag-bar{
   position:fixed;
   left:0;right:0;bottom:0;
   z-index:15;
-  padding:14px 20px calc(14px + env(safe-area-inset-bottom));
-  background:rgba(var(--bgs-bg-rgb),0.94);
-  -webkit-backdrop-filter:blur(10px);
-  backdrop-filter:blur(10px);
-  border-top:1px solid rgba(var(--bgs-gold-rgb),0.25);
   transform:translateY(100%);
   /* visibility keeps the bar's controls out of the tab order while it is down,
      which is what aria-hidden on the same element promises. It flips at the
@@ -317,119 +316,149 @@ body[data-bag-state="packing"] .game-card .players{display:none;}
   visibility:hidden;
   transition:transform 220ms cubic-bezier(.2,.8,.3,1), visibility 0s linear 220ms;
 }
-.bag-bar:focus{outline:none;}
+.bag-bar:focus{box-shadow:none;}
 body[data-bag-state="packing"] .bag-bar{
   transform:translateY(0);
   visibility:visible;
   transition:transform 220ms cubic-bezier(.2,.8,.3,1), visibility 0s;
 }
-/* Room under the grid for the bar. */
-body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-bottom));}
+/* Room under the grid: the bar with its gap line (102px), the 44px pills and
+   the 12px between, plus a little air, so the last row scrolls clear of both. */
+body[data-bag-state="packing"]{padding-bottom:calc(102px + 44px + 12px + 24px + env(safe-area-inset-bottom));}
 
-.bag-bar__row{
+/* The floating row: right-aligned, 12px above the bar's top border. */
+.bag-dock__float{
   display:flex;
-  align-items:flex-end;
-  gap:20px;
-  flex-wrap:wrap;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  padding:0 16px 12px;
+}
+.bag-dock__cancel,
+.bag-dock__pack{
+  height:44px;
+  border-radius:22px;
+  font-family:'Inter',sans-serif;
+  font-size:15px;
+  font-weight:500;
+  color:var(--bgs-ivory);
+  cursor:pointer;
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:0 8px 24px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,0,0,.25);
+  transition:background-color .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s cubic-bezier(.2,.8,.2,1);
+}
+.bag-dock__cancel{
+  padding:0 18px;
+  background:rgba(var(--bgs-ivory-rgb),.10);
+  border:1px solid rgba(var(--bgs-ivory-rgb),.22);
+}
+.bag-dock__pack{
+  padding:0 26px;
+  font-weight:600;
+  background:rgba(var(--bgs-gold-rgb),.26);
+  border:1px solid rgba(var(--bgs-gold-rgb),.55);
+}
+.bag-dock__pack:disabled{opacity:.45;cursor:default;}
+/* The focus ring joins the depth shadows rather than replacing them. */
+.bag-dock__cancel:focus-visible,
+.bag-dock__pack:focus-visible{
+  box-shadow:0 8px 24px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,0,0,.25),
+    0 0 0 2px var(--bgs-bg),
+    0 0 0 4px var(--bgs-gold);
+}
+@supports not (backdrop-filter:blur(1px)){
+  .bag-dock__cancel{background:rgba(42,31,22,.92);}
+  .bag-dock__pack{background:rgba(var(--bgs-gold-rgb),.55);color:#1a1206;}
+}
+
+/* The bar itself. 76px without the gap line, 102px with, before the safe area.
+   Its content sits in the page's own column (20px gutter, 960px max) so the
+   left block lines up with the first column of covers at every width. */
+.bag-dock__bar{
+  background:var(--bgs-bg);
+  border-top:1px solid rgba(var(--bgs-gold-rgb),.28);
+  padding:14px 20px calc(14px + env(safe-area-inset-bottom));
+  transition:height .28s cubic-bezier(.2,.8,.2,1);
+}
+.bag-dock__row{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
   max-width:960px;
   margin:0 auto;
 }
-.bag-bar__name{flex:1 1 200px;min-width:160px;}
-.bag-name-input{
-  width:100%;
-  background:transparent;
-  border:0;
-  border-bottom:1px solid var(--line);
-  padding:6px 0;
-  color:var(--bgs-ivory);
+.bag-dock__left{width:104px;flex:none;}
+.bag-dock__count{
   font-family:'Fraunces',serif;
+  font-size:24px;
+  line-height:24px;
   font-weight:500;
-  /* 22px per the mockup, and comfortably over the 16px below which iOS Safari
-     zooms the page in on focus and never zooms back out. */
-  font-size:22px;
-  letter-spacing:-0.01em;
-}
-.bag-name-input::placeholder{color:var(--bgs-ivory-45);}
-.bag-name-input:focus{outline:none;border-bottom-color:var(--bgs-gold);}
-
-.bag-cov{
-  display:flex;
-  align-items:flex-end;
-  gap:22px;
-  flex-wrap:wrap;
-}
-.bag-cov__item{display:flex;flex-direction:column;gap:6px;}
-.bag-cov__item--gaps{min-width:0;}
-.bag-lab{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:11px;
-  letter-spacing:0.06em;
-  text-transform:uppercase;
-  color:var(--bgs-gold-dim);
-}
-.bag-val{
-  font-size:15px;
   color:var(--bgs-ivory);
   font-variant-numeric:tabular-nums;
 }
-.bag-val b{
-  font-family:'Fraunces',serif;
-  font-weight:500;
-  font-size:22px;
-}
-.bag-val--plain{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:13px;
-  padding-bottom:4px;
-}
-
-.bag-dots{display:flex;gap:5px;align-items:flex-end;}
-.bag-dot{
-  width:22px;height:22px;
-  border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'IBM Plex Mono',monospace;
-  font-size:11px;
-  font-variant-numeric:tabular-nums;
-  color:var(--bgs-ivory-45);
-  background:rgba(var(--bgs-ivory-rgb),0.05);
-  box-shadow:inset 0 0 0 1px var(--line);
-  transition:background-color 160ms ease, color 160ms ease;
-}
-.bag-dot.on{
-  background:var(--bgs-gold);
-  color:var(--bgs-bg);
-  box-shadow:none;
-}
-
-.bag-gaps{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  font-size:12.5px;
-  color:var(--bgs-ivory);
-  min-height:26px;
-  align-items:center;
-}
-.bag-gaps.is-clear{color:var(--bgs-ivory-45);}
-.bag-gap{
-  padding:4px 10px;
-  border-radius:999px;
-  background:rgba(var(--bgs-gold-rgb),0.14);
-  box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.5);
-  white-space:nowrap;
-}
-.bag-gap::before{content:"•";color:var(--bgs-gold);margin-right:6px;}
-
-.bag-bar__actions{display:flex;gap:8px;margin-left:auto;}
-.bag-bar__error{
-  flex:0 0 100%;
-  margin:0;
+.bag-dock__count small{
   font-family:'Inter',sans-serif;
-  font-size:13px;
-  color:var(--bgs-danger-hover);
+  font-size:14px;
+  font-weight:400;
+  color:var(--bgs-ivory-45);
+  margin-left:5px;
 }
-.bag-bar__error[hidden]{display:none;}
+.bag-dock__time{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  line-height:14px;
+  margin-top:6px;
+  color:var(--bgs-ivory-45);
+  font-variant-numeric:tabular-nums;
+}
+.bag-dock__right{flex:1;min-width:0;}
+.bag-dock__strip{display:flex;gap:4px;}
+.bag-dock__strip span{
+  position:relative;
+  flex:1;
+  height:24px;
+  border-radius:6px;
+  background:rgba(var(--bgs-ivory-rgb),.12);
+  transition:background-color .18s cubic-bezier(.2,.8,.2,1);
+}
+.bag-dock__strip span.is-covered{background:var(--bgs-gold);}
+.bag-dock__strip span.is-gap::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-9px;
+  width:4px;height:4px;
+  margin-left:-2px;
+  border-radius:50%;
+  background:var(--bgs-amber);
+}
+.bag-dock__labels{
+  display:flex;
+  gap:4px;
+  margin-top:6px;
+  font-family:'Inter',sans-serif;
+  font-size:11px;
+  line-height:14px;
+  color:var(--bgs-ivory-45);
+}
+.bag-dock__labels span{flex:1;text-align:center;}
+.bag-dock__gaps{
+  max-width:960px;
+  margin:10px auto 0;
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  line-height:16px;
+  color:var(--bgs-amber);
+}
+.bag-dock__gaps:empty{display:none;}
+
+/* The naming step, commit 1: present and wired, styled in the next commit. */
+.bag-name[hidden]{display:none;}
 
 /* Screen-reader-only, for the spoken version of the player cells. */
 .bag-sr{
@@ -448,26 +477,19 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
      meta row rather than being truncated in the middle. */
   .bag-line__players{display:none;}
   body[data-bag-state="packing"] .game-card .players{display:inline;}
-  .bag-bar{padding:12px 16px calc(12px + env(safe-area-inset-bottom));}
-  .bag-bar__row{gap:12px;}
-  .bag-cov{gap:16px;}
-  .bag-bar__actions{width:100%;}
-  .bag-bar__actions .bag-btn--primary{flex:1;}
-  body[data-bag-state="packing"]{padding-bottom:calc(300px + env(safe-area-inset-bottom));}
 }
 
 @media (prefers-reduced-motion:reduce){
   .bag-bar,
   body[data-bag-state="packing"] .bag-bar,
+  .bag-dock__bar,
+  .bag-dock__strip span,
+  .bag-dock__cancel,
+  .bag-dock__pack,
   .bag-dot{transition:none;}
 }
 
-@supports not (backdrop-filter:blur(1px)){
-  .bag-bar{background:var(--bgs-bg);}
-}
 @media (prefers-reduced-transparency:reduce){
-  .bag-bar{
-    background:var(--bgs-bg);
-    -webkit-backdrop-filter:none;backdrop-filter:none;
-  }
+  .bag-dock__cancel{background:rgba(42,31,22,.92);-webkit-backdrop-filter:none;backdrop-filter:none;}
+  .bag-dock__pack{background:rgba(var(--bgs-gold-rgb),.55);color:#1a1206;-webkit-backdrop-filter:none;backdrop-filter:none;}
 }

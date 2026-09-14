@@ -109,53 +109,72 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   const hint = el('<p class="bag-hint" hidden>Tap covers to pack them. <b>The bar shows who the bag covers, and for how long.</b></p>');
   gridEl.before(hint);
 
+  // The dock: a read-only coverage bar along the bottom edge, with Cancel and
+  // Pack floating above it as glass pills so the grid stays visible behind.
+  // `.bag-bar` is still the root the show/hide logic drives (the slide, the
+  // visibility flip, inert); `.bag-dock` is the layout inside it.
   const bar = el(`
-    <div class="bag-bar" role="region" aria-label="Bag coverage" aria-hidden="true" tabindex="-1">
-      <div class="bag-bar__row">
-        <div class="bag-bar__name">
-          <input class="bag-name-input" type="text" placeholder="Name the bag" aria-label="Bag name" autocomplete="off" spellcheck="false">
-        </div>
-        <div class="bag-cov">
-          <div class="bag-cov__item">
-            <span class="bag-lab">Games</span>
-            <span class="bag-val"><b data-bag-count>0</b></span>
+    <div class="bag-bar bag-dock" role="region" aria-label="Bag coverage" aria-hidden="true" tabindex="-1">
+      <div class="bag-dock__float">
+        <button type="button" class="bag-dock__cancel" data-bag-cancel>Cancel</button>
+        <button type="button" class="bag-dock__pack" data-bag-commit disabled>Pack</button>
+      </div>
+      <div class="bag-dock__bar">
+        <div class="bag-dock__row">
+          <div class="bag-dock__left">
+            <div class="bag-dock__count"><span data-bag-count>0</span><small>games</small></div>
+            <div class="bag-dock__time" data-bag-time>–</div>
           </div>
-          <div class="bag-cov__item">
-            <span class="bag-lab">Players</span>
-            <div class="bag-dots" data-bag-dots aria-hidden="true"></div>
+          <div class="bag-dock__right">
+            <div class="bag-dock__strip" data-bag-strip aria-hidden="true"></div>
             <span class="bag-sr" data-bag-players></span>
-          </div>
-          <div class="bag-cov__item">
-            <span class="bag-lab">Playtime</span>
-            <span class="bag-val bag-val--plain" data-bag-time>—</span>
-          </div>
-          <div class="bag-cov__item bag-cov__item--gaps">
-            <span class="bag-lab">Gaps</span>
-            <div class="bag-gaps" data-bag-gaps aria-live="polite"></div>
+            <div class="bag-dock__labels" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8+</span></div>
           </div>
         </div>
-        <div class="bag-bar__actions">
-          <button class="bag-btn bag-btn--quiet" type="button" data-bag-cancel>Cancel</button>
-          <button class="bag-btn bag-btn--primary" type="button" data-bag-commit disabled>Pack</button>
-        </div>
-        <p class="bag-bar__error" data-bag-error role="alert" hidden></p>
+        <div class="bag-dock__gaps" data-bag-gaps aria-live="polite"></div>
       </div>
     </div>
   `);
   document.body.appendChild(bar);
 
-  const nameInput = bar.querySelector('.bag-name-input');
+  // The naming step. Pack no longer saves: it opens this, and "Pack the bag"
+  // runs the save. It lives beside the bar rather than inside it, because the
+  // bar slides with a transform and a fixed sheet inside it would slide too.
+  // Commit 1 keeps it plain and hidden; the sheet styling is the next commit.
+  const nameStep = el(`
+    <div class="bag-name" role="dialog" aria-modal="true" aria-labelledby="bagNameTitle" hidden>
+      <div class="bag-name__panel">
+        <h2 class="bag-name__title" id="bagNameTitle">Name the bag</h2>
+        <p class="bag-name__sub" data-bag-name-sub></p>
+        <input class="bag-name-input" type="text" placeholder="Name the bag" aria-label="Bag name" autocomplete="off" spellcheck="false">
+        <p class="bag-bar__error" data-bag-error role="alert" hidden></p>
+        <div class="bag-name__foot">
+          <button type="button" class="bag-name__back" data-bag-name-back>Back</button>
+          <button type="button" class="bag-name__save" data-bag-save>Pack the bag</button>
+        </div>
+      </div>
+    </div>
+  `);
+  document.body.appendChild(nameStep);
+
+  const nameInput = nameStep.querySelector('.bag-name-input');
+  const nameSubEl = nameStep.querySelector('[data-bag-name-sub]');
+  const nameBackBtn = nameStep.querySelector('[data-bag-name-back]');
+  const saveBtn = nameStep.querySelector('[data-bag-save]');
+  const errorEl = nameStep.querySelector('[data-bag-error]');
   const countEl = bar.querySelector('[data-bag-count]');
-  const dotsEl = bar.querySelector('[data-bag-dots]');
+  const stripEl = bar.querySelector('[data-bag-strip]');
   const playersSrEl = bar.querySelector('[data-bag-players]');
   const timeEl = bar.querySelector('[data-bag-time]');
   const gapsEl = bar.querySelector('[data-bag-gaps]');
   const commitBtn = bar.querySelector('[data-bag-commit]');
   const cancelBtn = bar.querySelector('[data-bag-cancel]');
-  const errorEl = bar.querySelector('[data-bag-error]');
 
-  dotsEl.innerHTML = cellsHTML([false, false, false, false, false, false, false, false]);
-  const dots = Array.from(dotsEl.querySelectorAll('.bag-dot'));
+  // Eight cells, 1 to 8+. Covered when a packed game plays at that count;
+  // the 2 and 5 cells also carry a gap mark when the bag has games but none
+  // for that count, since those are the two the gap line calls out.
+  stripEl.innerHTML = '<span></span>'.repeat(8);
+  const cells = Array.from(stripEl.children);
 
   // ---- the bags control and sheet ----
 
@@ -250,6 +269,23 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     // controls are tabbable for as long as it is still on screen. inert closes
     // that window where the browser has it; visibility closes it everywhere else.
     if (SUPPORTS_INERT) bar.inert = !packing;
+    if (!packing) closeNaming();
+  }
+
+  function openNaming() {
+    if (!draft.size) { showError('NO_GAMES'); return; }
+    clearError();
+    nameStep.hidden = false;
+    nameInput.focus({ preventScroll: true });
+  }
+
+  function closeNaming() {
+    if (nameStep.hidden) return;
+    nameStep.hidden = true;
+    clearError();
+    // Back returns to packing with the selection intact; focus goes back to
+    // the pill that opened the step.
+    if (mode === 'packing') commitBtn.focus({ preventScroll: true });
   }
 
   function showError(code) {
@@ -264,30 +300,27 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   function updateBar() {
     const selected = draftGames();
+    const n = selected.length;
     const cover = coverage(selected);
-    countEl.textContent = String(selected.length);
-    dots.forEach((dot, i) => dot.classList.toggle('on', cover.cells[i]));
-    playersSrEl.textContent = selected.length
+    countEl.textContent = String(n);
+    cells.forEach((cell, i) => {
+      cell.classList.toggle('is-covered', cover.cells[i]);
+      cell.classList.toggle('is-gap', n > 0 && !cover.cells[i] && (i === 1 || i === 4));
+    });
+    playersSrEl.textContent = n
       ? `Player counts covered: ${coveredPlayersLabel(cover.cells) || 'none'}`
       : '';
-    timeEl.textContent = timeLabel(cover.minTime, cover.maxTime);
-    // "Covered" is the all-clear, so it belongs to a bag that holds something.
-    // An empty bag leaves the slot blank rather than claiming it covers a trip.
-    if (cover.gaps.length) {
-      gapsEl.classList.remove('is-clear');
-      gapsEl.innerHTML = cover.gaps.map(g => `<span class="bag-gap">${g}</span>`).join('');
-    } else {
-      gapsEl.classList.toggle('is-clear', selected.length > 0);
-      gapsEl.textContent = selected.length ? 'Covered' : '';
-    }
-    // Pack stays live: pressing it with nothing picked, or no name, says so
-    // in the bar rather than sitting dimmed with no reason showing.
-    commitBtn.disabled = saving;
-    commitBtn.textContent = saving
-      ? 'Packing…'
-      : selected.length
-        ? `${editing ? 'Save' : 'Pack'} ${selected.length} game${selected.length === 1 ? '' : 's'}`
-        : 'Pack';
+    const time = cover.minTime === null ? '–' : timeLabel(cover.minTime, cover.maxTime);
+    timeEl.textContent = time;
+    // The gap line is only there when there is something to say; CSS hides
+    // the empty element, so the bar drops back to its shorter height.
+    gapsEl.textContent = cover.gaps.join(' · ');
+    // Pack waits for a game. It opens the naming step; saving happens there.
+    commitBtn.disabled = !n || saving;
+    commitBtn.textContent = editing ? 'Save' : 'Pack';
+    nameSubEl.textContent = `${n} game${n === 1 ? '' : 's'}, ${time}`;
+    saveBtn.disabled = saving;
+    saveBtn.textContent = saving ? 'Packing…' : `${editing ? 'Save' : 'Pack'} the bag`;
   }
 
   function enterPacking(bag, origin) {
@@ -315,6 +348,8 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   // Saving ends on the bag's own page. Until the navigation lands the bar
   // stays up with everything still selected, so a failure loses nothing.
+  // Reached from the naming step's "Pack the bag"; the bar's Pack only opens
+  // that step.
   async function commit() {
     if (saving) return;
     // A bag needs games, and a name: the page it becomes is titled with it,
@@ -345,6 +380,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   function cancel() {
     stopWave?.();
+    closeNaming();
     const back = editing;
     editing = null;
     draft = new Set();
@@ -364,8 +400,11 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   packBtn.addEventListener('click', openBags);
   cancelBtn.addEventListener('click', cancel);
-  commitBtn.addEventListener('click', commit);
-  nameInput.addEventListener('input', () => { clearError(); updateBar(); });
+  commitBtn.addEventListener('click', openNaming);
+  nameBackBtn.addEventListener('click', closeNaming);
+  saveBtn.addEventListener('click', commit);
+  nameInput.addEventListener('input', clearError);
+  nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); commit(); } });
   applyMode();
 
   // ---- what the shelf calls ----
