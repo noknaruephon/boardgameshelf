@@ -12734,6 +12734,7 @@
     "color": "#4A5A6B",
     "image": "https://cf.geekdo-images.com/t1aM0G-Rqb7uCLzwyFz1yQ__original/img/uyN9xvO70NGE6Lvw7Nk_eKnDpzw=/0x0/filters:format(png)/pic5476466.png",
     "blurb": "One player secretly knows the answer to a word puzzle and is quietly steering the group's yes-or-no questions toward it — everyone else just has to work out who that is. A deduction game disguised as 20 Questions.",
+    "blurb_th": "คนหนึ่งแอบรู้คำตอบของปริศนาคำ และค่อยๆ ชี้นำคำถามใช่/ไม่ใช่ของกลุ่มไปหาคำตอบนั้น คนอื่นแค่ต้องหาให้ได้ว่าคนนั้นคือใคร เกมสืบสวนในคราบเกม 20 คำถาม",
     "why": [
       "The insider wins by helping just enough without getting caught",
       "Fast rounds mean you can play it three times before anyone's bored",
@@ -12748,6 +12749,7 @@
       "8": "recommended"
     },
     "caption": "One player secretly knows the answer to a word puzzle.",
+    "caption_th": "คนหนึ่งแอบรู้คำตอบของปริศนาคำ",
     "teach": {
       "beats": [
         {
@@ -12795,6 +12797,18 @@
           "caption": "Note who asked the question that cracked it."
         }
       ],
+      "captions_th": [
+        "ทายคำ มีคนรู้อยู่แล้วและคอยนำทางคุณ",
+        "ทุกคนชนะถ้าเจอคำ คนวงในชนะถ้าหาไม่เจอ",
+        "เวลาสั้น คนวงในต้องนำทางอย่างแนบเนียน",
+        "คนวงในรู้คำและแกล้งทำเป็นไม่รู้",
+        "จดว่าใครถามคำถามที่ไขได้"
+      ],
+      "frames_th": [
+        "ถามคำถามใช่/ไม่ใช่",
+        "มาสเตอร์ตอบ",
+        "เจอแล้ว? โหวตหาคนวงใน"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -12824,6 +12838,7 @@
     "color": "#4A2E4E",
     "image": "https://cf.geekdo-images.com/ZljGAZbiYM3Ak3Mg4RE1Qw__original/img/8pwHFGkMCacx03ANgln1jZ9QzjA=/0x0/filters:format(jpeg)/pic7181914.jpg",
     "blurb": "A hidden cult has infiltrated the group and you're racing to root them out before their ritual completes. A newer entry in the crowded social deduction space, built for a big, suspicious table.",
+    "blurb_th": "ลัทธิลับแทรกซึมเข้ามาในกลุ่ม และคุณกำลังแข่งขุดพวกเขาออกมาก่อนพิธีกรรมจะเสร็จ เกมใหม่ในตลาด social deduction ที่แน่นขนัด สร้างมาเพื่อโต๊ะใหญ่ที่ขี้ระแวง",
     "why": [
       "Scales up to 8 players for a proper party-sized deduction game",
       "Ritual and investigation framing adds a layer beyond simple lying and voting",
@@ -12838,6 +12853,7 @@
       "8": "best"
     },
     "caption": "A hidden cult has infiltrated the group and you're racing to root them out before their ritual completes.",
+    "caption_th": "ลัทธิลับแทรกซึมเข้ามา แข่งขุดพวกเขาออกมาก่อนพิธีกรรมเสร็จ",
     "teach": {
       "beats": [
         {
@@ -12885,6 +12901,18 @@
           "caption": "Note who avoids the ritual room."
         }
       ],
+      "captions_th": [
+        "สาวกลัทธิซ่อนตัวในหมู่เอเจนต์ในคฤหาสน์ผีสิง",
+        "เอเจนต์ชนะเมื่อหยุดพิธีกรรม สาวกชนะเมื่อทำเสร็จ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "สาวกรู้จักกัน เอเจนต์ไม่รู้",
+        "จดว่าใครเลี่ยงห้องพิธีกรรม"
+      ],
+      "frames_th": [
+        "เดินและค้นห้อง",
+        "แชร์หรือซ่อนสิ่งที่เจอ",
+        "โหวตขับผู้ต้องสงสัย"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -12907,6 +12935,7 @@
     "color": "#3B5A6B",
     "image": "https://cf.geekdo-images.com/tba3l0K1zisn8k-y0WP32Q__original/img/U_AVODfChX1STSle-GyDiniCPy8=/0x0/filters:format(png)/pic8881493.png",
     "blurb": "Named for the old philosophical dilemma about who gets thrown overboard to save the rest, this is a negotiation game about surviving together — or deciding who doesn't. Dark premise, lively table talk.",
+    "blurb_th": "ตั้งชื่อตามปัญหาปรัชญาเก่าแก่ว่าใครควรถูกโยนลงน้ำเพื่อให้ที่เหลือรอด นี่คือเกมเจรจาเรื่องรอดไปด้วยกัน หรือตัดสินว่าใครไม่รอด เรื่องมืด แต่คุยกันบนโต๊ะสนุก",
     "why": [
       "Built around a genuine ethical thought experiment, not just theme dressing",
       "Negotiation and persuasion matter more than any card or die",
@@ -12921,6 +12950,7 @@
       "7": "recommended"
     },
     "caption": "Named for the old philosophical dilemma about who gets thrown overboard to save the rest.",
+    "caption_th": "เกมเจรจาว่าใครถูกโยนลงน้ำเพื่อให้ที่เหลือรอด",
     "teach": {
       "beats": [
         {
@@ -12968,6 +12998,18 @@
           "caption": "Promise to save whoever votes with you."
         }
       ],
+      "captions_th": [
+        "พายเรือชูชีพ ตัดสินว่าใครถูกโยนออกทุกครั้งที่รั่ว",
+        "แต้มมากสุดในหมู่ผู้รอดที่ถึงฝั่งชนะ",
+        "ทุกโหวตคือข้อตกลง",
+        "เรือที่รั่วเสียคนหนึ่ง เรือโหวตว่าใคร",
+        "สัญญาว่าจะช่วยใครก็ตามที่โหวตกับคุณ"
+      ],
+      "frames_th": [
+        "โหวตว่าเรือลำไหนขยับ",
+        "เจรจาว่าใครถูกโยนลงน้ำ",
+        "รั่ว: ลูกเรือตัดสินว่าใครจม"
+      ],
       "wordCount": 56,
       "source": "generated",
       "reviewed": false
@@ -12990,6 +13032,7 @@
     "color": "#6B3A3A",
     "image": "https://cf.geekdo-images.com/TCPmgay8x1ALgTxwd4ks6g__original/img/vAXjnVDHLPmtNpPw7UQD8du7MC8=/0x0/filters:format(jpeg)/pic4272103.jpg",
     "blurb": "The classic hidden-role party game blown out to enormous scale — one Moderator narrates through the night while villagers and werewolves accuse each other before sunrise. Best when you have way too many people over and nothing else planned.",
+    "blurb_th": "เกมปาร์ตี้บทบาทลับคลาสสิกขยายสเกลใหญ่ยักษ์ ผู้ดำเนินเกมหนึ่งคนเล่าเรื่องผ่านค่ำคืน ขณะที่ชาวบ้านกับมนุษย์หมาป่ากล่าวหากันก่อนรุ่งสาง ดีที่สุดเมื่อมีคนมาบ้านเยอะเกินและไม่มีแผนอื่น",
     "why": [
       "Scales absurdly high — official rules support up to 75 players",
       "A huge character deck lets the Moderator dial the chaos up or down",
@@ -13006,6 +13049,7 @@
       "11": "best"
     },
     "caption": "The classic hidden-role party game blown out to enormous scale.",
+    "caption_th": "เกมปาร์ตี้บทบาทลับคลาสสิกขยายสเกลใหญ่ยักษ์",
     "teach": {
       "beats": [
         {
@@ -13053,6 +13097,18 @@
           "caption": "First day: watch who's quiet."
         }
       ],
+      "captions_th": [
+        "ชาวบ้านล่ามนุษย์หมาป่ากลางวัน หมาป่ากินกลางคืน",
+        "หมู่บ้านชนะเมื่อฆ่าหมาป่าหมด หมาป่าชนะเมื่อมีมากกว่าชาวบ้าน",
+        "คนตายต้องเงียบ",
+        "ผู้หยั่งรู้และคนอื่นรู้บางอย่างแบบลับ",
+        "วันแรก: ดูว่าใครเงียบ"
+      ],
+      "frames_th": [
+        "กลางวัน: กล่าวหาและเถียง",
+        "แขวนคอหนึ่งคน",
+        "กลางคืน: หมาป่าและบทบาทลงมือ"
+      ],
       "wordCount": 47,
       "source": "generated",
       "reviewed": false
@@ -13081,6 +13137,7 @@
     "color": "#7A6A9E",
     "image": "https://cf.geekdo-images.com/jmf0M01DsReKLByori6OGg__itemrep@2x/img/0Lydurneh5hRNAlhBUy59QTev8E=/fit-in/492x600/filters:strip_icc()/pic2335221.png",
     "blurb": "Split into two rooms, trade hostages each round, and try to keep your team's President away from the other team's Bomber. Loud, chaotic, and needs a crowd.",
+    "blurb_th": "แยกเป็นสองห้อง แลกตัวประกันทุกรอบ และพยายามกันประธานาธิบดีของทีมให้ห่างจากมือระเบิดของอีกทีม ดัง วุ่นวาย และต้องมีคนเยอะ",
     "tag": "Party · social deduction",
     "why": [
       "Made for a real crowd — the bigger the group, the better",
@@ -13097,6 +13154,7 @@
       "11": "recommended"
     },
     "caption": "Split into two rooms, trade hostages each round.",
+    "caption_th": "แยกเป็นสองห้อง แลกตัวประกันทุกรอบ",
     "teach": {
       "beats": [
         {
@@ -13144,6 +13202,18 @@
           "caption": "Find your teammates; share colours only."
         }
       ],
+      "captions_th": [
+        "สองห้อง บทบาทลับ: พามือระเบิดไปอยู่กับประธานาธิบดี",
+        "น้ำเงินชนะถ้าประธานาธิบดีรอด แดงชนะถ้ามือระเบิดถึงตัวเขา",
+        "สามรอบ สั้นลงทุกครั้ง",
+        "โชว์การ์ดได้ทั้งใบหรือแค่สี ถามให้ชัด",
+        "หาเพื่อนร่วมทีม แชร์แค่สี"
+      ],
+      "frames_th": [
+        "คุย โชว์การ์ด เจรจา",
+        "ห้องเลือกหัวหน้า หัวหน้าเลือกตัวประกัน",
+        "ตัวประกันสลับห้อง"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -13172,6 +13242,7 @@
     "color": "#4A6C6F",
     "image": "https://cf.geekdo-images.com/VrY3Gy9bI9Df1rrzdRPmEw__itemrep@2x/img/IiiHYa4I_FxElpVGEVtkg5DWQMs=/fit-in/492x600/filters:strip_icc()/pic4708322.png",
     "blurb": "Sneak your family members to the front of a crowded elevator line, cutting in ahead of pedestrians before the doors close. A light, sneaky little filler with real bite.",
+    "blurb_th": "แอบพาคนในครอบครัวไปอยู่หน้าแถวลิฟต์ที่แน่นขนัด แซงคนเดินเท้าก่อนประตูปิด เกมฟิลเลอร์เบาๆ เจ้าเล่ห์ที่กัดจริง",
     "tag": "Light filler",
     "why": [
       "Light, quick filler with more bite than it looks",
@@ -13184,7 +13255,8 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "Sneak your family members to the front of a crowded elevator line, cutting in ahead of pedestrians."
+    "caption": "Sneak your family members to the front of a crowded elevator line, cutting in ahead of pedestrians.",
+    "caption_th": "แอบพาครอบครัวไปหน้าแถวลิฟต์ แซงคนอื่นก่อนประตูปิด"
   },
   {
     "bggId": "131357",
@@ -13203,6 +13275,7 @@
     "color": "#6B2737",
     "image": "https://cf.geekdo-images.com/PfT8GdZBYImw6I_O7dgCkA__original/img/lO3o9_2xcUINJeY0JDTnJraIhhg=/0x0/filters:format(jpeg)/pic2830023.jpg",
     "blurb": "Bluff your way to eliminating everyone else's influence, claiming powers you may or may not actually have. Fifteen minutes of pure nerve and calling people's bluffs.",
+    "blurb_th": "บลัฟจนกำจัดอิทธิพลของทุกคนได้ อ้างพลังที่คุณอาจมีหรือไม่มีจริง สิบห้านาทีของความกล้าล้วนๆ และการจับโกหกคนอื่น",
     "why": [
       "Minimal setup, maximum table tension",
       "Every card you claim could be a lie — or a trap",
@@ -13217,6 +13290,7 @@
       "6": "recommended"
     },
     "caption": "Bluff your way to eliminating everyone else's influence, claiming powers you may or may not actually have.",
+    "caption_th": "บลัฟจนกำจัดอิทธิพลของทุกคน อ้างพลังที่อาจไม่มีจริง",
     "teach": {
       "beats": [
         {
@@ -13264,6 +13338,18 @@
           "caption": "Take income twice. Watch who claims Duke."
         }
       ],
+      "captions_th": [
+        "บลัฟว่าถือการ์ดสองใบไหน โดนจับได้เสียหนึ่งใบ",
+        "คนสุดท้ายที่ยังมีการ์ดชนะ",
+        "เจ็ดเหรียญ: ต้องทำรัฐประหาร",
+        "บลัฟถูกกฎ ท้าทายคนพูดจริงเสียการ์ด",
+        "รับรายได้สองครั้ง ดูว่าใครอ้างเป็น Duke"
+      ],
+      "frames_th": [
+        "อ้างแอ็กชันของบทบาท หรือรับรายได้",
+        "ใครก็ท้าทายหรือบล็อกได้",
+        "คนแพ้การท้าทายเสียการ์ด"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -13293,6 +13379,7 @@
     "color": "#9C7A4A",
     "image": "https://cf.geekdo-images.com/hRAiuzG7v-YWTkfs88MJWA__original/img/Y2ldwz1H3nXXt3e5kzBorKh4Iuo=/0x0/filters:format(png)/pic7278326.png",
     "blurb": "Stack cards to raise your own tower of Babel, drafting and combo-ing pieces before the structure gets scored. A brisk card game with a satisfying tableau to admire when you're done.",
+    "blurb_th": "ซ้อนการ์ดสร้างหอคอยบาเบลของตัวเอง ดราฟต์และคอมโบชิ้นส่วนก่อนโครงสร้างจะถูกนับแต้ม เกมการ์ดกระฉับกระเฉงที่ได้ tableau น่าชื่นชมตอนจบ",
     "why": [
       "Combo-driven scoring rewards planning your build order ahead of time",
       "Fast 30-minute runtime fits easily between bigger games",
@@ -13306,6 +13393,7 @@
       "5": "recommended"
     },
     "caption": "Stack cards to raise your own tower of Babel, drafting and combo-ing pieces before the structure gets scored.",
+    "caption_th": "ซ้อนการ์ดสร้างหอคอยบาเบลของตัวเอง ดราฟต์และคอมโบ",
     "teach": {
       "beats": [
         {
@@ -13353,6 +13441,18 @@
           "caption": "Build the cheapest floor first."
         }
       ],
+      "captions_th": [
+        "สร้างหอคอยจากการ์ดที่ชั้นและสัญลักษณ์ตรงกัน",
+        "แต้มมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กกฎการซ้อน",
+        "สร้างชั้นที่ถูกสุดก่อน"
+      ],
+      "frames_th": [
+        "จั่ว",
+        "สร้างชั้น",
+        "โบนัสเมื่อตรงกัน"
+      ],
       "wordCount": 36,
       "source": "generated",
       "reviewed": false
@@ -13375,6 +13475,7 @@
     "color": "#A8763E",
     "image": "https://cf.geekdo-images.com/asA8kd9kLpkA4Q_TF8TjUA__original/img/6nC83nGPPCP0xC9hZ_GWjTG6MHo=/0x0/filters:format(png)/pic8249159.png",
     "blurb": "Liar's Dice by another name — everyone hides their dice under a cup and bids on how many of a given value are on the table, calling bluffs when the numbers stop adding up. A pub classic for a reason.",
+    "blurb_th": "Liar's Dice ในอีกชื่อ ทุกคนซ่อนลูกเต๋าใต้ถ้วยแล้วเสนอว่ามีเลขนั้นกี่ลูกบนโต๊ะ จับโกหกเมื่อตัวเลขเริ่มไม่สมเหตุสมผล คลาสสิกประจำผับด้วยเหตุผลที่ดี",
     "why": [
       "Bidding and bluffing scale naturally with the number of players",
       "No reading required, just nerve and a bit of probability instinct",
@@ -13393,6 +13494,7 @@
       "10": "not_recommended"
     },
     "caption": "Liar's Dice by another name — everyone hides their dice under a cup.",
+    "caption_th": "Liar's Dice ในอีกชื่อ ทุกคนซ่อนลูกเต๋าใต้ถ้วย",
     "teach": {
       "beats": [
         {
@@ -13440,6 +13542,18 @@
           "caption": "Bid what you can see, plus one."
         }
       ],
+      "captions_th": [
+        "ลูกเต๋าโกหก: เสนอว่ามีลูกเต๋ากี่ลูกใต้ถ้วยทุกคนรวมกัน",
+        "คนสุดท้ายที่ยังมีลูกเต๋าชนะ",
+        "เลขหนึ่งเป็นไวลด์",
+        "เสนอเลขหนึ่งจำนวนลดครึ่ง กลับมาเสนอเลขอื่นต้องเพิ่มเท่าตัว",
+        "เสนอเท่าที่เห็น บวกหนึ่ง"
+      ],
+      "frames_th": [
+        "ทุกคนทอยใต้ถ้วยตัวเอง",
+        "เสนอจำนวนและหน้า ต้องสูงขึ้นเสมอ",
+        "ร้อง dudo: เปิด คนแพ้เสียลูกเต๋า"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -13469,6 +13583,7 @@
     "color": "#5A6B73",
     "image": "https://cf.geekdo-images.com/JwXKEz_lc32uFKJX47wbmQ__original/img/M60m47J_KOcEBTs21vTxUHAeJpY=/0x0/filters:format(jpeg)/pic7674334.jpg",
     "blurb": "A quick, sneaky little card game about ratting people out before they rat you out first. Ten to twenty minutes of low-stakes betrayal to open or close a game night.",
+    "blurb_th": "เกมการ์ดเล็กๆ เร็วและเจ้าเล่ห์เรื่องการฟ้องคนอื่นก่อนเขาจะฟ้องคุณ สิบถึงยี่สิบนาทีของการหักหลังแบบเดิมพันต่ำ เปิดหรือปิดคืนเกม",
     "why": [
       "Short enough to squeeze in between bigger games",
       "Easy rules make it a solid icebreaker for mixed groups",
@@ -13483,6 +13598,7 @@
       "6": "no_data"
     },
     "caption": "A quick, sneaky little card game about ratting people out before they rat you out first.",
+    "caption_th": "เกมการ์ดเล็กๆ เรื่องการฟ้องคนอื่นก่อนเขาจะฟ้องคุณ",
     "teach": {
       "beats": [
         {
@@ -13530,6 +13646,18 @@
           "caption": "Tell the truth first round."
         }
       ],
+      "captions_th": [
+        "บลัฟค่าการ์ด หาคนฟ้อง",
+        "แต้มมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กบทลงโทษการท้าทาย",
+        "รอบแรกพูดความจริง"
+      ],
+      "frames_th": [
+        "ลงการ์ดคว่ำ",
+        "อ้างค่าของมัน",
+        "ท้าทายหรือยอมรับ"
+      ],
       "wordCount": 37,
       "source": "generated",
       "reviewed": false
@@ -13552,6 +13680,7 @@
     "color": "#6B5C2E",
     "image": "https://cf.geekdo-images.com/NhDgNswxHpwKSmuJZk26sw__original/img/xOl2dG2WOghH59R7dSv3l8zwevM=/0x0/filters:format(jpeg)/pic9174727.jpg",
     "blurb": "Guess the number, then bet on whose guess is closest — you don't need to actually know the trivia to win. Loud, fast, and forgiving of people who are bad at trivia.",
+    "blurb_th": "ทายตัวเลข แล้วแทงว่าคำตอบของใครใกล้ที่สุด ไม่ต้องรู้คำตอบจริงก็ชนะได้ ดัง เร็ว และให้อภัยคนที่ตอบคำถามความรู้ไม่เก่ง",
     "why": [
       "The betting layer means non-trivia-buffs can still win big",
       "Rounds move fast enough to fit a dozen questions in one sitting",
@@ -13566,6 +13695,7 @@
       "7": "best"
     },
     "caption": "Guess the number, then bet on whose guess is closest — you don't need to actually know the trivia to win.",
+    "caption_th": "ทายตัวเลข แล้วแทงว่าคำตอบของใครใกล้ที่สุด",
     "teach": {
       "beats": [
         {
@@ -13613,6 +13743,18 @@
           "caption": "Bet on the middle answer."
         }
       ],
+      "captions_th": [
+        "เกมความรู้ที่คุณแทงคำตอบของคนอื่น",
+        "จบเจ็ดคำถามใครชิปมากสุดชนะ",
+        "ไม่ต้องรู้คำตอบ",
+        "เกินเลขจริง? คำตอบนั้นตกไป",
+        "แทงคำตอบตรงกลาง"
+      ],
+      "frames_th": [
+        "ทุกคนเขียนตัวเลข",
+        "เรียงคำตอบ แทงอันที่ดีสุด",
+        "ใกล้สุดโดยไม่เกินได้เงิน"
+      ],
       "wordCount": 48,
       "source": "generated",
       "reviewed": false
@@ -13642,6 +13784,7 @@
     "color": "#C17A3E",
     "image": "https://cf.geekdo-images.com/VK7rPG7ftimNBbsa-XPKpQ__original/img/x0bFSZ6reARfgp3USrQHxBawzjE=/0x0/filters:format(png)/pic7957332.png",
     "blurb": "Guess how the group ranked something absurd — most likely to survive a bear attack, say — and see how close your gut lands to the real spread. Fifteen minutes of arguing over rankings with friends.",
+    "blurb_th": "ทายว่ากลุ่มจัดอันดับเรื่องเพี้ยนๆ ยังไง เช่น ใครรอดจากหมีโจมตีได้มากสุด แล้วดูว่าสัญชาตญาณของคุณใกล้ผลจริงแค่ไหน สิบห้านาทีของการเถียงเรื่องอันดับกับเพื่อน",
     "why": [
       "Prompts are genuinely funny and built for arguing over",
       "No prep, no strategy — just pure party-game instinct",
@@ -13657,7 +13800,8 @@
       "7": "best",
       "8": "recommended"
     },
-    "caption": "Guess how the group ranked something absurd — most likely to survive a bear attack."
+    "caption": "Guess how the group ranked something absurd — most likely to survive a bear attack.",
+    "caption_th": "ทายว่ากลุ่มจัดอันดับเรื่องเพี้ยนๆ ยังไง"
   },
   {
     "bggId": "254681",
@@ -13676,6 +13820,7 @@
     "color": "#4F6B4A",
     "image": "https://cf.geekdo-images.com/s0HfVQ2rDlGGDJhpcWxsZQ__original/img/Yi91ZFyIdYn3qlfYK3aPXD42-t8=/0x0/filters:format(jpeg)/pic4973022.jpg",
     "blurb": "Pitch outrageous ad campaigns and bluff your way to the biggest advertising budget in the jungle. A light card game built around negotiation and a healthy dose of nonsense.",
+    "blurb_th": "นำเสนอแคมเปญโฆษณาสุดเว่อร์ และบลัฟจนได้งบโฆษณาก้อนใหญ่สุดในป่า เกมการ์ดเบาๆ ที่สร้างรอบการเจรจาและความไร้สาระในปริมาณพอดี",
     "why": [
       "Negotiation-driven bidding keeps every round unpredictable",
       "Silly premise keeps things from feeling too cutthroat",
@@ -13691,6 +13836,7 @@
       "8": "best"
     },
     "caption": "Pitch outrageous ad campaigns and bluff your way to the biggest advertising budget in the jungle.",
+    "caption_th": "นำเสนอแคมเปญโฆษณาสุดเว่อร์ บลัฟจนได้งบก้อนใหญ่สุด",
     "teach": {
       "beats": [
         {
@@ -13738,6 +13884,18 @@
           "caption": "Pitch with confidence."
         }
       ],
+      "captions_th": [
+        "บลัฟและเจรจาเพื่อขายสินค้าห่วยๆ",
+        "เงินมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กบทลงโทษการบลัฟ",
+        "นำเสนออย่างมั่นใจ"
+      ],
+      "frames_th": [
+        "นำเสนอสินค้า",
+        "เจรจา",
+        "ขาย"
+      ],
       "wordCount": 29,
       "source": "generated",
       "reviewed": false
@@ -13760,6 +13918,7 @@
     "color": "#8B3A5C",
     "image": "https://cf.geekdo-images.com/gWCKep7ZE408LuhHpevJ7Q__original/img/GthF8hu8UKxFYqS1dhteUK6hwqU=/0x0/filters:format(png)/pic8237135.png",
     "blurb": "Take turns performing on a tiny stage while the rest of the table tries to guess what you're going for. A quick party game built for hamming it up rather than winning.",
+    "blurb_th": "ผลัดกันแสดงบนเวทีเล็กๆ ขณะที่คนอื่นบนโต๊ะพยายามทายว่าคุณสื่ออะไร เกมปาร์ตี้เร็วๆ ที่สร้างมาเพื่อเล่นใหญ่มากกว่าเอาชนะ",
     "why": [
       "Rounds move fast enough for everyone to get several turns",
       "Performance-based gameplay gets louder as the night goes on",
@@ -13771,7 +13930,8 @@
       "4": "best",
       "5": "not_recommended"
     },
-    "caption": "Take turns performing on a tiny stage while the rest of the table tries to guess what you're going for."
+    "caption": "Take turns performing on a tiny stage while the rest of the table tries to guess what you're going for.",
+    "caption_th": "ผลัดกันแสดงบนเวทีเล็กๆ ให้คนอื่นทายว่าสื่ออะไร"
   },
   {
     "bggId": "2453",
@@ -13790,6 +13950,7 @@
     "color": "#2E5C5C",
     "image": "https://cf.geekdo-images.com/96YA5wUJDxtPkmPxemr5Qg__original/img/sdX6o0TZpXjsDMw071k2P80wpYw=/0x0/filters:format(jpeg)/pic2197702.jpg",
     "blurb": "Place your colored pieces so each new one only touches its own color at the corners, boxing your opponents out of the board as the grid fills in. A crisp abstract strategy game with almost no rules overhead.",
+    "blurb_th": "วางชิ้นสีของคุณให้ชิ้นใหม่แตะสีเดียวกันได้แค่ตรงมุม กันคู่แข่งออกจากกระดานขณะที่ตารางค่อยๆ เต็ม เกมกลยุทธ์นามธรรมสุดเฉียบที่แทบไม่มีกฎให้จำ",
     "why": [
       "Learn it in two minutes, but the spatial squeeze gets genuinely tricky",
       "No luck, no hidden information — pure positional strategy",
@@ -13802,6 +13963,7 @@
       "4": "best"
     },
     "caption": "Place your colored pieces so each new one only touches its own color at the corners.",
+    "caption_th": "วางชิ้นสีให้แตะสีเดียวกันได้แค่ตรงมุม กันคู่แข่งออกจากกระดาน",
     "teach": {
       "beats": [
         {
@@ -13849,6 +14011,18 @@
           "caption": "Big pieces first, toward the middle."
         }
       ],
+      "captions_th": [
+        "วางชิ้นของคุณบนกระดาน มุมชนมุมเท่านั้น",
+        "เหลือช่องในมือน้อยสุดชนะ",
+        "ขอบของสีเดียวกันห้ามแตะกันเด็ดขาด",
+        "สีเดียวกันแตะกันตามขอบผิดกฎ",
+        "ชิ้นใหญ่ก่อน มุ่งไปตรงกลาง"
+      ],
+      "frames_th": [
+        "เลือกชิ้น",
+        "มุมชนมุมกับสีของคุณ",
+        "วางไม่ได้? จบของคุณ"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -13878,6 +14052,7 @@
     "color": "#3D6B6B",
     "image": "https://cf.geekdo-images.com/OWTqmf6vMiRJAWo99IV5vg__original/img/vV_2JIY28q4vVR_rsx4yqhYfEMw=/0x0/filters:format(png)/pic3326341.png",
     "blurb": "A communication party game where you try to guess which of your answers overlaps with a fellow player's — using nothing but your read on how they think. Surprisingly revealing about how well you actually know people.",
+    "blurb_th": "เกมปาร์ตี้สื่อสารที่คุณพยายามทายว่าคำตอบไหนของคุณซ้อนกับของเพื่อนผู้เล่น โดยใช้แค่การอ่านว่าเขาคิดยังไง เผยได้เกินคาดว่าคุณรู้จักคนอื่นดีแค่ไหนจริงๆ",
     "why": [
       "No two rounds play out the same way",
       "Rewards knowing your friends' sense of humor",
@@ -13892,6 +14067,7 @@
       "8": "best"
     },
     "caption": "A communication party game where you try to guess which of your answers overlaps with a fellow player's.",
+    "caption_th": "เกมปาร์ตี้สื่อสาร ทายว่าคำตอบไหนของคุณซ้อนกับของเพื่อน",
     "teach": {
       "beats": [
         {
@@ -13939,6 +14115,18 @@
           "caption": "Say the most common association."
         }
       ],
+      "captions_th": [
+        "คนใบ้สองคนพาทีมเดียวไปหาคำ คนละหนึ่งคำ",
+        "ทีมไหนทายคำได้ก่อนชนะรอบนั้น",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "คนใบ้ปรึกษากันไม่ได้",
+        "พูดคำที่คนนึกถึงมากที่สุด"
+      ],
+      "frames_th": [
+        "คนใบ้แต่ละคนพูดหนึ่งคำ",
+        "ทีมทาย",
+        "ผิด? คำใบ้ถัดไป"
+      ],
       "wordCount": 45,
       "source": "generated",
       "reviewed": false
@@ -13961,6 +14149,7 @@
     "color": "#1F3A4D",
     "image": "https://cf.geekdo-images.com/owyKXaa5SPB2HG9F_MueNQ__original/img/gOmpUB3hM7Ap9o-kDsV8ZVBVYXA=/0x0/filters:format(png)/pic3169827.png",
     "blurb": "Dive for treasure with a shared, dwindling oxygen supply — the deeper you go, the more you risk not making it back to the sub. Tense push-your-luck packed into thirty minutes.",
+    "blurb_th": "ดำน้ำหาสมบัติด้วยอากาศส่วนกลางที่ร่อยหรอลงเรื่อยๆ ยิ่งลงลึก ยิ่งเสี่ยงกลับไม่ถึงเรือ push-your-luck สุดตึงอัดแน่นในสามสิบนาที",
     "why": [
       "Shared oxygen means everyone's greed affects everyone else",
       "Quick to teach, quicker to create table groans",
@@ -13975,6 +14164,7 @@
       "6": "recommended"
     },
     "caption": "Dive for treasure with a shared, dwindling oxygen supply.",
+    "caption_th": "ดำน้ำหาสมบัติด้วยอากาศส่วนกลางที่ร่อยหรอลงเรื่อยๆ",
     "teach": {
       "beats": [
         {
@@ -14022,6 +14212,18 @@
           "caption": "Turn back after one treasure."
         }
       ],
+      "captions_th": [
+        "ดำหาสมบัติ อากาศส่วนกลางหมดสำหรับทุกคน",
+        "จบสามรอบดำใครมูลค่าสมบัติมากสุดชนะ",
+        "อากาศลดตามจำนวนสมบัติของทุกคน",
+        "อากาศเป็นศูนย์: ทุกคนใต้น้ำทิ้งของทั้งหมด",
+        "หันกลับหลังได้สมบัติหนึ่งชิ้น"
+      ],
+      "frames_th": [
+        "ทอย เดินลงหรือกลับ",
+        "คว้าสมบัติ หรือทิ้งไว้",
+        "กลับถึงเรือ: เก็บเข้าบัญชี"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -14044,6 +14246,7 @@
     "color": "#4A6D5C",
     "image": "https://cf.geekdo-images.com/PTyoIJVnTwvSzsNyxuizkA__original/img/MZPWkHIqIrbxthd1UdNp7xnxFGA=/0x0/filters:format(jpeg)/pic8379513.jpg",
     "blurb": "Cast your line, out-fish the table, and land the best catch before the round runs out. A pocket-sized angling game that's done before your coffee gets cold.",
+    "blurb_th": "เหวี่ยงเบ็ด ตกปลาให้เหนือกว่าโต๊ะ และคว้าปลาที่ดีที่สุดก่อนรอบจะหมด เกมตกปลาขนาดพกพาที่จบก่อนกาแฟจะเย็น",
     "why": [
       "Full game wraps up in about fifteen minutes",
       "Simple enough to teach between rounds of something heavier",
@@ -14056,7 +14259,8 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "Cast your line, out-fish the table, and land the best catch before the round runs out."
+    "caption": "Cast your line, out-fish the table, and land the best catch before the round runs out.",
+    "caption_th": "เหวี่ยงเบ็ด ตกปลาให้เหนือกว่าโต๊ะก่อนรอบจะหมด"
   },
   {
     "bggId": "11971",
@@ -14075,6 +14279,7 @@
     "color": "#5C4A3D",
     "image": "https://cf.geekdo-images.com/1CxDV83C00o4EXRlaPuIkw__original/img/yf2fgFD-P7zxOBhTbQu0jFIj5Xc=/0x0/filters:format(png)/pic8873465.png",
     "blurb": "Pass a card face-down and claim it's a cockroach (or a rat, or a bat) — the other player either believes you or calls your bluff. Collect four of any one creature and you lose.",
+    "blurb_th": "ส่งการ์ดคว่ำแล้วอ้างว่ามันคือแมลงสาบ (หรือหนู หรือค้างคาว) อีกฝ่ายจะเชื่อหรือจับโกหก เก็บสัตว์ชนิดเดียวกันครบสี่แล้วคุณแพ้",
     "why": [
       "Pure read-your-opponent bluffing with no luck once cards are dealt",
       "Rounds are short enough to slot between bigger games",
@@ -14089,6 +14294,7 @@
       "6": "recommended"
     },
     "caption": "Pass a card face-down and claim it's a cockroach (or a rat.",
+    "caption_th": "ส่งการ์ดคว่ำแล้วอ้างว่ามันคือแมลงสาบ (หรือหนู)",
     "teach": {
       "beats": [
         {
@@ -14136,6 +14342,18 @@
           "caption": "Tell the truth the first time."
         }
       ],
+      "captions_th": [
+        "ส่งการ์ดคว่ำแล้วโกหกเกี่ยวกับมัน",
+        "แพ้ถ้ารับแมลงชนิดเดียวกันสี่ใบ คนสุดท้ายที่รอดชนะ",
+        "การ์ดตรงหน้าคุณนับเป็นโทษ",
+        "ชนิดเดียวกันสี่ใบตรงหน้า: คุณแพ้เกม",
+        "ครั้งแรกพูดความจริง"
+      ],
+      "frames_th": [
+        "ส่งการ์ด บอกชื่อแมลงอะไรก็ได้",
+        "เขาทาย หรือแอบดูแล้วส่งต่อ",
+        "ผิด: เขาเก็บไว้ ถูก: เป็นของคุณ"
+      ],
       "wordCount": 64,
       "source": "generated",
       "reviewed": false
@@ -14165,6 +14383,7 @@
     "color": "#4A4A5C",
     "image": "https://cf.geekdo-images.com/4nE3EGcIVJnItZOdZ2NrxA__original/img/_6mflaWrgVpkFbJJICGTB8WAiiI=/0x0/filters:format(jpeg)/pic4141398.jpg",
     "blurb": "One player is secretly the spy with no idea where everyone else is; everyone else grills each other with sly questions to flush them out before time runs out. Standalone sequel with a fresh set of locations and roles.",
+    "blurb_th": "คนหนึ่งแอบเป็นสายลับที่ไม่รู้ว่าทุกคนอยู่ที่ไหน คนอื่นซักกันด้วยคำถามเจ้าเล่ห์เพื่อไล่ต้อนสายลับออกมาก่อนหมดเวลา ภาคต่อเล่นเดี่ยวได้พร้อมสถานที่และบทบาทชุดใหม่",
     "why": [
       "Plays up to 12, so it scales for a real party crowd",
       "Rounds are fast enough to play three in a row without anyone getting bored",
@@ -14183,6 +14402,7 @@
       "11": "recommended"
     },
     "caption": "One player is secretly the spy with no idea where everyone else.",
+    "caption_th": "คนหนึ่งแอบเป็นสายลับที่ไม่รู้ว่าทุกคนอยู่ที่ไหน",
     "teach": {
       "beats": [
         {
@@ -14229,6 +14449,18 @@
           "scene": "hand-talk",
           "caption": "Ask questions that need the location, not the role."
         }
+      ],
+      "captions_th": [
+        "ทุกคนรู้สถานที่ยกเว้นสายลับ ถามคำถามเพื่อหาตัว",
+        "สายลับชนะเมื่อทายสถานที่ถูกหรือรอด คนอื่นชนะเมื่อจับได้",
+        "แปดนาที อาจมีสายลับสองคน",
+        "ตอบเจาะจงเกินไปแล้วสายลับจะรู้สถานที่",
+        "ถามคำถามที่ต้องรู้สถานที่ ไม่ใช่บทบาท"
+      ],
+      "frames_th": [
+        "ถามใครก็ได้หนึ่งคำถาม",
+        "ตอบ แล้วคุณเป็นคนถาม",
+        "กล่าวหา ต้องเอกฉันท์จึงเปิด"
       ],
       "wordCount": 59,
       "source": "generated",
