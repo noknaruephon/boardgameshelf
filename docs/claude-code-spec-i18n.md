@@ -343,3 +343,10 @@ Where the repo differed from the illustrative snippets above, the code follows t
 - **Game-night pages** (`/night/:code/host`, `/vote/:code`, `/vote/:code/swipe`, `/results/:code`) initialise i18n so the shared detail modal and the swipe caption follow the stored language; their own chrome is not yet extracted and stays English. The share sheets, invite poster and `/api/og/*` are untouched.
 - **Dates.** No page formats a date today; `fmtDate()` is exported for the first one that does (`th-TH-u-ca-gregory-nu-latn`).
 - **Status.** `python3 scripts/i18n-status.py` reports the content pass; before it: `0 / 196` blurbs and captions, `0 / 155` Teach sets.
+
+## Content pass (stage 3) — what shipped
+
+- All 196 games have Thai in `docs/i18n/batch-1.json` … `batch-10.json` (shape: `{ bggId, blurb_th, caption_th, captions_th?, frames_th?, confidence, note }`). `python3 scripts/merge-i18n.py` merges them into `games.json` additively; `python3 scripts/i18n-extract.py <dir>` dumps the English a batch needs.
+- Merged by default: `high` and `medium`. `medium` marks games whose English Teach beats are themselves draft placeholders ("Draft — verify …"); the Thai carries the placeholder as written so the two languages stay in step, and both get replaced together when the English beat is fixed.
+- Held back (`low`, not in `games.json` until reviewed): **Ironwood** (407343), **King of 12** (302917), **Spyfest** (295646). In each, the English blurb and the English Teach describe different games, so the source needs a look before the Thai does. Merge them with `python3 scripts/merge-i18n.py --include-low` once fixed.
+- `python3 scripts/i18n-status.py` lists what is still missing.
