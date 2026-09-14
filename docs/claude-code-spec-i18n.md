@@ -328,3 +328,18 @@ Suggested commit message per batch: `content(i18n): Thai curation batch N/10`
 - Mockup card cover-to-title mapping was illustrative; production reads `games.json`.
 - The gold "blurb_th missing" note in the mockup is demo-only. Production has no fallback indicator.
 - Mockup translated vibe chips in an earlier draft; the shipped rule is that they stay English.
+
+---
+
+## Implementation notes (commits 1 and 2)
+
+Where the repo differed from the illustrative snippets above, the code follows the repo. Recorded here so the content pass and the flag removal land in the right place.
+
+- **No `game_curation` table exists.** Curated fields live in `games.extras` (jsonb), written only by `scripts/migrate-games-json.mjs`; `/api/sync/*` never touches that column. The Thai siblings therefore live there too — `extras.blurb_th`, `extras.caption_th`, and inside `extras.teach` — and no migration was needed. `js/shelf-data.js` passes them through to the legacy game shape; `EXTRA_KEYS` in the migrate script carries them into Supabase.
+- **Teach shape.** The real data is `teach.beats[].caption` plus `steps[].caption` on the strip beat, not a flat `captions`. The Thai set is `teach.captions_th` (five strings, beat order) and `teach.frames_th` (three strings, only when the turn beat is a strip). `localisedTeach()` in `js/curation.js` uses the Thai set only when it is complete; otherwise the whole block stays English.
+- **Type tokens.** `css/base.css` had no font tokens; `--font-ui` and `--font-mono` were introduced and every page's hardcoded `'Inter',sans-serif` / `'IBM Plex Mono',monospace` now reads them. The display serif stays a literal `'Fraunces'` on purpose. The body had no line-height in English, so `--lh-body` is applied to `body` only under `[data-lang="th"]`; prose that already set `1.5` reads the token. Chip room is `--chip-pad` (1 / 1.15) scaling side padding, because a percentage `min-width` would resolve against the container, not the label.
+- **Pill classes.** `.pill` is the shelf's filter-pill class, so the header pills share `.bgs-pill` (the Beta pill's rules, factored out) and the swap pill is `.bgs-pill.bgs-lang`, built by `js/lang-pill.js` inside `.bgs-wordmark` beside Beta. It is only built while `?i18n=1` is present.
+- **Where the flag lives.** `resolveLang()` in `js/i18n.js` consults `navigator.language` only when `hasFlag()` is true (the `// FLAG` line), and `js/lang-pill.js` returns early without the flag. Shipping is those two guards.
+- **Game-night pages** (`/night/:code/host`, `/vote/:code`, `/vote/:code/swipe`, `/results/:code`) initialise i18n so the shared detail modal and the swipe caption follow the stored language; their own chrome is not yet extracted and stays English. The share sheets, invite poster and `/api/og/*` are untouched.
+- **Dates.** No page formats a date today; `fmtDate()` is exported for the first one that does (`th-TH-u-ca-gregory-nu-latn`).
+- **Status.** `python3 scripts/i18n-status.py` reports the content pass; before it: `0 / 196` blurbs and captions, `0 / 155` Teach sets.

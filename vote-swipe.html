@@ -391,7 +391,7 @@ import { deckFromSession, openGameModal, shuffleHTML } from '/js/waiting-room.js
 import { attachSwipe, markCommitted, exitCard } from '/js/swipe.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
-import { initI18n } from '/js/i18n.js';
+import { initI18n, getLang } from '/js/i18n.js';
 
 // The detail modal (js/game-modal.js) reads its strings from the dictionary,
 // so the language is applied here too; this page's own chrome stays English.
@@ -688,7 +688,11 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
    * own numbers, so a game added before the next sync still says something.
    */
   function captionFor(game) {
-    return (game.caption_override || '').trim()
+    // In Thai, the curated caption_th when there is one (docs/claude-code-spec-i18n.md);
+    // otherwise the English override, then the English caption, then the stats line.
+    const th = getLang() === 'th' ? (game.caption_th || '').trim() : '';
+    return th
+      || (game.caption_override || '').trim()
       || (game.caption || '').trim()
       || `${playersLabel(game.players)} players · ${timeLabel(game.time)} · weight ${weightLabel(game.weightScore)}`;
   }

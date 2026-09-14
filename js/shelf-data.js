@@ -104,8 +104,10 @@ export function toLegacyGame(ug) {
   };
 
   // Optional curated fields: only present when games.json had them, so the
-  // modal's "if (g.backImage)" style checks keep working unchanged.
-  for (const key of ['caption', 'caption_override', 'teach', 'fingerprint', 'backImage', 'spineImage', 'tableShot']) {
+  // modal's "if (g.backImage)" style checks keep working unchanged. The _th
+  // siblings are the Thai curation (js/curation.js); teach carries its own
+  // captions_th / frames_th inside.
+  for (const key of ['caption', 'caption_override', 'teach', 'fingerprint', 'backImage', 'spineImage', 'tableShot', 'blurb_th', 'caption_th']) {
     if (x[key] !== undefined && x[key] !== null) game[key] = x[key];
   }
   return game;

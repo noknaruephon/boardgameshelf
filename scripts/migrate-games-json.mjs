@@ -32,6 +32,9 @@ const CHUNK = 200;
 const EXTRA_KEYS = [
   'color', 'blurb', 'why', 'tag', 'playerRecommendations', 'caption', 'caption_override',
   'teach', 'fingerprint', 'backImage', 'spineImage', 'tableShot', 'weight',
+  // Thai curation (docs/claude-code-spec-i18n.md); teach carries its own
+  // captions_th / frames_th inside.
+  'blurb_th', 'caption_th',
 ];
 
 // ---- args + env ----

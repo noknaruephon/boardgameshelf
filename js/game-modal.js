@@ -2,6 +2,7 @@ import { timeLabel, weightLabel, playersRangeLabel } from './filters.js';
 import { registerOverlay, syncScrollLock } from './scroll-lock.js';
 import { renderScene } from './teach-scenes.js';
 import { t, translate } from './i18n.js';
+import { pickLocalised, localisedTeach } from './curation.js';
 
 // The game detail modal, shared by the shelf and the game-night waiting room.
 // Markup lives here and styling in css/game-modal.css, so an enhancement to
@@ -134,7 +135,8 @@ function beatHTML(b) {
 // emitted — so no heading and no divider is ever left behind.
 function teachHTML(g) {
   if (!teachVisible) return '';
-  const teach = g.teach;
+  // Thai captions only as a whole set (see js/curation.js); otherwise English.
+  const teach = localisedTeach(g.teach);
   if (!teach || !Array.isArray(teach.beats) || teach.beats.length !== 5) return '';
   if (teach.beats.some((b, i) => !b || b.key !== TEACH_BEAT_KEYS[i])) return '';
   const strip = teach.beats[2];
@@ -172,7 +174,7 @@ function bodyHTML(g) {
       <span class="stat-chip">${TIME_ICON} ${timeLabel(g.time)}</span>
       <span class="stat-chip">${WEIGHT_ICON} ${weightLabel(g.weightScore)}</span>
     </div>
-    <p class="blurb">${g.blurb}</p>
+    <p class="blurb">${pickLocalised(g, 'blurb')}</p>
     ${highlightsHTML(g)}
     ${g.tag ? `<span class="tag">${g.tag}</span>` : ''}${teachHTML(g)}`;
 }
