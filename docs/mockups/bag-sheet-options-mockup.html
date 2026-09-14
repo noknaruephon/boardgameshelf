@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bag sheet — 3 options</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+<style>
+  /* Production token names; values approximated from the live site (repo private from sandbox) */
+  :root{
+    --bgs-bg:#160F0A;
+    --bgs-plate:#2A1F16;
+    --bgs-ivory:#F1E8D8;
+    --bgs-gold:#E6B547;
+    --bgs-gold-rgb:230,181,71;
+    --bgs-ivory-rgb:241,232,216;
+    --bgs-line:rgba(var(--bgs-gold-rgb),.28);
+    --bgs-mute:rgba(var(--bgs-ivory-rgb),.55);
+    --bgs-amber:#F0913A;
+    --r:14px;
+    --ease:cubic-bezier(.2,.8,.2,1);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#0d0906;color:var(--bgs-ivory);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+  button:focus-visible{box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);outline:none;border-radius:8px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- demo bar ---------- */
+  .demo{position:sticky;top:0;z-index:9;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;background:#0d0906;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+  .demo .seg{display:inline-flex;border:1px solid rgba(255,255,255,.14);border-radius:8px;overflow:hidden}
+  .demo .seg button{padding:6px 12px;color:var(--bgs-mute)}
+  .demo .seg button[aria-pressed="true"]{background:var(--bgs-gold);color:#1a1206;font-weight:600}
+  .demo label{display:inline-flex;gap:6px;align-items:center;color:var(--bgs-mute);margin-left:auto}
+  .demo .hint{width:100%;color:var(--bgs-mute);font-size:12px}
+
+  /* ---------- phone ---------- */
+  .stage{display:flex;justify-content:center;padding:24px 12px 48px}
+  .phone{position:relative;width:390px;height:844px;background:var(--bgs-bg);border-radius:44px;overflow:hidden;box-shadow:0 0 0 8px #1c1511,0 30px 80px rgba(0,0,0,.6)}
+  .status{display:flex;justify-content:space-between;padding:16px 28px 0;font-size:15px;font-weight:600}
+
+  .top{padding:14px 16px 8px;display:flex;gap:8px}
+  .search{flex:1;height:48px;border:1px solid var(--bgs-line);border-radius:var(--r);display:flex;align-items:center;padding:0 16px;color:var(--bgs-mute);font-size:16px}
+  .iconbtn{width:48px;height:48px;border:1px solid var(--bgs-line);border-radius:var(--r);display:grid;place-items:center;font-size:20px}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:8px 16px 240px;overflow-y:auto;height:calc(844px - 40px - 70px)}
+  .card{position:relative;background:var(--bgs-plate);border-radius:12px;overflow:hidden;text-align:left;box-shadow:inset 0 0 0 0 var(--bgs-gold);transition:box-shadow .18s var(--ease)}
+  .card img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
+  .card .t{font-family:Fraunces,serif;font-size:14px;font-weight:600;line-height:1.2;padding:8px 8px 2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card .m{padding:0 8px 8px;font-size:11px;color:var(--bgs-mute)}
+  .card .tick{position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:7px;border:1.5px solid rgba(255,255,255,.55);background:rgba(0,0,0,.35);display:grid;place-items:center;color:#1a1206;font-size:14px}
+  .card .tick i{opacity:0}
+  .card[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--bgs-gold)}
+  .card[aria-pressed="true"] .tick{background:var(--bgs-gold);border-color:var(--bgs-gold)}
+  .card[aria-pressed="true"] .tick i{opacity:1}
+
+  /* ---------- shared sheet bits ---------- */
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bgs-bg);border-top:1px solid var(--bgs-line);padding:0 20px;padding-bottom:calc(14px + 22px);transition:height .28s var(--ease);display:none}
+  .sheet.on{display:block}
+  .pack{height:48px;padding:0 28px;border-radius:12px;background:var(--bgs-gold);color:#1a1206;font-weight:600;font-size:16px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+  .pack:disabled{opacity:.45;cursor:default}
+  .cancel{color:var(--bgs-mute);font-size:15px}
+  .count{font-family:Fraunces,serif;font-size:26px;line-height:1;font-weight:500}
+  .count small{font-family:Inter;font-size:13px;font-weight:400;color:var(--bgs-mute);margin-left:6px}
+
+  /* coverage strip (compact): 8 segments */
+  .strip{display:flex;gap:3px}
+  .strip span{position:relative;flex:1;height:8px;border-radius:3px;background:rgba(var(--bgs-ivory-rgb),.12);transition:background .18s var(--ease)}
+  .strip span.f{background:var(--bgs-gold)}
+  .strip span.gap::after{content:"";position:absolute;top:-6px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--bgs-amber)}
+  .strip-l{display:flex;justify-content:space-between;font-size:10px;color:var(--bgs-mute);margin-top:4px}
+  .time{font-size:12px;color:var(--bgs-mute)}
+
+  /* coverage cells (full): the existing design */
+  .cells{display:flex;gap:6px}
+  .cells span{flex:1;height:34px;border-radius:8px;border:1px solid rgba(var(--bgs-ivory-rgb),.18);display:grid;place-items:center;font-size:13px;color:var(--bgs-mute);transition:all .18s var(--ease)}
+  .cells span.f{border-color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),.14);color:var(--bgs-ivory)}
+  .cells span.gap{border-color:var(--bgs-amber);color:var(--bgs-amber)}
+  .gaps{font-size:13px;color:var(--bgs-amber);min-height:18px}
+  .gaps:empty::before{content:"No gaps";color:var(--bgs-mute)}
+
+  /* ---------- A: compact bar ---------- */
+  #A{height:calc(88px + 22px);padding-top:14px}
+  #A .row{display:flex;align-items:center;gap:14px}
+  #A .x{width:36px;height:36px;display:grid;place-items:center;font-size:20px;color:var(--bgs-mute)}
+  #A .mid{flex:1;min-width:0}
+  #A .left{width:78px}
+  #A .left .time{margin-top:4px}
+  #A .note{font-size:12px;color:var(--bgs-amber);margin-top:6px;min-height:14px}
+
+  /* ---------- A2: compact bar, revised ---------- */
+  #A2{height:auto;padding:14px 16px calc(14px + 22px)}
+  #A2 .row{display:flex;align-items:baseline;gap:10px;height:40px}
+  #A2 .row .n{font-family:Fraunces,serif;font-size:24px;font-weight:500;line-height:1}
+  #A2 .row .g{font-size:15px;color:var(--bgs-ivory)}
+  #A2 .row .time{font-size:12px;margin-left:4px}
+  #A2 .row .sp{flex:1}
+  #A2 .row .cancel{font-size:15px}
+  #A2 .row .pack{height:40px;padding:0 22px;border-radius:10px;font-size:15px;align-self:center}
+  #A2 .cells{margin-top:10px;gap:4px}
+  #A2 .cells span{height:28px;border-radius:7px;font-size:12px}
+  #A2 .line{font-size:12px;color:var(--bgs-amber);margin-top:8px;line-height:16px}
+  #A2 .line:empty{display:none}
+
+  /* ---------- A1 / A2x / A3: single row ---------- */
+  .one{height:auto;padding:14px 16px calc(14px + 22px)}
+  .one .row{display:flex;align-items:baseline;gap:8px;height:40px;white-space:nowrap}
+  .one .n{font-family:Fraunces,serif;font-size:24px;font-weight:500;line-height:1}
+  .one .g{font-size:15px}
+  .one .time{font-size:12px;transition:color .18s var(--ease)}
+  .one .time.gap{color:var(--bgs-amber)}
+  .one .sp{flex:1}
+  .one .pack{height:40px;padding:0 20px;border-radius:10px;font-size:15px;align-self:center}
+  .one .cancel{font-size:15px}
+  .one .x{align-self:center;width:28px;height:28px;display:grid;place-items:center;font-size:18px;color:var(--bgs-mute);margin-left:-6px}
+  /* micro cells */
+  .mcells{display:flex;gap:2px;align-self:center}
+  .mcells span{width:18px;height:18px;border-radius:5px;border:1px solid rgba(var(--bgs-ivory-rgb),.16);display:grid;place-items:center;font-size:10px;color:var(--bgs-mute);transition:all .18s var(--ease)}
+  .mcells span.f{border-color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),.16);color:var(--bgs-ivory)}
+  .mcells span.gap{border-color:var(--bgs-amber);color:var(--bgs-amber)}
+  /* text ranges */
+  .rng{display:inline-flex;gap:4px;align-items:baseline;font-size:13px}
+  .rng i{font-size:14px;color:var(--bgs-mute);position:relative;top:1px}
+  .rng .no{font-size:11px;color:var(--bgs-amber)}
+  /* dots */
+  .dots{display:flex;gap:4px;align-self:center}
+  .dots span{width:10px;height:10px;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.14);transition:all .18s var(--ease)}
+  .dots span.f{background:var(--bgs-gold)}
+  .dots span.gap{background:transparent;box-shadow:inset 0 0 0 1.5px var(--bgs-amber)}
+
+  /* ---------- A4: info bar + floating buttons ---------- */
+  #A4{padding:0;border-top:0;background:transparent}
+  #A4 .float{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:0 16px 12px}
+  #A4 .float .cancel,#A4 .float .pack{
+    height:44px;border-radius:22px;font-size:15px;font-weight:500;
+    -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
+    box-shadow:0 8px 24px rgba(0,0,0,.45),
+      inset 0 1px 0 rgba(255,255,255,.18),      /* top highlight */
+      inset 0 -1px 0 rgba(0,0,0,.25);            /* bottom shade */
+  }
+  #A4 .float .cancel{padding:0 18px;color:var(--bgs-ivory);
+    background:rgba(var(--bgs-ivory-rgb),.10);
+    border:1px solid rgba(var(--bgs-ivory-rgb),.22)}
+  #A4 .float .pack{padding:0 26px;color:var(--bgs-ivory);font-weight:600;
+    background:rgba(var(--bgs-gold-rgb),.26);
+    border:1px solid rgba(var(--bgs-gold-rgb),.55)}
+  #A4 .float .pack:disabled{opacity:.45}
+  @supports not (backdrop-filter:blur(1px)){
+    #A4 .float .cancel{background:rgba(42,31,22,.92)}
+    #A4 .float .pack{background:rgba(var(--bgs-gold-rgb),.55);color:#1a1206}
+  }
+  #A4 .bar{background:var(--bgs-bg);border-top:1px solid var(--bgs-line);padding:14px 16px calc(14px + 22px)}
+  #A4 .row{display:flex;align-items:flex-start;gap:16px}
+  #A4 .left{width:104px;flex:none}
+  #A4 .count{font-size:24px;line-height:24px}
+  #A4 .count small{font-size:14px;margin-left:5px}
+  #A4 .time{font-size:12px;margin-top:6px;line-height:14px}
+  #A4 .right{flex:1;min-width:0}
+  #A4 .strip{gap:4px}
+  #A4 .strip span{height:24px;border-radius:6px}
+  #A4 .strip span.gap::after{top:auto;bottom:-9px;width:4px;height:4px;margin-left:-2px}
+  #A4 .strip-l{font-size:11px;margin-top:6px;line-height:14px}
+  #A4 .strip-l span{flex:1;text-align:center}
+  #A4 .line{font-size:12px;color:var(--bgs-amber);margin-top:10px;line-height:16px}
+  #A4 .line:empty{display:none}
+
+  /* ---------- B: two-snap ---------- */
+  #B{padding-top:6px}
+  #B.peek{height:calc(110px + 22px)}
+  #B.full{height:calc(280px + 22px)}
+  #B .handle{width:36px;height:4px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.3);margin:0 auto 12px;display:block}
+  #B .row{display:flex;align-items:center;gap:14px}
+  #B .mid{flex:1;min-width:0}
+  #B .left{width:78px}
+  #B .more{margin-top:16px;transition:opacity .2s var(--ease)}
+  #B.peek .more{opacity:0;pointer-events:none}
+  #B .more .lab{font-size:11px;letter-spacing:.06em;color:var(--bgs-gold);margin:12px 0 6px}
+  #B .more .lab:first-child{margin-top:0}
+  #B .foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+
+  /* ---------- C: top strip + pill ---------- */
+  .topcov{display:none;padding:14px 16px 8px;gap:12px;align-items:center;transition:opacity .2s var(--ease)}
+  .topcov.on{display:flex}
+  .topcov .cells{flex:1}
+  .topcov .cells span{height:38px}
+  .topcov .t{width:78px;text-align:right}
+  .topcov .t .time{font-size:12px}
+  .topcov .t .gaps{font-size:11px;margin-top:2px}
+  #C{border-top:0;background:transparent;padding:0;height:calc(56px + 22px);display:none;justify-content:center;align-items:flex-start;gap:18px}
+  #C.on{display:flex}
+  #C .pack{height:52px;padding:0 24px;border-radius:26px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  #C .cancel{height:52px;display:inline-flex;align-items:center}
+
+  /* ---------- naming step (after Pack) ---------- */
+  .scrim{position:absolute;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;padding:0}
+  .scrim.on{display:flex}
+  .name{width:100%;background:var(--bgs-bg);border-top:1px solid var(--bgs-line);border-radius:22px 22px 0 0;padding:22px 20px 36px}
+  .name h2{font-family:Fraunces,serif;font-weight:500;font-size:22px;margin:0 0 4px}
+  .name p{margin:0 0 16px;font-size:13px;color:var(--bgs-mute)}
+  .name input{width:100%;height:50px;border-radius:12px;border:1px solid var(--bgs-line);background:transparent;color:var(--bgs-ivory);font:500 18px Fraunces,serif;padding:0 14px}
+  .name input:focus{outline:none;box-shadow:0 0 0 2px var(--bgs-gold)}
+  .name .foot{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+  .name .foot .pack{flex:1;margin-left:24px;justify-content:center}
+
+  .rm *{transition:none!important}
+</style>
+</head>
+<body>
+
+<div class="demo">
+  <div class="seg" id="optSeg">
+    <button aria-pressed="true" data-opt="A4">A · floating buttons</button>
+    <button aria-pressed="false" data-opt="A">A · before</button>
+    <button aria-pressed="false" data-opt="A1">A1</button>
+    <button aria-pressed="false" data-opt="A2x">A2</button>
+    <button aria-pressed="false" data-opt="A3">A3</button>
+    <button aria-pressed="false" data-opt="B">B · Two-snap</button>
+    <button aria-pressed="false" data-opt="C">C · Top strip + pill</button>
+  </div>
+  <div class="seg" id="bSeg" hidden>
+    <button aria-pressed="true" data-snap="peek">Peek</button>
+    <button aria-pressed="false" data-snap="full">Full</button>
+  </div>
+  <label><input type="checkbox" id="rm"> Reduced motion</label>
+  <div class="hint">Tap covers to pack them. Tap Pack to see the deferred naming step.</div>
+</div>
+
+<div class="stage">
+<div class="phone" id="phone">
+  <div class="status"><span>21:58</span><span class="mono">5G 77%</span></div>
+
+  <div class="top" id="topSearch">
+    <div class="search">Search titles…</div>
+    <div class="iconbtn" id="filterBtn"><i class="ti ti-adjustments-horizontal"></i></div>
+    <div class="iconbtn"><i class="ti ti-arrow-up"></i></div>
+  </div>
+
+  <div class="topcov" id="topcov">
+    <div class="cells" data-cells></div>
+    <div class="t"><div class="time" data-time>–</div><div class="gaps" data-gaps></div></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <!-- A -->
+  <div class="sheet" id="A">
+    <div class="row">
+      <button class="x" aria-label="Cancel"><i class="ti ti-x"></i></button>
+      <div class="left"><div class="count"><span data-count>0</span><small>games</small></div><div class="time" data-time>–</div></div>
+      <div class="mid"><div class="strip" data-strip></div><div class="strip-l"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8+</span></div></div>
+      <button class="pack" data-pack disabled>Pack</button>
+    </div>
+    <div class="note" data-gaps-line></div>
+  </div>
+
+  <!-- A4 info bar + floating buttons -->
+  <div class="sheet on" id="A4">
+    <div class="float">
+      <button class="cancel">Cancel</button>
+      <button class="pack" data-pack disabled>Pack</button>
+    </div>
+    <div class="bar">
+      <div class="row">
+        <div class="left"><div class="count"><span data-count>0</span><small>games</small></div><div class="time mono" data-time>–</div></div>
+        <div class="right"><div class="strip" data-strip></div><div class="strip-l"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8+</span></div></div>
+      </div>
+      <div class="line" data-gaps-line></div>
+    </div>
+  </div>
+
+  <!-- A1 micro-cells -->
+  <div class="sheet one" id="A1">
+    <div class="row">
+      <span class="n" data-count>0</span><span class="time mono" data-time data-time-gap>–</span>
+      <span class="sp"></span>
+      <div class="mcells" data-mcells></div>
+      <span class="sp"></span>
+      <button class="pack" data-pack disabled>Pack</button>
+    </div>
+  </div>
+
+  <!-- A2x text ranges -->
+  <div class="sheet one" id="A2x">
+    <div class="row">
+      <span class="n" data-count>0</span><span class="g">games</span>
+      <span class="sp"></span>
+      <span class="rng"><i class="ti ti-users"></i><span data-range>–</span></span>
+      <span class="rng"><i class="ti ti-clock"></i><span class="time mono" data-time data-time-gap>–</span></span>
+      <span class="sp"></span>
+      <button class="cancel">Cancel</button>
+      <button class="pack" data-pack disabled>Pack</button>
+    </div>
+  </div>
+
+  <!-- A3 dots -->
+  <div class="sheet one" id="A3">
+    <div class="row">
+      <button class="x" aria-label="Cancel"><i class="ti ti-x"></i></button>
+      <span class="n" data-count>0</span><span class="g">games</span><span class="time mono" data-time data-time-gap>–</span>
+      <span class="sp"></span>
+      <div class="dots" data-dots title="Players 1–8+"></div>
+      <span class="sp"></span>
+      <button class="pack" data-pack disabled>Pack</button>
+    </div>
+  </div>
+
+  <!-- A2 -->
+  <div class="sheet" id="A2">
+    <div class="row">
+      <span class="n" data-count>0</span><span class="g">games</span><span class="time mono" data-time>–</span>
+      <span class="sp"></span>
+      <button class="cancel">Cancel</button>
+      <button class="pack" data-pack disabled>Pack</button>
+    </div>
+    <div class="cells" data-cells></div>
+    <div class="line" data-gaps-line></div>
+  </div>
+
+  <!-- B -->
+  <div class="sheet peek" id="B">
+    <button class="handle" aria-label="Expand" id="handle"></button>
+    <div class="row">
+      <div class="left"><div class="count"><span data-count>0</span><small>games</small></div><div class="time" data-time>–</div></div>
+      <div class="mid"><div class="strip" data-strip></div><div class="strip-l"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8+</span></div></div>
+      <button class="pack" data-pack disabled>Pack</button>
+    </div>
+    <div class="more">
+      <div class="lab">PLAYERS</div>
+      <div class="cells" data-cells></div>
+      <div class="lab">GAPS</div>
+      <div class="gaps" data-gaps></div>
+      <div class="foot"><button class="cancel">Cancel</button></div>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="sheet" id="C">
+    <button class="cancel">Cancel</button>
+    <button class="pack" data-pack disabled>Pack <span class="mono" style="font-weight:400;opacity:.8">· <span data-count>0</span></span></button>
+  </div>
+
+  <!-- naming step -->
+  <div class="scrim" id="scrim">
+    <div class="name">
+      <h2>Name the bag</h2>
+      <p><span data-count>0</span> games, <span data-time>–</span></p>
+      <input placeholder="Weekend at Chiang Mai" autocomplete="off">
+      <div class="foot"><button class="cancel" id="nameBack">Back</button><button class="pack">Pack the bag</button></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// Background grid. Cover/title pairs are stand-ins where BGG art wasn't reachable — swap in the spec.
+const games=[
+  {t:"The Castles of Burgundy: Special Edition",p:[1,4],m:[70,120],r:9.1,img:"https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg"},
+  {t:"Terra Mystica: Big Box",p:[1,5],m:[30,150],r:8.7,img:"https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg"},
+  {t:"Dune: Imperium – Uprising",p:[1,6],m:[60,120],r:8.7,img:"https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg"},
+  {t:"Brass: Birmingham",p:[2,4],m:[60,120],r:8.6,img:"https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg"},
+  {t:"Ark Nova",p:[1,4],m:[90,150],r:8.5,img:"https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg"},
+  {t:"Nippon: Zaibatsu",p:[2,4],m:[60,120],r:8.2,img:"https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg"},
+];
+const sel=new Set([1,4]);
+const grid=document.getElementById('grid');
+grid.innerHTML=games.map((g,i)=>`<button class="card" aria-pressed="${sel.has(i)}" data-i="${i}">
+  <img src="${g.img}" alt=""><span class="tick"><i class="ti ti-check"></i></span>
+  <div class="t">${g.t}</div><div class="m">★ ${g.r}&nbsp;&nbsp;${g.p[0]}–${g.p[1]}&nbsp;&nbsp;<span class="mono">${g.m[0]}–${g.m[1]} min</span></div></button>`).join('');
+grid.addEventListener('click',e=>{const c=e.target.closest('.card');if(!c)return;const i=+c.dataset.i;sel.has(i)?sel.delete(i):sel.add(i);c.setAttribute('aria-pressed',sel.has(i));render();});
+
+const labels=['1','2','3','4','5','6','7','8+'];
+function render(){
+  const cov=new Array(8).fill(false);let mn=Infinity,mx=0;
+  sel.forEach(i=>{const g=games[i];for(let p=g.p[0];p<=Math.min(g.p[1],8);p++)cov[p-1]=true;if(g.p[1]>8)cov[7]=true;mn=Math.min(mn,g.m[0]);mx=Math.max(mx,g.m[1]);});
+  const n=sel.size,time=n?`${mn}–${mx} min`:'–';
+  const gaps=[];if(n){if(!cov[1])gaps.push('No 2-player game');if(!cov[4])gaps.push('Nothing for 5');if(mn>=30)gaps.push('Nothing under 30 min');}
+  document.querySelectorAll('[data-count]').forEach(e=>e.textContent=n);
+  document.querySelectorAll('[data-time]').forEach(e=>e.textContent=time);
+  document.querySelectorAll('[data-pack]').forEach(e=>e.disabled=!n);
+  document.querySelectorAll('[data-strip]').forEach(e=>e.innerHTML=cov.map((f,i)=>`<span class="${f?'f':''}${n&&!f&&(i===1||i===4)?' gap':''}"></span>`).join(''));
+  document.querySelectorAll('[data-cells]').forEach(e=>e.innerHTML=cov.map((f,i)=>`<span class="${f?'f':''}${n&&!f&&(i===1||i===4)?' gap':''}">${labels[i]}</span>`).join(''));
+  document.querySelectorAll('[data-gaps]').forEach(e=>e.textContent=gaps.join(' · '));
+  document.querySelectorAll('[data-mcells]').forEach(e=>e.innerHTML=cov.map((f,i)=>`<span class="${f?'f':''}${n&&!f&&(i===1||i===4)?' gap':''}">${labels[i]}</span>`).join(''));
+  document.querySelectorAll('[data-dots]').forEach(e=>e.innerHTML=cov.map((f,i)=>`<span class="${f?'f':''}${n&&!f&&(i===1||i===4)?' gap':''}"></span>`).join(''));
+  document.querySelectorAll('[data-time-gap]').forEach(e=>e.classList.toggle('gap',n>0&&mn>=30));
+  const rs=[];let st=null;for(let i=0;i<=8;i++){const on=i<8&&cov[i];if(on&&st===null)st=i;if(!on&&st!==null){rs.push(st===i-1?labels[st]:`${labels[st]}–${labels[i-1]}`);st=null;}}
+  const nos=[];if(n){if(!cov[1])nos.push('no 2');if(!cov[4])nos.push('no 5');}
+  document.querySelectorAll('[data-range]').forEach(e=>e.innerHTML=(n?rs.join(', '):'–')+(nos.length?` <span class="no">${nos.join(' · ')}</span>`:''));
+  document.querySelectorAll('[data-gaps-line]').forEach(e=>e.textContent=gaps[0]?gaps.join(' · '):'');
+}
+render();
+
+// demo controls
+const sheets={A4:document.getElementById('A4'),A1:document.getElementById('A1'),A2x:document.getElementById('A2x'),A3:document.getElementById('A3'),A2:document.getElementById('A2'),A:document.getElementById('A'),B:document.getElementById('B'),C:document.getElementById('C')};
+function setOpt(o){
+  Object.entries(sheets).forEach(([k,el])=>el.classList.toggle('on',k===o));
+  document.getElementById('topSearch').style.display=o==='C'?'none':'';
+  document.getElementById('topcov').classList.toggle('on',o==='C');
+  document.getElementById('bSeg').hidden=o!=='B';
+  document.getElementById('filterBtn').innerHTML=o==='A1'?'<i class="ti ti-x"></i>':'<i class="ti ti-adjustments-horizontal"></i>';
+  document.querySelectorAll('#optSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.opt===o));
+}
+document.getElementById('optSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setOpt(b.dataset.opt);});
+function setSnap(s){sheets.B.classList.toggle('peek',s==='peek');sheets.B.classList.toggle('full',s==='full');document.querySelectorAll('#bSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.snap===s));}
+document.getElementById('bSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setSnap(b.dataset.snap);});
+document.getElementById('handle').addEventListener('click',()=>setSnap(sheets.B.classList.contains('peek')?'full':'peek'));
+document.getElementById('rm').addEventListener('change',e=>document.getElementById('phone').classList.toggle('rm',e.target.checked));
+
+// naming step
+const scrim=document.getElementById('scrim');
+document.querySelectorAll('[data-pack]').forEach(b=>b.addEventListener('click',()=>{scrim.classList.add('on');scrim.querySelector('input').focus();}));
+document.getElementById('nameBack').addEventListener('click',()=>scrim.classList.remove('on'));
+scrim.addEventListener('click',e=>{if(e.target===scrim)scrim.classList.remove('on');});
+</script>
+</body>
+</html>
