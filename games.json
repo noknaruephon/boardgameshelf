@@ -14491,6 +14491,7 @@
     "color": "#7A5A2E",
     "image": "https://cf.geekdo-images.com/AACbIbsoGRaCyuDfrG6hTg__original/img/QSp8vwu__YSdq49rG_17X-xWqmU=/0x0/filters:format(jpeg)/pic8774964.jpg",
     "blurb": "A social party game about jockeying for authority at the table, with the title role up for grabs each round. Loud, competitive, and built for a group that likes needling each other.",
+    "blurb_th": "เกมปาร์ตี้สังคมเรื่องการแย่งอำนาจบนโต๊ะ ตำแหน่งบอสพร้อมให้แย่งทุกรอบ ดัง แข่งขัน และสร้างมาเพื่อกลุ่มที่ชอบแซะกัน",
     "why": [
       "Social interaction and table talk drive most of the fun",
       "Works well with a full table of six",
@@ -14504,6 +14505,7 @@
       "6": "best"
     },
     "caption": "A social party game about jockeying for authority at the table, with the title role up for grabs each round.",
+    "caption_th": "เกมปาร์ตี้แย่งอำนาจบนโต๊ะ ตำแหน่งบอสพร้อมให้แย่งทุกรอบ",
     "teach": {
       "beats": [
         {
@@ -14551,6 +14553,18 @@
           "caption": "Agree to anything. Then play a card."
         }
       ],
+      "captions_th": [
+        "ทำดีล ทุกคนอยากร่วม ใช้การ์ดขโมยดีล",
+        "ดีลหมดแล้วใครเงินมากสุดชนะ",
+        "บอสรับดีล นักลงทุนได้ส่วนแบ่ง",
+        "ดีลถูกขโมยได้ก่อนปิดเสี้ยววินาที",
+        "ตกลงทุกอย่าง แล้วเล่นการ์ด"
+      ],
+      "frames_th": [
+        "ทอย เดิน ตกช่องดีล",
+        "เจรจาว่าใครอยู่ในดีล",
+        "เล่นการ์ดเพื่อชิงหรือบล็อก"
+      ],
       "wordCount": 58,
       "source": "generated",
       "reviewed": false
@@ -14580,6 +14594,7 @@
     "color": "#5C4A78",
     "image": "https://cf.geekdo-images.com/tWIrpGrKEj9O7Pa8brQ1kg__original/img/6XccpCK-UFAopk8Y9KcrN_3HYXo=/0x0/filters:format(jpeg)/pic4252589.jpg",
     "blurb": "Two to four pilots duel it out in a chaotic arena where positioning and timing matter as much as raw power. A longer, crunchier head-to-head than its cover art might suggest.",
+    "blurb_th": "นักบินสองถึงสี่คนดวลกันในสนามวุ่นวายที่ตำแหน่งกับจังหวะสำคัญพอๆ กับพลังดิบ ตัวต่อตัวที่ยาวและหนักกว่าที่หน้ากล่องบอก",
     "why": [
       "Tactical arena combat with real stakes for bad positioning",
       "Runs long enough to reward planning several turns ahead",
@@ -14592,6 +14607,7 @@
       "4": "best"
     },
     "caption": "Two to four pilots duel it out in a chaotic arena where positioning and timing matter as much as raw power.",
+    "caption_th": "นักบินสองถึงสี่คนดวลกันในสนามวุ่นวาย ตำแหน่งกับจังหวะสำคัญ",
     "teach": {
       "beats": [
         {
@@ -14639,6 +14655,18 @@
           "caption": "Stay out of the storm's path."
         }
       ],
+      "captions_th": [
+        "ต่อสู้ในสนาม: สร้างหุ่นเหล็ก สู้ในพายุ",
+        "หุ่นตัวสุดท้ายที่ยืนอยู่ หรือแต้มมากสุด",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กกฎพายุ",
+        "อย่าอยู่ในเส้นทางพายุ"
+      ],
+      "frames_th": [
+        "โปรแกรมแอ็กชัน",
+        "เดิน",
+        "โจมตี"
+      ],
       "wordCount": 36,
       "source": "generated",
       "reviewed": false
@@ -14661,6 +14689,7 @@
     "color": "#2F6F63",
     "image": "https://cf.geekdo-images.com/rE37bpTHbMlei9RJYCJPoQ__original/img/XIpnIu6CqsVQNJ6yqD8iQVP9IVg=/0x0/filters:format(png)/pic6938099.png",
     "blurb": "One player knows the real answer, everyone else has to fake it convincingly enough to blend in. A bluffing party game that thrives on confident nonsense.",
+    "blurb_th": "คนหนึ่งรู้คำตอบจริง คนอื่นต้องแต่งให้เนียนพอจะกลมกลืน เกมปาร์ตี้บลัฟที่เติบโตด้วยความไร้สาระที่พูดอย่างมั่นใจ",
     "why": [
       "Bluffing format that rewards commitment over cleverness",
       "Scales up to ten players without needing extra rules",
@@ -14677,6 +14706,7 @@
       "10": "recommended"
     },
     "caption": "One player knows the real answer, everyone else has to fake it convincingly enough to blend in.",
+    "caption_th": "คนหนึ่งรู้คำตอบจริง คนอื่นต้องแต่งให้เนียน",
     "teach": {
       "beats": [
         {
@@ -14724,6 +14754,18 @@
           "caption": "Invent something boring. Boring sounds true."
         }
       ],
+      "captions_th": [
+        "คำตอบหนึ่งจริง ผู้เล่นคนอื่นบลัฟคำตอบ",
+        "จบทุกรอบใครปลามากสุดชนะ",
+        "ตัดคำตอบปลอมให้หมดโดยไม่เลือกของจริง",
+        "เลือกคำตอบจริงแล้วรอบของคุณจบ",
+        "แต่งอะไรน่าเบื่อๆ น่าเบื่อฟังดูจริง"
+      ],
+      "frames_th": [
+        "อ่านคำถาม คนหนึ่งรู้คำตอบ",
+        "คนอื่นแต่งคำตอบ",
+        "คนทายเลือกคำตอบปลอมเพื่อตัดออก"
+      ],
       "wordCount": 52,
       "source": "generated",
       "reviewed": false
@@ -14746,6 +14788,7 @@
     "color": "#4A5A6B",
     "image": "https://cf.geekdo-images.com/q_JGK291hrhnhiRB0667oA__original/img/8VjZEG278faO9JZwzce3v3EKssI=/0x0/filters:format(png)/pic3979766.png",
     "blurb": "No talking, no signaling — just a room full of people trying to play cards in ascending order purely by feel. Sounds impossible until it suddenly isn't.",
+    "blurb_th": "ห้ามพูด ห้ามส่งสัญญาณ แค่ห้องที่เต็มไปด้วยคนพยายามลงการ์ดเรียงจากน้อยไปมากด้วยความรู้สึกล้วนๆ ฟังดูเป็นไปไม่ได้จนกระทั่งมันเป็นไปได้ขึ้นมา",
     "why": [
       "Zero communication allowed, which makes every successful round feel earned",
       "Tension builds physically as everyone hesitates over the same card",
@@ -14758,6 +14801,7 @@
       "4": "best"
     },
     "caption": "No talking, no signaling — just a room full of people trying to play cards in ascending order purely by feel.",
+    "caption_th": "ห้ามพูด ห้ามส่งสัญญาณ แค่ลงการ์ดเรียงจากน้อยไปมากด้วยความรู้สึก",
     "teach": {
       "beats": [
         {
@@ -14805,6 +14849,18 @@
           "caption": "Wait longer than you think."
         }
       ],
+      "captions_th": [
+        "ลงการ์ดตัวเลขตามลำดับ โดยไม่พูด",
+        "ผ่านด่านสุดท้ายด้วยกัน",
+        "ไม่มีคำใบ้ มีแค่จังหวะ",
+        "ห้ามพูด ห้ามทำท่า แค่รู้สึกเอา",
+        "รอนานกว่าที่คิด"
+      ],
+      "frames_th": [
+        "แจกการ์ด ด่านละหนึ่งใบ",
+        "ลงเมื่อรู้สึกว่าของคุณต่ำสุด",
+        "ผิดลำดับ: เสียชีวิตหนึ่ง"
+      ],
       "wordCount": 43,
       "source": "generated",
       "reviewed": false
@@ -14834,6 +14890,7 @@
     "color": "#7A5C3E",
     "image": "https://cf.geekdo-images.com/WRRQtWATtDSAoVUW1pN_8A__original/img/_SiQ3rw1Cw37LB2MUrMpTSQ-XB0=/0x0/filters:format(png)/pic6484232.png",
     "blurb": "Everyone gets a secret role, roles get swapped in the dark, and by the end nobody — including you — is entirely sure who they are. A bluffing game that rewards nerve over memory.",
+    "blurb_th": "ทุกคนได้บทบาทลับ บทบาทถูกสลับในความมืด และตอนจบไม่มีใคร รวมทั้งคุณ แน่ใจเต็มที่ว่าตัวเองเป็นใคร เกมบลัฟที่ตอบแทนความกล้ามากกว่าความจำ",
     "why": [
       "Roles can be secretly swapped, so even you might be wrong about your own",
       "Scales up to twelve players without losing its bite",
@@ -14851,6 +14908,7 @@
       "11": "not_recommended"
     },
     "caption": "Everyone gets a secret role, roles get swapped in the dark, and by the end nobody — including.",
+    "caption_th": "ทุกคนได้บทบาทลับ ถูกสลับในความมืด จนไม่มีใครแน่ใจว่าเป็นใคร",
     "teach": {
       "beats": [
         {
@@ -14898,6 +14956,18 @@
           "caption": "Look at your card. Then swap."
         }
       ],
+      "captions_th": [
+        "ทุกคนมีบทบาทลับ การ์ดถูกสลับแบบคว่ำ",
+        "ใครถึง 13 เหรียญก่อนชนะ",
+        "ใครก็ค้านคำอ้างของคุณได้",
+        "หลังสลับ คุณอาจไม่รู้การ์ดตัวเอง",
+        "ดูการ์ดตัวเอง แล้วสลับ"
+      ],
+      "frames_th": [
+        "สลับการ์ดกับใครสักคน หรือไม่สลับ",
+        "หรือดูการ์ดของตัวเอง",
+        "หรืออ้างบทบาท ใช้มัน"
+      ],
       "wordCount": 53,
       "source": "generated",
       "reviewed": false
@@ -14927,6 +14997,7 @@
     "color": "#8B5E3C",
     "image": "https://cf.geekdo-images.com/F8pACwitKdp_ozWXDkpycw__original/img/tfJxylyCT_BB17Y-gxxVfMHwy0U=/0x0/filters:format(jpeg)/pic4104712.jpg",
     "blurb": "Guess the real medication behind a list of increasingly absurd side effects — funnier the more people are guessing along. A quick party filler with an oddly specific premise.",
+    "blurb_th": "ทายยาจริงจากรายการผลข้างเคียงที่เพี้ยนขึ้นเรื่อยๆ ยิ่งคนทายเยอะยิ่งฮา ฟิลเลอร์ปาร์ตี้เร็วๆ ที่มีพล็อตเจาะจงแปลกๆ",
     "why": [
       "Genuinely funny reveals when the real side effects turn out stranger than any bluff",
       "No prep, no long rules explanation, straight into the guessing",
@@ -14942,7 +15013,8 @@
       "7": "recommended",
       "8": "recommended"
     },
-    "caption": "Guess the real medication behind a list of increasingly absurd side effects."
+    "caption": "Guess the real medication behind a list of increasingly absurd side effects.",
+    "caption_th": "ทายยาจริงจากรายการผลข้างเคียงที่เพี้ยนขึ้นเรื่อยๆ"
   },
   {
     "bggId": "302595",
@@ -14961,6 +15033,7 @@
     "color": "#35495E",
     "image": "https://cf.geekdo-images.com/UOG3vXQ9X27yEpND6kSeuA__original/img/uBqhdbHaQJorOYdyGhPe_qjDKas=/0x0/filters:format(jpeg)/pic6819118.jpg",
     "blurb": "A licensed social deduction game set in the Detective Conan universe — find the hidden culprit before they talk their way out of the room. Fast rounds make it easy to run several times a night.",
+    "blurb_th": "เกม social deduction ลิขสิทธิ์ในจักรวาล Detective Conan หาคนร้ายที่ซ่อนอยู่ก่อนเขาจะพูดเอาตัวรอดออกจากห้อง รอบเร็วทำให้เล่นซ้ำได้หลายรอบต่อคืน",
     "why": [
       "Scales up to a huge thirty-player group",
       "Rounds wrap up in minutes, so nobody sits out long",
@@ -14976,7 +15049,8 @@
       "10": "no_data",
       "11": "no_data"
     },
-    "caption": "A licensed social deduction game set in the Detective Conan universe."
+    "caption": "A licensed social deduction game set in the Detective Conan universe.",
+    "caption_th": "social deduction ในจักรวาล Detective Conan หาคนร้ายที่ซ่อนอยู่"
   },
   {
     "bggId": "194626",
@@ -14995,6 +15069,7 @@
     "color": "#C77B5E",
     "image": "https://cf.geekdo-images.com/22gbMRtHEEVDBL7E2L1Qfw__original/img/HMi4BlxHod1F93jhQWAeS5XtCaw=/0x0/filters:format(jpeg)/pic6613101.jpg",
     "blurb": "Match your card with someone else's, then do whatever it says — high five, trade, switcheroo — as fast as possible. Pure chaotic energy with a two-minute round timer.",
+    "blurb_th": "จับคู่การ์ดของคุณกับของคนอื่น แล้วทำตามที่มันบอก ไฮไฟว์ แลก สลับที่ ให้เร็วที่สุด พลังงานวุ่นวายล้วนๆ กับรอบสองนาที",
     "why": [
       "Rounds are timed to end before the chaos gets old",
       "Zero setup and zero downtime between players",
@@ -15010,6 +15085,7 @@
       "8": "recommended"
     },
     "caption": "Match your card with someone else's, then do whatever it says — high five, trade.",
+    "caption_th": "จับคู่การ์ดกับคนอื่น แล้วทำตามที่มันบอก ไฮไฟว์ แลก",
     "teach": {
       "beats": [
         {
@@ -15057,6 +15133,18 @@
           "caption": "Shout louder."
         }
       ],
+      "captions_th": [
+        "ตะโกนการ์ด หาคู่ ทำแอ็กชัน แข่งกัน",
+        "ใครทิ้งกองหมดก่อนชนะ",
+        "ทุกคนพร้อมกัน",
+        "ไม่มีตา ไม่ต้องรอ ลุย",
+        "ตะโกนให้ดังกว่า"
+      ],
+      "frames_th": [
+        "เปิดการ์ดบนสุด ตะโกนมัน",
+        "หาคู่ ทำแอ็กชัน",
+        "ทิ้ง ใบต่อไป"
+      ],
       "wordCount": 41,
       "source": "generated",
       "reviewed": false
@@ -15086,6 +15174,7 @@
     "color": "#3D3B30",
     "image": "https://cf.geekdo-images.com/I1YNAhee09mryaqfEo8MwA__original/img/LUcYakoNVnYxjmpYRFA6HUpHWo4=/0x0/filters:format(jpeg)/pic3488232.jpg",
     "blurb": "Race your pawn to the other side of the board while dropping walls to slow everyone else down. Pure abstract strategy — no luck, no theme, just spatial thinking.",
+    "blurb_th": "แข่งพาหมากไปอีกฝั่งของกระดาน พลางวางกำแพงถ่วงคนอื่น กลยุทธ์นามธรรมล้วนๆ ไม่มีดวง ไม่มีธีม มีแค่การคิดเชิงพื้นที่",
     "why": [
       "Rules fit on an index card but the wall-blocking puzzle runs deep",
       "Plays in fifteen minutes flat, so it's easy to squeeze in a rematch",
@@ -15098,6 +15187,7 @@
       "4": "recommended"
     },
     "caption": "Race your pawn to the other side of the board while dropping walls to slow everyone else down.",
+    "caption_th": "แข่งพาหมากไปอีกฝั่ง พลางวางกำแพงถ่วงคนอื่น",
     "teach": {
       "beats": [
         {
@@ -15145,6 +15235,18 @@
           "caption": "Move forward twice, then wall."
         }
       ],
+      "captions_th": [
+        "แข่งไปฝั่งไกล กั้นกำแพงคู่ต่อสู้",
+        "หมากตัวแรกที่ถึงขอบตรงข้ามชนะ",
+        "กำแพงปิดล้อมใครจนมิดไม่ได้",
+        "กำแพงบล็อกทุกทางไม่ได้ ต้องเหลือทางเสมอ",
+        "เดินหน้าสองครั้ง แล้ววางกำแพง"
+      ],
+      "frames_th": [
+        "เดินหนึ่งช่อง",
+        "หรือวางกำแพง",
+        "คนละสิบกำแพง"
+      ],
       "wordCount": 48,
       "source": "generated",
       "reviewed": false
@@ -15174,6 +15276,7 @@
     "color": "#6B5546",
     "image": "https://cf.geekdo-images.com/U9jYBjSg0xIRirdSUzEISA__original/img/t2la-q7BJDQLSA7y2Zo2fHJejpM=/0x0/filters:format(jpeg)/pic4399167.jpg",
     "blurb": "A quick, quiet two-player game of coaxing timid little monsters out of hiding. Simple to teach and over almost as soon as it starts.",
+    "blurb_th": "เกมสองคนเร็วๆ เงียบๆ เรื่องการล่อสัตว์ประหลาดตัวน้อยขี้อายออกจากที่ซ่อน สอนง่ายและจบเกือบทันทีที่เริ่ม",
     "why": [
       "Fast setup and a ten-minute runtime make it easy to fit in anywhere",
       "Approachable enough for a non-gamer partner",
@@ -15184,6 +15287,7 @@
       "2": "best"
     },
     "caption": "A quick, quiet two-player game of coaxing timid little monsters out of hiding.",
+    "caption_th": "เกมสองคนเงียบๆ ล่อสัตว์ประหลาดตัวน้อยขี้อายออกจากที่ซ่อน",
     "teach": {
       "beats": [
         {
@@ -15231,6 +15335,18 @@
           "caption": "Explorer: take the path with fewest cards."
         }
       ],
+      "captions_th": [
+        "คนหนึ่งซ่อนสัตว์ประหลาด อีกคนสำรวจรัง",
+        "นักสำรวจชนะเมื่อถึงบอส สัตว์ประหลาดชนะเมื่อทำให้กลัวสามครั้ง",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "การ์ดสัตว์ประหลาดซ่อนอยู่จนกว่าจะเหยียบ",
+        "นักสำรวจ: เลือกทางที่มีการ์ดน้อยสุด"
+      ],
+      "frames_th": [
+        "ฝ่ายสัตว์ประหลาดวางการ์ดคว่ำ",
+        "นักสำรวจเดินหน้า",
+        "เปิดสัตว์ประหลาด"
+      ],
       "wordCount": 52,
       "source": "generated",
       "reviewed": false
@@ -15253,6 +15369,7 @@
     "color": "#5A3F6B",
     "image": "https://cf.geekdo-images.com/cQhZ22SucknOeqNKg0IfEg__original/img/ttCl-jwaAQkTgCqUllUCUc8Lnvw=/0x0/filters:format(png)/pic9079341.png",
     "blurb": "A quick multiplayer wizard showdown where spells and positioning decide who's left standing. Light rules, fast rounds, easy to relearn each time it hits the table.",
+    "blurb_th": "ศึกพ่อมดหลายคนแบบเร็ว คาถากับตำแหน่งตัดสินว่าใครยืนอยู่คนสุดท้าย กฎเบา รอบเร็ว เรียนใหม่ง่ายทุกครั้งที่ลงโต๊ะ",
     "why": [
       "Short playtime makes it easy to squeeze in a rematch",
       "Simple spellcasting keeps the barrier to entry low",
@@ -15265,7 +15382,8 @@
       "5": "best",
       "6": "best"
     },
-    "caption": "A quick multiplayer wizard showdown where spells and positioning decide who's left standing."
+    "caption": "A quick multiplayer wizard showdown where spells and positioning decide who's left standing.",
+    "caption_th": "ศึกพ่อมดหลายคนแบบเร็ว คาถากับตำแหน่งตัดสินว่าใครเหลือ"
   },
   {
     "bggId": "302917",
@@ -15365,6 +15483,7 @@
     "color": "#6B6259",
     "image": "https://cf.geekdo-images.com/0uu0QJ2OFRIEGVMUgzfYJQ__original/img/kLE0YlCEq_tSQGQXF9CMrTUtK8o=/0x0/filters:format(jpeg)/pic5251671.jpg",
     "blurb": "Stack magnetic marbles onto a growing pile without letting any of them snap together — one click and you're out. Simple premise, surprisingly nerve-wracking in practice.",
+    "blurb_th": "วางลูกแก้วแม่เหล็กลงกองที่โตขึ้นเรื่อยๆ โดยไม่ให้ลูกไหนดูดติดกัน ดังคลิกเดียวคุณตกรอบ พล็อตง่าย แต่ลุ้นจนมือสั่นเวลาเล่นจริง",
     "why": [
       "Physical magnets create tension no card or die can replicate",
       "Rounds are over almost as fast as they start",
@@ -15378,6 +15497,7 @@
       "4": "recommended"
     },
     "caption": "Stack magnetic marbles onto a growing pile without letting any of them snap together.",
+    "caption_th": "วางลูกแก้วแม่เหล็กลงกอง โดยไม่ให้ลูกไหนดูดติดกัน",
     "teach": {
       "beats": [
         {
@@ -15425,6 +15545,18 @@
           "caption": "Place far from everything, not clever."
         }
       ],
+      "captions_th": [
+        "วางแม่เหล็กในวงเชือกโดยไม่ให้ดูดติดกัน",
+        "ใครวางแม่เหล็กหมดก่อนชนะ",
+        "ทุกอย่างในวงเชือกมีผล",
+        "ดูดติดแปลว่ารับทุกลูกที่ขยับ",
+        "วางให้ห่างจากทุกอย่าง ไม่ต้องฉลาด"
+      ],
+      "frames_th": [
+        "วางแม่เหล็กในวง",
+        "ถ้าดูดติด: รับไปทั้งหมด",
+        "คนถัดไป"
+      ],
       "wordCount": 50,
       "source": "generated",
       "reviewed": false
@@ -15447,6 +15579,7 @@
     "color": "#6B2C3E",
     "image": "https://cf.geekdo-images.com/iYTN8JZEqoY7HPhFZDJyeQ__original/img/pbYtQeAtGDQVEmZWgZXuECSUDTY=/0x0/filters:format(jpeg)/pic4765917.jpg",
     "blurb": "A small crime family jockeys for power, and everyone's angling to end up on top without getting caught scheming. Quick and tense enough for a short session before the real game night starts.",
+    "blurb_th": "ครอบครัวอาชญากรเล็กๆ แย่งชิงอำนาจกัน ทุกคนเล็งขึ้นเป็นใหญ่โดยไม่ถูกจับได้ว่าวางแผน เร็วและตึงพอสำหรับช่วงสั้นๆ ก่อนคืนเกมจริงจะเริ่ม",
     "why": [
       "Plays in about twenty minutes, easy to squeeze in twice",
       "Hidden-agenda tension keeps a small table on edge",
@@ -15458,7 +15591,8 @@
       "3": "no_data",
       "4": "no_data"
     },
-    "caption": "A small crime family jockeys for power, and everyone's angling to end up on top without getting caught."
+    "caption": "A small crime family jockeys for power, and everyone's angling to end up on top without getting caught.",
+    "caption_th": "ครอบครัวอาชญากรเล็กๆ แย่งชิงอำนาจ โดยไม่ถูกจับได้ว่าวางแผน"
   },
   {
     "bggId": "423792",
@@ -15477,6 +15611,7 @@
     "color": "#B5654A",
     "image": "https://cf.geekdo-images.com/06qCPGgRpeBxnur6VpChDw__original/img/65xDuBZ8HGgmjCZWIWmqNXB9he4=/0x0/filters:format(png)/pic8279574.png",
     "blurb": "Take turns answering absurd would-you-rather-style prompts and guessing how your friends answered. Zero setup, zero strategy, all icebreaker chaos.",
+    "blurb_th": "ผลัดกันตอบคำถามเพี้ยนๆ แนวเลือกอย่างไหน แล้วทายว่าเพื่อนตอบยังไง ไม่ต้องเซ็ต ไม่มีกลยุทธ์ มีแต่ความวุ่นวายละลายพฤติกรรม",
     "why": [
       "Scales from a small group to a full party without changing the rules",
       "No reading a rulebook — just draw a card and talk",
@@ -15495,6 +15630,7 @@
       "11": "no_data"
     },
     "caption": "Take turns answering absurd would-you-rather-style prompts and guessing how your friends answered.",
+    "caption_th": "ผลัดกันตอบคำถามเพี้ยนๆ แล้วทายว่าเพื่อนตอบยังไง",
     "teach": {
       "beats": [
         {
@@ -15542,6 +15678,18 @@
           "caption": "Answer honestly; it's funnier."
         }
       ],
+      "captions_th": [
+        "ตอบคำถามโง่ๆ ทายว่าเพื่อนตอบอะไร",
+        "ทายตรงมากสุดชนะ",
+        "ฉบับร่าง — เช็กวิธีนับแต้ม",
+        "ฉบับร่าง — เช็กวิธีนับแต้ม",
+        "ตอบตามจริง ฮากว่า"
+      ],
+      "frames_th": [
+        "อ่านคำถาม",
+        "ทุกคนตอบ",
+        "ทายว่าใครพูดอะไร"
+      ],
       "wordCount": 33,
       "source": "generated",
       "reviewed": false
@@ -15564,6 +15712,7 @@
     "color": "#35586B",
     "image": "https://cf.geekdo-images.com/xxU1HKdkf1HIotFGyYO2bQ__original/img/cnGPfeD1TqnhWPlcAN0P0gzKzdc=/0x0/filters:format(jpeg)/pic7837610.jpg",
     "blurb": "A light, breezy game about spotting whales before anyone else does. Simple enough for kids, quick enough to squeeze in before dinner.",
+    "blurb_th": "เกมเบาๆ สบายๆ เรื่องการมองหาวาฬให้เจอก่อนใคร ง่ายพอสำหรับเด็ก เร็วพอจะแทรกก่อนมื้อเย็น",
     "why": [
       "Easy rules make it a genuine all-ages pick",
       "Fast rounds keep everyone engaged without dragging on",
@@ -15576,7 +15725,8 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "A light, breezy game about spotting whales before anyone else does."
+    "caption": "A light, breezy game about spotting whales before anyone else does.",
+    "caption_th": "เกมเบาๆ สบายๆ มองหาวาฬให้เจอก่อนใคร"
   },
   {
     "bggId": "227072",
@@ -15595,6 +15745,7 @@
     "color": "#4A6741",
     "image": "https://cf.geekdo-images.com/t4z9o26DuJd1Hteg--95wg__original/img/CzS9UppGiuQbjDSkmyP8OalCQhM=/0x0/filters:format(jpeg)/pic8218889.jpg",
     "blurb": "One player is secretly bluffing about a topic everyone else already knows — spot them before they talk their way out of it. Fifteen minutes of pure deduction with almost no setup.",
+    "blurb_th": "คนหนึ่งแอบบลัฟเรื่องหัวข้อที่ทุกคนรู้อยู่แล้ว จับให้ได้ก่อนเขาจะพูดเอาตัวรอด สิบห้านาทีของการสืบสวนล้วนๆ แทบไม่ต้องเซ็ต",
     "why": [
       "No board and barely any components — just talk and suspicion",
       "Works with big groups without slowing down",
@@ -15610,6 +15761,7 @@
       "8": "recommended"
     },
     "caption": "One player is secretly bluffing about a topic everyone else already knows.",
+    "caption_th": "คนหนึ่งแอบบลัฟเรื่องหัวข้อที่ทุกคนรู้อยู่แล้ว",
     "teach": {
       "beats": [
         {
@@ -15657,6 +15809,18 @@
           "caption": "Say something true but vague."
         }
       ],
+      "captions_th": [
+        "ทุกคนรู้คำยกเว้นกิ้งก่า หาตัวให้เจอ",
+        "จับกิ้งก่าได้ หรือกิ้งก่าทายคำถูก",
+        "กิ้งก่าบลัฟจากคำใบ้ของทุกคน",
+        "พูดมากไปแล้วกิ้งก่าจะรู้คำ",
+        "พูดอะไรที่จริงแต่คลุมเครือ"
+      ],
+      "frames_th": [
+        "ทอย ลูกเต๋าชี้คำลับ",
+        "แต่ละคนพูดคำที่เกี่ยวหนึ่งคำ",
+        "โหวตหากิ้งก่า"
+      ],
       "wordCount": 52,
       "source": "generated",
       "reviewed": false
@@ -15686,6 +15850,7 @@
     "color": "#4A6B7A",
     "image": "https://cf.geekdo-images.com/_GACn_3jAT16uoKsFSbEhw__original/img/gTqH9aRWhlT6fVtg-YcGnUDeQEE=/0x0/filters:format(png)/pic8894297.png",
     "blurb": "A light, quick-playing game built for short bursts of casual competition rather than a long strategic haul. Easy to teach and easy to reset for another round.",
+    "blurb_th": "เกมเบาๆ เล่นเร็ว สร้างมาเพื่อการแข่งขันสบายๆ ช่วงสั้นๆ ไม่ใช่กลยุทธ์ยาวเหยียด สอนง่ายและเซ็ตใหม่ง่ายสำหรับอีกรอบ",
     "why": [
       "Fifteen-minute rounds make it simple to fit in between other games",
       "Low rules overhead means minimal teaching time",
@@ -15700,6 +15865,7 @@
       "6": "best"
     },
     "caption": "A light, quick-playing game built for short bursts of casual competition rather than a long strategic haul.",
+    "caption_th": "เกมเบาๆ เล่นเร็ว สำหรับการแข่งขันสบายๆ ช่วงสั้นๆ",
     "teach": {
       "beats": [
         {
@@ -15747,6 +15913,18 @@
           "caption": "Look before grabbing."
         }
       ],
+      "captions_th": [
+        "เกมความเร็วครอบครัว: คว้าชิ้นที่ถูกต้อง",
+        "คว้าถูกมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กบทลงโทษคว้าผิด",
+        "ดูก่อนคว้า"
+      ],
+      "frames_th": [
+        "เปิดการ์ด",
+        "คว้าชิ้นที่ตรงกัน",
+        "ถูก? เก็บการ์ดไว้"
+      ],
       "wordCount": 36,
       "source": "generated",
       "reviewed": false
@@ -15769,6 +15947,7 @@
     "color": "#8B4A2B",
     "image": "https://cf.geekdo-images.com/_04xA-d-rfygm0c49HE4vA__original/img/el-4Ilu9DeYunRT3r4TVP8Vy3uk=/0x0/filters:format(jpeg)/pic1170986.jpg",
     "blurb": "Sheriffs, outlaws, deputies, and a renegade shoot it out with a deck of Wild West cards, each player secretly assigned a role. A quick, cheap-to-teach classic that still holds up as a hidden-role icebreaker.",
+    "blurb_th": "นายอำเภอ โจร รองนายอำเภอ และคนทรยศ ยิงกันด้วยเด็คการ์ดตะวันตก แต่ละคนได้บทบาทลับ คลาสสิกเร็วๆ สอนถูกๆ ที่ยังใช้ละลายพฤติกรรมแบบบทบาทลับได้ดี",
     "why": [
       "Dead-simple rules — most groups are playing within five minutes",
       "Secret roles create shifting alliances round to round",
@@ -15782,6 +15961,7 @@
       "7": "best"
     },
     "caption": "Sheriffs, outlaws, deputies, and a renegade shoot it out with a deck of Wild West cards.",
+    "caption_th": "นายอำเภอ โจร รองนายอำเภอ และคนทรยศ ยิงกันด้วยการ์ดตะวันตก",
     "teach": {
       "beats": [
         {
@@ -15829,6 +16009,18 @@
           "caption": "Sheriff: don't shoot until someone shoots you."
         }
       ],
+      "captions_th": [
+        "นายอำเภอปะทะโจร บทบาทลับ ยิงด้วยการ์ด",
+        "นายอำเภอชนะถ้าโจรและคนทรยศตาย โจรชนะถ้านายอำเภอตาย",
+        "ตาละหนึ่ง bang เว้นแต่มี Volcanic",
+        "เปิดเผยแค่บทบาทนายอำเภอ รองนายอำเภอซ่อน",
+        "นายอำเภอ: อย่ายิงจนกว่าจะมีคนยิงคุณ"
+      ],
+      "frames_th": [
+        "จั่วสองใบ",
+        "เล่นการ์ด: bang เบียร์ อุปกรณ์",
+        "ทิ้งให้เหลือเท่าเลือด"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -15858,6 +16050,7 @@
     "color": "#4F6B3C",
     "image": "https://cf.geekdo-images.com/BOR53WaU0vKwYtDmWSsuQw__original/img/GREQP_OEzLuakwDz71lUlgxtM84=/0x0/filters:format(jpeg)/pic1319089.jpg",
     "blurb": "A light, brightly-themed game about frogs snapping up flies — simple enough for family night, with just enough push-your-luck to keep it interesting.",
+    "blurb_th": "เกมเบาๆ ธีมสดใสเรื่องกบงับแมลงวัน ง่ายพอสำหรับคืนครอบครัว มี push-your-luck พอให้น่าสนใจ",
     "why": [
       "Quick rules make it an easy fit for younger players",
       "Short playtime suits a pre-dinner round",
@@ -15869,7 +16062,8 @@
       "3": "recommended",
       "4": "best"
     },
-    "caption": "A light, brightly-themed game about frogs snapping up flies."
+    "caption": "A light, brightly-themed game about frogs snapping up flies.",
+    "caption_th": "เกมเบาๆ ธีมสดใสเรื่องกบงับแมลงวัน"
   },
   {
     "bggId": "261262",
