@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#160F0A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/game-modal.css">
 <style>
@@ -21,7 +21,7 @@
   .screen{max-width:420px;margin:0 auto;}
   .shelf-footer{max-width:420px;}
   .eyebrow{
-    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;
     text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
   }
   h1{
@@ -157,11 +157,11 @@
     </a>
   </div>
   <nav class="shelf-footer__links" aria-label="Legal">
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
+    <a href="/privacy" data-i18n="footer.privacy">Privacy</a>
+    <a href="/terms" data-i18n="footer.terms">Terms</a>
   </nav>
   <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar.</p>
-  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
+  <p class="shelf-footer__legal" data-i18n="footer.courtesy">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 
 <script type="module">
@@ -173,6 +173,11 @@ import { fetchSession, joinGameNight, sessionErrorMessage } from '/js/session.js
 import { joinSessionChannel } from '/js/presence.js';
 import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession, shuffleHTML } from '/js/waiting-room.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
+import { initI18n } from '/js/i18n.js';
+
+// The detail modal (js/game-modal.js) reads its strings from the dictionary,
+// so the language is applied here too; this page's own chrome stays English.
+initI18n();
 
 const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.

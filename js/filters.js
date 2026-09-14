@@ -1,4 +1,5 @@
 import { VIBES } from './vibes.js';
+import { t } from './i18n.js';
 
 // showExpansions: expansions (subtype = boardgameexpansion) are hidden unless
 // the shelf owner turned "Show expansions" on in Settings. It is carried here
@@ -22,7 +23,7 @@ export function activeGroupCount(filters){
 }
 export function playersLabel(filters){
   const { minPlayers:min, maxPlayers:max } = filters;
-  if(min===1 && max===11) return "Any";
+  if(min===1 && max===11) return t('filter.any');
   if(max===11) return `${min}+`;
   if(min===max) return `${min}`;
   return `${min}–${max}`;
@@ -72,9 +73,13 @@ export function vibeLabel(key){
 export function weightLabel(score){
   return `${score.toFixed(1)} / 5`;
 }
-export function timeLabel(t){
-  return t[0]===t[1] ? `${t[0]}m` : `${t[0]}–${t[1]}m`;
+// Meta strings go through i18n: English keeps the bare "2–4" and "30m", Thai
+// reads "2–4 คน" and "30 นาที" (docs/claude-code-spec-i18n.md, meta.*).
+export function timeLabel(time){
+  const range = time[0]===time[1] ? `${time[0]}` : `${time[0]}–${time[1]}`;
+  return t('meta.time', { range });
 }
 export function playersRangeLabel(players){
-  return players[0]===players[1] ? `${players[0]}` : `${players[0]}–${players[1]}`;
+  const range = players[0]===players[1] ? `${players[0]}` : `${players[0]}–${players[1]}`;
+  return t('meta.players', { range });
 }

@@ -25,7 +25,7 @@
   border-radius:10px;
   color:var(--bgs-ivory);
   font:inherit;
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   font-size:13px;
   font-weight:600;
   padding:11px 16px;
@@ -81,7 +81,7 @@
   padding:4px 0;
   border:0;
   background:transparent;
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:12px;
   color:var(--bgs-ivory-45);
   cursor:pointer;
@@ -127,7 +127,7 @@ body.gn-selecting .shelf-bags-btn{display:none;}
   background:rgba(var(--bgs-ivory-rgb),0.05);
   color:var(--bgs-ivory);
   text-decoration:none;
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
 }
 .bags-sheet__row:hover{background:rgba(var(--bgs-ivory-rgb),0.09);}
 .bags-sheet__row:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
@@ -141,7 +141,7 @@ body.gn-selecting .shelf-bags-btn{display:none;}
   white-space:nowrap;
 }
 .bags-sheet__meta{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:12px;
   color:var(--bgs-ivory-45);
   font-variant-numeric:tabular-nums;
@@ -220,7 +220,7 @@ body.gn-selecting .shelf-bags-btn{display:none;}
   font-size:10px;
 }
 .bag-cov-row__meta{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:12px;
   color:var(--bgs-ivory-70);
   font-variant-numeric:tabular-nums;
@@ -243,7 +243,7 @@ body.gn-selecting .shelf-bags-btn{display:none;}
   border:0;
   background:transparent;
   color:var(--bgs-ivory);
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   font-size:14px;
   font-weight:500;
   cursor:pointer;
@@ -267,7 +267,7 @@ body.gn-selecting .shelf-bags-btn{display:none;}
 .bag-pill--danger:focus-visible{color:var(--bgs-danger-hover);}
 .bag-actions__error{
   margin:0 0 10px;
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   font-size:13px;
   color:var(--bgs-danger-hover);
 }
@@ -277,7 +277,7 @@ body.gn-selecting .shelf-bags-btn{display:none;}
 /* ---- packing hint ---- */
 
 .bag-hint{
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   font-size:13.5px;
   color:var(--bgs-ivory-70);
   margin:0 0 14px;
@@ -291,7 +291,7 @@ body.gn-selecting .shelf-bags-btn{display:none;}
    which is what you are judging while you pack. The card's own players span
    would say the first half of it twice. */
 .bag-line{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:10.5px;
   color:var(--bgs-ivory-45);
   font-variant-numeric:tabular-nums;
@@ -361,7 +361,7 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
 .bag-cov__item{display:flex;flex-direction:column;gap:6px;}
 .bag-cov__item--gaps{min-width:0;}
 .bag-lab{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   letter-spacing:0.06em;
   text-transform:uppercase;
@@ -378,7 +378,7 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
   font-size:22px;
 }
 .bag-val--plain{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:13px;
   padding-bottom:4px;
 }
@@ -388,7 +388,7 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
   width:22px;height:22px;
   border-radius:6px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   font-variant-numeric:tabular-nums;
   color:var(--bgs-ivory-45);
@@ -425,7 +425,7 @@ body[data-bag-state="packing"]{padding-bottom:calc(220px + env(safe-area-inset-b
 .bag-bar__error{
   flex:0 0 100%;
   margin:0;
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   font-size:13px;
   color:var(--bgs-danger-hover);
 }

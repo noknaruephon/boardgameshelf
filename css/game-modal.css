@@ -113,7 +113,7 @@
   object-fit:contain;
 }
 .flip-hint{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   color:var(--bgs-gold-dim);
   text-align:center;
@@ -170,7 +170,7 @@
   display:flex;
   align-items:center;
   gap:7px;
-  padding:6px 15px;
+  padding:6px calc(15px * var(--chip-pad));
   border:none;
   border-radius:9px;
   background:none;
@@ -207,13 +207,13 @@
   margin-bottom:16px;
 }
 .stat-chip{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:12px;
   color:var(--bgs-ivory);
   background:rgba(var(--bgs-ivory-rgb),0.08);
   border:1px solid rgba(var(--bgs-ivory-rgb),0.16);
   border-radius:6px;
-  padding:5px 10px;
+  padding:5px calc(10px * var(--chip-pad));
   display:flex;
   align-items:center;
   gap:6px;
@@ -226,14 +226,14 @@
   margin:0 0 18px;
 }
 .backdrop .card .tag{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   letter-spacing:0.06em;
   text-transform:uppercase;
   color:var(--bgs-gold);
 }
 .why-heading{
-  font-family:'IBM Plex Mono',monospace;
+  font-family:var(--font-mono);
   font-size:11px;
   letter-spacing:0.08em;
   text-transform:uppercase;
@@ -353,7 +353,7 @@ body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
    same contrast deviation .why-heading already makes). */
 .teach-draft{
   display:flex;align-items:center;gap:7px;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.02em;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.02em;
   color:var(--bgs-gold-dim);margin:-4px 0 12px;
 }
 .teach-draft svg{flex-shrink:0;}
@@ -382,7 +382,7 @@ body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
 .teach-scene svg{width:100%;height:100%;display:block;overflow:visible;}
 .teach-beat__label{
   display:flex;align-items:center;gap:6px;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;
   text-transform:uppercase;color:var(--bgs-gold-dim);margin:0 0 4px;
 }
 .teach-beat__label svg{color:var(--bgs-gold);}
@@ -394,7 +394,7 @@ body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
 .teach-frame__cap{font-size:12px;line-height:1.35;color:var(--bgs-ivory-70);margin:0;text-align:center;}
 .teach-frame__num{
   position:absolute;top:6px;left:6px;
-  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
+  font-family:var(--font-mono);font-size:10px;font-weight:600;
   /* full gold, not gold-dim: at 10px this is text and needs 4.5:1. gold-dim
      on the plate is ~4.0:1; full gold is ~8:1. */
   color:var(--bgs-gold);
@@ -408,14 +408,14 @@ body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
 .pg-gold-fill{fill:rgba(var(--bgs-gold-rgb),.20);}
 .pg-gold-solid{fill:var(--bgs-gold);}
 .pg-ivory-solid{fill:var(--bgs-ivory);fill-opacity:.72;}
-.pg-mono{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;fill:var(--bgs-gold);}
+.pg-mono{font-family:var(--font-mono);font-size:11px;font-weight:600;fill:var(--bgs-gold);}
 
 /* Word budget footer — the discipline the format depends on. ivory-70, not
    the mockup's ivory-45: at 11px this is text, and ivory-45 measures 3.94:1
    on the plate against the 4.5:1 it needs — the same deviation the
    media-toggle makes above. ivory-70 gives 8.0:1. */
 .teach-foot{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-ivory-70);
+  font-family:var(--font-mono);font-size:11px;color:var(--bgs-ivory-70);
   margin:12px 0 0;text-align:center;
 }
 

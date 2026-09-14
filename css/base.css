@@ -38,6 +38,42 @@
   --bgs-vote-play-rgb:143,167,90;
   --bgs-vote-pass:#C2604A;
   --bgs-vote-pass-rgb:194,96,74;
+
+  /* Type tokens (docs/claude-code-spec-i18n.md). Every page's CSS reads the
+     UI and mono faces through these two so the Thai swap below reaches them;
+     the display serif stays a literal 'Fraunces' everywhere on purpose — the
+     wordmark and game titles never change face. Line-height tokens are what
+     Thai needs (taller glyph box); in English the body keeps the browser's
+     own line-height and only the prose that already set 1.5 / 1.2 reads the
+     tokens. --chip-pad scales chip and button side padding, so a Thai label
+     — wider than its Latin sibling — gets +15% room instead of wrapping. */
+  --font-ui:'Inter',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --lh-body:1.5;
+  --lh-heading:1.2;
+  --chip-pad:1;
+}
+
+/* Thai: IBM Plex Sans Thai (loopless) for UI text; mono keeps Plex Mono for
+   Latin and digits and lets Thai glyphs fall through to Plex Sans Thai. Set on
+   <html> by js/i18n.js together with the lang attribute. */
+[data-lang="th"]{
+  --font-ui:'IBM Plex Sans Thai','Inter',sans-serif;
+  --font-mono:'IBM Plex Mono','IBM Plex Sans Thai',monospace;
+  --lh-body:1.65;
+  --lh-heading:1.4;
+  --chip-pad:1.15;
+}
+[data-lang="th"] body{line-height:var(--lh-body);}
+/* Display headings: Fraunces has no Thai glyphs, so headings become Plex Sans
+   Thai 600, upright, no tracking. The wordmark (h1.bgs-wordmark on the shelf)
+   and the modal's game title (.card h2) keep Fraunces: neither is translated. */
+[data-lang="th"] :is(h1,h2,h3,h4):not(.bgs-wordmark):not(.card h2){
+  font-family:var(--font-ui);
+  font-style:normal;
+  font-weight:600;
+  letter-spacing:0;
+  line-height:var(--lh-heading);
 }
 
 *{box-sizing:border-box;}
@@ -51,7 +87,7 @@ body{
     radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%),
     var(--bgs-bg);
   color:var(--bgs-ivory);
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   /* svh, not vh: on a phone 100vh is the *large* viewport — the height with the
      toolbars retracted — so it makes the body taller than what's actually visible
      and the page scrolls even when nothing overflows. 100svh is the smallest
@@ -198,7 +234,7 @@ body.scroll-locked{
   outline:none;
   box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
 }
-.shelf-footer__links{display:flex;justify-content:center;gap:18px;margin:18px 0 20px;font:500 13px/1 'Inter',sans-serif;}
+.shelf-footer__links{display:flex;justify-content:center;gap:18px;margin:18px 0 20px;font:500 13px/1 var(--font-ui);}
 /* Same text-link treatment as body links on the privacy and terms pages. */
 .shelf-footer__links a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
 .shelf-footer__links a:hover{color:var(--bgs-ivory);}
@@ -207,19 +243,22 @@ body.scroll-locked{
   box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
 }
 .shelf-footer__legal{
-  margin:0;font:400 11px/1.55 'IBM Plex Mono',monospace;
+  margin:0;font:400 11px/1.55 var(--font-mono);
   color:rgba(var(--bgs-ivory-rgb),.36);
 }
 .shelf-footer__legal + .shelf-footer__legal{margin-top:2px;}
 
-/* Beta pill beside the wordmark (spec: docs/beta-tag-spec.md). Each page
-   carries its own wordmark markup, so the pill is placed per page; the styles
-   live here once. A <button>, not a <span>, so the tooltip is keyboard
-   reachable. Upright and mono on purpose: the wordmark's italic serif must
-   not leak into it. Negative vertical margins cancel the pill's own height
-   against the wordmark line so the header does not grow. */
+/* Header pills beside the wordmark: the Beta pill (docs/beta-tag-spec.md) and
+   the TH/EN language swap (docs/claude-code-spec-i18n.md). Each page carries
+   its own wordmark markup, so the Beta pill is placed per page and the
+   language pill is built by js/lang-pill.js; the shared construction lives
+   here once in .bgs-pill. A <button>, not a <span>, so both are keyboard
+   reachable. Upright and mono on purpose, and always Plex Mono — never the
+   Thai face — so the wordmark's italic serif and the language swap leave
+   them alone. Negative vertical margins cancel the pill's own height against
+   the wordmark line so the header does not grow. */
 .bgs-wordmark{position:relative;}
-.bgs-beta{
+.bgs-pill{
   display:inline-block;
   margin:-4px 0 -4px 10px;
   padding:3px 8px;
@@ -242,9 +281,32 @@ body.scroll-locked{
   appearance:none;
 }
 /* Gold ring via box-shadow, same as every other focus ring on the site. */
-.bgs-beta:focus-visible{
+.bgs-pill:focus-visible{
   outline:none;
   box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+.bgs-beta{cursor:default;}
+/* The language swap. Shows the *other* language, Latin label always. The
+   label crossfade is a transition on opacity only, on the inner .lbl; no
+   animation ever lands on this element (WebKit drops a transition that
+   fights one). */
+.bgs-lang{
+  margin-left:8px;
+  padding:5px 7px 4px;
+  min-width:34px;
+  text-align:center;
+  letter-spacing:.02em;
+  border-color:rgba(var(--bgs-ivory-rgb),.22);
+  color:var(--bgs-ivory-70);
+  cursor:pointer;
+  transition:border-color .15s ease,color .15s ease;
+}
+.bgs-lang:hover{border-color:rgba(var(--bgs-gold-rgb),.7);color:var(--bgs-gold);}
+.bgs-lang .lbl{display:inline-block;transition:opacity .16s ease;}
+.bgs-lang.is-swapping .lbl{opacity:0;}
+@media (prefers-reduced-motion:reduce){
+  .bgs-lang{transition:none;}
+  .bgs-lang .lbl{transition:none;}
 }
 
 /* Beta tooltip, built by js/beta-tag.js as the pill's next sibling inside
@@ -268,7 +330,7 @@ body.scroll-locked{
   background:var(--bgs-bg);
   box-shadow:0 14px 28px -12px rgba(0,0,0,.85),0 2px 6px rgba(0,0,0,.35);
   color:var(--bgs-ivory);
-  font-family:'Inter',sans-serif;
+  font-family:var(--font-ui);
   font-style:normal;
   font-weight:400;
   font-size:13px;

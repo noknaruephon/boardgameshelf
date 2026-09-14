@@ -14,9 +14,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cf.geekdo-images.com" crossorigin>
 <link rel="dns-prefetch" href="https://cf.geekdo-images.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <script type="module" src="/js/beta-tag.js"></script>
+<script type="module" src="/js/lang-pill.js"></script>
 <link rel="stylesheet" href="/css/game-modal.css">
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
@@ -28,7 +29,7 @@
 
   header{margin-bottom:0;}
   .eyebrow{
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     letter-spacing:0.14em;
     text-transform:uppercase;
@@ -47,7 +48,7 @@
     font-size:15px;
     margin:0;
     max-width:50ch;
-    line-height:1.5;
+    line-height:var(--lh-body);
   }
 
   .filter-sort-bar{
@@ -80,7 +81,7 @@
     border:1px solid rgba(var(--bgs-gold-rgb),0.18);
     border-radius:12px;
     color:var(--bgs-ivory);
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:16px;
     padding:10px 34px 10px 14px;
     outline:none;
@@ -141,7 +142,7 @@
     border-radius:50%;
     background:var(--bgs-gold);
     color:var(--bgs-bg);
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:9.5px;
     font-weight:700;
     display:flex;
@@ -165,10 +166,10 @@
     background:rgba(var(--bgs-gold-rgb),0.16);
     border:1px solid rgba(var(--bgs-gold-rgb),0.4);
     color:var(--bgs-gold);
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:12.5px;
     font-weight:500;
-    padding:5px 8px 5px 12px;
+    padding:5px calc(8px * var(--chip-pad)) 5px calc(12px * var(--chip-pad));
     border-radius:999px;
   }
   .chip button{
@@ -184,7 +185,7 @@
   .chip button:hover{opacity:1;}
 
   .filter-label{
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     letter-spacing:0.08em;
     text-transform:uppercase;
@@ -192,14 +193,14 @@
     margin-right:2px;
   }
   .pill{
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:13px;
     font-weight:500;
     color:var(--bgs-ivory-70);
     background:transparent;
     border:1px solid rgba(var(--bgs-ivory-rgb),0.22);
     border-radius:999px;
-    padding:6px 13px;
+    padding:6px calc(13px * var(--chip-pad));
     cursor:pointer;
     transition:all 0.15s ease;
   }
@@ -267,7 +268,7 @@
     background:none;
     border:none;
     color:var(--bgs-gold);
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:11.5px;
     letter-spacing:0.06em;
     text-transform:uppercase;
@@ -360,7 +361,7 @@
     min-width:24px;
     height:22px;
     padding:0 4px;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:10px;
     line-height:1;
     color:var(--bgs-ivory-70);
@@ -424,7 +425,7 @@
     background:var(--bgs-bg);
   }
   .toggle-label{
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:13px;
     font-weight:500;
     color:var(--bgs-ivory);
@@ -449,7 +450,7 @@
     color:var(--bgs-bg);
     border:none;
     border-radius:12px;
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:15px;
     font-weight:600;
     padding:13px;
@@ -462,23 +463,24 @@
   .mode-tab{background:none;border:0;padding:6px 0 12px;cursor:pointer;text-align:left;color:var(--bgs-ivory-45);font:inherit;transition:color .15s ease;}
   .mode-tab:nth-child(2){text-align:right;}
   .mode-tab strong{display:block;font:600 16px/1.1 'Fraunces',serif;color:inherit;}
-  .mode-tab em{display:block;font-style:normal;font-family:'Inter',sans-serif;font-size:12px;margin-top:3px;opacity:.85;}
+  [data-lang="th"] .mode-tab strong{font-family:var(--font-ui);line-height:var(--lh-heading);}
+  .mode-tab em{display:block;font-style:normal;font-family:var(--font-ui);font-size:12px;margin-top:3px;opacity:.85;}
   .mode-tab[aria-selected=true]{color:var(--bgs-ivory);}
   .mode-tab:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-gold) inset;border-radius:6px;}
   .mode-ink{position:absolute;bottom:-1px;left:0;width:50%;height:2px;background:var(--bgs-gold);transition:transform .18s cubic-bezier(.2,.7,.2,1);}
   .mode-tabs[data-mode=numbers] .mode-ink{transform:translateX(100%);}
   .mode-panel{display:none;}
   .mode-panel[data-show]{display:block;}
-  .pill .n{font:400 11px 'IBM Plex Mono',monospace;opacity:.6;margin-left:6px;}
+  .pill .n{font:400 11px var(--font-mono);opacity:.6;margin-left:6px;}
   .pill.active .n{opacity:.7;}
   .pill:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-gold) inset;}
   .pill:disabled{opacity:.35;cursor:default;}
   .pill:disabled:hover{border-color:rgba(var(--bgs-ivory-rgb),0.22);color:var(--bgs-ivory-70);}
-  .vibe-hint{margin:12px 0 0;min-height:1.4em;font-family:'Inter',sans-serif;font-size:13px;color:var(--bgs-ivory-70);}
+  .vibe-hint{margin:12px 0 0;min-height:1.4em;font-family:var(--font-ui);font-size:13px;color:var(--bgs-ivory-70);}
   .vibe-hint b{color:var(--bgs-ivory);font-weight:500;}
   .empty-state button{background:none;border:0;color:var(--bgs-gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font:inherit;margin-top:10px;display:block;margin-inline:auto;}
   .empty-state a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;margin-top:10px;display:block;}
-  .empty-state code{font-family:'IBM Plex Mono',monospace;font-size:0.95em;}
+  .empty-state code{font-family:var(--font-mono);font-size:0.95em;}
   .owner-link{color:var(--bgs-gold);text-decoration:none;}
   .owner-link:hover{text-decoration:underline;text-underline-offset:3px;}
   /* Settings as a gear at the right end of the owner line. A 44px target
@@ -508,7 +510,7 @@
   }
 
   .shelf-count{
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     color:var(--bgs-gold-dim);
     margin:0 0 14px;
@@ -523,7 +525,7 @@
   @media (min-width:560px){ .shelf{ grid-template-columns:repeat(4, 1fr); gap:14px; } }
   @media (min-width:800px){ .shelf{ grid-template-columns:repeat(6, 1fr); gap:16px; } }
   .empty-state{
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     color:var(--bgs-ivory-70);
     font-size:14px;
     padding:60px 10px;
@@ -647,7 +649,7 @@
     border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
     border-radius:999px;
     color:var(--bgs-gold);
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:13.5px;
     font-weight:700;
     letter-spacing:0.01em;
@@ -689,7 +691,7 @@
     background:rgba(var(--bgs-plate-rgb),0.82);
     -webkit-backdrop-filter:blur(16px) saturate(1.2);backdrop-filter:blur(16px) saturate(1.2);
     border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);border-radius:999px;
-    color:var(--bgs-gold);font-family:'Inter',sans-serif;font-size:13.5px;font-weight:700;
+    color:var(--bgs-gold);font-family:var(--font-ui);font-size:13.5px;font-weight:700;
     white-space:nowrap;cursor:pointer;
     box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.08) inset,0 8px 24px -10px rgba(0,0,0,0.7);
     opacity:0;transform:translateY(14px) scale(0.9);pointer-events:none;
@@ -720,7 +722,7 @@
     background:var(--bgs-plate);
     border:1px solid rgba(var(--bgs-gold-rgb),0.35);
     color:var(--bgs-ivory);
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:13px;
     font-weight:500;
     padding:12px 18px;
@@ -917,7 +919,7 @@
   .gn-surprise-card .t{font-size:13px;line-height:1.2;padding:0;min-height:2.4em;}
   .gn-surprise-card .s{
     margin-top:4px;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:10.5px;
     color:var(--bgs-ivory-45);
   }
@@ -993,7 +995,7 @@
   .gn-field{margin-bottom:16px;}
   .gn-field label{
     display:block;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:11px;
     letter-spacing:0.06em;
     text-transform:uppercase;
@@ -1006,7 +1008,7 @@
     border:1px solid rgba(var(--bgs-gold-rgb),0.22);
     border-radius:10px;
     color:var(--bgs-ivory);
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     /* 16px, not smaller: iOS Safari zooms the page in when you focus an input
        whose text is under 16px, and never zooms back out. Matches .search. */
     font-size:16px;
@@ -1027,13 +1029,13 @@
     text-align:left;
   }
   .gn-toggle-row .toggle-label{
-    font-family:'Inter',sans-serif;
+    font-family:var(--font-ui);
     font-size:13px;
     font-weight:500;
     color:var(--bgs-ivory);
   }
   .gn-summary{
-    font-family:'IBM Plex Mono',monospace;
+    font-family:var(--font-mono);
     font-size:12px;
     color:var(--bgs-gold-dim);
     margin:2px 0 18px;
@@ -1220,7 +1222,7 @@
   }
   .invite-seg button{
     border:0;background:transparent;color:rgba(var(--bgs-ivory-rgb),.7);
-    font:500 13px 'Inter',sans-serif;padding:8px 16px;border-radius:999px;cursor:pointer;
+    font:500 13px var(--font-ui);padding:8px 16px;border-radius:999px;cursor:pointer;
   }
   .invite-seg button[aria-pressed="true"]{background:var(--bgs-gold);color:var(--bgs-bg);}
 
@@ -1234,9 +1236,9 @@
   .invite-row__lab{flex:1;min-width:0;}
   /* Label is the primary line: ivory, medium. The value is secondary:
      lighter weight, ivory at 70%; unset ("Add a …") drops to 45%. */
-  .invite-row__lab b{display:block;font:500 15px/1.3 'Inter',sans-serif;color:var(--bgs-ivory);}
+  .invite-row__lab b{display:block;font:500 15px/1.3 var(--font-ui);color:var(--bgs-ivory);}
   .invite-row__val{
-    font:400 14px 'Inter',sans-serif;color:var(--bgs-ivory-70);
+    font:400 14px var(--font-ui);color:var(--bgs-ivory-70);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%;
   }
   .invite-row__val.muted{color:var(--bgs-ivory-45);}
@@ -1261,14 +1263,14 @@
   .invite-edit[hidden]{display:none;}
   .invite-edit__input{
     flex:1;min-width:0;background:var(--bgs-bg);border:1px solid rgba(var(--bgs-gold-rgb),0.22);
-    border-radius:10px;color:var(--bgs-ivory);font-family:'Inter',sans-serif;
+    border-radius:10px;color:var(--bgs-ivory);font-family:var(--font-ui);
     /* 16px, not smaller: iOS Safari zooms in on a smaller input and never zooms back. */
     font-size:16px;padding:9px 11px;outline:none;
   }
   .invite-edit__input:focus-visible{border-color:var(--bgs-gold);}
   .invite-edit__done{
     border:0;border-radius:10px;background:var(--bgs-gold);color:var(--bgs-bg);
-    font:500 14px 'Inter',sans-serif;padding:0 14px;cursor:pointer;
+    font:500 14px var(--font-ui);padding:0 14px;cursor:pointer;
   }
 
   /* The headline picker: the picks as tiles with the shelf's star treatment. */
@@ -1277,7 +1279,7 @@
     padding:0 0 14px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);
   }
   .invite-picker[hidden]{display:none;}
-  .invite-picker__empty{grid-column:1/-1;margin:0;font:400 13px 'Inter',sans-serif;color:rgba(var(--bgs-ivory-rgb),.55);}
+  .invite-picker__empty{grid-column:1/-1;margin:0;font:400 13px var(--font-ui);color:rgba(var(--bgs-ivory-rgb),.55);}
   .invite-pick{
     position:relative;aspect-ratio:3/4;border:0;padding:0;border-radius:8px;overflow:hidden;
     background:var(--c,var(--bgs-bg));color:var(--bgs-ivory);cursor:pointer;
@@ -1294,7 +1296,7 @@
   .invite-pick.head .invite-pick__star{background:var(--bgs-gold);color:var(--bgs-bg);}
   .invite-pick__tag{
     display:none;position:absolute;left:6px;bottom:6px;
-    font:500 10px 'IBM Plex Mono',monospace;background:var(--bgs-gold);color:var(--bgs-bg);
+    font:500 10px var(--font-mono);background:var(--bgs-gold);color:var(--bgs-bg);
     padding:2px 6px;border-radius:4px;
   }
   .invite-pick.head .invite-pick__tag{display:block;}
@@ -1312,12 +1314,12 @@
   }
   .invite-primary{
     width:100%;height:52px;border:0;border-radius:14px;background:var(--bgs-gold);color:var(--bgs-bg);
-    font:500 16px 'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+    font:500 16px var(--font-ui);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
   }
   .invite-primary .invite-ti{width:20px;height:20px;}
   .invite-secondary{
     width:100%;height:44px;border:0;border-radius:14px;background:transparent;
-    color:rgba(var(--bgs-ivory-rgb),.75);font:500 15px 'Inter',sans-serif;cursor:pointer;
+    color:rgba(var(--bgs-ivory-rgb),.75);font:500 15px var(--font-ui);cursor:pointer;
   }
   .invite-secondary:hover{color:var(--bgs-ivory);}
   /* Save to Photos on iOS: the image alone, full screen, above the sheet. */
@@ -1333,11 +1335,11 @@
     border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);
     -webkit-touch-callout:default; /* the press-and-hold menu is the point */
   }
-  .invite-viewer__hint{margin:0;font:400 14px/1.4 'Inter',sans-serif;color:var(--bgs-ivory-70);text-align:center;}
+  .invite-viewer__hint{margin:0;font:400 14px/1.4 var(--font-ui);color:var(--bgs-ivory-70);text-align:center;}
   .invite-viewer__hint b{color:var(--bgs-ivory);font-weight:500;}
   .invite-viewer__done{
     height:44px;padding:0 22px;border:0;border-radius:14px;
-    background:var(--bgs-gold);color:var(--bgs-bg);font:500 15px 'Inter',sans-serif;cursor:pointer;
+    background:var(--bgs-gold);color:var(--bgs-bg);font:500 15px var(--font-ui);cursor:pointer;
   }
   .invite-viewer__done:focus-visible,
   .invite-icon:focus-visible,.invite-row:focus-visible,.invite-seg button:focus-visible,
@@ -1420,17 +1422,17 @@
 <div class="wrap">
   <header>
     <p class="eyebrow" style="color:var(--bgs-ivory-70)" id="shelfOwner">&nbsp;</p>
-    <h1 class="bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></h1>
-    <p class="sub">Browse the game, judge by its cover.</p>
+    <h1 class="bgs-wordmark">BoardgameShelf<button type="button" class="bgs-pill bgs-beta" aria-label="Beta — about this label">Beta</button></h1>
+    <p class="sub" data-i18n="shelf.tagline">Browse the game, judge by its cover.</p>
   </header>
 
   <div class="sticky-sentinel" id="stickySentinel" aria-hidden="true"></div>
   <div class="filter-sort-bar" id="filterSortBar">
     <div class="search-wrap">
-      <input class="search" id="search" type="text" placeholder="Search titles…">
-      <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>✕</button>
+      <input class="search" id="search" type="text" placeholder="Search titles…" data-i18n-attr="placeholder:shelf.search">
+      <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" data-i18n-attr="aria-label:shelf.clearSearch" hidden>✕</button>
     </div>
-    <button class="icon-btn" id="filterBtn" aria-label="Open filters" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterSheet">
+    <button class="icon-btn" id="filterBtn" aria-label="Open filters" data-i18n-attr="aria-label:shelf.openFilters" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterSheet">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="0" y1="2.5" x2="15" y2="2.5" stroke="currentColor" stroke-width="1.4"/>
         <circle cx="9.5" cy="2.5" r="2.2" fill="var(--bgs-plate)" stroke="currentColor" stroke-width="1.4"/>
@@ -1450,7 +1452,7 @@
 
   <div class="chips-row" id="chipsRow" hidden></div>
 
-  <p class="shelf-count" id="shelf-count"><span id="shelf-count-text" aria-live="polite">Loading the shelf…</span></p>
+  <p class="shelf-count" id="shelf-count"><span id="shelf-count-text" aria-live="polite" data-i18n="shelf.loading">Loading the shelf…</span></p>
   <div class="shelf" id="shelf">
     <div class="game-card game-card-skeleton"><div class="art"></div><div class="plate-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
     <div class="game-card game-card-skeleton"><div class="art"></div><div class="plate-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
@@ -1474,11 +1476,11 @@
     </a>
   </div>
   <nav class="shelf-footer__links" aria-label="Legal">
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
+    <a href="/privacy" data-i18n="footer.privacy">Privacy</a>
+    <a href="/terms" data-i18n="footer.terms">Terms</a>
   </nav>
   <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar.</p>
-  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
+  <p class="shelf-footer__legal" data-i18n="footer.courtesy">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 
 <!-- The game detail modal is created at runtime by js/game-modal.js. -->
@@ -1487,8 +1489,8 @@
 <div class="filter-sheet" id="filterSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheet-handle" aria-hidden="true"></div>
   <div class="sheet-header">
-    <h2 id="sheetTitle">Filters</h2>
-    <button class="reset-link" id="resetLink" type="button">Reset</button>
+    <h2 id="sheetTitle" data-i18n="filter.title">Filters</h2>
+    <button class="reset-link" id="resetLink" type="button" data-i18n="filter.reset">Reset</button>
   </div>
   <div class="sheet-body">
     <div class="sheet-group">
@@ -1496,45 +1498,45 @@
       <div class="range-wrap">
         <div class="range-track"></div>
         <div class="range-fill" id="rangeFill"></div>
-        <input type="range" min="1" max="11" step="1" value="1" id="rangeMin" class="range-input" aria-label="Minimum players">
-        <input type="range" min="1" max="11" step="1" value="11" id="rangeMax" class="range-input" aria-label="Maximum players">
+        <input type="range" min="1" max="11" step="1" value="1" id="rangeMin" class="range-input" aria-label="Minimum players" data-i18n-attr="aria-label:filter.minPlayers">
+        <input type="range" min="1" max="11" step="1" value="11" id="rangeMax" class="range-input" aria-label="Maximum players" data-i18n-attr="aria-label:filter.maxPlayers">
       </div>
-      <div class="number-cue-row" id="numberCueRow" role="group" aria-label="Pick an exact player count">
-        <button type="button" class="number-cue" data-n="1" aria-pressed="false" aria-label="Only 1 player" style="left:calc(10px + (100% - 20px) * 0)">1</button><button type="button" class="number-cue" data-n="2" aria-pressed="false" aria-label="Only 2 players" style="left:calc(10px + (100% - 20px) * 0.1)">2</button><button type="button" class="number-cue" data-n="3" aria-pressed="false" aria-label="Only 3 players" style="left:calc(10px + (100% - 20px) * 0.2)">3</button><button type="button" class="number-cue" data-n="4" aria-pressed="false" aria-label="Only 4 players" style="left:calc(10px + (100% - 20px) * 0.3)">4</button><button type="button" class="number-cue" data-n="5" aria-pressed="false" aria-label="Only 5 players" style="left:calc(10px + (100% - 20px) * 0.4)">5</button><button type="button" class="number-cue" data-n="6" aria-pressed="false" aria-label="Only 6 players" style="left:calc(10px + (100% - 20px) * 0.5)">6</button><button type="button" class="number-cue" data-n="7" aria-pressed="false" aria-label="Only 7 players" style="left:calc(10px + (100% - 20px) * 0.6)">7</button><button type="button" class="number-cue" data-n="8" aria-pressed="false" aria-label="Only 8 players" style="left:calc(10px + (100% - 20px) * 0.7)">8</button><button type="button" class="number-cue" data-n="9" aria-pressed="false" aria-label="Only 9 players" style="left:calc(10px + (100% - 20px) * 0.8)">9</button><button type="button" class="number-cue" data-n="10" aria-pressed="false" aria-label="Only 10 players" style="left:calc(10px + (100% - 20px) * 0.9)">10</button><button type="button" class="number-cue" data-n="11" aria-pressed="false" aria-label="11 or more players" style="left:calc(10px + (100% - 20px) * 1)">11+</button>
+      <div class="number-cue-row" id="numberCueRow" role="group" aria-label="Pick an exact player count" data-i18n-attr="aria-label:filter.exactCount">
+        <button type="button" class="number-cue" data-n="1" aria-pressed="false" aria-label="Only 1 player" data-i18n-attr="aria-label:filter.onlyOne" style="left:calc(10px + (100% - 20px) * 0)">1</button><button type="button" class="number-cue" data-n="2" aria-pressed="false" aria-label="Only 2 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":2}' style="left:calc(10px + (100% - 20px) * 0.1)">2</button><button type="button" class="number-cue" data-n="3" aria-pressed="false" aria-label="Only 3 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":3}' style="left:calc(10px + (100% - 20px) * 0.2)">3</button><button type="button" class="number-cue" data-n="4" aria-pressed="false" aria-label="Only 4 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":4}' style="left:calc(10px + (100% - 20px) * 0.3)">4</button><button type="button" class="number-cue" data-n="5" aria-pressed="false" aria-label="Only 5 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":5}' style="left:calc(10px + (100% - 20px) * 0.4)">5</button><button type="button" class="number-cue" data-n="6" aria-pressed="false" aria-label="Only 6 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":6}' style="left:calc(10px + (100% - 20px) * 0.5)">6</button><button type="button" class="number-cue" data-n="7" aria-pressed="false" aria-label="Only 7 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":7}' style="left:calc(10px + (100% - 20px) * 0.6)">7</button><button type="button" class="number-cue" data-n="8" aria-pressed="false" aria-label="Only 8 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":8}' style="left:calc(10px + (100% - 20px) * 0.7)">8</button><button type="button" class="number-cue" data-n="9" aria-pressed="false" aria-label="Only 9 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":9}' style="left:calc(10px + (100% - 20px) * 0.8)">9</button><button type="button" class="number-cue" data-n="10" aria-pressed="false" aria-label="Only 10 players" data-i18n-attr="aria-label:filter.onlyN" data-args='{"n":10}' style="left:calc(10px + (100% - 20px) * 0.9)">10</button><button type="button" class="number-cue" data-n="11" aria-pressed="false" aria-label="11 or more players" data-i18n-attr="aria-label:filter.elevenPlus" style="left:calc(10px + (100% - 20px) * 1)">11+</button>
       </div>
       <button type="button" class="toggle-row" id="bestFitToggle" role="switch" aria-checked="false">
         <span class="toggle-switch" aria-hidden="true"></span>
-        <span class="toggle-label">Recommended counts only</span>
+        <span class="toggle-label" data-i18n="filter.bestFit">Recommended counts only</span>
       </button>
     </div>
     <div class="mode-tabs" role="tablist" data-mode="vibe" id="modeTabs">
-      <button type="button" class="mode-tab" role="tab" id="tab-vibe" aria-selected="true" aria-controls="panel-vibe"><strong>Vibe</strong><em>What kind of night is it?</em></button>
-      <button type="button" class="mode-tab" role="tab" id="tab-numbers" aria-selected="false" aria-controls="panel-numbers" tabindex="-1"><strong>Time &amp; weight</strong><em>If you already know</em></button>
+      <button type="button" class="mode-tab" role="tab" id="tab-vibe" aria-selected="true" aria-controls="panel-vibe"><strong data-i18n="filter.tabVibe">Vibe</strong><em data-i18n="filter.tabVibeSub">What kind of night is it?</em></button>
+      <button type="button" class="mode-tab" role="tab" id="tab-numbers" aria-selected="false" aria-controls="panel-numbers" tabindex="-1"><strong data-i18n="filter.tabNumbers">Time &amp; weight</strong><em data-i18n="filter.tabNumbersSub">If you already know</em></button>
       <span class="mode-ink" aria-hidden="true"></span>
     </div>
     <div class="mode-panel" id="panel-vibe" role="tabpanel" aria-labelledby="tab-vibe" data-show>
       <div class="sheet-group">
-        <div class="segmented" id="vibePills" role="group" aria-label="Vibe"></div>
+        <div class="segmented" id="vibePills" role="group" aria-label="Vibe" data-i18n-attr="aria-label:filter.tabVibe"></div>
         <p class="vibe-hint" id="vibeHint" aria-live="polite"></p>
       </div>
     </div>
     <div class="mode-panel" id="panel-numbers" role="tabpanel" aria-labelledby="tab-numbers">
     <div class="sheet-group">
-      <span class="filter-label">Time</span>
-      <div class="segmented" data-type="time" role="group" aria-label="Time">
-        <button class="pill active" data-value="any" aria-pressed="true">Any</button>
-        <button class="pill" data-value="quick" aria-pressed="false">Quick</button>
-        <button class="pill" data-value="medium" aria-pressed="false">Medium</button>
-        <button class="pill" data-value="long" aria-pressed="false">Long</button>
+      <span class="filter-label" data-i18n="filter.time">Time</span>
+      <div class="segmented" data-type="time" role="group" aria-label="Time" data-i18n-attr="aria-label:filter.time">
+        <button class="pill active" data-value="any" aria-pressed="true" data-i18n="filter.any">Any</button>
+        <button class="pill" data-value="quick" aria-pressed="false" data-i18n="filter.quick">Quick</button>
+        <button class="pill" data-value="medium" aria-pressed="false" data-i18n="filter.medium">Medium</button>
+        <button class="pill" data-value="long" aria-pressed="false" data-i18n="filter.long">Long</button>
       </div>
     </div>
     <div class="sheet-group">
-      <span class="filter-label">Weight</span>
-      <div class="segmented" data-type="weight" role="group" aria-label="Weight">
-        <button class="pill active" data-value="any" aria-pressed="true">Any</button>
-        <button class="pill" data-value="light" aria-pressed="false">Light</button>
-        <button class="pill" data-value="medium" aria-pressed="false">Medium</button>
-        <button class="pill" data-value="heavy" aria-pressed="false">Heavy</button>
+      <span class="filter-label" data-i18n="filter.weight">Weight</span>
+      <div class="segmented" data-type="weight" role="group" aria-label="Weight" data-i18n-attr="aria-label:filter.weight">
+        <button class="pill active" data-value="any" aria-pressed="true" data-i18n="filter.any">Any</button>
+        <button class="pill" data-value="light" aria-pressed="false" data-i18n="filter.light">Light</button>
+        <button class="pill" data-value="medium" aria-pressed="false" data-i18n="filter.medium">Medium</button>
+        <button class="pill" data-value="heavy" aria-pressed="false" data-i18n="filter.heavy">Heavy</button>
       </div>
     </div>
     </div>
@@ -1559,6 +1561,13 @@ import { bagStore } from '/js/bag-store.js';
 import { coverage as bagCoverage, timeLabel as bagTimeLabel, cellsHTML as bagCellsHTML } from '/js/bag-coverage.js';
 import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
 import { getUser, fetchMyProfile, signOut, userDisplayName } from '/js/auth.js';
+import { initI18n, t, tn, translate } from '/js/i18n.js';
+
+// ---- Language (docs/claude-code-spec-i18n.md) ----
+// Started first so the dictionary is in before the first render; the static
+// markup carries data-i18n keys and translates itself, JS-built strings call
+// t() and are rebuilt on bgs:langchange (see the listener near the end).
+const i18nReady = initI18n();
 
 // ---- Game Night feature flag ----
 // Live: every visitor gets the Game Night pill. All four stages — session
@@ -1687,7 +1696,8 @@ function renderOwner(){
       const gear = document.createElement('button');
       gear.type = 'button';
       gear.className = 'owner-gear';
-      gear.setAttribute('aria-label', 'Settings');
+      gear.setAttribute('aria-label', t('header.settings'));
+      gear.dataset.i18nAttr = 'aria-label:header.settings';
       gear.innerHTML = GEAR_ICON;
       gear.addEventListener('click', ()=>{ location.href = '/settings'; });
       eyebrow.appendChild(gear);
@@ -1695,8 +1705,9 @@ function renderOwner(){
     }
     const a = document.createElement('a');
     a.className = 'owner-link';
-    if(!user){ a.href = '/'; a.textContent = 'Sign in'; }
-    else { a.href = '/welcome'; a.textContent = 'Your shelf'; }
+    if(!user){ a.href = '/'; a.dataset.i18n = 'header.signIn'; }
+    else { a.href = '/welcome'; a.dataset.i18n = 'header.yourShelf'; }
+    a.textContent = t(a.dataset.i18n);
     eyebrow.append(' · ', a);
   }).catch(()=>{});
 }
@@ -1730,7 +1741,7 @@ const BAG_SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 // the search row, the count line, the grid — with the bag's own words in it.
 // Mockup: docs/mockups/bag-page-mockup.html, "Bag page".
 function renderBagHeader(){
-  const name = pageBag.name || 'Bag';
+  const name = pageBag.name || t('bag.bag');
   const ownerName = profile.display_name || profile.bgg_username || profile.slug;
   document.title = `${name} · BoardgameShelf`;
   // Set for the share sheets that read the live page; a crawler sees none of
@@ -1752,11 +1763,14 @@ function renderBagHeader(){
   eyebrow.classList.add('bag-eyebrow');
   eyebrow.textContent = '';
   const mark = document.createElement('span');
-  mark.innerHTML = '<i class="bag-diamond" aria-hidden="true"></i> Bag';
+  mark.innerHTML = '<i class="bag-diamond" aria-hidden="true"></i> <span data-i18n="bag.bag">Bag</span>';
   const from = document.createElement('a');
   from.className = 'bag-eyebrow__from';
   from.href = `/u/${encodeURIComponent(profile.slug)}`;
-  from.textContent = `from ${ownerName}`;
+  from.dataset.i18n = 'bag.from';
+  from.dataset.args = JSON.stringify({ name: ownerName });
+  translate(mark);
+  translate(from);
   eyebrow.append(mark, ' · ', from);
 
   // Replace only the wordmark text: the beta pill sits beside it inside the
@@ -1768,10 +1782,15 @@ function renderBagHeader(){
   const cover = bagCoverage(games);
   const cov = document.createElement('div');
   cov.className = 'bag-cov-row';
-  const meta = `${games.length} game${games.length === 1 ? '' : 's'} · ${bagTimeLabel(cover.minTime, cover.maxTime)}`;
-  cov.innerHTML = `<div class="bag-dots" aria-hidden="true">${bagCellsHTML(cover.cells, { small: true })}</div><span class="bag-cov-row__meta">${meta}</span>`;
-  cov.setAttribute('aria-label', `${meta}. Player counts covered: ${
-    cover.cells.map((on, i) => on ? (i === 7 ? '8 or more' : String(i + 1)) : '').filter(Boolean).join(', ') || 'none'}`);
+  const bagMeta = () => `${tn('bag.games', games.length)} · ${bagTimeLabel(cover.minTime, cover.maxTime)}`;
+  const paintCov = () => {
+    const meta = bagMeta();
+    cov.innerHTML = `<div class="bag-dots" aria-hidden="true">${bagCellsHTML(cover.cells, { small: true })}</div><span class="bag-cov-row__meta">${meta}</span>`;
+    cov.setAttribute('aria-label', t('bag.playersCovered', { meta, list:
+      cover.cells.map((on, i) => on ? (i === 7 ? t('bag.eightPlus') : String(i + 1)) : '').filter(Boolean).join(', ') || t('bag.none') }));
+  };
+  paintCov();
+  document.addEventListener('bgs:langchange', paintCov);
   document.querySelector('header .sub').replaceWith(cov);
 
   // Share is the one gold action; Edit shows only where the edit key is.
@@ -1779,19 +1798,22 @@ function renderBagHeader(){
   acts.className = 'bag-actions';
   const share = document.createElement('button');
   share.type = 'button'; share.className = 'bag-pill bag-pill--gold';
-  share.innerHTML = `${BAG_SHARE_ICON}Share`;
+  share.innerHTML = `${BAG_SHARE_ICON}<span data-i18n="bag.share">Share</span>`;
+  translate(share);
   share.addEventListener('click', ()=> shareBag(share));
   acts.appendChild(share);
   if(bagStore.canEdit(pageBag.id)){
     const edit = document.createElement('a');
     edit.className = 'bag-pill bag-pill--quiet';
     edit.href = `/u/${encodeURIComponent(profile.slug)}?bag=1&edit=${encodeURIComponent(pageBag.id)}`;
-    edit.textContent = 'Edit';
+    edit.dataset.i18n = 'bag.edit';
+    edit.textContent = t('bag.edit');
     acts.appendChild(edit);
     const del = document.createElement('button');
     del.type = 'button';
     del.className = 'bag-pill bag-pill--quiet bag-pill--danger';
-    del.textContent = 'Delete';
+    del.dataset.i18n = 'bag.delete';
+    del.textContent = t('bag.delete');
     del.addEventListener('click', ()=> confirmDeleteBag(del));
     acts.appendChild(del);
   }
@@ -1803,7 +1825,9 @@ function renderBagHeader(){
   note.hidden = true;
   acts.after(note);
 
-  document.getElementById('search').placeholder = 'Search this bag…';
+  const search = document.getElementById('search');
+  search.dataset.i18nAttr = 'placeholder:shelf.searchBag';
+  search.placeholder = t('shelf.searchBag');
 }
 
 // Deleting a bag asks first, in the same dialog the game-night pages use.
@@ -1821,13 +1845,14 @@ function confirmDeleteBag(opener){
     bagConfirm.setAttribute('aria-labelledby', 'bagConfirmTitle');
     bagConfirm.innerHTML = `
       <div class="confirm__panel">
-        <h3 id="bagConfirmTitle">Delete this bag?</h3>
-        <p>Anyone with the link will find nothing there. The games stay on the shelf.</p>
+        <h3 id="bagConfirmTitle" data-i18n="bag.deleteTitle">Delete this bag?</h3>
+        <p data-i18n="bag.deleteBody">Anyone with the link will find nothing there. The games stay on the shelf.</p>
         <div class="confirm__row">
-          <button class="confirm__keep" type="button" data-bag-keep>Keep it</button>
-          <button class="confirm__end" type="button" data-bag-delete>Delete</button>
+          <button class="confirm__keep" type="button" data-bag-keep data-i18n="bag.keep">Keep it</button>
+          <button class="confirm__end" type="button" data-bag-delete data-i18n="bag.delete">Delete</button>
         </div>
       </div>`;
+    translate(bagConfirm);
     document.body.appendChild(bagConfirm);
     registerOverlay(() => bagConfirm.classList.contains('open'));
     const close = ()=>{
@@ -1840,20 +1865,20 @@ function confirmDeleteBag(opener){
     bagConfirm.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ e.preventDefault(); close(); } });
     bagConfirm.querySelector('[data-bag-delete]').addEventListener('click', async ()=>{
       const btn = bagConfirm.querySelector('[data-bag-delete]');
-      btn.disabled = true; btn.textContent = 'Deleting…';
+      btn.disabled = true; btn.textContent = t('bag.deleting');
       try {
         await bagStore.remove(pageBag.id);
         // Back to the shelf the bag came from; its Bags row no longer lists it.
         location.href = `/u/${encodeURIComponent(profile.slug)}`;
       } catch (err) {
-        btn.disabled = false; btn.textContent = 'Delete';
+        btn.disabled = false; btn.textContent = t('bag.delete');
         close();
         const note = document.querySelector('.bag-actions__error');
         note.textContent = err?.code === 'FORBIDDEN' || err?.code === 'NO_TOKEN'
-          ? 'This browser’s edit key for the bag doesn’t match, so it can’t be deleted from here.'
+          ? t('bag.deleteForbidden')
           : err?.code === 'NOT_FOUND'
-            ? 'This bag is already gone.'
-            : 'Couldn’t reach the shelf to delete it. Check the connection and try again.';
+            ? t('bag.deleteGone')
+            : t('bag.deleteFail');
         note.hidden = false;
         console.warn('[bag] delete failed', err);
       }
@@ -1877,13 +1902,14 @@ function showShelfState(kind){
   }
   if(kind === 'redirect') return;
   if(kind === 'empty-own'){
-    document.title = 'Your shelf · BoardgameShelf';
+    document.title = `${t('shelf.yourShelfTitle')} · BoardgameShelf`;
     const eyebrow = document.getElementById('shelfOwner');
-    eyebrow.textContent = userDisplayName(viewer) || 'Your shelf';
+    eyebrow.textContent = userDisplayName(viewer) || t('shelf.yourShelfTitle');
     const a = document.createElement('a');
-    a.href = '/welcome'; a.className = 'owner-link'; a.textContent = 'Connect your collection';
+    a.href = '/welcome'; a.className = 'owner-link'; a.dataset.i18n = 'shelf.connect'; a.textContent = t('shelf.connect');
     eyebrow.append(' · ', a);
-    shelf.innerHTML = `<p class="empty-state">Your shelf is empty.<br>Connect your BoardGameGeek account and your owned games will appear here.<a href="/welcome">Connect your collection</a><a href="#" id="emptySignOut">Sign out</a></p>`;
+    shelf.innerHTML = `<p class="empty-state"><span data-i18n="shelf.emptyOwn">Your shelf is empty.</span><br><span data-i18n="shelf.emptyOwnHint">Connect your BoardGameGeek account and your owned games will appear here.</span><a href="/welcome" data-i18n="shelf.connect">Connect your collection</a><a href="#" id="emptySignOut" data-i18n="shelf.signOut">Sign out</a></p>`;
+    translate(shelf);
     document.getElementById('emptySignOut').addEventListener('click', async (e)=>{
       e.preventDefault();
       try { await signOut(); } catch {}
@@ -1892,24 +1918,28 @@ function showShelfState(kind){
     return;
   }
   if(kind === 'not-found'){
-    document.title = 'Shelf not found · BoardgameShelf';
+    document.title = `${t('shelf.notFoundTitle')} · BoardgameShelf`;
     document.getElementById('shelfOwner').textContent = '404';
-    shelf.innerHTML = `<p class="empty-state">There's no shelf at <code>/u/${slugFromPath() || '…'}</code>.<br>The address is a BGG username, lowercased.<a href="/">Go to the front page</a></p>`;
+    shelf.innerHTML = `<p class="empty-state"><span data-i18n="shelf.notFound">There's no shelf at</span> <code>/u/${slugFromPath() || '…'}</code>.<br><span data-i18n="shelf.notFoundHint">The address is a BGG username, lowercased.</span><a href="/" data-i18n="shelf.front">Go to the front page</a></p>`;
+    translate(shelf);
     return;
   }
   if(kind === 'bag-not-found'){
-    document.title = 'Bag not found · BoardgameShelf';
-    document.getElementById('shelfOwner').textContent = 'Bag';
-    shelf.innerHTML = `<p class="empty-state">This bag doesn't exist.<br>It may have been unpacked, or the link is missing a character.<a href="/">Go to the front page</a></p>`;
+    document.title = `${t('shelf.bagNotFoundTitle')} · BoardgameShelf`;
+    document.getElementById('shelfOwner').textContent = t('bag.bag');
+    shelf.innerHTML = `<p class="empty-state"><span data-i18n="shelf.bagNotFound">This bag doesn't exist.</span><br><span data-i18n="shelf.bagNotFoundHint">It may have been unpacked, or the link is missing a character.</span><a href="/" data-i18n="shelf.front">Go to the front page</a></p>`;
+    translate(shelf);
     return;
   }
   if(kind === 'private'){
-    document.title = 'Private shelf · BoardgameShelf';
+    document.title = `${t('shelf.privateTitle')} · BoardgameShelf`;
     document.getElementById('shelfOwner').textContent = slugFromPath();
-    shelf.innerHTML = `<p class="empty-state">This shelf is private.<br>Its owner can make it public in Settings.<a href="/">Go to the front page</a></p>`;
+    shelf.innerHTML = `<p class="empty-state"><span data-i18n="shelf.private">This shelf is private.</span><br><span data-i18n="shelf.privateHint">Its owner can make it public in Settings.</span><a href="/" data-i18n="shelf.front">Go to the front page</a></p>`;
+    translate(shelf);
     return;
   }
-  shelf.innerHTML = `<p class="empty-state">Couldn't load the collection. Try refreshing.</p>`;
+  shelf.innerHTML = `<p class="empty-state" data-i18n="shelf.loadFail">Couldn't load the collection. Try refreshing.</p>`;
+  translate(shelf);
 }
 // "Show expansions" is the owner's Settings choice, read off the profile once
 // it loads. It rides inside `filters` so applyFilters sees it, but it is not
@@ -1939,13 +1969,14 @@ function render(){
   const pool = state.filters.showExpansions ? games : games.filter(g => g.subtype !== 'boardgameexpansion');
   const total = pool.length;
   const all = filtered.length === total;
+  delete countEl.dataset.i18n; // the static "Loading…" key is done with
   countEl.textContent = isBagRoute
     ? (all
-        ? `${total} game${total === 1 ? '' : 's'} in this bag`
-        : `${filtered.length} of ${total} in this bag`)
+        ? tn('shelf.bagCount', total)
+        : t('shelf.bagCountOf', { n: filtered.length, total }))
     : (all
-        ? `${total} on the shelf`
-        : `${filtered.length} of ${total} on the shelf`);
+        ? t('shelf.count', { n: total })
+        : t('shelf.countOf', { n: filtered.length, total }));
 
   // Cached for the tray's "hidden by filters" tags. Only what's *filtered* can
   // change it, and every such change comes through here — so selection toggles
@@ -1956,7 +1987,7 @@ function render(){
   renderChips();
 
   if(filtered.length===0){
-    shelf.innerHTML = `<p class="empty-state">Nothing on the shelf for that.<br>Try another vibe, or widen the player count.<button type="button" id="emptyReset">Clear filters</button></p>`;
+    shelf.innerHTML = `<p class="empty-state">${t('shelf.emptyFiltered')}<br>${t('shelf.emptyFilteredHint')}<button type="button" id="emptyReset">${t('shelf.clearFilters')}</button></p>`;
     const emptyReset = document.getElementById('emptyReset');
     if(emptyReset) emptyReset.addEventListener('click', ()=>{
       state.filters = freshFilters();
@@ -2049,21 +2080,19 @@ function renderChips(){
   const row = document.getElementById('chipsRow');
   const chips = [];
   if(state.filters.minPlayers !== 1 || state.filters.maxPlayers !== 11){
-    chips.push({ key:'players', label:`${playersLabel(state.filters)} players` });
+    chips.push({ key:'players', label: t('filter.chipPlayers', { label: playersLabel(state.filters) }) });
   }
   if(state.filters.vibe){
     chips.push({ key:'vibe', label: vibeLabel(state.filters.vibe) });
   }
   if(state.filters.time !== 'any'){
-    const labels = { quick:'Quick', medium:'Medium', long:'Long' };
-    chips.push({ key:'time', label: labels[state.filters.time] });
+    chips.push({ key:'time', label: t(`filter.${state.filters.time}`) });
   }
   if(state.filters.weight !== 'any'){
-    const labels = { light:'Light', medium:'Medium', heavy:'Heavy' };
-    chips.push({ key:'weight', label: labels[state.filters.weight] });
+    chips.push({ key:'weight', label: t(`filter.${state.filters.weight}`) });
   }
   if(state.filters.bestFit){
-    chips.push({ key:'bestFit', label: 'Recommended counts only' });
+    chips.push({ key:'bestFit', label: t('filter.bestFit') });
   }
   if(chips.length===0){
     row.hidden = true;
@@ -2074,7 +2103,7 @@ function renderChips(){
   row.innerHTML = chips.map(c=>`
     <span class="chip" data-key="${c.key}">
       ${c.label}
-      <button type="button" aria-label="Remove ${c.label} filter">✕</button>
+      <button type="button" aria-label="${t('filter.removeChip', { label: c.label })}">✕</button>
     </span>
   `).join('');
   row.querySelectorAll('.chip button').forEach(btn=>{
@@ -2130,9 +2159,11 @@ function syncVibePills(){
     p.querySelector('.n').textContent = String(n);
   });
   const v = VIBES.find(x => x.key === draftFilters.vibe);
+  // Vibe names stay English; their one-line hints are UI text and translate.
+  const hintOf = (vibe) => { const k = `vibe.hint.${vibe.key}`; const h = t(k); return h === k ? vibe.hint : h; };
   vibeHint.innerHTML = v
-    ? `<b>${v.label}</b> — ${v.hint}`
-    : 'Pick one. Or switch to Time &amp; weight if you already know how long you have.';
+    ? `<b>${v.label}</b> — ${hintOf(v)}`
+    : t('filter.vibeHint');
 }
 
 function syncSheetUI(){
@@ -2161,10 +2192,10 @@ function updateLiveCount(){
     cue.classList.toggle('active', n>=draftFilters.minPlayers && n<=draftFilters.maxPlayers);
     cue.setAttribute('aria-pressed', String(n === exact));
   });
-  playersGroupLabel.textContent = `Players — ${playersLabel(draftFilters)}`;
+  playersGroupLabel.textContent = t('filter.players', { label: playersLabel(draftFilters) });
   syncVibePills();
   const liveCount = applyFilters(games, draftFilters, state.search).length;
-  applyBtn.textContent = `Show ${liveCount} game${liveCount===1?'':'s'}`;
+  applyBtn.textContent = tn('filter.apply', liveCount);
 }
 
 function clampRange(){
@@ -2316,7 +2347,8 @@ sortBtn.addEventListener('click', ()=>{
   const isDesc = state.sort === 'desc';
   sortBtn.classList.toggle('active', isDesc);
   sortBtn.setAttribute('aria-pressed', String(isDesc));
-  sortBtn.setAttribute('aria-label', isDesc ? 'Sort descending' : 'Sort ascending');
+  sortBtn.dataset.i18nAttr = `aria-label:${isDesc ? 'shelf.sortDesc' : 'shelf.sortAsc'}`;
+  sortBtn.setAttribute('aria-label', t(isDesc ? 'shelf.sortDesc' : 'shelf.sortAsc'));
   sortIcon.style.transform = isDesc ? 'rotate(180deg)' : 'rotate(0deg)';
   render();
 });
@@ -2565,14 +2597,14 @@ registerOverlay(() => document.body.classList.contains('gn-tray-open'));
 
 function updateGnBar(){
   const n = state.selectedIds.size;
-  const hint = n < GN_MIN_SELECT ? `Pick at least ${GN_MIN_SELECT - n} more` : 'Ready to go';
+  const hint = n < GN_MIN_SELECT ? t('night.pickMore', { n: GN_MIN_SELECT - n }) : t('night.ready');
   const btn = document.getElementById('gnBarCount');
   // Always shown, including at zero, so the bar states the target up front
   // rather than appearing only once the host has already guessed at it. The
   // button still disables at zero — there's no tray to open — and the CSS
   // hides the chevron in that state so it reads as a label, not an affordance.
   btn.innerHTML = `
-    <span class="count-line">${n} selected${GN_CHEV_SVG}</span>
+    <span class="count-line">${t('night.selected', { n })}${GN_CHEV_SVG}</span>
     <small>${hint}</small>
   `;
   btn.disabled = n === 0;
@@ -2589,7 +2621,7 @@ function renderGnTray(){
   list.innerHTML = ids.map(id => {
     const g = games.find(x => x.bggId === id);
     if(!g) return '';
-    const off = visible.has(id) ? '' : '<span class="gn-tray__offscreen">hidden by filters</span>';
+    const off = visible.has(id) ? '' : `<span class="gn-tray__offscreen">${t('night.hiddenByFilters')}</span>`;
     return `
       <div class="gn-tray__row">
         <div class="gn-tray__thumb"><img src="${g.image}" alt="" loading="lazy" onerror="this.remove()"></div>
@@ -2597,7 +2629,7 @@ function renderGnTray(){
           <b>${g.title}</b>
           <span>${playersRangeLabel(g.players)} · ${timeLabel(g.time)}</span>${off}
         </div>
-        <button class="gn-tray__remove" type="button" data-remove="${id}" aria-label="Remove ${g.title}">${GN_X_SVG}</button>
+        <button class="gn-tray__remove" type="button" data-remove="${id}" aria-label="${t('night.remove', { title: g.title })}">${GN_X_SVG}</button>
       </div>
     `;
   }).join('');
@@ -2654,8 +2686,8 @@ function renderSurpriseCard(g, i){
           <div class="s">${playersRangeLabel(g.players)} · ${timeLabel(g.time)}</div>
         </div>
         <span class="lock" aria-hidden="true">${GN_LOCK_SVG}</span>
-        <button class="swap" type="button" data-swap="${i}" aria-label="Swap ${g.title}" ${kept ? 'hidden' : ''}>${GN_ROLL_SVG}</button>
-        <span class="sr-only" data-keptlabel data-title="${g.title}">${kept ? 'Kept' : 'Not kept'}: ${g.title}</span>
+        <button class="swap" type="button" data-swap="${i}" aria-label="${t('night.swap', { title: g.title })}" ${kept ? 'hidden' : ''}>${GN_ROLL_SVG}</button>
+        <span class="sr-only" data-keptlabel data-title="${g.title}">${t(kept ? 'night.kept' : 'night.notKept')}: ${g.title}</span>
       </div>
       </div>`;
 }
@@ -2728,8 +2760,8 @@ function syncRevealToggleUI(){
 
 function updateConfirmSummary(){
   const n = currentGnGameIds().length;
-  const modeLabel = gnState.mode === 'random' ? 'Random picks' : 'You picked them';
-  document.getElementById('gnSummary').textContent = `${n} game${n === 1 ? '' : 's'} · ${modeLabel}`;
+  const mode = t(gnState.mode === 'random' ? 'night.modeRandom' : 'night.modeManual');
+  document.getElementById('gnSummary').textContent = tn('night.summary', n, { mode });
 }
 
 function openConfirm(){
@@ -2753,7 +2785,7 @@ async function handleGnStart(){
   const hostName = nameInput.value.trim();
   const errorEl = document.getElementById('gnConfirmError');
   if(!hostName){
-    errorEl.textContent = 'Enter your name to continue.';
+    errorEl.textContent = t('night.enterName');
     errorEl.classList.add('show');
     nameInput.focus();
     return;
@@ -2765,17 +2797,17 @@ async function handleGnStart(){
   const startBtn = document.getElementById('gnConfirmStart');
   errorEl.classList.remove('show');
   startBtn.disabled = true;
-  startBtn.textContent = 'Starting…';
+  startBtn.textContent = t('night.starting');
   try {
     const { createGameNight } = await gnSessionModPromise;
     const code = await createGameNight({ hostName, mode, revealDeck, gameIds, ownerId: profile.id, bagId: isBagRoute ? bagRouteId : null });
     sessionStorage.setItem(`gamenight:${code}:name`, hostName);
     location.href = `/night/${code}/host`;
   } catch (err) {
-    errorEl.textContent = "Couldn't start the game night. Try again.";
+    errorEl.textContent = t('night.startFail');
     errorEl.classList.add('show');
     startBtn.disabled = false;
-    startBtn.textContent = 'Start Game Night';
+    startBtn.textContent = t('night.start');
   }
 }
 
@@ -2803,8 +2835,10 @@ function initGameNight(){
   gnRandomBtn.className = 'gn-random-fab';
   gnRandomBtn.type = 'button';
   gnRandomBtn.id = 'gnRandomBtn';
-  gnRandomBtn.setAttribute('aria-label', 'Random — pick 6 games for us');
-  gnRandomBtn.innerHTML = `${GN_ROLL_SVG}<span class="lbl">Random</span>`;
+  gnRandomBtn.setAttribute('aria-label', t('night.randomAria'));
+  gnRandomBtn.dataset.i18nAttr = 'aria-label:night.randomAria';
+  gnRandomBtn.innerHTML = `${GN_ROLL_SVG}<span class="lbl" data-i18n="night.random">Random</span>`;
+  translate(gnRandomBtn);
   document.body.appendChild(gnRandomBtn);
 
   ensureGnWave();
@@ -2815,34 +2849,34 @@ function initGameNight(){
     <div class="gn-backdrop gn-backdrop--sheet" id="gnSurpriseBackdrop">
       <div class="gn-panel gn-sheet" role="dialog" aria-modal="true" aria-labelledby="gnSurpriseTitle">
         <div class="gn-sheet__grab" aria-hidden="true"></div>
-        <h3 id="gnSurpriseTitle">Tonight's surprise</h3>
-        <p class="gn-sub">Tap a game to keep it. Re-roll swaps the rest.</p>
+        <h3 id="gnSurpriseTitle" data-i18n="night.surpriseTitle">Tonight's surprise</h3>
+        <p class="gn-sub" data-i18n="night.surpriseSub">Tap a game to keep it. Re-roll swaps the rest.</p>
         <div class="gn-surprise-grid" id="gnSurpriseGrid"></div>
         <div class="gn-row">
-          <button class="gn-secondary-btn" id="gnRerollBtn" type="button">${GN_ROLL_SVG} Re-roll <span id="gnRerollN"></span></button>
-          <button class="gn-primary-btn" id="gnSurpriseContinue" type="button">Continue</button>
+          <button class="gn-secondary-btn" id="gnRerollBtn" type="button">${GN_ROLL_SVG} <span data-i18n="night.reroll">Re-roll</span> <span id="gnRerollN"></span></button>
+          <button class="gn-primary-btn" id="gnSurpriseContinue" type="button" data-i18n="night.continue">Continue</button>
         </div>
-        <button class="gn-cancel-link" id="gnSurpriseCancel" type="button">Cancel</button>
+        <button class="gn-cancel-link" id="gnSurpriseCancel" type="button" data-i18n="night.cancel">Cancel</button>
       </div>
     </div>
 
     <div class="gn-backdrop" id="gnConfirmBackdrop">
       <div class="gn-panel" role="dialog" aria-modal="true" aria-labelledby="gnConfirmTitle">
-        <h3 id="gnConfirmTitle">Almost ready</h3>
+        <h3 id="gnConfirmTitle" data-i18n="night.almostReady">Almost ready</h3>
         <p class="gn-error" id="gnConfirmError">Couldn't start the game night. Try again.</p>
         <div class="gn-field">
-          <label for="gnHostName">Your name</label>
-          <input class="gn-text-input" id="gnHostName" type="text" placeholder="e.g. Nok" autocomplete="off">
+          <label for="gnHostName" data-i18n="night.yourName">Your name</label>
+          <input class="gn-text-input" id="gnHostName" type="text" placeholder="e.g. Nok" autocomplete="off" data-i18n-attr="placeholder:night.namePlaceholder">
         </div>
         <div class="gn-field" id="gnRevealField">
           <button type="button" class="toggle-row" id="gnRevealToggle" role="switch" aria-checked="false">
             <span class="toggle-switch" aria-hidden="true"></span>
-            <span class="toggle-label">Reveal selection</span>
+            <span class="toggle-label" data-i18n="night.reveal">Reveal selection</span>
           </button>
         </div>
         <p class="gn-summary" id="gnSummary"></p>
         <div class="gn-row">
-          <button class="gn-secondary-btn" id="gnConfirmBack" type="button">Back</button>
+          <button class="gn-secondary-btn" id="gnConfirmBack" type="button" data-i18n="night.back">Back</button>
           <button class="gn-primary-btn" id="gnConfirmStart" type="button">Start Game Night</button>
         </div>
       </div>
@@ -2851,23 +2885,25 @@ function initGameNight(){
     <div class="gn-scrim" id="gnScrim"></div>
     <div class="gn-tray" id="gnTray">
       <div class="gn-tray__head">
-        <h4>Tonight's deck</h4>
-        <button class="gn-tray__clear" id="gnTrayClear" type="button">Clear all</button>
+        <h4 data-i18n="night.deck">Tonight's deck</h4>
+        <button class="gn-tray__clear" id="gnTrayClear" type="button" data-i18n="night.clearAll">Clear all</button>
       </div>
       <div class="gn-tray__list" id="gnTrayList"></div>
     </div>
     <div class="gn-bar" id="gnBar">
-      <button class="gn-bar__cancel" id="gnBarCancel" type="button">Cancel</button>
+      <button class="gn-bar__cancel" id="gnBarCancel" type="button" data-i18n="night.cancel">Cancel</button>
       <button class="gn-bar__count" id="gnBarCount" type="button" disabled></button>
-      <button class="gn-bar__continue" id="gnBarContinue" type="button" disabled>Continue</button>
+      <button class="gn-bar__continue" id="gnBarContinue" type="button" disabled data-i18n="night.continue">Continue</button>
     </div>
   `);
+  // The panels above were just inserted, after the page-level pass ran.
+  ['gnSurpriseBackdrop', 'gnConfirmBackdrop', 'gnTray', 'gnBar'].forEach(id => translate(document.getElementById(id)));
 
   // entry point → selection mode, directly
   gnStartBtn.addEventListener('click', ()=>{
     const pool = gnPool();
     if(pool.length < GN_MIN_POOL){
-      showGnToast('Not enough games match these filters');
+      showGnToast(t('night.notEnough'));
       return;
     }
     gnState.mode = 'manual';
@@ -2897,7 +2933,7 @@ function initGameNight(){
     card.setAttribute('aria-pressed', String(kept));
     card.querySelector('.swap').hidden = kept;
     const label = card.querySelector('[data-keptlabel]');
-    label.textContent = `${kept ? 'Kept' : 'Not kept'}: ${label.dataset.title}`;
+    label.textContent = `${t(kept ? 'night.kept' : 'night.notKept')}: ${label.dataset.title}`;
     updateSurpriseControls();
   }
 
@@ -3058,10 +3094,30 @@ if('IntersectionObserver' in window){
   ).observe(stickySentinel);
 }
 
+// A language swap rebuilds everything this script composes from strings:
+// the grid and count line, the open filter sheet, the game-night bar, tray,
+// surprise cards and confirm summary, and the sort button's label. The
+// static markup and the panels' data-i18n keys were already re-applied.
+let shelfLoaded = false;
+document.addEventListener('bgs:langchange', ()=>{
+  if(!shelfLoaded) return; // an error state: its markup translated itself
+  render();
+  if(isSheetOpen()) syncSheetUI();
+  const isDesc = state.sort === 'desc';
+  sortBtn.setAttribute('aria-label', t(isDesc ? 'shelf.sortDesc' : 'shelf.sortAsc'));
+  if(gameNightVisible && document.getElementById('gnBar')){
+    if(state.selectionMode) updateGnBar();
+    if(gnState.surprisePool.length) renderSurprise();
+    if(document.getElementById('gnConfirmBackdrop').classList.contains('open')) updateConfirmSummary();
+  }
+});
+
 try {
+  await i18nReady;
   await loadGames();
   if(bagVisible && !isBagRoute) await initBag();
   render();
+  shelfLoaded = true;
   // A bag page shows no Game Night this stage (Stage 3 brings it back scoped
   // to the bag); the invite sheet hangs off its bar, so it goes with it.
   if(gameNightVisible) initGameNight();

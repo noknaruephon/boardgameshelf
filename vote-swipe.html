@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#160F0A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/game-modal.css">
 <link rel="stylesheet" href="/css/confirm-dialog.css">
@@ -35,7 +35,7 @@
   .screen{max-width:400px;margin:0 auto;position:relative;}
   .shelf-footer{max-width:400px;}
   .eyebrow{
-    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;
     text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
   }
   h1{
@@ -55,7 +55,7 @@
      see the layer rule at the top of js/swipe.js. */
   .tally{
     display:flex;align-items:center;gap:2px;white-space:nowrap;
-    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;
+    font-family:var(--font-mono);font-size:11px;font-weight:500;
     padding:5px 10px;border-radius:999px;
     background:rgba(var(--bgs-ivory-rgb),.06);
     border:1px solid rgba(var(--bgs-ivory-rgb),.1);
@@ -146,7 +146,7 @@
   }
   .stack .meta ul{
     margin:0;padding:0;list-style:none;display:flex;gap:14px;flex-wrap:wrap;
-    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-ivory-70);
+    font-family:var(--font-mono);font-size:12px;color:var(--bgs-ivory-70);
   }
   .stack .meta li{display:inline-flex;align-items:center;gap:5px;}
   .stack .meta svg{
@@ -181,7 +181,7 @@
 
   .stamp{
     position:absolute;top:26px;z-index:4;opacity:0;pointer-events:none;
-    font-family:'IBM Plex Mono',monospace;font-weight:500;
+    font-family:var(--font-mono);font-weight:500;
     font-size:20px;line-height:1;letter-spacing:.12em;
     /* Right pad trimmed to offset the trailing letter-spacing, so the box
        looks optically centred on the word. */
@@ -327,7 +327,7 @@
   /* ---- ended / not found ---- */
   .ended p{text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;}
   .ended-detail{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.5;
+    font-family:var(--font-mono);font-size:11px;line-height:1.5;
     color:var(--bgs-ivory-45);text-align:center;margin:-10px 0 22px;
     word-break:break-word;
   }
@@ -373,11 +373,11 @@
     </a>
   </div>
   <nav class="shelf-footer__links" aria-label="Legal">
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
+    <a href="/privacy" data-i18n="footer.privacy">Privacy</a>
+    <a href="/terms" data-i18n="footer.terms">Terms</a>
   </nav>
   <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar.</p>
-  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
+  <p class="shelf-footer__legal" data-i18n="footer.courtesy">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 
 <script type="module">
@@ -391,6 +391,11 @@ import { deckFromSession, openGameModal, shuffleHTML } from '/js/waiting-room.js
 import { attachSwipe, markCommitted, exitCard } from '/js/swipe.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
+import { initI18n } from '/js/i18n.js';
+
+// The detail modal (js/game-modal.js) reads its strings from the dictionary,
+// so the language is applied here too; this page's own chrome stays English.
+initI18n();
 
 const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.

@@ -12,9 +12,11 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <script type="module" src="/js/beta-tag.js"></script>
+<script type="module" src="/js/lang-pill.js"></script>
+<script type="module">import { initI18n } from '/js/i18n.js'; initI18n();</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
   /* Tokens and page chrome come from css/base.css. */
@@ -28,7 +30,7 @@
   .back{
     display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
     min-height:52px;margin:36px 0 0;padding:0 18px;border-radius:12px;
-    font:600 16px/1 'Inter',sans-serif;cursor:pointer;text-decoration:none;
+    font:600 16px/1 var(--font-ui);cursor:pointer;text-decoration:none;
     border:1.5px solid var(--bgs-gold);background:var(--bgs-gold);color:var(--bgs-bg);
     transition:background .15s ease,transform .1s ease;
   }
@@ -38,7 +40,7 @@
   .back:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
   @media (prefers-reduced-motion:reduce){.back{transition:none;}}
   h1{font-family:'Fraunces',serif;font-weight:600;font-variation-settings:'opsz' 144;font-size:clamp(32px,7vw,44px);line-height:1.05;letter-spacing:-.015em;margin:0 0 6px;}
-  .updated{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);margin:0 0 28px;}
+  .updated{font-family:var(--font-mono);font-size:12px;letter-spacing:.02em;color:var(--bgs-gold-dim);margin:0 0 28px;}
   h2{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:32px 0 10px;}
   p,li{font-size:16px;line-height:1.6;color:var(--bgs-ivory-70);}
   p{margin:0 0 14px;}
@@ -52,8 +54,8 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="mark bgs-wordmark"><a href="/">BoardgameShelf</a><button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></p>
-  <h1>Terms of service</h1>
+  <p class="mark bgs-wordmark"><a href="/">BoardgameShelf</a><button type="button" class="bgs-pill bgs-beta" aria-label="Beta — about this label">Beta</button></p>
+  <h1 data-i18n="legal.termsTitle">Terms of service</h1>
   <p class="updated">Last updated 8 September 2026</p>
 
   <p>BoardgameShelf is a free, non-commercial hobby site run by one person. By using it you agree to the plain-language terms below.</p>
@@ -86,7 +88,7 @@
   <h2>Contact</h2>
   <p><a href="mailto:nok.naruephon@gmail.com">nok.naruephon@gmail.com</a></p>
   <a class="back" id="backLink" href="/">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Back
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span data-i18n="legal.back">Back</span>
   </a>
 </div>
 <footer class="shelf-footer">
@@ -96,11 +98,11 @@
     </a>
   </div>
   <nav class="shelf-footer__links" aria-label="Legal">
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
+    <a href="/privacy" data-i18n="footer.privacy">Privacy</a>
+    <a href="/terms" data-i18n="footer.terms">Terms</a>
   </nav>
   <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar.</p>
-  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
+  <p class="shelf-footer__legal" data-i18n="footer.courtesy">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 <script>
   // Back returns to the page the visitor came from when that page is on

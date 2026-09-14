@@ -22,6 +22,7 @@
 import { bagStore, migrateLegacyBags } from './bag-store.js';
 import { coverage, coveredPlayersLabel, timeLabel, cellsHTML } from './bag-coverage.js';
 import { createBottomSheet } from './share-sheet.js';
+import { t, tn, translate } from './i18n.js';
 
 const STYLESHEET = '/css/bag.css';
 
@@ -31,13 +32,14 @@ const gameId = g => String(g.bggId);
 // reads the same way.
 const range = ([lo, hi]) => (lo === hi ? `${lo}` : `${lo}–${hi}`);
 
+// i18n keys; the strings live in /i18n/*.json.
 const SAVE_ERRORS = {
-  NO_GAMES: 'Pick at least one game to pack.',
-  NO_NAME: 'Name the bag before packing it.',
-  NO_TOKEN: 'This browser can’t edit that bag — only the one that packed it can.',
-  FORBIDDEN: 'That bag wouldn’t accept the change: the edit key here doesn’t match.',
-  NOT_FOUND: 'That bag is gone. Pack it again to make a new one.',
-  UNAVAILABLE: 'Couldn’t reach the shelf to save. Check the connection and try again.',
+  NO_GAMES: 'bag.errNoGames',
+  NO_NAME: 'bag.errNoName',
+  NO_TOKEN: 'bag.errNoToken',
+  FORBIDDEN: 'bag.errForbidden',
+  NOT_FOUND: 'bag.errNotFound',
+  UNAVAILABLE: 'bag.errUnavailable',
 };
 
 function loadStyles() {
@@ -84,7 +86,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   // "◆ N bags ▾", or "◆ No bags ▾" with none, and always opens the Bags sheet.
   const packBtn = el(`
     <button class="shelf-bags-btn" type="button" aria-haspopup="dialog" aria-expanded="false">
-      <i class="bag-diamond" aria-hidden="true"></i><span class="shelf-bags-btn__label">No bags</span><span class="shelf-bags-btn__caret" aria-hidden="true">▾</span>
+      <i class="bag-diamond" aria-hidden="true"></i><span class="shelf-bags-btn__label" data-i18n="bag.noBags">No bags</span><span class="shelf-bags-btn__caret" aria-hidden="true">▾</span>
     </button>
   `);
   const packLabel = packBtn.querySelector('.shelf-bags-btn__label');
@@ -99,49 +101,52 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     className: 'bags-sheet',
     titleId: 'bagsSheetTitle',
     bodyHTML: `
-      <h2 class="bsheet__title" id="bagsSheetTitle">Bags</h2>
+      <h2 class="bsheet__title" id="bagsSheetTitle" data-i18n="bag.bags">Bags</h2>
       <div class="bags-sheet__list" data-bags-list></div>
     `,
     onClose: () => packBtn.setAttribute('aria-expanded', 'false'),
   });
   const sheetList = sheet.el.querySelector('[data-bags-list]');
+  translate(sheet.el);
 
-  const hint = el('<p class="bag-hint" hidden>Tap covers to pack them. <b>The bar shows who the bag covers, and for how long.</b></p>');
+  const hint = el('<p class="bag-hint" hidden><span data-i18n="bag.hint">Tap covers to pack them.</span> <b data-i18n="bag.hintBar">The bar shows who the bag covers, and for how long.</b></p>');
+  translate(hint);
   gridEl.before(hint);
 
   const bar = el(`
-    <div class="bag-bar" role="region" aria-label="Bag coverage" aria-hidden="true" tabindex="-1">
+    <div class="bag-bar" role="region" aria-label="Bag coverage" aria-hidden="true" tabindex="-1" data-i18n-attr="aria-label:bag.coverage">
       <div class="bag-bar__row">
         <div class="bag-bar__name">
-          <input class="bag-name-input" type="text" placeholder="Name the bag" aria-label="Bag name" autocomplete="off" spellcheck="false">
+          <input class="bag-name-input" type="text" placeholder="Name the bag" aria-label="Bag name" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:bag.namePlaceholder,aria-label:bag.name">
         </div>
         <div class="bag-cov">
           <div class="bag-cov__item">
-            <span class="bag-lab">Games</span>
+            <span class="bag-lab" data-i18n="bag.labGames">Games</span>
             <span class="bag-val"><b data-bag-count>0</b></span>
           </div>
           <div class="bag-cov__item">
-            <span class="bag-lab">Players</span>
+            <span class="bag-lab" data-i18n="bag.labPlayers">Players</span>
             <div class="bag-dots" data-bag-dots aria-hidden="true"></div>
             <span class="bag-sr" data-bag-players></span>
           </div>
           <div class="bag-cov__item">
-            <span class="bag-lab">Playtime</span>
+            <span class="bag-lab" data-i18n="bag.labPlaytime">Playtime</span>
             <span class="bag-val bag-val--plain" data-bag-time>—</span>
           </div>
           <div class="bag-cov__item bag-cov__item--gaps">
-            <span class="bag-lab">Gaps</span>
+            <span class="bag-lab" data-i18n="bag.labGaps">Gaps</span>
             <div class="bag-gaps" data-bag-gaps aria-live="polite"></div>
           </div>
         </div>
         <div class="bag-bar__actions">
-          <button class="bag-btn bag-btn--quiet" type="button" data-bag-cancel>Cancel</button>
+          <button class="bag-btn bag-btn--quiet" type="button" data-bag-cancel data-i18n="bag.cancel">Cancel</button>
           <button class="bag-btn bag-btn--primary" type="button" data-bag-commit disabled>Pack</button>
         </div>
         <p class="bag-bar__error" data-bag-error role="alert" hidden></p>
       </div>
     </div>
   `);
+  translate(bar);
   document.body.appendChild(bar);
 
   const nameInput = bar.querySelector('.bag-name-input');
@@ -166,7 +171,9 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   function renderControl() {
     const n = bags.length;
-    packLabel.textContent = n ? `${n} bag${n === 1 ? '' : 's'}` : 'No bags';
+    packLabel.dataset.i18n = n ? 'bag.nBags' : 'bag.noBags';
+    packLabel.dataset.args = JSON.stringify({ n });
+    packLabel.textContent = n ? tn('bag.nBags', n) : t('bag.noBags');
   }
 
   function renderSheet() {
@@ -187,7 +194,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
       }
       const txt = el('<span class="bags-sheet__txt"><span class="bags-sheet__name"></span><span class="bags-sheet__meta"></span></span>');
       txt.querySelector('.bags-sheet__name').textContent = bag.name;
-      const parts = [`${games.length} game${games.length === 1 ? '' : 's'}`];
+      const parts = [tn('bag.games', games.length)];
       const players = coveredPlayersLabel(cover.cells);
       if (players) parts.push(players.replace(' players', ' p'));
       if (cover.minTime !== null) parts.push(timeLabel(cover.minTime, cover.maxTime));
@@ -197,11 +204,11 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     }
     if (!bags.length) {
       const empty = el('<p class="bags-sheet__empty"></p>');
-      empty.textContent = canPack ? 'Nothing packed yet.' : 'No bags on this shelf yet.';
+      empty.textContent = t(canPack ? 'bag.nothingPacked' : 'bag.noBagsYet');
       sheetList.appendChild(empty);
     }
     if (canPack) {
-      const add = el('<button class="bags-sheet__row bags-sheet__row--new" type="button">+ Pack a bag</button>');
+      const add = el(`<button class="bags-sheet__row bags-sheet__row--new" type="button">${t('bag.packABag')}</button>`);
       add.addEventListener('click', () => { sheet.close(); enterPacking(null, packBtn); });
       sheetList.appendChild(add);
     }
@@ -253,7 +260,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   }
 
   function showError(code) {
-    errorEl.textContent = SAVE_ERRORS[code] || SAVE_ERRORS.UNAVAILABLE;
+    errorEl.textContent = t(SAVE_ERRORS[code] || SAVE_ERRORS.UNAVAILABLE);
     errorEl.hidden = false;
   }
 
@@ -268,7 +275,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
     countEl.textContent = String(selected.length);
     dots.forEach((dot, i) => dot.classList.toggle('on', cover.cells[i]));
     playersSrEl.textContent = selected.length
-      ? `Player counts covered: ${coveredPlayersLabel(cover.cells) || 'none'}`
+      ? t('bag.playersCoveredSr', { list: coveredPlayersLabel(cover.cells) || t('bag.none') })
       : '';
     timeEl.textContent = timeLabel(cover.minTime, cover.maxTime);
     // "Covered" is the all-clear, so it belongs to a bag that holds something.
@@ -278,16 +285,16 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
       gapsEl.innerHTML = cover.gaps.map(g => `<span class="bag-gap">${g}</span>`).join('');
     } else {
       gapsEl.classList.toggle('is-clear', selected.length > 0);
-      gapsEl.textContent = selected.length ? 'Covered' : '';
+      gapsEl.textContent = selected.length ? t('bag.covered') : '';
     }
     // Pack stays live: pressing it with nothing picked, or no name, says so
     // in the bar rather than sitting dimmed with no reason showing.
     commitBtn.disabled = saving;
     commitBtn.textContent = saving
-      ? 'Packing…'
+      ? t('bag.packing')
       : selected.length
-        ? `${editing ? 'Save' : 'Pack'} ${selected.length} game${selected.length === 1 ? '' : 's'}`
-        : 'Pack';
+        ? tn(editing ? 'bag.saveN' : 'bag.packN', selected.length)
+        : t('bag.pack');
   }
 
   function enterPacking(bag, origin) {
@@ -367,6 +374,12 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   commitBtn.addEventListener('click', commit);
   nameInput.addEventListener('input', () => { clearError(); updateBar(); });
   applyMode();
+  // A language swap: the static keys re-applied themselves; rebuild the rest.
+  document.addEventListener('bgs:langchange', () => {
+    renderControl();
+    renderSheet();
+    if (mode === 'packing') updateBar();
+  });
 
   // ---- what the shelf calls ----
 

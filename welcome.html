@@ -12,9 +12,10 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/base.css">
 <script type="module" src="/js/beta-tag.js"></script>
+<script type="module" src="/js/lang-pill.js"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 <meta name="robots" content="noindex">
 <style>
@@ -29,14 +30,14 @@
   .plate{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.22);border-radius:16px;padding:22px 20px;box-shadow:0 12px 30px -18px rgba(0,0,0,.8);}
   label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 6px;}
   .field{
-    width:100%;min-height:52px;padding:0 16px;border-radius:12px;font:400 16px 'Inter',sans-serif;color:var(--bgs-ivory);
+    width:100%;min-height:52px;padding:0 16px;border-radius:12px;font:400 16px var(--font-ui);color:var(--bgs-ivory);
     background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
   }
   .field::placeholder{color:var(--bgs-ivory-45);}
   .field:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
   .btn{
     display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:0 18px;border-radius:12px;
-    font:600 16px/1 'Inter',sans-serif;cursor:pointer;text-decoration:none;
+    font:600 16px/1 var(--font-ui);cursor:pointer;text-decoration:none;
     border:1.5px solid rgba(var(--bgs-gold-rgb),.55);background:rgba(var(--bgs-gold-rgb),.1);color:var(--bgs-ivory);
     transition:background .15s ease;
   }
@@ -58,12 +59,12 @@
   .help{font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);margin:10px 0 0;min-height:20px;}
   .help.ok{color:var(--bgs-vote-play);}
   .help.err{color:var(--bgs-vote-pass);}
-  .mono{font-family:'IBM Plex Mono',monospace;}
+  .mono{font-family:var(--font-mono);}
   .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 
   /* step indicator: a mono line and three aligned bars */
   .steps{margin:0 0 26px;}
-  .steps .line{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.02em;color:var(--bgs-ivory-45);margin:0 0 8px;}
+  .steps .line{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:12px;letter-spacing:.02em;color:var(--bgs-ivory-45);margin:0 0 8px;}
   .steps .line b{font-weight:500;color:var(--bgs-ivory-70);}
   .steps .segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
   .steps .segs i{height:3px;border-radius:2px;background:rgba(var(--bgs-ivory-rgb),.12);}
@@ -105,40 +106,40 @@
 </head>
 <body>
 <div class="wrap" id="page" data-state="empty">
-  <p class="mark bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></p>
+  <p class="mark bgs-wordmark">BoardgameShelf<button type="button" class="bgs-pill bgs-beta" aria-label="Beta — about this label">Beta</button></p>
 
-  <div class="steps" aria-label="Progress">
-    <div class="line"><b id="stepNum">Step 2 of 3</b><span id="stepName">Your BGG name</span></div>
+  <div class="steps" aria-label="Progress" data-i18n-attr="aria-label:welcome.progress">
+    <div class="line"><b id="stepNum" data-i18n="welcome.step2">Step 2 of 3</b><span id="stepName" data-i18n="welcome.stepName">Your BGG name</span></div>
     <div class="segs" aria-hidden="true"><i class="done"></i><i class="now"></i><i></i></div>
     <p class="sr" id="stepLive" aria-live="polite"></p>
   </div>
 
-  <h1 class="s s-empty s-checking s-found s-missing">Connect your collection</h1>
-  <h1 class="s s-syncing">Pulling in your games</h1>
-  <h1 class="s s-done">You're on the shelf</h1>
-  <p class="lede s s-empty s-checking s-found s-missing">Your owned games come straight from BGG. Nothing to upload.</p>
-  <p class="lede s s-syncing">This runs once now and whenever you tap Sync in settings.</p>
-  <p class="lede s s-done">Send the link to your group. They can browse and vote without signing in.</p>
+  <h1 class="s s-empty s-checking s-found s-missing" data-i18n="welcome.connectTitle">Connect your collection</h1>
+  <h1 class="s s-syncing" data-i18n="welcome.syncingTitle">Pulling in your games</h1>
+  <h1 class="s s-done" data-i18n="welcome.doneTitle">You're on the shelf</h1>
+  <p class="lede s s-empty s-checking s-found s-missing" data-i18n="welcome.connectLede">Your owned games come straight from BGG. Nothing to upload.</p>
+  <p class="lede s s-syncing" data-i18n="welcome.syncingLede">This runs once now and whenever you tap Sync in settings.</p>
+  <p class="lede s s-done" data-i18n="welcome.doneLede">Send the link to your group. They can browse and vote without signing in.</p>
 
   <!-- step 2: just the field, no card -->
   <form class="s s-empty s-checking s-found s-missing" id="nameForm" novalidate>
-    <label for="bgg">BoardGameGeek username</label>
-    <input class="field bgg" id="bgg" name="bgg" type="text" placeholder="your BGG username" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" aria-describedby="bggHelp">
-    <p class="help" id="bggHelp" aria-live="polite">Same as your BGG login. Not your email.</p>
+    <label for="bgg" data-i18n="welcome.bggLabel">BoardGameGeek username</label>
+    <input class="field bgg" id="bgg" name="bgg" type="text" placeholder="your BGG username" data-i18n-attr="placeholder:welcome.bggPlaceholder" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" aria-describedby="bggHelp">
+    <p class="help" id="bggHelp" aria-live="polite" data-i18n="welcome.bggHelp">Same as your BGG login. Not your email.</p>
     <div class="act">
-      <button class="btn ghost" id="continue" type="submit" disabled>Continue</button>
+      <button class="btn ghost" id="continue" type="submit" disabled data-i18n="welcome.continue">Continue</button>
     </div>
-    <p class="links">Just looking? <a id="browseLink" href="#">Browse an existing shelf</a><span class="dot">·</span><a id="laterLink" href="/shelf">Do this later</a><span class="dot" id="claimDot" hidden>·</span><a id="claimAnyway" href="#" hidden>Claim the name anyway</a></p>
+    <p class="links"><span data-i18n="welcome.justLooking">Just looking?</span> <a id="browseLink" href="#" data-i18n="welcome.browseExisting">Browse an existing shelf</a><span class="dot">·</span><a id="laterLink" href="/shelf" data-i18n="welcome.later">Do this later</a><span class="dot" id="claimDot" hidden>·</span><a id="claimAnyway" href="#" hidden data-i18n="welcome.claimAnyway">Claim the name anyway</a></p>
   </form>
 
   <div class="plate s s-syncing">
       <div class="fill" id="fill" aria-hidden="true"></div>
       <div class="prog" id="prog"><i id="progBar"></i></div>
-      <div class="progtxt" role="status" aria-live="polite"><span id="progLeft">Asking BGG for your collection…</span><span id="progRight"></span></div>
-      <p class="help" id="syncHelp">Covers and details are cached, so the next sync is quick.</p>
+      <div class="progtxt" role="status" aria-live="polite"><span id="progLeft" data-i18n="welcome.asking">Asking BGG for your collection…</span><span id="progRight"></span></div>
+      <p class="help" id="syncHelp" data-i18n="welcome.cached">Covers and details are cached, so the next sync is quick.</p>
       <div class="retry stack" id="retryWrap" hidden>
-        <button class="btn" id="retry" type="button">Try again</button>
-        <button class="btn quiet" id="browseBtnSync" type="button">Browse an existing shelf instead</button>
+        <button class="btn" id="retry" type="button" data-i18n="welcome.tryAgain">Try again</button>
+        <button class="btn quiet" id="browseBtnSync" type="button" data-i18n="welcome.browseInstead">Browse an existing shelf instead</button>
       </div>
   </div>
 
@@ -146,8 +147,8 @@
       <div class="fill" id="fillDone" aria-hidden="true"></div>
       <div class="progtxt" style="margin-top:12px"><span class="ok" id="doneCount"></span><span class="mono" id="doneSlug"></span></div>
       <div class="stack">
-        <a class="btn gold" id="openShelf" href="/settings">Open your shelf</a>
-        <button class="btn" id="copyLink" type="button">Copy link</button>
+        <a class="btn gold" id="openShelf" href="/settings" data-i18n="welcome.openShelf">Open your shelf</a>
+        <button class="btn" id="copyLink" type="button" data-i18n="welcome.copyLink">Copy link</button>
       </div>
   </div>
 
@@ -159,6 +160,12 @@
 import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName } from '/js/auth.js';
 import { runSync, BATCH_SIZE, BATCH_SECONDS } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
+import { initI18n, t, tn } from '/js/i18n.js';
+
+// Strings built here are set through i18n keys on the element (data-i18n +
+// data-args) wherever they live on screen for a while, so a language swap
+// re-renders them; one-shot messages just call t().
+const i18nReady = initI18n();
 
 const $ = (id) => document.getElementById(id);
 const page = $('page');
@@ -174,40 +181,46 @@ let covers = [];           // thumbnails seen this sync, in arrival order
 // ---- state + steps strip ----
 
 const STEPS = {
-  name: { num: 'Step 2 of 3', name: 'Your BGG name', segs: ['done', 'now', ''] },
-  sync: { num: 'Step 3 of 3', name: 'Sync', segs: ['done', 'done', 'now'] },
-  done: { num: 'Done', name: 'Your shelf', segs: ['done', 'done', 'done'] },
+  name: { num: 'welcome.step2', name: 'welcome.stepName', segs: ['done', 'now', ''] },
+  sync: { num: 'welcome.step3', name: 'welcome.stepSync', segs: ['done', 'done', 'now'] },
+  done: { num: 'welcome.done', name: 'welcome.stepShelf', segs: ['done', 'done', 'done'] },
 };
 let stepShown = null;
 function setSteps(stage) {
   const st = STEPS[stage];
-  $('stepNum').textContent = st.num;
-  $('stepName').textContent = st.name;
+  $('stepNum').dataset.i18n = st.num;
+  $('stepNum').textContent = t(st.num);
+  $('stepName').dataset.i18n = st.name;
+  $('stepName').textContent = t(st.name);
   document.querySelectorAll('.steps .segs i').forEach((el, i) => { el.className = st.segs[i]; });
   // Announce once per change, not on every state tick within the same step.
   if (stepShown !== stage) {
     stepShown = stage;
-    $('stepLive').textContent = `${st.num}: ${st.name}`;
+    $('stepLive').textContent = `${t(st.num)}: ${t(st.name)}`;
   }
 }
 
-// The one Continue button, restyled per state rather than swapped.
-function setButton(mode, label = 'Continue') {
+// The one Continue button, restyled per state rather than swapped. `label`
+// is an i18n key, kept on the element so a language swap re-renders it.
+function setButton(mode, label = 'welcome.continue') {
   const b = $('continue');
   b.className = `btn ${mode === 'gold' ? 'gold' : mode === 'ghost' ? 'ghost' : ''}`.trim();
   b.disabled = mode === 'ghost';
-  b.textContent = label;
+  b.dataset.i18n = label;
+  b.textContent = t(label);
 }
 
 function setState(state) {
   page.dataset.state = state;
   setSteps(state === 'syncing' ? 'sync' : state === 'done' ? 'done' : 'name');
-  if (state === 'syncing' || state === 'done') document.title = `${state === 'done' ? 'Ready' : 'Syncing'} · BoardgameShelf`;
+  if (state === 'syncing' || state === 'done') document.title = `${t(state === 'done' ? 'welcome.titleReady' : 'welcome.titleSyncing')} · BoardgameShelf`;
 }
 
 function help(html, kind = '') {
   const el = $('bggHelp');
   el.className = `help ${kind}`.trim();
+  // Built strings replace the static key: a swap keeps the message as is.
+  delete el.dataset.i18n;
   el.innerHTML = html;
 }
 
@@ -226,12 +239,13 @@ function resetToEmpty() {
   $('claimDot').hidden = true;
   setButton('ghost');
   setState('empty');
-  help('Same as your BGG login. Not your email.');
+  help(t('welcome.bggHelp'));
+  $('bggHelp').dataset.i18n = 'welcome.bggHelp';
 }
 
 async function check(name) {
   setState('checking');
-  help('<span class="spin" aria-hidden="true"></span>Checking BGG…');
+  help(`<span class="spin" aria-hidden="true"></span>${t('welcome.checking')}`);
   const ctrl = new AbortController();
   inflight = ctrl;
   try {
@@ -254,14 +268,14 @@ async function check(name) {
       lookup = { username: result.username || name, count: result.count };
       const slug = slugOf(lookup.username);
       const games = lookup.count === null || lookup.count === undefined
-        ? 'Found.'
-        : `Found · ${lookup.count} game${lookup.count === 1 ? '' : 's'} owned.`;
-      help(`${games} Shelf address <span class="mono">/u/${escapeHTML(slug)}</span>`, 'ok');
-      setButton('gold', 'Continue to sync');
+        ? t('welcome.found')
+        : tn('welcome.foundN', lookup.count);
+      help(`${games} ${t('welcome.address')} <span class="mono">/u/${escapeHTML(slug)}</span>`, 'ok');
+      setButton('gold', 'welcome.continueSync');
       setState('found');
     } else {
       lookup = null;
-      help("No account by that name. It's usually a typo — usernames aren't case-sensitive.", 'err');
+      help(t('welcome.noAccount'), 'err');
       setButton('ghost');
       setState('missing');
     }
@@ -275,13 +289,13 @@ async function check(name) {
       // saves the profile with the name as typed, and the picker opens right
       // away so there is something to look at.
       lookup = { username: name, count: null };
-      help("BGG isn't reachable right now. Your username is saved — you can sync later from Settings.", 'err');
-      setButton('plain', 'Continue');
+      help(t('welcome.bggDown'), 'err');
+      setButton('plain', 'welcome.continue');
       setState('missing');
       showPicker();
     } else {
       lookup = null;
-      help(`Couldn't check with BGG right now (${escapeHTML(err.message || 'no reply')}). You can claim the name as typed and sync later from Settings.`, 'err');
+      help(t('welcome.checkFail', { reason: escapeHTML(err.message || t('welcome.noReply')) }), 'err');
       setButton('ghost');
       $('claimAnyway').hidden = false;
       $('claimDot').hidden = false;
@@ -299,29 +313,29 @@ $('bgg').addEventListener('input', () => {
   cancelLookup();
   const name = $('bgg').value.trim();
   resetToEmpty();
-  if (name.length >= MIN_CHARS) setButton('plain', 'Continue');
+  if (name.length >= MIN_CHARS) setButton('plain', 'welcome.continue');
 });
 
 async function claim(username, btn, idleLabel) {
   const wasLink = btn.tagName === 'A';
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  btn.textContent = t('welcome.saving');
   try {
     const result = await claimProfile({ bggUsername: username, displayName: userDisplayName(user) });
     if (result.error === 'taken') {
-      help("That shelf is already claimed. If it's yours, sign in with the account you used before.", 'err');
+      help(t('welcome.taken'), 'err');
       return;
     }
     if (result.error === 'invalid') {
-      help("That username can't be used as a link.", 'err');
+      help(t('welcome.invalid'), 'err');
       return;
     }
     profile = result.profile;
     startSync();
   } catch (err) {
-    help(escapeHTML(err.message || "Couldn't save that. Try again."), 'err');
+    help(escapeHTML(err.message || t('welcome.saveFail')), 'err');
   } finally {
-    btn.textContent = idleLabel;
+    btn.textContent = t(idleLabel);
     if (!wasLink) btn.disabled = false;
   }
 }
@@ -336,7 +350,7 @@ $('nameForm').addEventListener('submit', async (e) => {
     await check(name);
     if (!lookup) return;              // not found, or an error was shown
   }
-  claim(lookup.username, $('continue'), page.dataset.state === 'found' ? 'Continue to sync' : 'Continue');
+  claim(lookup.username, $('continue'), page.dataset.state === 'found' ? 'welcome.continueSync' : 'welcome.continue');
 });
 
 // ---- fallback: browse a stocked shelf ----
@@ -364,7 +378,7 @@ $('claimAnyway').addEventListener('click', (e) => {
   const name = $('bgg').value.trim();
   if (name.length < MIN_CHARS) return;
   cancelLookup();
-  claim(name, $('claimAnyway'), 'Claim the name anyway');
+  claim(name, $('claimAnyway'), 'welcome.claimAnyway');
 });
 
 // ---- step 3: sync with covers filling in ----
@@ -391,7 +405,7 @@ function paintGrid(el) {
 function estimate(done, total) {
   const batchesLeft = Math.ceil(Math.max(0, total - done) / BATCH_SIZE);
   const secs = Math.max(10, Math.round((batchesLeft * BATCH_SECONDS) / 10) * 10);
-  return `about ${secs}s left`;
+  return t('welcome.eta', { secs });
 }
 
 function startSync() {
@@ -399,10 +413,12 @@ function startSync() {
   buildGrid($('fill'));
   $('progBar').style.width = '0%';
   $('prog').classList.add('waiting');
-  $('progLeft').textContent = 'Asking BGG for your collection…';
+  $('progLeft').dataset.i18n = 'welcome.asking';
+  $('progLeft').textContent = t('welcome.asking');
   $('progRight').textContent = '';
   $('syncHelp').className = 'help';
-  $('syncHelp').textContent = 'Covers and details are cached, so the next sync is quick.';
+  $('syncHelp').dataset.i18n = 'welcome.cached';
+  $('syncHelp').textContent = t('welcome.cached');
   $('retryWrap').hidden = true;
   setState('syncing');
 
@@ -410,14 +426,18 @@ function startSync() {
     onStep(text, { waiting }) {
       $('prog').classList.toggle('waiting', !!waiting);
       if (waiting) {
-        $('progLeft').textContent = 'BGG is preparing your collection…';
+        $('progLeft').dataset.i18n = 'welcome.preparing';
+        $('progLeft').textContent = t('welcome.preparing');
         $('progRight').textContent = '';
       }
     },
     onProgress(done, total) {
       $('prog').classList.remove('waiting');
       $('progBar').style.width = total ? `${Math.round((done / total) * 100)}%` : '100%';
-      $('progLeft').textContent = total ? `${done} of ${total} games` : 'Everything is already up to date';
+      const left = $('progLeft');
+      left.dataset.i18n = total ? 'welcome.progressOf' : 'welcome.upToDate';
+      left.dataset.args = JSON.stringify({ done, total });
+      left.textContent = t(left.dataset.i18n, { done, total });
       $('progRight').textContent = done > 0 && done < total ? estimate(done, total) : '';
     },
     onBatch(games) {
@@ -428,7 +448,9 @@ function startSync() {
       $('progBar').style.width = '100%';
       profile = (await fetchMyProfile().catch(() => null)) || profile;
       const n = summary.total ?? 0;
-      $('doneCount').textContent = `${n} game${n === 1 ? '' : 's'} synced`;
+      $('doneCount').dataset.i18n = n === 1 ? 'welcome.syncedOne' : 'welcome.synced';
+      $('doneCount').dataset.args = JSON.stringify({ n });
+      $('doneCount').textContent = tn('welcome.synced', n);
       $('doneSlug').textContent = `/u/${profile.slug}`;
       $('openShelf').href = `/u/${profile.slug}`;
       buildGrid($('fillDone'));
@@ -438,6 +460,7 @@ function startSync() {
     onError(message) {
       $('prog').classList.remove('waiting');
       $('syncHelp').className = 'help err';
+      delete $('syncHelp').dataset.i18n;
       $('syncHelp').textContent = message;
       $('retryWrap').hidden = false;
     },
@@ -453,10 +476,11 @@ $('copyLink').addEventListener('click', async () => {
   const btn = $('copyLink');
   try {
     await navigator.clipboard.writeText(url);
-    btn.textContent = 'Copied';
-    setTimeout(() => { btn.textContent = 'Copy link'; }, 2000);
+    btn.textContent = t('welcome.copied');
+    setTimeout(() => { btn.textContent = t('welcome.copyLink'); }, 2000);
   } catch {
     // Clipboard blocked: leave the address in the button so it can be selected.
+    delete btn.dataset.i18n;
     btn.textContent = url;
   }
 });
@@ -464,6 +488,7 @@ $('copyLink').addEventListener('click', async () => {
 // ---- boot ----
 
 try {
+  await i18nReady;
   user = await getUser();
   if (!user) { location.replace('/'); throw new Error('signed out'); }
   profile = await fetchMyProfile();
@@ -478,7 +503,7 @@ try {
   }
 } catch (err) {
   if (!['signed out', 'done'].includes(err.message)) {
-    help(escapeHTML(err.message || "Couldn't load your account. Refresh to try again."), 'err');
+    help(escapeHTML(err.message || t('welcome.loadFail')), 'err');
   }
 }
 </script>

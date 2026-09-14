@@ -1,10 +1,15 @@
 import { timeLabel, weightLabel, playersRangeLabel } from './filters.js';
 import { registerOverlay, syncScrollLock } from './scroll-lock.js';
 import { renderScene } from './teach-scenes.js';
+import { t, translate } from './i18n.js';
 
 // The game detail modal, shared by the shelf and the game-night waiting room.
 // Markup lives here and styling in css/game-modal.css, so an enhancement to
 // either lands on every page at once. Pages must link that stylesheet.
+//
+// UI strings come from js/i18n.js (t()); the body is rebuilt on
+// "bgs:langchange" while a game is open, so a language swap never needs the
+// modal reopened. Game titles, vibe/tag lines and BGG data stay as they are.
 
 const PLUS_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 const TICK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
@@ -44,7 +49,7 @@ function coverHTML(g) {
             <img class="card-cover" src="${g.backImage}" alt="${g.title} back of box" loading="lazy" decoding="async" onerror="this.style.display='none'">
           </div>
         </div>
-        <p class="flip-hint">⟲ tap or swipe to see the back of the box</p>
+        <p class="flip-hint">${t('modal.flipHint')}</p>
       </div>`;
   }
   return `
@@ -77,9 +82,9 @@ function mediaHTML(g) {
       <img class="media-layer media-table" src="${g.tableShot}" alt="${g.title} set up on a table" loading="lazy" decoding="async" aria-hidden="true">
     </div>
     <div class="media-toggle-row">
-      <div class="media-toggle" role="group" aria-label="Game image view">
-        <button class="media-toggle__btn" type="button" data-view="cover" aria-pressed="true">${VIEW_COVER_ICON} Cover</button>
-        <button class="media-toggle__btn" type="button" data-view="table" aria-pressed="false">${VIEW_TABLE_ICON} On the table</button>
+      <div class="media-toggle" role="group" aria-label="${t('modal.imageView')}">
+        <button class="media-toggle__btn" type="button" data-view="cover" aria-pressed="true">${VIEW_COVER_ICON} ${t('modal.cover')}</button>
+        <button class="media-toggle__btn" type="button" data-view="table" aria-pressed="false">${VIEW_TABLE_ICON} ${t('modal.table')}</button>
       </div>
     </div>`;
 }
@@ -90,12 +95,20 @@ function mediaHTML(g) {
 // role="img" — naming the scene as well would read everything twice.
 const TEACH_BEAT_KEYS = ['hook', 'win', 'turn', 'gotcha', 'first'];
 
+// Beat labels are the five fixed UI strings (teach.label.*); the data's own
+// label is the fallback for a key the dictionary does not carry.
+function beatLabel(b) {
+  const key = `teach.label.${b.key}`;
+  const s = t(key);
+  return s === key ? b.label : s;
+}
+
 function beatHTML(b) {
   const icon = b.key === 'gotcha' ? ALERT_ICON : '';
   if (b.scene === 'strip') {
     return `
       <li class="teach-beat teach-beat--strip">
-        <p class="teach-beat__label">${icon}${b.label}</p>
+        <p class="teach-beat__label">${icon}${beatLabel(b)}</p>
         <div class="teach-strip">
           ${b.steps.map((s, i) => `
             <div class="teach-frame">
@@ -110,7 +123,7 @@ function beatHTML(b) {
     <li class="teach-beat">
       <div class="teach-scene">${renderScene(b.scene)}</div>
       <div>
-        <p class="teach-beat__label">${icon}${b.label}</p>
+        <p class="teach-beat__label">${icon}${beatLabel(b)}</p>
         <p class="teach-beat__text">${b.caption}</p>
       </div>
     </li>`;
@@ -121,20 +134,20 @@ function beatHTML(b) {
 // emitted — so no heading and no divider is ever left behind.
 function teachHTML(g) {
   if (!teachVisible) return '';
-  const t = g.teach;
-  if (!t || !Array.isArray(t.beats) || t.beats.length !== 5) return '';
-  if (t.beats.some((b, i) => !b || b.key !== TEACH_BEAT_KEYS[i])) return '';
-  const strip = t.beats[2];
+  const teach = g.teach;
+  if (!teach || !Array.isArray(teach.beats) || teach.beats.length !== 5) return '';
+  if (teach.beats.some((b, i) => !b || b.key !== TEACH_BEAT_KEYS[i])) return '';
+  const strip = teach.beats[2];
   if (strip.scene === 'strip' && (!Array.isArray(strip.steps) || strip.steps.length !== 3)) return '';
-  const draft = t.reviewed !== true;
+  const draft = teach.reviewed !== true;
   return `
     <section class="teach-section">
-      <p class="why-heading">${SCHOOL_ICON} Teach me in 60 seconds</p>
-      ${draft ? `<p class="teach-draft">${PENCIL_ICON} Draft — not yet checked against the rulebook</p>` : ''}
+      <p class="why-heading">${SCHOOL_ICON} ${t('teach.title')}</p>
+      ${draft ? `<p class="teach-draft">${PENCIL_ICON} ${t('teach.draft')}</p>` : ''}
       <ol class="teach-beats">
-        ${t.beats.map(beatHTML).join('')}
+        ${teach.beats.map(beatHTML).join('')}
       </ol>
-      <p class="teach-foot">${t.wordCount} words · five pictures</p>
+      <p class="teach-foot">${t('teach.foot', { n: teach.wordCount })}</p>
     </section>`;
 }
 
@@ -144,7 +157,7 @@ function highlightsHTML(g) {
   const why = Array.isArray(g.why) ? g.why.filter(Boolean) : [];
   if (!why.length) return '';
   return `
-    <p class="why-heading">Highlights</p>
+    <p class="why-heading">${t('modal.highlights')}</p>
     <ul class="why-list">
       ${why.map((w) => `<li>${w}</li>`).join('')}
     </ul>`;
@@ -253,17 +266,18 @@ export function createGameModal({ selection } = {}) {
   document.body.insertAdjacentHTML('beforeend', `
     <div class="backdrop" id="backdrop">
       <div class="card" id="card">
-        <button class="close-btn" id="close-btn" type="button" aria-label="Close">✕</button>
+        <button class="close-btn" id="close-btn" type="button" aria-label="Close" data-i18n-attr="aria-label:modal.close">✕</button>
         <div id="card-body"></div>
         <div class="card-sticky" id="cardSticky">
           ${selection ? '<button class="modal__add" id="modalAddBtn" type="button"></button>' : ''}
-          <button class="modal__close" id="modalCloseBtn" type="button">Close</button>
+          <button class="modal__close" id="modalCloseBtn" type="button" data-i18n="modal.close">Close</button>
         </div>
       </div>
     </div>
   `);
 
   const backdrop = document.getElementById('backdrop');
+  translate(backdrop);
   // Every page gets this modal, so registering here locks the background on
   // all of them without each page repeating itself.
   registerOverlay(() => backdrop.classList.contains('open'));
@@ -281,8 +295,8 @@ export function createGameModal({ selection } = {}) {
     const inDeck = selection.isSelected(openGame);
     addBtn.className = 'modal__add' + (inDeck ? ' is-in' : '');
     addBtn.innerHTML = inDeck
-      ? `${TICK_SVG} In tonight's deck`
-      : `${PLUS_SVG} Add to tonight`;
+      ? `${TICK_SVG} ${t('modal.inDeck')}`
+      : `${PLUS_SVG} ${t('modal.addTonight')}`;
   }
 
   function open(game) {
@@ -295,6 +309,18 @@ export function createGameModal({ selection } = {}) {
     backdrop.classList.add('open');
     syncScrollLock();
   }
+
+  // A language swap while a game is open rebuilds the body in place; the
+  // scroll position is kept so the reader stays where they were.
+  document.addEventListener('bgs:langchange', () => {
+    if (!openGame) return;
+    const top = body.scrollTop;
+    body.innerHTML = bodyHTML(openGame);
+    wireFlip(body);
+    wireMediaToggle(body);
+    refreshFooter();
+    body.scrollTop = top;
+  });
 
   document.getElementById('close-btn').addEventListener('click', close);
   document.getElementById('modalCloseBtn').addEventListener('click', close);
