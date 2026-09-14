@@ -16082,6 +16082,7 @@
     "color": "#5C6B3A",
     "image": "https://cf.geekdo-images.com/xXUwxVJoAWem0HHUq-pWmw__original/img/cJyrNVy28Av-7ZDJHMcGx3U8bUs=/0x0/filters:format(jpeg)/pic4321545.jpg",
     "blurb": "A light, silly card game built around outsmarting the table in short, chaotic rounds. Nothing fancy — just quick laughs between bigger games.",
+    "blurb_th": "เกมการ์ดเบาๆ ฮาๆ ที่สร้างรอบการเอาชนะโต๊ะในรอบสั้นๆ วุ่นๆ ไม่มีอะไรหรูหรา แค่เสียงหัวเราะเร็วๆ คั่นระหว่างเกมใหญ่",
     "why": [
       "Rules teach in a couple of minutes flat",
       "Short, silly rounds make it a natural warm-up or palate cleanser",
@@ -16094,7 +16095,8 @@
       "5": "best",
       "6": "best"
     },
-    "caption": "A light, silly card game built around outsmarting the table in short, chaotic rounds."
+    "caption": "A light, silly card game built around outsmarting the table in short, chaotic rounds.",
+    "caption_th": "เกมการ์ดเบาๆ ฮาๆ เอาชนะโต๊ะในรอบสั้นๆ วุ่นๆ"
   },
   {
     "bggId": "105593",
@@ -16113,6 +16115,7 @@
     "color": "#B5862B",
     "image": "https://cf.geekdo-images.com/ulu-HipUfC0FM8Z2FPI-XA__original/img/qPT_pHIOYHAOyFAVUvzsm-TcLvU=/0x0/filters:format(jpeg)/pic6369025.jpg",
     "blurb": "Race to empty your hand by playing cards in sequence — and if nobody's looking, slip one in out of order. Getting caught costs you, but so does playing it safe.",
+    "blurb_th": "แข่งทิ้งมือให้หมดด้วยการลงการ์ดตามลำดับ และถ้าไม่มีใครมอง ก็แอบสอดใบที่ผิดลำดับเข้าไป โดนจับได้มีราคา แต่เล่นปลอดภัยก็มีราคาเหมือนกัน",
     "why": [
       "Cheating is explicitly part of the rules, not a house variant",
       "Fast, loud, and over almost as soon as it starts",
@@ -16125,6 +16128,7 @@
       "5": "best"
     },
     "caption": "Race to empty your hand by playing cards in sequence — and if nobody's looking, slip one in out of order.",
+    "caption_th": "แข่งทิ้งมือด้วยการลงการ์ดตามลำดับ ถ้าไม่มีใครมองก็แอบโกง",
     "teach": {
       "beats": [
         {
@@ -16172,6 +16176,18 @@
           "caption": "Cheat when the guard is looking away."
         }
       ],
+      "captions_th": [
+        "กำจัดการ์ด โกงด้วยการทิ้งมันใต้โต๊ะ",
+        "จบทุกรอบใครแต้มน้อยสุดชนะ",
+        "ยามคอยจับคนโกง",
+        "โดนจับได้ว่าโกง? รับการ์ดคืนบวกโทษ",
+        "โกงตอนยามมองไปทางอื่น"
+      ],
+      "frames_th": [
+        "ลงสูงกว่าหรือต่ำกว่าหนึ่ง",
+        "ลงไม่ได้? จั่ว",
+        "โกง: ซ่อนการ์ดถ้าไม่มีใครเห็น"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -16194,6 +16210,7 @@
     "color": "#4F5D3A",
     "image": "https://cf.geekdo-images.com/RqyXZLS2lZHbfxjZBIblag__original/img/ooqT1FgGMcP5MxWe2snI5GlzTec=/0x0/filters:format(png)/pic8083224.png",
     "blurb": "One player is secretly the alien picking off the crew one by one; everyone else has to figure out who it is before the ship empties out. A fast, tense hidden-role game that leans hard into its horror-movie premise.",
+    "blurb_th": "คนหนึ่งแอบเป็นเอเลี่ยนที่เก็บลูกเรือทีละคน คนอื่นต้องหาให้ได้ว่าเป็นใครก่อนยานจะว่างเปล่า เกมบทบาทลับเร็วและตึงที่ทุ่มเต็มตัวกับพล็อตหนังสยองขวัญ",
     "why": [
       "Ten-to-fifteen-minute rounds mean you can run it back immediately",
       "Alien-versus-crew premise makes the paranoia easy to buy into",
@@ -16210,7 +16227,8 @@
       "9": "recommended",
       "10": "recommended"
     },
-    "caption": "One player is secretly the alien picking off the crew one by one."
+    "caption": "One player is secretly the alien picking off the crew one by one.",
+    "caption_th": "คนหนึ่งแอบเป็นเอเลี่ยนที่เก็บลูกเรือทีละคน"
   },
   {
     "bggId": "383981",
@@ -16229,6 +16247,7 @@
     "color": "#8A6642",
     "image": "https://cf.geekdo-images.com/tYVBDcYzJF6GKSsJR4gIyQ__original/img/LyK0JH61NSC5DqPs5OWmwH9aaR8=/0x0/filters:format(jpeg)/pic7826835.jpg",
     "blurb": "Plan and build out a growing city for the crown, balancing zoning, resources, and royal demands. A mid-weight builder for players who like watching a board fill in.",
+    "blurb_th": "วางแผนและสร้างเมืองที่กำลังโตให้ราชวงศ์ ชั่งการจัดโซน ทรัพยากร และความต้องการของราชินี เกมสร้างระดับกลางสำหรับคนที่ชอบดูกระดานค่อยๆ เต็ม",
     "why": [
       "City-planning puzzle with real tension between short-term needs and long-term layout",
       "Solo mode holds up if you just want to build in peace",
@@ -16241,7 +16260,8 @@
       "3": "best",
       "4": "recommended"
     },
-    "caption": "Plan and build out a growing city for the crown, balancing zoning, resources, and royal demands."
+    "caption": "Plan and build out a growing city for the crown, balancing zoning, resources, and royal demands.",
+    "caption_th": "วางแผนและสร้างเมืองให้ราชวงศ์ ชั่งโซน ทรัพยากร และความต้องการ"
   },
   {
     "bggId": "433075",
@@ -16260,6 +16280,7 @@
     "color": "#7A4F5C",
     "image": "https://cf.geekdo-images.com/2ONbq-WFgz0SLHFX_gkvEA__original/img/Z-IWUb4E2F7UIckT1T42wazZqmY=/0x0/filters:format(jpeg)/pic8817706.jpg",
     "blurb": "Guess what the table thinks is trending, popular, or overrated, and see how well you read the room. A quick, conversation-driven party game built for arguing over opinions.",
+    "blurb_th": "ทายว่าโต๊ะคิดว่าอะไรกำลังฮิต ดัง หรือถูกยกยอเกิน แล้วดูว่าคุณอ่านบรรยากาศได้ดีแค่ไหน เกมปาร์ตี้เร็วๆ ขับด้วยบทสนทนา สร้างมาเพื่อเถียงเรื่องความเห็น",
     "why": [
       "Built entirely around reading your group's taste, so it plays differently every time",
       "Short rounds keep the energy up",
@@ -16271,7 +16292,8 @@
       "4": "recommended",
       "5": "best"
     },
-    "caption": "Guess what the table thinks is trending, popular, or overrated, and see how well you read the room."
+    "caption": "Guess what the table thinks is trending, popular, or overrated, and see how well you read the room.",
+    "caption_th": "ทายว่าโต๊ะคิดว่าอะไรกำลังฮิต ดัง หรือถูกยกยอเกิน"
   },
   {
     "bggId": "367601",
@@ -16290,6 +16312,7 @@
     "color": "#4A7A6E",
     "image": "https://cf.geekdo-images.com/Ti4Av8a7JxNnoWDUr9BSig__original/img/nt98EC5u3WRL7XxlutideyNfly0=/0x0/filters:format(jpeg)/pic8621075.jpg",
     "blurb": "Someone plays a sound clip, everyone else races to guess what it is — part trivia, part reflexes, and surprisingly great with a big group. Scales absurdly well, from a small game night up to a full party.",
+    "blurb_th": "ใครสักคนเปิดคลิปเสียง คนอื่นแข่งทายว่ามันคืออะไร ครึ่งความรู้ ครึ่งปฏิกิริยา และดีเกินคาดกับกลุ่มใหญ่ รองรับได้กว้างมาก ตั้งแต่คืนเกมเล็กๆ จนถึงปาร์ตี้เต็มงาน",
     "why": [
       "Officially supports up to 30 players, rare for a board game",
       "Sound-based guessing keeps rounds fast and a little chaotic",
@@ -16308,7 +16331,8 @@
       "10": "no_data",
       "11": "no_data"
     },
-    "caption": "Someone plays a sound clip, everyone else races to guess what it."
+    "caption": "Someone plays a sound clip, everyone else races to guess what it.",
+    "caption_th": "ใครสักคนเปิดคลิปเสียง คนอื่นแข่งทายว่ามันคืออะไร"
   },
   {
     "bggId": "386826",
@@ -16327,6 +16351,7 @@
     "color": "#8B4A5C",
     "image": "https://cf.geekdo-images.com/DtcDeW8oHH0vXZNk8py-Ug__original/img/aNrF6fNMzdxY6ImQvsEY1-bPBEE=/0x0/filters:format(jpeg)/pic7489920.jpg",
     "blurb": "A goofy party game built around dares, bluffing, and questionable decisions involving a goblin. Plays fast and loose with a big group that's already laughing.",
+    "blurb_th": "เกมปาร์ตี้เพี้ยนๆ ที่สร้างรอบคำท้า การบลัฟ และการตัดสินใจน่ากังขาที่เกี่ยวกับก็อบลิน เล่นเร็วและหลวมกับกลุ่มใหญ่ที่หัวเราะอยู่แล้ว",
     "why": [
       "Flexible player count handles a rotating game-night crowd",
       "Rules light enough to explain in one breath",
@@ -16342,7 +16367,8 @@
       "7": "no_data",
       "8": "no_data"
     },
-    "caption": "A goofy party game built around dares, bluffing, and questionable decisions involving a goblin."
+    "caption": "A goofy party game built around dares, bluffing, and questionable decisions involving a goblin.",
+    "caption_th": "เกมปาร์ตี้เพี้ยนๆ รอบคำท้า การบลัฟ และก็อบลิน"
   },
   {
     "bggId": "370772",
@@ -16361,6 +16387,7 @@
     "color": "#6B4C5E",
     "image": "https://cf.geekdo-images.com/OeVEYoTQ5LxHMixhTUU_zg__original/img/tf8zvlQovHkVpAA1xnZZlOViK1I=/0x0/filters:format(png)/pic7072414.png",
     "blurb": "A quick social deduction game where somebody at the table is hiding something, and it's everyone else's job to catch them before time runs out. Loud, fast, and a little chaotic in the best way.",
+    "blurb_th": "เกม social deduction เร็วๆ ที่ใครสักคนบนโต๊ะซ่อนอะไรบางอย่าง และหน้าที่ของทุกคนคือจับให้ได้ก่อนหมดเวลา ดัง เร็ว และวุ่นนิดๆ ในแบบที่ดีที่สุด",
     "why": [
       "Short rounds keep the group cycling through games all night",
       "Easy to teach in under a minute",
@@ -16373,7 +16400,8 @@
       "5": "best",
       "6": "best"
     },
-    "caption": "A quick social deduction game where somebody at the table is hiding something."
+    "caption": "A quick social deduction game where somebody at the table is hiding something.",
+    "caption_th": "social deduction เร็วๆ ใครสักคนซ่อนอะไรบางอย่าง จับให้ได้ก่อนหมดเวลา"
   },
   {
     "bggId": "184522",
@@ -16392,6 +16420,7 @@
     "color": "#A85C2E",
     "image": "https://cf.geekdo-images.com/o-Z0bj1YVYgsnaVVR5yXOQ__original/img/JgQHRpfhx6JXMfa0lynP_1XaTdc=/0x0/filters:format(jpeg)/pic3021686.jpg",
     "blurb": "A rowdy party game built entirely around not finishing last — because the loser here doesn't just lose, they get roasted for it. Best with a big, competitive group that doesn't mind some good-natured humiliation.",
+    "blurb_th": "เกมปาร์ตี้เฮฮาที่สร้างรอบการไม่จบเป็นคนสุดท้ายล้วนๆ เพราะคนแพ้ที่นี่ไม่ใช่แค่แพ้ แต่โดนแซวด้วย ดีที่สุดกับกลุ่มใหญ่ที่ชอบแข่งและไม่ถือสาการขายหน้าเล็กๆ น้อยๆ",
     "why": [
       "Scales up to twelve players without losing steam",
       "Punishing the loser makes every round matter",
@@ -16407,6 +16436,7 @@
       "11": "recommended"
     },
     "caption": "A rowdy party game built entirely around not finishing last.",
+    "caption_th": "เกมปาร์ตี้เฮฮาที่สร้างรอบการไม่จบเป็นคนสุดท้าย",
     "teach": {
       "beats": [
         {
@@ -16454,6 +16484,18 @@
           "caption": "Follow the biggest group."
         }
       ],
+      "captions_th": [
+        "ทุกคนตกลงกันเงียบๆ ว่าจะโหวตใครออก โดยไม่พูด",
+        "ใครถึง 24 แต้มก่อนชนะ",
+        "จับมือกันได้แค่แบบไม่ใช้คำพูด",
+        "ห้ามพูด ชี้ ขยิบตา พยักหน้า",
+        "ตามกลุ่มที่ใหญ่สุด"
+      ],
+      "frames_th": [
+        "ส่งสัญญาณ แล้วชี้พร้อมกัน",
+        "เป้าเสียงข้างมากตกรอบ",
+        "คนอื่นได้แต้ม คนถูกเล็งซุ่มโจมตีได้"
+      ],
       "wordCount": 41,
       "source": "generated",
       "reviewed": false
@@ -16476,6 +16518,7 @@
     "color": "#3E5C58",
     "image": "https://cf.geekdo-images.com/yA-FNLyrwoGYSCRajldkEQ__original/img/JaH-R6qUAdMfDqD39XMuQSR7-K0=/0x0/filters:format(jpeg)/pic6214391.jpg",
     "blurb": "Bid, bluff, and haggle your way through a chaotic fish market where the freshest catch goes to whoever plays it coolest. Quick, silly, and over before anyone gets territorial about tuna.",
+    "blurb_th": "ประมูล บลัฟ และต่อรองผ่านตลาดปลาสุดวุ่นวาย ที่ปลาสดสุดตกเป็นของคนที่เล่นนิ่งที่สุด เร็ว ฮา และจบก่อนใครจะหวงทูน่า",
     "why": [
       "Fast-paced bidding keeps every round tense",
       "Simple rules make it an easy pick for a filler slot",
@@ -16490,6 +16533,7 @@
       "6": "no_data"
     },
     "caption": "Bid, bluff, and haggle your way through a chaotic fish market where the freshest catch goes to whoever plays.",
+    "caption_th": "ประมูล บลัฟ และต่อรองในตลาดปลาสุดวุ่นวาย",
     "teach": {
       "beats": [
         {
@@ -16537,6 +16581,18 @@
           "caption": "Bid low first."
         }
       ],
+      "captions_th": [
+        "ประมูลปลาแลกแมว เก็บชุดแบบเร็วๆ",
+        "แต้มมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กกฎกรณีเสมอ",
+        "ประมูลต่ำๆ ก่อน"
+      ],
+      "frames_th": [
+        "ลงราคาประมูล",
+        "เปิด",
+        "คนชนะรับแมว"
+      ],
       "wordCount": 32,
       "source": "generated",
       "reviewed": false
@@ -16559,6 +16615,7 @@
     "color": "#B5651D",
     "image": "https://cf.geekdo-images.com/zMy1iQvHerTCKdg8LD42GA__original/img/KZ9XRxwoclHxhWVECJWoUscgUyg=/0x0/filters:format(jpeg)/pic4523294.jpg",
     "blurb": "A carnival-style shooting gallery brought to the table, taking aim at ducks for points before time runs out. Silly, physical, and over in twenty minutes.",
+    "blurb_th": "แผงยิงเป้าแบบงานวัดยกมาไว้บนโต๊ะ เล็งยิงเป็ดเก็บแต้มก่อนหมดเวลา ฮา ใช้มือ และจบในยี่สิบนาที",
     "why": [
       "Dexterity-driven shooting mechanic that's rare on most game shelves",
       "Great energy for a group that wants something active, not cerebral",
@@ -16572,6 +16629,7 @@
       "6": "best"
     },
     "caption": "A carnival-style shooting gallery brought to the table, taking aim at ducks for points before time runs out.",
+    "caption_th": "แผงยิงเป้าแบบงานวัดบนโต๊ะ เล็งยิงเป็ดเก็บแต้ม",
     "teach": {
       "beats": [
         {
@@ -16618,6 +16676,18 @@
           "scene": "hand-safe",
           "caption": "Move your duck to the back."
         }
+      ],
+      "captions_th": [
+        "เป็ดเดินขบวน เล่นการ์ดยิงหรือปกป้องพวกมัน",
+        "คนสุดท้ายที่ยังมีเป็ดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "เป็ดของคุณที่อยู่หน้าสุดคือตัวที่อันตราย",
+        "ย้ายเป็ดของคุณไปข้างหลัง"
+      ],
+      "frames_th": [
+        "เล่นการ์ดลงแผง",
+        "เป็ดขยับเมื่อถูกยิงหรือย้าย",
+        "จั่วให้ครบสาม"
       ],
       "wordCount": 53,
       "source": "generated",
@@ -16726,6 +16796,7 @@
     "color": "#B5502E",
     "image": "https://cf.geekdo-images.com/jZjPfc14gzL0uYdhfzB0IQ__original/img/lQXyO_8lJyG6mCy5WSuwnfa_fTg=/0x0/filters:format(jpeg)/pic8158230.jpg",
     "blurb": "A lighthearted party game built around a chaotic family dinner — quick rounds, silly moments, and low stakes. An easy pick for a casual group looking for something breezy.",
+    "blurb_th": "เกมปาร์ตี้สบายๆ ที่สร้างรอบมื้อเย็นครอบครัวสุดวุ่น รอบเร็ว ช่วงเวลาฮาๆ เดิมพันต่ำ ตัวเลือกง่ายๆ สำหรับกลุ่มสบายๆ ที่อยากได้อะไรเบาๆ",
     "why": [
       "Fast setup and quick rounds keep things moving",
       "Easygoing enough for players who don't game often",
@@ -16741,7 +16812,8 @@
       "9": "no_data",
       "10": "no_data"
     },
-    "caption": "A lighthearted party game built around a chaotic family dinner — quick rounds, silly moments, and low stakes."
+    "caption": "A lighthearted party game built around a chaotic family dinner — quick rounds, silly moments, and low stakes.",
+    "caption_th": "เกมปาร์ตี้สบายๆ รอบมื้อเย็นครอบครัวสุดวุ่น"
   },
   {
     "bggId": "386102",
@@ -16760,6 +16832,7 @@
     "color": "#5C5C3E",
     "image": "https://cf.geekdo-images.com/RNUvlP4cotz7mivLcCPO7g__original/img/xiEg-yq8keQzlVaL8QOLrlxuv_c=/0x0/filters:format(jpeg)/pic7921921.jpg",
     "blurb": "Squeeze cars into a packed parking garage as fast as possible before someone else grabs the last open spot. Loud, quick, and over in a few minutes flat.",
+    "blurb_th": "ยัดรถเข้าอาคารจอดที่แน่นให้เร็วที่สุดก่อนคนอื่นจะคว้าช่องว่างสุดท้าย ดัง เร็ว และจบในไม่กี่นาที",
     "why": [
       "Rounds finish in five to fifteen minutes, easy to replay immediately",
       "Scales to a big table without slowing down",
@@ -16777,7 +16850,8 @@
       "10": "recommended",
       "11": "recommended"
     },
-    "caption": "Squeeze cars into a packed parking garage as fast as possible before someone else grabs the last open spot."
+    "caption": "Squeeze cars into a packed parking garage as fast as possible before someone else grabs the last open spot.",
+    "caption_th": "ยัดรถเข้าอาคารจอดที่แน่นให้เร็วที่สุดก่อนคนอื่นคว้าช่องสุดท้าย"
   },
   {
     "bggId": "410185",
@@ -16796,6 +16870,7 @@
     "color": "#8A7259",
     "image": "https://cf.geekdo-images.com/YxV7oGKzj42twflZg3r-SA__original/img/lX-3ekEw3N3G1wGyvnL4JzVrE2U=/0x0/filters:format(jpeg)/pic7934628.jpg",
     "blurb": "A small Japanese puzzle game about arranging rooms into an efficient floor plan — interior design reframed as a tile-laying optimization problem. Quick and cerebral, and easy to slot in solo between bigger games.",
+    "blurb_th": "เกมปริศนาญี่ปุ่นเล็กๆ เรื่องการจัดห้องให้เป็นแปลนบ้านที่มีประสิทธิภาพ ออกแบบภายในในร่างปัญหาวางไทล์ให้เหมาะสม เร็วและใช้หัว แทรกเล่นเดี่ยวระหว่างเกมใหญ่ได้ง่าย",
     "why": [
       "Solo-friendly puzzle structure with a fast ten-to-twenty-minute footprint",
       "Rewards spatial planning over luck",
@@ -16809,7 +16884,8 @@
       "4": "best",
       "5": "recommended"
     },
-    "caption": "A small Japanese puzzle game about arranging rooms into an efficient floor plan."
+    "caption": "A small Japanese puzzle game about arranging rooms into an efficient floor plan.",
+    "caption_th": "เกมปริศนาญี่ปุ่นเล็กๆ จัดห้องให้เป็นแปลนบ้านที่มีประสิทธิภาพ"
   },
   {
     "bggId": "198961",
@@ -16828,6 +16904,7 @@
     "color": "#A85A3F",
     "image": "https://cf.geekdo-images.com/ooxfKcX1kaoE1DrS2MS8Gg__original/img/Y7nYPNdVF7puAn9DFnJtk9nOAg8=/0x0/filters:format(jpeg)/pic8616133.jpg",
     "blurb": "Pull noodles out of the pot one at a time without waking the yeti balanced on top. A classic dexterity game for the youngest players at the table.",
+    "blurb_th": "ดึงเส้นออกจากหม้อทีละเส้นโดยไม่ปลุกเยติที่นั่งอยู่ข้างบน เกมทักษะคลาสสิกสำหรับผู้เล่นตัวเล็กสุดบนโต๊ะ",
     "why": [
       "Simple enough for very young kids to play unassisted",
       "Physical tension keeps even short attention spans locked in",
@@ -16847,6 +16924,7 @@
       "11": "not_recommended"
     },
     "caption": "Pull noodles out of the pot one at a time without waking the yeti balanced on top.",
+    "caption_th": "ดึงเส้นออกจากหม้อทีละเส้นโดยไม่ปลุกเยติข้างบน",
     "teach": {
       "beats": [
         {
@@ -16893,6 +16971,18 @@
           "scene": "hand-safe",
           "caption": "Pull the strand with nothing on it."
         }
+      ],
+      "captions_th": [
+        "ดึงเส้นสปาเก็ตตี้โดยไม่ให้เยติตก",
+        "คนสุดท้ายที่ไม่ทำเยติตกชนะ",
+        "เยติตกลงหม้อ: คุณแพ้",
+        "ทำเยติตกแล้วตกรอบ",
+        "ดึงเส้นที่ไม่มีอะไรทับ"
+      ],
+      "frames_th": [
+        "ดึงหนึ่งเส้น",
+        "เยติโยกเยก",
+        "คนถัดไป"
       ],
       "wordCount": 41,
       "source": "generated",
