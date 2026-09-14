@@ -9317,6 +9317,7 @@
     "color": "#4A6670",
     "image": "https://cf.geekdo-images.com/Zwx2ZXS6r6PaxhkaVEe75Q__original/img/nBfsV9V5a-xc3uJkYhE0DN-QVjI=/0x0/filters:format(jpeg)/pic4309147.jpg",
     "blurb": "Snap together colorful puzzle pieces to complete shape cards, leveling up from tiny scraps to big combo pieces. Low interaction, high brain-itch — the kind of game that goes quiet fast.",
+    "blurb_th": "ต่อชิ้นส่วนปริศนาสีสันเข้าด้วยกันเพื่อทำการ์ดรูปทรงให้เสร็จ อัปเกรดจากเศษเล็กๆ ไปเป็นชิ้นคอมโบใหญ่ ปฏิสัมพันธ์น้อย คันสมองมาก เกมประเภทที่โต๊ะเงียบเร็ว",
     "why": [
       "Satisfying puzzle-solving with actual plastic pieces to click together",
       "Quick to teach and replay, scales cleanly down to solo",
@@ -9330,6 +9331,7 @@
       "4": "recommended"
     },
     "caption": "Snap together colorful puzzle pieces to complete shape cards.",
+    "caption_th": "ต่อชิ้นส่วนปริศนาสีสันเพื่อทำการ์ดรูปทรงให้เสร็จ",
     "teach": {
       "beats": [
         {
@@ -9377,6 +9379,18 @@
           "caption": "Take small puzzles that reward pieces."
         }
       ],
+      "captions_th": [
+        "เติมการ์ดปริศนาด้วยชิ้นส่วน ปริศนาที่เสร็จให้ชิ้นส่วนเพิ่ม",
+        "แต้มมากสุดชนะ ลบปริศนาที่ทำไม่เสร็จ",
+        "ตาละสามแอ็กชัน แอ็กชันมาสเตอร์เติมทุกปริศนา",
+        "ปริศนาที่ทำไม่เสร็จหักแต้มตอนจบ",
+        "หยิบปริศนาเล็กๆ ที่ให้ชิ้นส่วนเป็นรางวัล"
+      ],
+      "frames_th": [
+        "หยิบปริศนาหรือชิ้นส่วน",
+        "วางชิ้นส่วนบนปริศนา",
+        "เสร็จ: รับรางวัลและแต้ม"
+      ],
       "wordCount": 56,
       "source": "generated",
       "reviewed": false
@@ -9406,6 +9420,7 @@
     "color": "#5C1F1F",
     "image": "https://cf.geekdo-images.com/RbNAitZatR7g82u_9OBV8A__original/img/z2leJtn83aYVYDepcIb9srAjM3I=/0x0/filters:format(jpeg)/pic7453834.jpg",
     "blurb": "A two-player hidden-movement duel — one player stalks as Dracula, the other hunts as Van Helsing, each trying to outmaneuver the other in the dark. Tense, thematic, and built entirely for a rematch.",
+    "blurb_th": "ดวลสองคนแบบเดินซ่อน คนหนึ่งสะกดรอยเป็น Dracula อีกคนไล่ล่าเป็น Van Helsing ต่างพยายามเหนือกว่ากันในความมืด ตึง เข้าธีม และสร้างมาเพื่อแก้มือล้วนๆ",
     "why": [
       "Asymmetric roles give both players a completely different experience",
       "Hidden movement keeps the tension high the whole game",
@@ -9416,6 +9431,7 @@
       "2": "best"
     },
     "caption": "A two-player hidden-movement duel — one player stalks as Dracula, the other hunts as Van Helsing.",
+    "caption_th": "ดวลสองคนแบบเดินซ่อน Dracula ปะทะ Van Helsing",
     "teach": {
       "beats": [
         {
@@ -9463,6 +9479,18 @@
           "caption": "Van Helsing: search where Dracula last struck."
         }
       ],
+      "captions_th": [
+        "Dracula เดินแบบซ่อน Van Helsing ไล่ล่าเขาทั่วทรานซิลเวเนีย",
+        "Van Helsing ชนะเมื่อเจอ Dracula Dracula ชนะเมื่อเปลี่ยนสามหมู่บ้าน",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "เส้นทางของ Dracula ถูกเขียนไว้ ไม่ได้โชว์",
+        "Van Helsing: ค้นตรงที่ Dracula ลงมือล่าสุด"
+      ],
+      "frames_th": [
+        "Dracula เดินแบบลับ",
+        "Van Helsing เดิน ค้นหา",
+        "เบาะแสบีบวงให้แคบลง"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -9485,6 +9513,7 @@
     "color": "#7A6A35",
     "image": "https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg",
     "blurb": "Collect gem tokens, buy development cards, and build an engine of permanent discounts on your way to prestige points. Quiet, elegant, and endlessly easy to teach.",
+    "blurb_th": "เก็บโทเค็นอัญมณี ซื้อการ์ดพัฒนา และสร้างเครื่องจักรส่วนลดถาวรไปสู่แต้มเกียรติยศ เงียบ สง่างาม และสอนง่ายไม่มีวันเบื่อ",
     "why": [
       "Tight engine-building loop that's easy to learn but hard to master",
       "Gorgeous chunky tokens that make every turn feel satisfying",
@@ -9497,6 +9526,7 @@
       "4": "recommended"
     },
     "caption": "Collect gem tokens, buy development cards, and build an engine of permanent discounts on your way.",
+    "caption_th": "เก็บอัญมณี ซื้อการ์ดพัฒนา สร้างเครื่องจักรส่วนลดถาวร",
     "teach": {
       "beats": [
         {
@@ -9544,6 +9574,18 @@
           "caption": "Take gems for the cheapest cards you see."
         }
       ],
+      "captions_th": [
+        "เก็บอัญมณีซื้อการ์ด การ์ดให้อัญมณีฟรีตลอดไป",
+        "ใครถึง 15 เกียรติยศก่อนชนะ",
+        "การ์ดที่คุณมีลดราคาการ์ดต่อไป",
+        "ถืออัญมณีได้สูงสุดสิบ ที่เกินต้องทิ้ง",
+        "เก็บอัญมณีสำหรับการ์ดถูกสุดที่เห็น"
+      ],
+      "frames_th": [
+        "หยิบอัญมณีสามสี หรือสองเหมือนกัน",
+        "หรือซื้อการ์ดด้วยอัญมณี",
+        "หรือจองการ์ด รับทอง"
+      ],
       "wordCount": 55,
       "source": "generated",
       "reviewed": false
@@ -9573,6 +9615,7 @@
     "color": "#A0662E",
     "image": "https://cf.geekdo-images.com/d5JR5FekM_PsanGOHBdSMA__original/img/n6y6kwfqOwqChZ6X5ajMq0N-X7Q=/0x0/filters:format(jpeg)/pic7720019.jpg",
     "blurb": "Lay steam pipes across a shifting industrial map, fulfill contracts, and out-produce the competition in this dense economic euro. A solid solo mode is included if you'd rather just optimize in peace.",
+    "blurb_th": "วางท่อไอน้ำข้ามแผนที่อุตสาหกรรมที่เปลี่ยนไปเรื่อย ทำสัญญาให้เสร็จ และผลิตให้เหนือกว่าคู่แข่งในยูโรเศรษฐกิจแน่นๆ นี้ มีโหมดเล่นเดี่ยวดีๆ ถ้าอยากนั่งจัดระบบเงียบๆ คนเดียว",
     "why": [
       "Network-building pipes interact with contract fulfillment in genuinely tricky ways",
       "Scales cleanly from solo all the way up to five players",
@@ -9587,6 +9630,7 @@
       "5": "recommended"
     },
     "caption": "Lay steam pipes across a shifting industrial map.",
+    "caption_th": "วางท่อไอน้ำข้ามแผนที่อุตสาหกรรมที่เปลี่ยนไปเรื่อย",
     "teach": {
       "beats": [
         {
@@ -9634,6 +9678,18 @@
           "caption": "Connect two close cities first."
         }
       ],
+      "captions_th": [
+        "สร้างเครือข่ายรางและขับเคลื่อนอุตสาหกรรมด้วยไอน้ำ",
+        "แต้มมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กกฎการกู้เงิน",
+        "เชื่อมสองเมืองใกล้ๆ ก่อน"
+      ],
+      "frames_th": [
+        "สร้างราง",
+        "ส่งสินค้า",
+        "จ่ายค่าบำรุง"
+      ],
       "wordCount": 33,
       "source": "generated",
       "reviewed": false
@@ -9656,6 +9712,7 @@
     "color": "#2F4858",
     "image": "https://cf.geekdo-images.com/Ekj8MUqrqXDhOzIA7Xvu1Q__original/img/cw9gyQQuOL6DGVE2bJYuyoJ_WNo=/0x0/filters:format(jpeg)/pic7772702.jpg",
     "blurb": "A silent Forensic Scientist lays out clue tiles while everyone else races to name the murder weapon, location, and cause of death — before the actual killer talks their way out of it. Quiet, clever, and tenser than most party games manage.",
+    "blurb_th": "นักนิติวิทยาศาสตร์ที่พูดไม่ได้วางไทล์เบาะแส ขณะที่คนอื่นแข่งกันระบุอาวุธ สถานที่ และสาเหตุการตาย ก่อนฆาตกรตัวจริงจะพูดเอาตัวรอด เงียบ ฉลาด และตึงกว่าเกมปาร์ตี้ส่วนใหญ่",
     "why": [
       "The Forensic Scientist can't speak — every clue comes through tile placement",
       "Plays fast enough for two or three cases in one sitting",
@@ -9673,6 +9730,7 @@
       "11": "recommended"
     },
     "caption": "A silent Forensic Scientist lays out clue tiles while everyone else races to name the murder weapon.",
+    "caption_th": "นักนิติวิทยาศาสตร์ที่พูดไม่ได้วางเบาะแส ทุกคนแข่งระบุอาวุธ",
     "teach": {
       "beats": [
         {
@@ -9720,6 +9778,18 @@
           "caption": "Watch who steers the group away from a clue."
         }
       ],
+      "captions_th": [
+        "นักสืบหาฆาตกร นักนิติวิทยาศาสตร์ใบ้แบบเงียบๆ",
+        "นักสืบชนะเมื่อระบุอาวุธและเบาะแสถูก ไม่งั้นฆาตกรชนะ",
+        "ฆาตกรอยู่ในหมู่นักสืบ",
+        "นักวิทยาศาสตร์ไม่พูดเลย ฆาตกรรู้คำตอบ",
+        "ดูว่าใครพากลุ่มออกห่างจากเบาะแส"
+      ],
+      "frames_th": [
+        "นักวิทยาศาสตร์วางตัวนับใบ้",
+        "ทุกคนถกกัน",
+        "แต่ละคนกล่าวหาได้หนึ่งครั้ง"
+      ],
       "wordCount": 52,
       "source": "generated",
       "reviewed": false
@@ -9749,6 +9819,7 @@
     "color": "#8B4A42",
     "image": "https://cf.geekdo-images.com/d9F0ZDqcN3J7J92WckyraQ__original/img/3OAIArHm3Z_j5bAJeJlU5LKQie0=/0x0/filters:format(jpeg)/pic7605785.jpg",
     "blurb": "A fast, sharp little card game from Reiner Knizia — race to grab number cards using dice rolls and shed your hand first. Fifteen minutes of the kind of clean, elegant design Knizia's known for.",
+    "blurb_th": "เกมการ์ดเล็กๆ เร็วและคมจาก Reiner Knizia แข่งคว้าการ์ดตัวเลขด้วยการทอยลูกเต๋าและทิ้งมือให้หมดก่อนใคร สิบห้านาทีของดีไซน์สะอาดสง่างามแบบที่ Knizia ขึ้นชื่อ",
     "why": [
       "Reiner Knizia design — simple rules hiding real tactical bite",
       "Fast enough to play several rounds back to back",
@@ -9762,6 +9833,7 @@
       "6": "recommended"
     },
     "caption": "A fast, sharp little card game from Reiner Knizia.",
+    "caption_th": "เกมการ์ดเล็กๆ เร็วและคมจาก Reiner Knizia",
     "teach": {
       "beats": [
         {
@@ -9809,6 +9881,18 @@
           "caption": "Ask for lowest cards first."
         }
       ],
+      "captions_th": [
+        "หาสามใบเหมือนกันด้วยการแอบดูมือคนอื่นและบนโต๊ะ",
+        "ใครเก็บสามชุดก่อนชนะ หรือชุดเลข 7",
+        "การ์ดที่ไม่ตรงกลับไปที่เดิม",
+        "ทุกคนเห็นสิ่งที่คุณเปิด ความจำคือตัวเกม",
+        "ขอดูการ์ดต่ำสุดก่อน"
+      ],
+      "frames_th": [
+        "ถามผู้เล่น: ต่ำสุดหรือสูงสุด?",
+        "หรือเปิดการ์ดบนโต๊ะ",
+        "ตรงกันสาม: เก็บไว้"
+      ],
       "wordCount": 58,
       "source": "generated",
       "reviewed": false
@@ -9831,6 +9915,7 @@
     "color": "#4E5D6C",
     "image": "https://cf.geekdo-images.com/ysPyCEGW3ZqHr_acw-d8pA__original/img/rePl8MgjoY8dqE8TUN9wqtVM5XA=/0x0/filters:format(jpeg)/pic9566323.jpg",
     "blurb": "A tense two-player game with quick rounds built for a fast rematch — a newer release still finding its footing on the shelf, but early ratings are promising.",
+    "blurb_th": "เกมสองคนสุดตึงที่รอบสั้น สร้างมาเพื่อแก้มือไวๆ ออกใหม่และยังหาที่ยืนบนชั้น แต่คะแนนช่วงแรกน่าจับตา",
     "why": [
       "Built specifically for two, with no scaling compromises",
       "Short playtime makes it easy to fit in one more round",
@@ -9840,7 +9925,8 @@
     "playerRecommendations": {
       "2": "no_data"
     },
-    "caption": "A tense two-player game with quick rounds built for a fast rematch."
+    "caption": "A tense two-player game with quick rounds built for a fast rematch.",
+    "caption_th": "เกมสองคนสุดตึงที่รอบสั้น สร้างมาเพื่อแก้มือไว"
   },
   {
     "bggId": "92828",
@@ -9859,6 +9945,7 @@
     "color": "#6B4E71",
     "image": "https://cf.geekdo-images.com/6P0_yuSoDVr567Dkr52CZA__original/img/tz_uHWJVc1Q0BOA6wnSBa5XxKRo=/0x0/filters:format(jpeg)/pic5272244.jpg",
     "blurb": "Tell a story with a single word or phrase, then watch everyone else try to guess which dreamlike card is yours — without making it too obvious or too obscure. The big-box Dixit with more cards and more room at the table.",
+    "blurb_th": "เล่าเรื่องด้วยคำหรือวลีเดียว แล้วดูทุกคนพยายามทายว่าการ์ดเหมือนฝันใบไหนเป็นของคุณ โดยไม่ให้ชัดไปหรือคลุมเครือไป Dixit กล่องใหญ่ที่มีการ์ดมากขึ้นและที่นั่งมากขึ้น",
     "why": [
       "Gorgeous, surreal artwork drives every round",
       "No reading or writing skill required — just imagination",
@@ -9877,6 +9964,7 @@
       "11": "recommended"
     },
     "caption": "Tell a story with a single word or phrase, then watch everyone else try to guess which dreamlike card.",
+    "caption_th": "เล่าเรื่องด้วยคำเดียว แล้วดูทุกคนทายว่าการ์ดเหมือนฝันใบไหนของคุณ",
     "teach": {
       "beats": [
         {
@@ -9924,6 +10012,18 @@
           "caption": "Clue a feeling, not an object."
         }
       ],
+      "captions_th": [
+        "ให้คำใบ้สำหรับรูปของคุณ คนอื่นแอบใส่ตัวหลอก",
+        "ใครถึง 30 แต้มก่อนชนะ",
+        "คำใบ้ต้องคลุมเครือ ไม่ชัดเกิน",
+        "ทุกคนหรือไม่มีใครทายถูก: คนเล่าได้ศูนย์",
+        "ใบ้ความรู้สึก ไม่ใช่สิ่งของ"
+      ],
+      "frames_th": [
+        "คนเล่าบอกคำใบ้",
+        "ทุกคนใส่การ์ดที่เข้ากัน",
+        "โหวตหาการ์ดของคนเล่า"
+      ],
       "wordCount": 48,
       "source": "generated",
       "reviewed": false
@@ -9952,6 +10052,7 @@
     "color": "#6B4226",
     "image": "https://cf.geekdo-images.com/Fy-jrkPaNbPEOV8414pKqw__itemrep@2x/img/xnJe_NeUxSZTSQsW2Lq3xS8NZug=/fit-in/492x600/filters:strip_icc()/pic4783811.jpg",
     "blurb": "One secret conspirator has to guess a hidden word using only two surreal picture cards, while everyone else tries to sniff out who's faking it. Gorgeous art, easy explanation, big laughs.",
+    "blurb_th": "ผู้สมรู้ร่วมคิดลับหนึ่งคนต้องทายคำที่ซ่อนอยู่โดยใช้แค่การ์ดรูปเหนือจริงสองใบ ขณะที่คนอื่นพยายามจับว่าใครแกล้งทำ ภาพสวย อธิบายง่าย ฮาใหญ่",
     "tag": "Party · social deduction",
     "why": [
       "Gorgeous, surreal art makes every clue memorable",
@@ -9967,6 +10068,7 @@
       "8": "recommended"
     },
     "caption": "One secret conspirator has to guess a hidden word using only two surreal picture cards.",
+    "caption_th": "ผู้สมรู้ร่วมคิดลับต้องทายคำโดยใช้แค่รูปเหนือจริงสองใบ",
     "teach": {
       "beats": [
         {
@@ -10014,6 +10116,18 @@
           "caption": "Explain your cards with confidence."
         }
       ],
+      "captions_th": [
+        "คนหนึ่งไม่รู้คำ ซ่อนมันไว้ในรูปของคุณ",
+        "แต่ละคนได้นำครบแล้วใครแต้มมากสุดชนะ",
+        "ผู้สมรู้ร่วมคิดบลัฟด้วยการ์ดที่เข้ากัน",
+        "ผู้สมรู้ร่วมคิดได้คำว่าง ไม่ใช่คำจริง",
+        "อธิบายการ์ดของคุณอย่างมั่นใจ"
+      ],
+      "frames_th": [
+        "บอกคำให้ทุกคนยกเว้นหนึ่ง",
+        "ทุกคนลงการ์ดรูปสองใบ",
+        "โหวตว่าใครคือผู้สมรู้ร่วมคิด"
+      ],
       "wordCount": 56,
       "source": "generated",
       "reviewed": false
@@ -10036,6 +10150,7 @@
     "color": "#5C4A5E",
     "image": "https://cf.geekdo-images.com/DHA-mcH3zzw_OjfDxOPj1A__original/img/2-Lb6nLePhn0I0Hh2j1pOtbO4rg=/0x0/filters:format(jpeg)/pic8266874.jpg",
     "blurb": "A cooperative flicking game where you knock ghosts out of a haunted house before they overrun the team. Family-friendly and fast, with just enough randomness to keep tension high.",
+    "blurb_th": "เกมดีด co-op ที่คุณดีดผีออกจากบ้านผีสิงก่อนพวกมันจะท่วมทีม เหมาะกับครอบครัวและเร็ว มีความสุ่มพอให้ตึงตลอด",
     "why": [
       "Physical dexterity play breaks up the usual card-and-board routine",
       "Cooperative format means everyone wins or loses together",
@@ -10049,6 +10164,7 @@
       "5": "recommended"
     },
     "caption": "A cooperative flicking game where you knock ghosts out of a haunted house before they overrun the team.",
+    "caption_th": "เกมดีด co-op ดีดผีออกจากบ้านผีสิงก่อนท่วมทีม",
     "teach": {
       "beats": [
         {
@@ -10096,6 +10212,18 @@
           "caption": "Clear ghosts near the door first."
         }
       ],
+      "captions_th": [
+        "เด็กๆ กวาดผีออกจากบ้านผีสิงก่อนมันจะเต็ม",
+        "ชนะเมื่อขนสมบัติออกครบก่อนถูกหลอกหกครั้ง",
+        "ผีสามตัวในห้องเดียว: ถูกหลอก",
+        "ถูกหลอกหกครั้งบ้านชนะ",
+        "กวาดผีใกล้ประตูก่อน"
+      ],
+      "frames_th": [
+        "ทอย: เดินหรือสู้",
+        "เดิน คว้าสมบัติ",
+        "ผีโผล่ตามห้อง"
+      ],
       "wordCount": 48,
       "source": "generated",
       "reviewed": false
@@ -10118,6 +10246,7 @@
     "color": "#A6432A",
     "image": "https://cf.geekdo-images.com/km_1BAYH0i_U3dJ8enQsbg__original/img/B-vOsRQDmkWVk4xZdP_AluG1pmY=/0x0/filters:format(jpeg)/pic7297552.jpg",
     "blurb": "Run for office, build an ideology out of contradictory promises, and campaign your way to power in a game built by people who lived through real elections. Sharp, cynical, and genuinely different.",
+    "blurb_th": "ลงสมัครรับเลือกตั้ง สร้างอุดมการณ์จากคำสัญญาที่ขัดกันเอง และหาเสียงจนขึ้นสู่อำนาจ ในเกมที่สร้างโดยคนที่ผ่านการเลือกตั้งจริงมา คม เย้ยหยัน และแตกต่างจริง",
     "why": [
       "Ideology cards force real trade-offs between what you believe and what wins votes",
       "Political satire with teeth — not a reskin of an existing system",
@@ -10130,6 +10259,7 @@
       "5": "recommended"
     },
     "caption": "Run for office, build an ideology out of contradictory promises.",
+    "caption_th": "ลงสมัครรับเลือกตั้ง สร้างอุดมการณ์จากคำสัญญาที่ขัดกันเอง",
     "teach": {
       "beats": [
         {
@@ -10177,6 +10307,18 @@
           "caption": "Take the zone nearest your ideology's cards."
         }
       ],
+      "captions_th": [
+        "ทำการเลือกตั้ง: อุดมการณ์ ทรัพยากร และกลุ่มผู้ลงคะแนน",
+        "ชนะเมื่อคุมเขตผู้ลงคะแนนได้มากสุด",
+        "ทุกคำตอบขยับอุดมการณ์ของคุณ",
+        "ยึดอุดมการณ์ปลดล็อกพลังแต่ล็อกคุณไว้ด้วย",
+        "เอาเขตที่ใกล้การ์ดอุดมการณ์ของคุณที่สุด"
+      ],
+      "frames_th": [
+        "ตอบคำถามนโยบาย",
+        "รับทรัพยากรที่มันให้",
+        "วางผู้ลงคะแนนหรือสร้าง"
+      ],
       "wordCount": 50,
       "source": "generated",
       "reviewed": false
@@ -10198,6 +10340,7 @@
     "color": "#B5533C",
     "image": "https://cf.geekdo-images.com/47o_swlkRbfpMH3hnFZgtA__itemrep@2x/img/eZ4dHFV9gf2olr8sweduthKS_Ho=/fit-in/492x600/filters:strip_icc()/pic4383594.png",
     "blurb": "Bid unlimited fake money to bail out companies as a central bank — print too much, though, and you're instantly out. A clever, mean little auction game about money that doesn't exist.",
+    "blurb_th": "ประมูลด้วยเงินปลอมไม่จำกัดเพื่ออุ้มบริษัทในฐานะธนาคารกลาง แต่พิมพ์มากไปแล้วตกรอบทันที เกมประมูลเล็กๆ ฉลาดและร้ายเรื่องเงินที่ไม่มีอยู่จริง",
     "tag": "Auction · bidding",
     "why": [
       "A clever twist on the classic auction game formula",
@@ -10211,6 +10354,7 @@
       "5": "best"
     },
     "caption": "Bid unlimited fake money to bail out companies as a central bank.",
+    "caption_th": "ประมูลด้วยเงินปลอมไม่จำกัดเพื่ออุ้มบริษัทในฐานะธนาคารกลาง",
     "teach": {
       "beats": [
         {
@@ -10258,6 +10402,18 @@
           "caption": "Bid small; learn what others think is big."
         }
       ],
+      "captions_th": [
+        "ประมูลเท่าไหร่ก็ได้ เงินไม่จำกัด ใช้มากสุดแพ้",
+        "แต้มมากสุดชนะ ยกเว้นคุณใช้เงินมากสุด: ได้ศูนย์",
+        "คนจัดประมูลเสนอศูนย์ได้และแอบดูฟรี",
+        "คนใช้เงินรวมมากสุดถูกตัดสิทธิ์",
+        "ประมูลน้อยๆ เรียนรู้ว่าคนอื่นคิดว่าเยอะคือเท่าไหร่"
+      ],
+      "frames_th": [
+        "คนจัดประมูลเขียนราคาลับ",
+        "คนอื่นเขียนราคา",
+        "สูงสุดชนะ คนชนะเท่านั้นที่จ่าย"
+      ],
       "wordCount": 54,
       "source": "generated",
       "reviewed": false
@@ -10287,6 +10443,7 @@
     "color": "#C97B4A",
     "image": "https://cf.geekdo-images.com/Jz0dykYa1D0ptyCt5wP-fA__original/img/NbeQBCw--Xc2S3YeLfMqwQsuZBY=/0x0/filters:format(jpeg)/pic6012984.jpg",
     "blurb": "Everyone gets a secret number from 1 to 100 and must line themselves up using only vague clues tied to a shared theme — no numbers allowed. Cooperative, quick, and surprisingly tense for something this simple.",
+    "blurb_th": "ทุกคนได้เลขลับ 1 ถึง 100 แล้วต้องเรียงตัวเองโดยใช้แค่คำใบ้คลุมเครือที่ผูกกับธีมร่วม ห้ามพูดตัวเลข co-op เร็ว และตึงเกินคาดสำหรับอะไรที่ง่ายขนาดนี้",
     "why": [
       "Wins or loses as a group, so there's no downtime resentment",
       "Scales cleanly from a couple's game to a big table",
@@ -10305,6 +10462,7 @@
       "10": "not_recommended"
     },
     "caption": "Everyone gets a secret number from 1 to 100 and must line themselves up using only vague clues tied.",
+    "caption_th": "ทุกคนได้เลขลับ 1 ถึง 100 แล้วเรียงตัวเองด้วยคำใบ้ตามธีม",
     "teach": {
       "beats": [
         {
@@ -10352,6 +10510,18 @@
           "caption": "Describe your number, then listen to everyone."
         }
       ],
+      "captions_th": [
+        "ทุกคนมีเลขลับ บรรยายมันด้วยธีม",
+        "ลงการ์ดให้ถูกลำดับเพื่อชนะด้วยกัน",
+        "ห้ามพูดเลข พูดได้แค่เรื่องธีม",
+        "ห้ามพูดตัวเลขเด็ดขาด แม้แต่เลขใกล้ๆ",
+        "บรรยายเลขของคุณ แล้วฟังทุกคน"
+      ],
+      "frames_th": [
+        "จั่วเลข 1 ถึง 100",
+        "บรรยายมันด้วยธีม",
+        "ลงการ์ดจากน้อยไปมาก"
+      ],
       "wordCount": 53,
       "source": "generated",
       "reviewed": false
@@ -10381,6 +10551,7 @@
     "color": "#52616B",
     "image": "https://cf.geekdo-images.com/_a4_mDMXdTK8U5Ngul9Gcw__original/img/1xVw_4NVb_PKN-uoloqdoFK5bwA=/0x0/filters:format(png)/pic9556500.png",
     "blurb": "A fast-playing Arthurian adventure for anywhere from two players to a full round table of knights. Short rounds keep the focus on quick decisions rather than long-term planning.",
+    "blurb_th": "ผจญภัยสายอาเธอร์เล่นเร็ว ตั้งแต่สองคนจนถึงโต๊ะกลมเต็มโต๊ะอัศวิน รอบสั้นทำให้โฟกัสอยู่ที่การตัดสินใจไวมากกว่าแผนระยะยาว",
     "why": [
       "Wide player count range fits almost any group",
       "Rounds wrap up in under half an hour",
@@ -10396,7 +10567,8 @@
       "7": "recommended",
       "8": "recommended"
     },
-    "caption": "A fast-playing Arthurian adventure for anywhere from two players to a full round table of knights."
+    "caption": "A fast-playing Arthurian adventure for anywhere from two players to a full round table of knights.",
+    "caption_th": "ผจญภัยสายอาเธอร์เล่นเร็ว ตั้งแต่สองคนถึงโต๊ะกลมเต็มโต๊ะ"
   },
   {
     "bggId": "400566",
@@ -10415,6 +10587,7 @@
     "color": "#7A3B4A",
     "image": "https://cf.geekdo-images.com/9JUWC-JjpKkaaH5Hz6XiaA__original/img/dmdd9hn635tGce7sGyprbUjOQr8=/0x0/filters:format(jpeg)/pic7751485.jpg",
     "blurb": "A quick, elimination-driven hidden-role game of duels and betrayal dressed up in swashbuckling finery. Rounds are short enough to reset the grudges and go again.",
+    "blurb_th": "เกมบทบาทลับแบบเร็ว ขับด้วยการคัดออก เรื่องการดวลและการหักหลังในชุดนักดาบสุดหรู รอบสั้นพอจะลืมแค้นแล้วเล่นใหม่",
     "why": [
       "Fast rounds keep a big group cycling through games all night",
       "Swashbuckling theme gives the bluffing and accusations some flair",
@@ -10429,7 +10602,8 @@
       "9": "recommended",
       "10": "recommended"
     },
-    "caption": "A quick, elimination-driven hidden-role game of duels and betrayal dressed up in swashbuckling finery."
+    "caption": "A quick, elimination-driven hidden-role game of duels and betrayal dressed up in swashbuckling finery.",
+    "caption_th": "เกมบทบาทลับแบบเร็ว ดวลและหักหลังในชุดนักดาบสุดหรู"
   },
   {
     "title": "Ichor",
@@ -10447,6 +10621,7 @@
     "color": "#2A6157",
     "image": "https://cf.geekdo-images.com/hRqHGC9qABpo_ZnolfpkDQ__itemrep@2x/img/Bc9mOJCSQ16ST-3vqg2Fya3TsIo=/fit-in/492x600/filters:strip_icc()/pic8195971.png",
     "blurb": "Greek gods and monsters race to lay down all their tokens first, each character carrying one powerful ability you can only use once. Fast, sharp, built for two.",
+    "blurb_th": "เทพและสัตว์ประหลาดกรีกแข่งวางโทเค็นทั้งหมดให้หมดก่อน แต่ละตัวมีความสามารถทรงพลังหนึ่งอย่างที่ใช้ได้ครั้งเดียว เร็ว คม สร้างมาเพื่อสองคน",
     "tag": "2-player duel",
     "why": [
       "Built for exactly two players, no compromises",
@@ -10457,7 +10632,8 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "Greek gods and monsters race to lay down all their tokens first."
+    "caption": "Greek gods and monsters race to lay down all their tokens first.",
+    "caption_th": "เทพและสัตว์ประหลาดกรีกแข่งวางโทเค็นให้หมดก่อน"
   },
   {
     "bggId": "329845",
@@ -10476,6 +10652,7 @@
     "color": "#6B4A6E",
     "image": "https://cf.geekdo-images.com/j3vn68o2ovUim3zh-JiWIA__original/img/hQyaMSdfLsbyghE-mZ6T5HI3M_s=/0x0/filters:format(jpeg)/pic6738101.jpg",
     "blurb": "Use the same dreamy, surreal Dixit-style art to guess which card best fits a shared theme, then try to out-vote everyone else's read on it. Faster and more head-to-head than the original Dixit formula.",
+    "blurb_th": "ใช้ภาพเหมือนฝันสไตล์ Dixit ชุดเดิม ทายว่าการ์ดไหนเข้ากับธีมร่วมที่สุด แล้วพยายามให้เสียงคุณชนะการอ่านของคนอื่น เร็วกว่าและปะทะกันตรงกว่าสูตร Dixit เดิม",
     "why": [
       "Same evocative artwork that made Dixit a household name",
       "More competitive pacing than the original storytelling game",
@@ -10489,6 +10666,7 @@
       "6": "best"
     },
     "caption": "Use the same dreamy, surreal Dixit-style art to guess which card best fits a shared theme.",
+    "caption_th": "ใช้ภาพเหมือนฝันสไตล์ Dixit ทายว่าการ์ดไหนเข้ากับธีมที่สุด",
     "teach": {
       "beats": [
         {
@@ -10536,6 +10714,18 @@
           "caption": "Pick the obvious two first."
         }
       ],
+      "captions_th": [
+        "ทุกคนแอบเลือกรูปที่เข้ากับคำ",
+        "จบทุกรอบใครแต้มมากสุดชนะ",
+        "เลือกมากไป แล้วพลาดใบเดียวได้ศูนย์",
+        "เลือกรูปที่ไม่มีใครเลือก? เสียแต้ม",
+        "เลือกสองใบที่ชัดๆ ก่อน"
+      ],
+      "frames_th": [
+        "ประกาศคำ",
+        "ทุกคนเลือกรูปที่เข้ากัน",
+        "เปิด: ที่ตรงกันได้แต้ม ที่โดดเดี่ยวไม่ได้"
+      ],
       "wordCount": 51,
       "source": "generated",
       "reviewed": false
@@ -10558,6 +10748,7 @@
     "color": "#6B7B3E",
     "image": "https://cf.geekdo-images.com/pImGcBuPfLEov1mm-e7iMA__original/img/zcGXpAdlvLoxmONV_Xcr2CaZtH8=/0x0/filters:format(png)/pic7490756.png",
     "blurb": "A compact farming game about planting, tending, and cashing in crops before the season runs out. Light enough to teach in a few minutes, with just enough planning to stay interesting whether you're playing solo or with a full table.",
+    "blurb_th": "เกมทำฟาร์มกะทัดรัดเรื่องปลูก ดูแล และเก็บผลผลิตไปขายก่อนหมดฤดู เบาพอสอนได้ในไม่กี่นาที แต่มีการวางแผนพอให้น่าสนใจไม่ว่าจะเล่นเดี่ยวหรือเต็มโต๊ะ",
     "why": [
       "Plays solo or with up to six, with rounds wrapped inside twenty minutes",
       "Simple crop-cycle mechanics keep downtime low",
@@ -10573,6 +10764,7 @@
       "6": "recommended"
     },
     "caption": "A compact farming game about planting, tending, and cashing in crops before the season runs out.",
+    "caption_th": "เกมทำฟาร์มกะทัดรัด ปลูก ดูแล เก็บผลผลิตก่อนหมดฤดู",
     "teach": {
       "beats": [
         {
@@ -10620,6 +10812,18 @@
           "caption": "Plant first, worry later."
         }
       ],
+      "captions_th": [
+        "ปลูก โต เก็บเกี่ยว worker placement ทำฟาร์มแบบง่ายๆ",
+        "แต้มมากสุดชนะ",
+        "ฉบับร่าง — เช็กกับกฎให้ดี",
+        "ฉบับร่าง — เช็กกฎการเลี้ยง",
+        "ปลูกก่อน ค่อยกังวลทีหลัง"
+      ],
+      "frames_th": [
+        "วางคนงาน",
+        "รับเมล็ดหรือน้ำ",
+        "ปลูกหรือเก็บเกี่ยว"
+      ],
       "wordCount": 35,
       "source": "generated",
       "reviewed": false
@@ -10642,6 +10846,7 @@
     "color": "#5B6B3F",
     "image": "https://cf.geekdo-images.com/5UHlN7xHbtLyBflLo22l_A__original/img/FAHSuf-h8Y599jdyVZg2KEWA0RU=/0x0/filters:format(jpeg)/pic9085224.jpg",
     "blurb": "A head-to-head duel built strictly for two, with rounds short enough to play best-of-three. Tight, focused, and easy to bring out whenever it's just the two of you.",
+    "blurb_th": "ดวลตัวต่อตัวที่สร้างมาเพื่อสองคนเท่านั้น รอบสั้นพอจะเล่นชนะสองในสาม แน่น โฟกัส และหยิบมาเล่นง่ายเมื่อมีแค่สองคน",
     "why": [
       "Designed exclusively for two players, so there's no scaling compromise",
       "Fast rounds make rematches painless",
@@ -10651,7 +10856,8 @@
     "playerRecommendations": {
       "2": "best"
     },
-    "caption": "A head-to-head duel built strictly for two, with rounds short enough to play best-of-three."
+    "caption": "A head-to-head duel built strictly for two, with rounds short enough to play best-of-three.",
+    "caption_th": "ดวลตัวต่อตัวเพื่อสองคนเท่านั้น รอบสั้นพอเล่นชนะสองในสาม"
   },
   {
     "bggId": "420087",
@@ -10670,6 +10876,7 @@
     "color": "#A83E32",
     "image": "https://cf.geekdo-images.com/YrQxEB9Ef0kQorRApzG5vQ__original/img/hK6k-x_GYfooemrkkRuF0bTvKxE=/0x0/filters:format(jpeg)/pic8780246.jpg",
     "blurb": "Flip cards from a shared deck and stop before you bust — a push-your-luck game so simple it teaches itself in one round. Ruthlessly addictive with a big group.",
+    "blurb_th": "เปิดการ์ดจากกองกลางแล้วหยุดก่อนจะพัง เกม push-your-luck ที่ง่ายจนสอนตัวเองได้ในรอบเดียว เสพติดอย่างไร้ปรานีกับกลุ่มใหญ่",
     "why": [
       "Explains in under a minute but stays tense every round",
       "Scales up to a huge table without slowing down",
@@ -10688,6 +10895,7 @@
       "11": "not_recommended"
     },
     "caption": "Flip cards from a shared deck and stop before you bust.",
+    "caption_th": "เปิดการ์ดจากกองกลางแล้วหยุดก่อนจะพัง",
     "teach": {
       "beats": [
         {
@@ -10734,6 +10942,18 @@
           "scene": "hand-safe",
           "caption": "Stop after four cards the first round."
         }
+      ],
+      "captions_th": [
+        "เปิดการ์ด อยู่ใต้ลิมิต อย่าเจอเลขซ้ำ",
+        "ใครถึง 200 แต้มก่อนชนะ",
+        "เจ็ดใบไม่ซ้ำ: โบนัสและรอบจบ",
+        "เลขเดียวกันสองใบ รอบนั้นได้ศูนย์",
+        "รอบแรกหยุดหลังสี่ใบ"
+      ],
+      "frames_th": [
+        "เจ้ามือเปิดการ์ดให้คุณ",
+        "อยู่ต่อรับอีกใบ หรือหยุด",
+        "พังเพราะเลขซ้ำ: ศูนย์"
       ],
       "wordCount": 54,
       "source": "generated",
