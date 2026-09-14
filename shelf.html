@@ -3014,7 +3014,10 @@ async function initInvite(){
 // this page (see isBagRoute) and works with the flag off.
 async function initBag(){
   const { setupBag } = await import('/js/bag-ui.js');
+  // Only the shelf's owner packs; everyone else browses the Bags sheet.
+  const user = await getUser().catch(() => null);
   bag = setupBag({
+    canPack: !!user && user.id === profile.id,
     getGames: () => games,
     rerender: () => render(),
     headerEl: document.querySelector('header'),

@@ -150,6 +150,13 @@ body.gn-selecting .shelf-bags-btn{display:none;}
   white-space:nowrap;
 }
 .bags-sheet__chev{color:var(--bgs-ivory-45);font-size:18px;line-height:1;}
+.bags-sheet__empty{
+  margin:4px 0;
+  padding:14px 12px;
+  text-align:center;
+  font-size:14px;
+  color:var(--bgs-ivory-45);
+}
 .bags-sheet__row--new{
   justify-content:center;
   background:transparent;

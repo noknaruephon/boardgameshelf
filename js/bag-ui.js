@@ -3,7 +3,7 @@
 // Two states, and the shelf's body carries the current one as data-bag-state
 // so the CSS can follow:
 //
-//   browse ──"Pack a bag" / "+ Pack a bag"──▶ packing ──"Pack N games"──▶ /bag/<id>
+//   browse ──"+ Pack a bag" (owner only)──▶ packing ──"Pack N games"──▶ /bag/<id>
 //                                               │
 //                                             Cancel ──▶ browse (or back to the bag being edited)
 //
@@ -63,11 +63,14 @@ function el(html) {
  * @param {HTMLElement} opts.countEl the "196 on the shelf" line; the bags
  *   control takes its right-hand end
  * @param {string} opts.ownerSlug whose shelf this is: bags are packed for it
+ * @param {boolean} [opts.canPack] whether the viewer is the shelf's owner.
+ *   Only the owner packs: guests get the Bags sheet to browse, with no
+ *   "+ Pack a bag" row, and packing never opens for them.
  * @param {(origin: HTMLElement) => void} [opts.runWave] the shelf's selection
  *   entrance — the gold wave out from the control that was tapped
  * @param {() => void} [opts.stopWave] cancels it when packing ends early
  */
-export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfCountEl, ownerSlug, runWave, stopWave }) {
+export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfCountEl, ownerSlug, canPack = false, runWave, stopWave }) {
   loadStyles();
 
   let mode = 'browse';
@@ -77,22 +80,21 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   // ---- DOM ----
 
-  // The one way in: the right-hand end of the count line. With bags it reads
-  // "◆ N bags ▾" and opens the Bags sheet; with none it reads "◆ Pack a bag"
-  // and opens packing straight away.
+  // The one way in: the right-hand end of the count line. It reads
+  // "◆ N bags ▾", or "◆ No bags ▾" with none, and always opens the Bags sheet.
   const packBtn = el(`
     <button class="shelf-bags-btn" type="button" aria-haspopup="dialog" aria-expanded="false">
-      <i class="bag-diamond" aria-hidden="true"></i><span class="shelf-bags-btn__label">Pack a bag</span><span class="shelf-bags-btn__caret" aria-hidden="true" hidden>▾</span>
+      <i class="bag-diamond" aria-hidden="true"></i><span class="shelf-bags-btn__label">No bags</span><span class="shelf-bags-btn__caret" aria-hidden="true">▾</span>
     </button>
   `);
   const packLabel = packBtn.querySelector('.shelf-bags-btn__label');
-  const packCaret = packBtn.querySelector('.shelf-bags-btn__caret');
   shelfCountEl.classList.add('shelf-count--with-bags');
   shelfCountEl.appendChild(packBtn);
   let bags = [];
 
   // The Bags sheet: the same scaffold as the share sheet, rows of bags with
-  // a cover stack, and "+ Pack a bag" last.
+  // a cover stack, and for the owner "+ Pack a bag" last. With no bags it
+  // says so, and the owner still gets the row.
   const sheet = createBottomSheet({
     className: 'bags-sheet',
     titleId: 'bagsSheetTitle',
@@ -164,10 +166,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
 
   function renderControl() {
     const n = bags.length;
-    packLabel.textContent = n ? `${n} bag${n === 1 ? '' : 's'}` : 'Pack a bag';
-    packCaret.hidden = n === 0;
-    if (n) packBtn.setAttribute('aria-haspopup', 'dialog');
-    else packBtn.removeAttribute('aria-haspopup');
+    packLabel.textContent = n ? `${n} bag${n === 1 ? '' : 's'}` : 'No bags';
   }
 
   function renderSheet() {
@@ -196,20 +195,26 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
       a.append(stack, txt, el('<span class="bags-sheet__chev" aria-hidden="true">›</span>'));
       sheetList.appendChild(a);
     }
-    const add = el('<button class="bags-sheet__row bags-sheet__row--new" type="button">+ Pack a bag</button>');
-    add.addEventListener('click', () => { sheet.close(); enterPacking(null, packBtn); });
-    sheetList.appendChild(add);
+    if (!bags.length) {
+      const empty = el('<p class="bags-sheet__empty"></p>');
+      empty.textContent = canPack ? 'Nothing packed yet.' : 'No bags on this shelf yet.';
+      sheetList.appendChild(empty);
+    }
+    if (canPack) {
+      const add = el('<button class="bags-sheet__row bags-sheet__row--new" type="button">+ Pack a bag</button>');
+      add.addEventListener('click', () => { sheet.close(); enterPacking(null, packBtn); });
+      sheetList.appendChild(add);
+    }
   }
 
   function openBags() {
-    if (!bags.length) { enterPacking(null, packBtn); return; }
     packBtn.setAttribute('aria-expanded', 'true');
     sheet.open(packBtn);
   }
 
   // Stage 1's local bags are packed again into the shelf first, so they show
   // up in the sheet on the same visit. Neither step is allowed to take the
-  // shelf down: a list that fails to load is simply "Pack a bag".
+  // shelf down: a list that fails to load is simply "No bags".
   const bagsReady = (async () => {
     try { await migrateLegacyBags(ownerSlug); } catch { /* reported by the store */ }
     try {
@@ -286,6 +291,9 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   }
 
   function enterPacking(bag, origin) {
+    // A new bag is the owner's to pack. Editing one goes by its edit token,
+    // which only a browser that packed it holds.
+    if (!bag && !canPack) return;
     editing = bag || null;
     // Only ids the shelf still carries make it into the draft, so a game
     // dropped by a sync leaves the bag on the next save.
