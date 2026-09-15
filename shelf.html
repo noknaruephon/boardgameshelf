@@ -2738,7 +2738,9 @@ function renderSelbar(){
   document.getElementById('selbarPillTxt').textContent = ok ? `Continue · ${n}` : `Pick ${GN_MIN_SELECT - n} more`;
   document.getElementById('selbarShare').classList.toggle('hide', !ok);
 
-  const list = document.getElementById('selbar-list');
+  // Rows go in the inner scroller, not the glass box: on iOS the children of
+  // an element that both blurs its backdrop and scrolls do not paint.
+  const list = document.getElementById('selbarListScroll');
   const ids = Array.from(state.selectedIds);
   list.innerHTML = n ? `<h4>Selected · ${n}</h4>` + ids.map(id => {
     const g = games.find(x => x.bggId === id);
@@ -3085,7 +3087,7 @@ function initGameNight(){
          css/glass.css in its place. Its list opens with the tray's own
          open/close (body.gn-tray-open, the scrim, the scroll lock). -->
     <div class="selbar" id="selbar">
-      <div class="selbar__list glass" id="selbar-list"></div>
+      <div class="selbar__list glass" id="selbar-list"><div class="selbar__scroll" id="selbarListScroll"></div></div>
       <button class="selbar__chip glass" id="selbarChip" type="button" aria-expanded="false" aria-controls="selbar-list" disabled>
         <span id="selbarChipTxt">0 selected</span><span class="selbar__chev" aria-hidden="true">${GN_CHEV_SVG}</span>
       </button>
