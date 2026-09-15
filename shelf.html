@@ -1427,18 +1427,22 @@
 
 </style>
 <script>
-  // Liquid Glass flag (docs/claude-code-spec-liquid-glass.md). ?glass=1 turns
-  // it on and persists to localStorage.bgsGlass; ?glass=0 clears it. With it
-  // set, css/glass.css is loaded here — last in <head>, so it wins over the
-  // page's own styles at equal specificity. Nothing else is gated: the .glass
-  // class sits in the markup regardless and is inert without the stylesheet.
+  // Liquid Glass (docs/claude-code-spec-liquid-glass.md). Live for everyone;
+  // ?glass=0 opts a device out (persisted to localStorage.bgsGlass) and
+  // ?glass=1 opts it back in. Same kill-switch shape as the other flags: set
+  // GLASS_ENABLED to false to pull the material without reverting anything.
+  // css/glass.css is loaded here — last in <head>, so it wins over the page's
+  // own styles at equal specificity. Nothing else is gated: the .glass class
+  // sits in the markup regardless and is inert without the stylesheet.
   (function(){
+    var GLASS_ENABLED = true;
     try{
       var q = new URLSearchParams(location.search).get('glass');
-      if(q === '1') localStorage.setItem('bgsGlass', '1');
-      else if(q === '0') localStorage.removeItem('bgsGlass');
-      if(localStorage.getItem('bgsGlass') !== '1') return;
-    }catch(e){ return; }
+      if(q === '0') localStorage.setItem('bgsGlass', '0');
+      else if(q === '1') localStorage.removeItem('bgsGlass');
+      var off = localStorage.getItem('bgsGlass') === '0';
+      if(GLASS_ENABLED ? off : !(q === '1')) return;
+    }catch(e){ if(!GLASS_ENABLED) return; }
     var link = document.createElement('link');
     link.rel = 'stylesheet'; link.href = '/css/glass.css';
     document.head.appendChild(link);
