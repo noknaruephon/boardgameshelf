@@ -2736,7 +2736,8 @@ function renderSelbar(){
   pill.classList.toggle('gold', ok);
   pill.disabled = !ok;
   document.getElementById('selbarPillTxt').textContent = ok ? `Continue · ${n}` : `Pick ${GN_MIN_SELECT - n} more`;
-  document.getElementById('selbarShare').classList.toggle('hide', !ok);
+  // Share works from one pick: the invite module enables its button at n ≥ 1.
+  document.getElementById('selbarShare').classList.toggle('hide', n === 0);
 
   // Rows go in the inner scroller, not the glass box: on iOS the children of
   // an element that both blurs its backdrop and scrolls do not paint.
