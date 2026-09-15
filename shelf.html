@@ -73,6 +73,7 @@
      (css/glass.css shows them); without it they do not exist on screen. */
   .topbar{display:none;}
   .mode-puck{display:none;}
+  .selbar{display:none;}
   .search-wrap{
     position:relative;
     flex:1;
@@ -2678,8 +2679,14 @@ function exitSelectionMode(){
   updateGnBar();
 }
 
-function openGnTray(){ document.body.classList.add('gn-tray-open'); syncScrollLock(); }
-function closeGnTray(){ document.body.classList.remove('gn-tray-open'); syncScrollLock(); }
+function openGnTray(){ document.body.classList.add('gn-tray-open'); syncScrollLock(); syncSelbarChip(); }
+function closeGnTray(){ document.body.classList.remove('gn-tray-open'); syncScrollLock(); syncSelbarChip(); }
+function syncSelbarChip(){
+  document.getElementById('selbarChip')?.setAttribute('aria-expanded', String(document.body.classList.contains('gn-tray-open')));
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && document.body.classList.contains('gn-tray-open')) closeGnTray();
+});
 
 // The chooser, surprise, and confirm dialogs share one predicate — only ever
 // one is open, and which of them it is makes no difference to the lock.
@@ -2703,6 +2710,49 @@ function updateGnBar(){
   invite?.onSelection();
   if(n === 0) closeGnTray();
   renderGnTray();
+  renderSelbar();
+}
+
+// Deselect from a list (tray or floating bar): same routine either way.
+function deselectFromList(id){
+  state.selectedIds.delete(id);
+  cardNodeFor(id)?.classList.remove('selected');
+  updateGnBar();
+  gameModal.refreshFooter();
+}
+
+// The floating glass bar: chip, pill, share and its list, all read from
+// state.selectedIds. No logic of its own — see updateGnBar for the rules.
+function renderSelbar(){
+  const bar = document.getElementById('selbar');
+  if(!bar) return;
+  const n = state.selectedIds.size;
+  const ok = n >= GN_MIN_SELECT;
+  const chip = document.getElementById('selbarChip');
+  document.getElementById('selbarChipTxt').textContent = `${n} selected`;
+  chip.classList.toggle('ok', ok);
+  chip.disabled = n === 0;
+  const pill = document.getElementById('selbarPill');
+  pill.classList.toggle('gold', ok);
+  pill.disabled = !ok;
+  document.getElementById('selbarPillTxt').textContent = ok ? `Continue · ${n}` : `Pick ${GN_MIN_SELECT - n} more`;
+  document.getElementById('selbarShare').classList.toggle('hide', !ok);
+
+  const list = document.getElementById('selbar-list');
+  const ids = Array.from(state.selectedIds);
+  list.innerHTML = n ? `<h4>Selected · ${n}</h4>` + ids.map(id => {
+    const g = games.find(x => x.bggId === id);
+    if(!g) return '';
+    return `
+      <div class="selbar__item">
+        <img src="${g.image}" alt="" loading="lazy" onerror="this.remove()">
+        <div class="selbar__txt"><b>${g.title}</b><span>★ ${g.bggRating.toFixed(1)} · ${playersRangeLabel(g.players)}</span></div>
+        <button class="selbar__rm" type="button" data-remove="${id}" aria-label="Remove ${g.title}">${GN_X_SVG}</button>
+      </div>`;
+  }).join('') : '<div class="selbar__empty">Nothing picked yet.</div>';
+  list.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', ()=>deselectFromList(btn.dataset.remove));
+  });
 }
 
 function renderGnTray(){
@@ -2725,13 +2775,7 @@ function renderGnTray(){
     `;
   }).join('');
   list.querySelectorAll('[data-remove]').forEach(btn => {
-    btn.addEventListener('click', ()=>{
-      const id = btn.dataset.remove;
-      state.selectedIds.delete(id);
-      cardNodeFor(id)?.classList.remove('selected');
-      updateGnBar();
-      gameModal.refreshFooter();
-    });
+    btn.addEventListener('click', ()=>deselectFromList(btn.dataset.remove));
   });
 }
 
@@ -3035,6 +3079,22 @@ function initGameNight(){
       <button class="gn-bar__count" id="gnBarCount" type="button" disabled></button>
       <button class="gn-bar__continue" id="gnBarContinue" type="button" disabled>Continue</button>
     </div>
+
+    <!-- Floating glass selection bar (docs/claude-code-spec-selection-bar.md):
+         a view over the same selection state as .gn-bar, shown by
+         css/glass.css in its place. Its list opens with the tray's own
+         open/close (body.gn-tray-open, the scrim, the scroll lock). -->
+    <div class="selbar" id="selbar">
+      <div class="selbar__list glass" id="selbar-list"></div>
+      <button class="selbar__chip glass" id="selbarChip" type="button" aria-expanded="false" aria-controls="selbar-list" disabled>
+        <span id="selbarChipTxt">0 selected</span><span class="selbar__chev" aria-hidden="true">${GN_CHEV_SVG}</span>
+      </button>
+      <div class="selbar__row">
+        <button class="selbar__round glass" id="selbarCancel" type="button" aria-label="Cancel">${GN_X_SVG}</button>
+        <button class="selbar__pill glass" id="selbarPill" type="button" disabled>${GN_DIE_SVG}<span id="selbarPillTxt">Pick ${GN_MIN_SELECT} more</span></button>
+        <button class="selbar__round glass hide" id="selbarShare" type="button" aria-label="Share invite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 11l8-4M8 13l8 4"/></svg></button>
+      </div>
+    </div>
   `);
 
   // entry point: the pill opens the sheet with the two ways in — pick the
@@ -3138,11 +3198,24 @@ function initGameNight(){
     updateGnBar();
     gameModal.refreshFooter();
   });
-  document.getElementById('gnBarContinue').addEventListener('click', ()=>{
+  function continueFromSelection(){
     if(state.selectedIds.size < GN_MIN_SELECT) return;
     closeGnTray();
     gnState.mode = 'manual';
     openConfirm();
+  }
+  document.getElementById('gnBarContinue').addEventListener('click', continueFromSelection);
+
+  // floating glass bar: same handlers as the bar above
+  document.getElementById('selbarCancel').addEventListener('click', exitSelectionMode);
+  document.getElementById('selbarPill').addEventListener('click', continueFromSelection);
+  document.getElementById('selbarChip').addEventListener('click', ()=>{
+    document.body.classList.contains('gn-tray-open') ? closeGnTray() : openGnTray();
+  });
+  // Share: the invite module owns the share button it adds to .gn-bar and
+  // its handler; this one just presses it.
+  document.getElementById('selbarShare').addEventListener('click', ()=>{
+    document.getElementById('gnBarShare')?.click();
   });
 
   // confirm step
