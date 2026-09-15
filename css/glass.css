@@ -266,12 +266,17 @@ a.glass:active,
 }
 .gn-fab.glass.is-open{--glass-fill-a:.66;}
 body.is-selecting .gn-fab.glass{transform:translateX(-50%) translateY(14px) scale(.9);}
-/* Sheet option: lighter glass, no drop shadow, so it sits in the plate. */
+/* Sheet options: lighter fill, no drop shadow, and no backdrop-filter of
+   their own. The box around them is already blurred and is resizing while
+   they show; nesting more blur layers inside a resizing one is what tipped
+   iOS Safari into reloading the page. The rim gradient stays — it is a
+   plain gradient, not a filter. */
 .gn-opt.glass{
   --glass-fill-a:.3;
-  --glass-blur:10px;
   --glass-shadow:none;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
 }
+.gn-opt.glass::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
 .gn-opt.glass:hover{--glass-fill-a:.45;}
 
 /* ---- Filter sheet tabs: a sliding glass puck under the active tab ---- */
@@ -299,11 +304,13 @@ body.is-selecting .gn-fab.glass{transform:translateX(-50%) translateY(14px) scal
   width:calc((100% - 8px) / 2);
   border-radius:12px;
   --glass-fill-a:.5;
-  --glass-blur:8px;
   --glass-shadow:0 2px 8px rgba(0,0,0,.35);
+  /* Same rule as the sheet options: no blur nested inside the sheet's. */
+  -webkit-backdrop-filter:none; backdrop-filter:none;
   transition:transform .45s var(--ease-liquid),
              background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid);
 }
+.filter-sheet.glass .mode-puck::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
 .filter-sheet.glass .mode-tabs[data-mode=numbers] .mode-puck{transform:translateX(100%);}
 
 /* ---- Reduced motion: no transitions; the refraction ring is static and
