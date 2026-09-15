@@ -32,13 +32,17 @@ const TEACH_ENABLED = true;
 const teachVisible =
   TEACH_ENABLED || new URLSearchParams(location.search).get('teach') === '1';
 
+// Inline onerror prefix: a sized cover that fails (the optimiser is not
+// available) retries once with the original before the handler gives up.
+const FALLBACK_ONCE = "if(this.dataset.orig&&this.src!==this.dataset.orig){this.src=this.dataset.orig;delete this.dataset.orig;return}";
+
 function coverHTML(g) {
   if (g.backImage) {
     return `
       <div class="flip-scene">
         <div class="flip-card" id="flip-card">
           <div class="flip-face flip-front">
-            <img class="card-cover" src="${g.imageLarge || g.image}" alt="${g.title} box cover" loading="lazy" decoding="async" onerror="this.style.display='none'">
+            <img class="card-cover" src="${g.imageMid || g.imageLarge || g.image}" alt="${g.title} box cover" loading="lazy" decoding="async" data-orig="${g.imageLarge || g.image}" onerror="${FALLBACK_ONCE}this.style.display='none'">
           </div>
           <div class="flip-face flip-back">
             <img class="card-cover" src="${g.backImage}" alt="${g.title} back of box" loading="lazy" decoding="async" onerror="this.style.display='none'">
@@ -49,7 +53,7 @@ function coverHTML(g) {
   }
   return `
     <div class="card-cover-wrap" style="background:${g.color}22">
-      <img class="card-cover" src="${g.imageLarge || g.image}" alt="${g.title} box cover" width="600" height="450" loading="lazy" decoding="async" fetchpriority="low" onerror="this.parentElement.style.background='${g.color}';this.style.display='none'">
+      <img class="card-cover" src="${g.imageMid || g.imageLarge || g.image}" alt="${g.title} box cover" width="600" height="450" loading="lazy" decoding="async" fetchpriority="low" data-orig="${g.imageLarge || g.image}" onerror="${FALLBACK_ONCE}this.parentElement.style.background='${g.color}';this.style.display='none'">
     </div>`;
 }
 
@@ -274,6 +278,10 @@ export function createGameModal({ selection } = {}) {
     backdrop.classList.remove('open');
     openGame = null;
     syncScrollLock();
+    // Drop the body so the cover's decoded bitmap can be released: with the
+    // markup left in place each game read added another full-size image to
+    // what the page held, and a few in a row reloaded iOS Safari.
+    body.innerHTML = '';
   }
 
   function refreshFooter() {
