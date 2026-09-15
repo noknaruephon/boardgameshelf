@@ -1,0 +1,224 @@
+/* Liquid Glass material — docs/claude-code-spec-liquid-glass.md.
+
+   Loaded by shelf.html only when localStorage.bgsGlass is set (?glass=1 sets
+   it, ?glass=0 clears it). Nothing in here is prefixed by a flag selector:
+   the .glass class sits in the markup regardless, and is inert until this
+   file loads. Dropping the flag later means loading this file unconditionally.
+
+   Rules (engineering-principles):
+   - transitions only, never @keyframes — WebKit drops a transition that
+     shares a property with an animation;
+   - the rim and every ring are box-shadow, never border, never outline;
+   - tokens are the --glass-* set in css/base.css.
+   Game cards never get .glass: 197 backdrop-filters would not scroll. */
+
+.glass{
+  position:relative;
+  isolation:isolate;
+  border:0;
+  background:
+    linear-gradient(135deg, var(--glass-sheen) 0%, transparent 38%, transparent 70%, rgba(var(--bgs-ivory-rgb),.04) 100%)
+      var(--light-x) 0 / 220% 100% no-repeat,
+    rgba(var(--bgs-plate-rgb),var(--glass-fill-a));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  /* --glass-focus is the focus ring slot: empty by default, a gold ring on
+     :focus-visible, so focus composes with the rim instead of replacing it. */
+  --glass-focus:0 0 0 0 transparent;
+  box-shadow:
+    var(--glass-focus),
+    inset 1px 1px 0 var(--glass-rim-light),
+    inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px var(--glass-rim-gold),
+    var(--glass-shadow);
+  transition:background var(--dur) var(--ease-liquid),
+             box-shadow var(--dur) var(--ease-liquid),
+             transform .28s var(--ease-liquid);
+}
+/* Refraction ring: a band along the edge with its own, stronger
+   backdrop-filter, so the world behind bends and brightens at the rim. */
+.glass::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  z-index:-1;
+  pointer-events:none;
+  padding:var(--glass-rim-w);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  -webkit-backdrop-filter:blur(3px) brightness(1.35) saturate(2) contrast(1.1);
+  backdrop-filter:blur(3px) brightness(1.35) saturate(2) contrast(1.1);
+  background:conic-gradient(from 210deg at 50% 50%,
+    rgba(var(--bgs-ivory-rgb),.30), rgba(var(--bgs-gold-rgb),.18) 25%,
+    transparent 45%, rgba(var(--bgs-ivory-rgb),.10) 60%, transparent 80%,
+    rgba(var(--bgs-ivory-rgb),.30));
+}
+/* Inner glow that reads as thickness. */
+.glass::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  z-index:-1;
+  pointer-events:none;
+  box-shadow:inset 0 0 18px rgba(var(--bgs-ivory-rgb),.05), inset 0 -10px 20px rgba(0,0,0,.18);
+}
+/* Press: fill thickens, control shrinks. Only on things you press — a sheet
+   is :active while any row inside it is, and must not scale. */
+button.glass:active,
+a.glass:active,
+[role="button"].glass:active{
+  --glass-fill-a:.74;
+  transform:scale(.97);
+}
+.glass:focus-visible{
+  outline:none; /* the ring is the box-shadow slot below */
+  --glass-focus:0 0 0 2px var(--bgs-bg), 0 0 0 4px var(--bgs-gold);
+}
+
+/* No blur available, or the OS asks for less transparency: a near-solid
+   plate keeps the text readable, the rim stays. */
+@supports not (backdrop-filter:blur(1px)){
+  .glass{--glass-fill-a:.92;}
+  .glass::before{background:none;}
+}
+@media (prefers-reduced-transparency:reduce){
+  .glass{--glass-fill-a:.92; -webkit-backdrop-filter:none; backdrop-filter:none;}
+  .glass::before{-webkit-backdrop-filter:none; backdrop-filter:none; background:none;}
+}
+
+/* ---- Header controls: search field, filter + sort (52px, radius 18) ---- */
+
+.filter-sort-bar.is-stuck{
+  background:transparent;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+.search.glass{
+  height:52px;
+  border-radius:18px;
+  padding:0 40px 0 18px;
+  color:var(--bgs-ivory);
+}
+.search.glass::placeholder{color:var(--bgs-ivory-45);}
+.search-wrap .search-clear{right:12px;}
+.icon-btn.glass{
+  width:52px;
+  height:52px;
+  border-radius:18px;
+  color:var(--bgs-gold);
+}
+.icon-btn.glass:hover{color:var(--bgs-ivory);}
+.icon-btn.glass.active{--glass-fill-a:.7; color:var(--bgs-gold);}
+
+/* ---- Beta pill ---- */
+
+.bgs-beta.glass{
+  padding:5px 12px;
+  border-radius:999px;
+  --glass-blur:10px;
+  --glass-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+.bgs-beta.glass:focus-visible{
+  box-shadow:
+    var(--glass-focus),
+    inset 1px 1px 0 var(--glass-rim-light),
+    inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px var(--glass-rim-gold),
+    var(--glass-shadow);
+}
+
+/* ---- Bags button (on the count line) ---- */
+
+.shelf-bags-btn.glass{
+  margin:-8px 0;
+  padding:6px 12px;
+  border-radius:12px;
+  --glass-blur:12px;
+  --glass-shadow:0 4px 12px rgba(0,0,0,.35);
+}
+/* bag.css loads lazily, after this file, so its outline ring needs a more
+   specific override here: the ring is the box-shadow slot. */
+.shelf-bags-btn.glass:focus-visible{outline:none;border-radius:12px;}
+.shelf-bags-btn.glass .shelf-bags-btn__label{color:var(--bgs-gold);}
+
+/* ---- Sheets: the filter sheet and every bottom sheet (bags, share) ----
+   Same box as the open Game Night sheet: 12px in from the edges, radius 30,
+   entering from translateY(112%). The sheet's own transform transition
+   replaces .glass's press transition — a sheet is never pressed. */
+
+.filter-sheet.glass,
+.bsheet.glass{
+  position:fixed; /* .glass says relative; a sheet floats */
+  left:12px;
+  right:12px;
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  max-width:456px;
+  border-radius:30px;
+  --glass-fill-a:.66;
+  transform:translateY(112%);
+  transition:transform var(--dur) var(--ease-liquid),
+             background var(--dur) var(--ease-liquid),
+             box-shadow var(--dur) var(--ease-liquid);
+}
+.filter-sheet.glass{max-height:calc(100vh - 24px - env(safe-area-inset-bottom));}
+.filter-sheet.glass.open{transform:none;}
+.bsheet.glass{
+  padding-bottom:20px;
+  transition:transform var(--dur) var(--ease-liquid),
+             background var(--dur) var(--ease-liquid),
+             box-shadow var(--dur) var(--ease-liquid),
+             visibility 0s linear var(--dur);
+}
+.bsheet.glass.is-open{
+  transform:none;
+  transition:transform var(--dur) var(--ease-liquid),
+             background var(--dur) var(--ease-liquid),
+             box-shadow var(--dur) var(--ease-liquid),
+             visibility 0s;
+}
+.sheet-scrim,
+.bsheet-scrim{
+  background:rgba(var(--bgs-bg-rgb),.45);
+  transition:opacity .35s;
+}
+/* Sheet rows: lighter glass, no drop shadow, so they sit in the plate. */
+.bags-sheet.glass .bags-sheet__row{
+  background:rgba(var(--bgs-plate-rgb),.3);
+  box-shadow:inset 1px 1px 0 var(--glass-rim-light), inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06);
+}
+.bags-sheet.glass .bags-sheet__row:hover{background:rgba(var(--bgs-plate-rgb),.5);}
+.bags-sheet.glass .bags-sheet__row--new{background:transparent;}
+
+/* ---- Game Night pill (Commit 2 turns it into the morphing sheet) ----
+   The pill keeps its own centring transform, so the press scale is
+   composed with it rather than taken from .glass. */
+
+.gn-fab.glass{
+  position:fixed; /* .glass says relative; the pill floats */
+  height:60px;
+  padding:0 24px 0 20px;
+  font-size:16px;
+  --glass-fill-a:.58;
+  color:var(--bgs-gold);
+  transition:background var(--dur) var(--ease-liquid),
+             box-shadow var(--dur) var(--ease-liquid),
+             transform .28s var(--ease-liquid),
+             opacity .18s ease;
+}
+.gn-fab.glass svg{width:20px;height:20px;}
+.gn-fab.glass:active{transform:translateX(-50%) scale(.97);}
+.gn-fab.glass:focus-visible{outline:none;}
+body.is-selecting .gn-fab.glass{transform:translateX(-50%) translateY(14px) scale(.9);}
+
+/* ---- Reduced motion: no transitions; the refraction ring is static and
+   stays. Sheets still open and close, they just don't slide. ---- */
+
+@media (prefers-reduced-motion:reduce){
+  .glass,
+  .glass::before,
+  .glass::after,
+  .glass.open,
+  .glass.is-open,
+  .sheet-scrim,
+  .bsheet-scrim{transition:none;}
+}

@@ -83,7 +83,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
   // The one way in: the right-hand end of the count line. It reads
   // "◆ N bags ▾", or "◆ No bags ▾" with none, and always opens the Bags sheet.
   const packBtn = el(`
-    <button class="shelf-bags-btn" type="button" aria-haspopup="dialog" aria-expanded="false">
+    <button class="shelf-bags-btn glass" type="button" aria-haspopup="dialog" aria-expanded="false">
       <i class="bag-diamond" aria-hidden="true"></i><span class="shelf-bags-btn__label">No bags</span><span class="shelf-bags-btn__caret" aria-hidden="true">▾</span>
     </button>
   `);
@@ -483,7 +483,7 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
         'aria-label',
         `${game.title}, ${range(game.players)} players, ${range(game.time)} minutes`
       );
-      const body = cardEl.querySelector('.plate-body');
+      const body = cardEl.querySelector('.info');
       if (body) {
         // Player count and playtime, the two things you are weighing while you
         // pack. On a phone the tile is too narrow for both, so the CSS drops
