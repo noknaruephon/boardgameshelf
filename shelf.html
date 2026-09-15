@@ -1140,8 +1140,10 @@
   body.is-selecting .checkbox{
     display:flex;align-items:center;justify-content:center;
     position:absolute;top:6px;left:6px;z-index:4;
-    width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,0.55);
-    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);backdrop-filter:blur(3px);
+    width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,0.6);
+    /* No backdrop-filter here: one per card is ~200 blur layers that all
+       re-render whenever a cover dims, and toggling a pick stuttered. */
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);
     transition:background 0.15s ease, border-color 0.15s ease;
   }
   body.is-selecting .checkbox svg{width:13px;height:13px;opacity:0;transition:opacity 0.12s ease;}
@@ -1154,8 +1156,8 @@
   }
   body.is-selecting .info-btn i{
     display:flex;align-items:center;justify-content:center;
-    width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.55);
-    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);backdrop-filter:blur(3px);
+    width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.6);
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);
     font-style:normal;font-size:12px;font-weight:700;color:var(--bgs-ivory-70);font-family:'Fraunces',serif;
   }
   body.is-selecting .info-btn:hover i{border-color:var(--bgs-gold);color:var(--bgs-gold);}
@@ -2679,7 +2681,7 @@ function exitSelectionMode(){
   updateGnBar();
 }
 
-function openGnTray(){ document.body.classList.add('gn-tray-open'); syncScrollLock(); syncSelbarChip(); }
+function openGnTray(){ document.body.classList.add('gn-tray-open'); syncScrollLock(); syncSelbarChip(); renderGnTray(); renderSelbarList(); }
 function closeGnTray(){ document.body.classList.remove('gn-tray-open'); syncScrollLock(); syncSelbarChip(); }
 function syncSelbarChip(){
   document.getElementById('selbarChip')?.setAttribute('aria-expanded', String(document.body.classList.contains('gn-tray-open')));
@@ -2709,8 +2711,11 @@ function updateGnBar(){
   document.getElementById('gnBarContinue').disabled = n < GN_MIN_SELECT;
   invite?.onSelection();
   if(n === 0) closeGnTray();
-  renderGnTray();
   renderSelbar();
+  // The lists (tray, floating bar) rebuild their rows only while open —
+  // openGnTray builds them — so a tap on a card does not re-create every
+  // selected row's markup and image.
+  if(document.body.classList.contains('gn-tray-open') || n === 0){ renderGnTray(); renderSelbarList(); }
 }
 
 // Deselect from a list (tray or floating bar): same routine either way.
@@ -2738,7 +2743,11 @@ function renderSelbar(){
   document.getElementById('selbarPillTxt').textContent = ok ? `Continue · ${n}` : `Pick ${GN_MIN_SELECT - n} more`;
   // Share works from one pick: the invite module enables its button at n ≥ 1.
   document.getElementById('selbarShare').classList.toggle('hide', n === 0);
+}
 
+function renderSelbarList(){
+  if(!document.getElementById('selbar')) return;
+  const n = state.selectedIds.size;
   // Rows go in the inner scroller, not the glass box: on iOS the children of
   // an element that both blurs its backdrop and scrolls do not paint.
   const list = document.getElementById('selbarListScroll');
