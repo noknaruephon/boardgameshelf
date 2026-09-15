@@ -41,7 +41,8 @@ export function createBottomSheet({ className = '', titleId, bodyHTML, onClose }
   scrim.className = 'bsheet-scrim';
 
   const el = document.createElement('div');
-  el.className = `bsheet ${className}`.trim();
+  // .glass is inert unless css/glass.css is loaded (shelf.html, ?glass=1).
+  el.className = `bsheet glass ${className}`.trim();
   el.setAttribute('role', 'dialog');
   el.setAttribute('aria-modal', 'true');
   if (titleId) el.setAttribute('aria-labelledby', titleId);
