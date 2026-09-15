@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#160F0A">
+<title>BoardgameShelf — Liquid Glass mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   Production tokens (names verbatim from css/base.css; values
+   approximated from the live site — align on hand-off)
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --bgs-bg:#160F0A;          --bgs-bg-rgb:22,15,10;
+  --bgs-plate:#241A13;       --bgs-plate-rgb:36,26,19;
+  --bgs-ivory:#F3E9D8;       --bgs-ivory-rgb:243,233,216;
+  --bgs-gold:#D9B25C;        --bgs-gold-rgb:217,178,92;
+  --bgs-muted:rgba(var(--bgs-ivory-rgb),.55);
+
+  --font-display:"Fraunces",Georgia,serif;
+  --font-ui:"Inter",system-ui,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
+
+  /* ── Liquid Glass tokens (new) ── */
+  --glass-fill-a:.52;                                   /* plate tint opacity */
+  --glass-blur:22px;
+  --glass-sat:1.6;
+  --glass-rim-w:1.5px;                                  /* refraction ring width */
+  --glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);
+  --glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
+  --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);
+  --glass-sheen:rgba(var(--bgs-ivory-rgb),.10);
+  --light-x:20%;                                        /* specular position, follows scroll */
+
+  --ease-liquid:cubic-bezier(.32,.72,0,1);
+  --dur:.55s;
+  --demo-h:40px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bgs-bg)}
+body{
+  font-family:var(--font-ui); color:var(--bgs-ivory);
+  background:var(--bgs-bg); min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  padding-top:var(--demo-h);
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible{box-shadow:0 0 0 2px rgba(var(--bgs-gold-rgb),.7)!important;outline:none}
+input{font:inherit;color:inherit;background:none;border:0;outline:none;width:100%}
+input::placeholder{color:var(--bgs-muted)}
+.page{max-width:480px;margin:0 auto;padding:0 16px 140px}
+
+/* ─────────────────────────────────────────────────────────────
+   The glass material
+   ───────────────────────────────────────────────────────────── */
+.glass{
+  position:relative; isolation:isolate;
+  background:
+    linear-gradient(135deg, var(--glass-sheen) 0%, transparent 38%, transparent 70%, rgba(var(--bgs-ivory-rgb),.04) 100%) var(--light-x) 0 / 220% 100% no-repeat,
+    rgba(var(--bgs-plate-rgb),var(--glass-fill-a));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  box-shadow:
+    inset 1px 1px 0 var(--glass-rim-light),
+    inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px var(--glass-rim-gold),
+    var(--glass-shadow);
+  transition:background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid), transform .28s var(--ease-liquid);
+}
+/* refraction ring: a masked band along the edge with its own, stronger
+   backdrop-filter, so the world behind bends and brightens at the rim */
+.glass::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; z-index:-1; pointer-events:none;
+  padding:var(--glass-rim-w);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  -webkit-backdrop-filter:blur(3px) brightness(1.35) saturate(2) contrast(1.1);
+  backdrop-filter:blur(3px) brightness(1.35) saturate(2) contrast(1.1);
+  background:conic-gradient(from 210deg at 50% 50%,
+    rgba(var(--bgs-ivory-rgb),.30), rgba(var(--bgs-gold-rgb),.18) 25%,
+    transparent 45%, rgba(var(--bgs-ivory-rgb),.10) 60%, transparent 80%, rgba(var(--bgs-ivory-rgb),.30));
+  opacity:1; transition:opacity .3s;
+}
+/* inner glow that reads as thickness */
+.glass::after{
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:-1;
+  box-shadow:inset 0 0 18px rgba(var(--bgs-ivory-rgb),.05), inset 0 -10px 20px rgba(0,0,0,.18);
+}
+.glass.is-pressed,.glass:active{ --glass-fill-a:.74; transform:scale(.97) }
+[data-refraction="off"] .glass::before{opacity:0}
+[data-refraction="off"] .glass{ box-shadow: inset 0 0 0 1px var(--glass-rim-gold), var(--glass-shadow) }
+
+/* ─────────────────────────────────────────────────────────────
+   Header (full) — scrolls away
+   ───────────────────────────────────────────────────────────── */
+.header{padding:44px 0 24px}
+.owner{font-family:var(--font-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--bgs-muted);display:flex;justify-content:space-between;align-items:center}
+.icon-btn{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:var(--bgs-gold)}
+.wordmark{font-family:var(--font-display);font-weight:700;font-size:44px;line-height:1.05;letter-spacing:-.01em;margin-top:16px;display:flex;align-items:center;gap:12px}
+.beta{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;padding:5px 12px;border-radius:999px;color:var(--bgs-gold);vertical-align:middle;margin-top:6px}
+.tagline{font-size:20px;color:var(--bgs-gold);margin-top:14px}
+.search-row{display:flex;gap:10px;margin-top:32px}
+.field{flex:1;height:52px;border-radius:18px;display:flex;align-items:center;gap:10px;padding:0 18px}
+.field svg{color:var(--bgs-muted);flex:none}
+.sq{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;color:var(--bgs-gold);flex:none}
+
+/* ─────────────────────────────────────────────────────────────
+   Compact topbar — fixed glass bar, slides in on scroll
+   ───────────────────────────────────────────────────────────── */
+.topbar{
+  position:fixed; top:calc(var(--demo-h) + 10px); left:12px; right:12px; z-index:40;
+  height:56px; border-radius:22px; display:flex; align-items:center; gap:8px; padding:0 6px 0 8px;
+  transform:translateY(-140%) scale(.96); opacity:0;
+  transition:transform var(--dur) var(--ease-liquid), opacity .3s;
+  max-width:456px; margin:0 auto;
+}
+.topbar.is-in{transform:none;opacity:1}
+.topbar .field{height:40px;border-radius:14px;padding:0 12px;background:rgba(var(--bgs-bg-rgb),.35);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06)}
+.topbar .sq{width:40px;height:40px;border-radius:14px;background:none;box-shadow:none}
+
+/* ─────────────────────────────────────────────────────────────
+   Shelf
+   ───────────────────────────────────────────────────────────── */
+.shelf-meta{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:15px;color:var(--bgs-gold);margin:36px 0 16px;position:relative}
+.bags-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;color:var(--bgs-gold);font-family:var(--font-mono);font-size:15px}
+.bags-btn .diamond{width:8px;height:8px;background:var(--bgs-gold);transform:rotate(45deg);border-radius:1px}
+.bags-menu{position:absolute;right:0;top:calc(100% + 6px);width:220px;border-radius:20px;padding:8px;z-index:30;
+  transform-origin:top right;transform:scale(.85) translateY(-6px);opacity:0;pointer-events:none;
+  transition:transform .4s var(--ease-liquid),opacity .25s}
+.bags-menu.is-open{transform:none;opacity:1;pointer-events:auto}
+.bags-menu button{display:flex;justify-content:space-between;width:100%;padding:12px 12px;border-radius:14px;font-family:var(--font-ui);font-size:15px;color:var(--bgs-ivory)}
+.bags-menu button span{font-family:var(--font-mono);font-size:13px;color:var(--bgs-muted)}
+.bags-menu button:hover{background:rgba(var(--bgs-ivory-rgb),.06)}
+.bags-menu .new{color:var(--bgs-gold)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* Card = artwork box (top, locked 4:5) + solid plate info (bottom).
+   The artwork never runs under the info. No gradient — hard edge. */
+:root{--art-ratio:4/5}
+.card{position:relative;border-radius:18px;overflow:hidden;background:var(--bgs-plate);display:flex;flex-direction:column;
+  box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),.06) inset, 0 6px 18px rgba(0,0,0,.35);
+  transition:transform .28s var(--ease-liquid);text-align:left}
+.card:active{transform:scale(.97)}
+.card .art{position:relative;aspect-ratio:var(--art-ratio);flex:none;background:var(--bgs-plate)}
+.card .art img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.card .info{padding:9px 10px 11px}
+.card .info .title{font-family:var(--font-display);font-weight:600;font-size:13.5px;line-height:1.2;letter-spacing:-.005em;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em}
+.card .info .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.rating{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-ui);font-weight:600;font-size:12.5px;color:var(--bgs-gold);padding:3px 8px;border-radius:999px;
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45)}
+.players{font-family:var(--font-mono);font-size:12px;color:var(--bgs-muted)}
+
+/* ─────────────────────────────────────────────────────────────
+   Game Night — one element that morphs from pill to sheet
+   ───────────────────────────────────────────────────────────── */
+.scrim{position:fixed;inset:0;background:rgba(var(--bgs-bg-rgb),.45);opacity:0;pointer-events:none;transition:opacity .35s;z-index:50}
+.scrim.is-on{opacity:1;pointer-events:auto}
+.gn{
+  position:fixed; z-index:60; left:50%; bottom:calc(24px + env(safe-area-inset-bottom));
+  width:232px; height:60px; margin-left:-116px; border-radius:999px;
+  --glass-fill-a:.58;
+  transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid),
+             margin-left var(--dur) var(--ease-liquid), bottom var(--dur) var(--ease-liquid),
+             border-radius var(--dur) var(--ease-liquid),
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid);
+  overflow:hidden; text-align:left;
+}
+.gn .pill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;
+  font-weight:600;font-size:22px;color:var(--bgs-gold);white-space:nowrap;transition:opacity .2s,transform .35s var(--ease-liquid)}
+.gn .sheet{position:absolute;inset:0;padding:22px 20px;opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .35s .18s,transform .5s .12s var(--ease-liquid)}
+.gn.is-open{width:calc(100vw - 24px);max-width:456px;margin-left:min(calc(-50vw + 12px),-228px);height:420px;bottom:calc(12px + env(safe-area-inset-bottom));border-radius:30px;--glass-fill-a:.66}
+.gn.is-open .pill{opacity:0;transform:scale(.9)}
+.gn.is-open .sheet{opacity:1;transform:none;pointer-events:auto}
+.sheet h2{font-family:var(--font-display);font-weight:700;font-size:28px;letter-spacing:-.01em;display:flex;align-items:center;gap:12px;color:var(--bgs-ivory)}
+.sheet h2 svg{color:var(--bgs-gold)}
+.sheet p{color:var(--bgs-muted);font-size:15px;margin-top:6px}
+.sheet .close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;color:var(--bgs-muted);background:rgba(var(--bgs-ivory-rgb),.06)}
+.opt{display:flex;align-items:center;gap:14px;padding:16px 16px;border-radius:20px;margin-top:12px;--glass-fill-a:.3;--glass-blur:10px;--glass-shadow:none;width:100%;text-align:left}
+.opt:first-of-type{margin-top:22px}
+.opt .ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),.12);flex:none}
+.opt b{display:block;font-weight:600;font-size:16px}
+.opt span{display:block;color:var(--bgs-muted);font-size:13.5px;margin-top:2px}
+.opt .chev{margin-left:auto;color:var(--bgs-muted)}
+
+/* ─────────────────────────────────────────────────────────────
+   Filter sheet — bottom glass sheet with tabs
+   ───────────────────────────────────────────────────────────── */
+.filter{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:456px;margin:0 auto;z-index:60;border-radius:30px;padding:20px 20px 24px;
+  --glass-fill-a:.66;transform:translateY(112%);transition:transform var(--dur) var(--ease-liquid)}
+.filter.is-open{transform:none}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:16px;background:rgba(var(--bgs-bg-rgb),.4);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06);position:relative}
+.tabs button{flex:1;padding:9px 0;border-radius:12px;font-weight:500;font-size:14px;color:var(--bgs-muted);position:relative;z-index:1;transition:color .25s}
+.tabs button.is-on{color:var(--bgs-ivory)}
+.tabs .puck{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);border-radius:12px;--glass-fill-a:.5;--glass-blur:8px;--glass-shadow:0 2px 8px rgba(0,0,0,.35);
+  transition:transform .45s var(--ease-liquid)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{padding:9px 14px;border-radius:999px;font-size:14px;font-weight:500;--glass-fill-a:.28;--glass-blur:8px;--glass-shadow:none}
+.chip.is-on{--glass-fill-a:.6;color:var(--bgs-gold);box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55), inset 1px 1px 0 var(--glass-rim-light)}
+.filter .actions{display:flex;gap:10px;margin-top:22px}
+.filter .actions button{flex:1;height:48px;border-radius:16px;font-weight:600;font-size:15px}
+.filter .actions .primary{background:var(--bgs-gold);color:var(--bgs-bg)}
+.filter .actions .ghost{--glass-fill-a:.3;--glass-shadow:none}
+
+/* ─────────────────────────────────────────────────────────────
+   Demo bar
+   ───────────────────────────────────────────────────────────── */
+.demo{position:fixed;top:0;left:0;right:0;height:var(--demo-h);z-index:100;background:#0b0705;border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:6px;padding:0 10px;overflow-x:auto;font-family:var(--font-mono);font-size:11px;color:#9a8e7e;white-space:nowrap}
+.demo::-webkit-scrollbar{display:none}
+.demo b{color:#c9bca8;font-weight:500;margin-right:2px}
+.demo button{padding:4px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.12);color:#c9bca8}
+.demo button.is-on{background:rgba(217,178,92,.18);border-color:rgba(217,178,92,.6);color:#e8c675}
+.demo .sep{width:1px;height:18px;background:rgba(255,255,255,.12);margin:0 4px;flex:none}
+
+/* ─────────────────────────────────────────────────────────────
+   Reduced motion
+   ───────────────────────────────────────────────────────────── */
+[data-rm="on"] *,[data-rm="on"] *::before,[data-rm="on"] *::after{transition:none!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+</head>
+<body data-refraction="on" data-rm="off">
+
+<!-- demo toggle bar -->
+<div class="demo">
+  <b>State</b>
+  <button data-state="top" class="is-on">Top</button>
+  <button data-state="scrolled">Scrolled</button>
+  <button data-state="gn">Game Night</button>
+  <button data-state="filter">Filter</button>
+  <button data-state="bags">Bags</button>
+  <span class="sep"></span>
+  <b>Refraction</b><button id="t-refr" class="is-on">on</button>
+  
+  <b>Motion</b><button id="t-rm">reduced</button>
+</div>
+
+<!-- compact glass topbar -->
+<div class="topbar glass" id="topbar">
+    <label class="field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="m21 21-6-6"/></svg><input placeholder="Search titles…"></label>
+  <button class="sq" aria-label="Filter"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+</div>
+
+<main class="page">
+  <header class="header">
+    <div class="owner"><span>Naruephon Nateprachar</span><button class="icon-btn glass" aria-label="Settings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.325 4.317a1.724 1.724 0 0 1 3.35 0 1.724 1.724 0 0 0 2.573 1.066 1.724 1.724 0 0 1 2.37 2.37 1.724 1.724 0 0 0 1.065 2.572 1.724 1.724 0 0 1 0 3.35 1.724 1.724 0 0 0-1.066 2.573 1.724 1.724 0 0 1-2.37 2.37 1.724 1.724 0 0 0-2.572 1.065 1.724 1.724 0 0 1-3.35 0 1.724 1.724 0 0 0-2.573-1.066 1.724 1.724 0 0 1-2.37-2.37 1.724 1.724 0 0 0-1.065-2.572 1.724 1.724 0 0 1 0-3.35 1.724 1.724 0 0 0 1.066-2.573 1.724 1.724 0 0 1 2.37-2.37 1.724 1.724 0 0 0 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+    <h1 class="wordmark">BoardgameShelf <span class="beta glass">BETA</span></h1>
+    <p class="tagline">Browse the game, judge by its cover.</p>
+    <div class="search-row">
+      <label class="field glass"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="7"/><path d="m21 21-6-6"/></svg><input placeholder="Search titles…"></label>
+      <button class="sq glass" data-open="filter" aria-label="Filter"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+      <button class="sq glass" aria-label="Sort"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg></button>
+    </div>
+  </header>
+
+  <div class="shelf-meta">
+    <span>197 on the shelf</span>
+    <button class="bags-btn glass" data-open="bags"><span class="diamond"></span>2 bags <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="bags-menu glass" id="bags">
+      <button>Chiang Mai trip <span>8</span></button>
+      <button>Office lunch <span>5</span></button>
+      <button class="new">New bag</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- Game Night: pill that morphs into a sheet -->
+<div class="scrim" id="scrim"></div>
+<button class="gn glass" id="gn" aria-expanded="false">
+  <span class="pill"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".8" fill="currentColor"/><circle cx="15" cy="15" r=".8" fill="currentColor"/><circle cx="15" cy="9" r=".8" fill="currentColor"/><circle cx="9" cy="15" r=".8" fill="currentColor"/></svg>Game Night</span>
+  <div class="sheet">
+    <span class="close" data-close="gn" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+    <h2><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".8" fill="currentColor"/><circle cx="15" cy="15" r=".8" fill="currentColor"/><circle cx="15" cy="9" r=".8" fill="currentColor"/><circle cx="9" cy="15" r=".8" fill="currentColor"/></svg>Game night</h2>
+    <p>Pick how tonight starts.</p>
+    <span class="opt glass" role="button" tabindex="0"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span><b>Vote now</b><span>Everyone at the table picks from the shelf</span></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>
+    <span class="opt glass" role="button" tabindex="0"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M16 3v4M8 3v4M4 11h16"/></svg></span><span><b>Schedule a night</b><span>Set a date, add a lineup, collect RSVPs</span></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>
+    <span class="opt glass" role="button" tabindex="0"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l2 2"/><circle cx="12" cy="12" r="9"/></svg></span><span><b>Upcoming</b><span>Friday · 4 in · lineup revealed</span></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>
+  </div>
+</button>
+
+<!-- Filter sheet -->
+<div class="filter glass" id="filter" aria-hidden="true">
+  <div class="tabs" id="tabs">
+    <span class="puck glass"></span>
+    <button class="is-on">Vibe</button><button>Time</button><button>Weight</button>
+  </div>
+  <div class="chips">
+    <button class="chip glass is-on">Party</button><button class="chip glass">Bluffing</button><button class="chip glass">Co-op</button><button class="chip glass">Duel</button><button class="chip glass is-on">Strategy</button><button class="chip glass">Family</button><button class="chip glass">Chill</button><button class="chip glass">Story</button><button class="chip glass">Others</button>
+  </div>
+  <div class="actions">
+    <button class="ghost glass" data-close="filter">Clear</button>
+    <button class="primary" data-close="filter">Show 42 games</button>
+  </div>
+</div>
+
+<script>
+/* ── data: real BGG covers from the landing-page fan; titles from the shelf.
+   Cover↔title pairing is placeholder here — production uses games.json. ── */
+const covers=[
+ "https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg",
+ "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg",
+ "https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg",
+ "https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg",
+ "https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg"];
+const games=[
+ ["The Castles of Burgundy: Special Edition","9.1","1–4"],["Terra Mystica: Big Box","8.7","1–5"],["Dune: Imperium – Uprising","8.7","1–6"],
+ ["Brass: Birmingham","8.6","2–4"],["Ark Nova","8.6","1–4"],["Nippon: Zaibatsu","8.5","1–4"],
+ ["Star Wars: Rebellion","8.4","2–4"],["Dune: War for Arrakis","8.4","1–4"],["Great Western Trail","8.3","2–4"],
+ ["Concordia","8.1","2–5"],["Spirit Island","8.3","1–4"],["Gaia Project","8.4","1–4"],["Root","8.0","2–4"],["Scythe","8.2","1–5"],["Barrage","8.1","1–4"]];
+document.getElementById('grid').innerHTML=games.map((g,i)=>`
+ <button class="card" aria-label="${g[0]}">
+   <div class="art"><img src="${covers[i%covers.length]}" alt="" loading="lazy"></div>
+   <div class="info">
+     <div class="title">${g[0]}</div>
+     <div class="meta"><span class="rating">★ ${g[1]}</span><span class="players">${g[2]}</span></div>
+   </div>
+ </button>`).join('');
+
+/* ── scroll: compact topbar + specular light drift ── */
+const topbar=document.getElementById('topbar'),root=document.documentElement;
+function onScroll(){
+  const y=window.scrollY;
+  topbar.classList.toggle('is-in',y>150);
+  root.style.setProperty('--light-x',(20+(y/8)%60)+'%');   // light travels across glass as you scroll
+}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* ── overlays ── */
+const gn=document.getElementById('gn'),scrim=document.getElementById('scrim'),filter=document.getElementById('filter'),bags=document.getElementById('bags');
+function closeAll(){gn.classList.remove('is-open');gn.setAttribute('aria-expanded','false');filter.classList.remove('is-open');bags.classList.remove('is-open');scrim.classList.remove('is-on')}
+function open(which){closeAll();if(which==='gn'){gn.classList.add('is-open');gn.setAttribute('aria-expanded','true');scrim.classList.add('is-on')}
+  if(which==='filter'){filter.classList.add('is-open');scrim.classList.add('is-on')}
+  if(which==='bags'){bags.classList.add('is-open')}}
+gn.addEventListener('click',e=>{if(!gn.classList.contains('is-open'))open('gn')});
+scrim.addEventListener('click',closeAll);
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();open(b.dataset.open)}));
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();closeAll()}));
+document.addEventListener('click',e=>{if(!e.target.closest('#bags,[data-open="bags"]'))bags.classList.remove('is-open')});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
+
+/* filter tabs puck */
+const tabs=[...document.querySelectorAll('#tabs button')],puck=document.querySelector('#tabs .puck');
+tabs.forEach((t,i)=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('is-on'));t.classList.add('is-on');puck.style.transform=`translateX(${i*100}%)`}));
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('is-on')));
+
+/* ── demo bar ── */
+const stateBtns=[...document.querySelectorAll('.demo [data-state]')];
+stateBtns.forEach(b=>b.addEventListener('click',()=>{
+  stateBtns.forEach(x=>x.classList.remove('is-on'));b.classList.add('is-on');
+  const s=b.dataset.state;closeAll();
+  if(s==='top'){scrollTo({top:0,behavior:'smooth'})}
+  if(s==='scrolled'){scrollTo({top:520,behavior:'smooth'})}
+  if(s==='gn'){open('gn')} if(s==='filter'){open('filter')} if(s==='bags'){open('bags')}
+}));
+const body=document.body;
+document.getElementById('t-refr').addEventListener('click',e=>{const on=body.dataset.refraction==='on';body.dataset.refraction=on?'off':'on';e.target.textContent=on?'off':'on';e.target.classList.toggle('is-on',!on)});
+
+document.getElementById('t-rm').addEventListener('click',e=>{const on=body.dataset.rm==='on';body.dataset.rm=on?'off':'on';e.target.classList.toggle('is-on',!on)});
+</script>
+</body>
+</html>
