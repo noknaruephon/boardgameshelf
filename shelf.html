@@ -2962,6 +2962,19 @@ function initGameNight(){
     if(refocus) gnPill.focus({ preventScroll: true });
   }
   registerOverlay(isGnSheetOpen);
+  // Runs fn once the box has morphed back to the pill. The morph (a blurred
+  // box resizing) and what follows it (the selection wave over every card,
+  // or the surprise sheet rising) are each heavy on the compositor; starting
+  // both in the same frame is what made iOS Safari reload the page. With no
+  // transition (reduced motion) it runs at once.
+  function afterGnMorph(fn){
+    if(getComputedStyle(gnStartBtn).transitionDuration.split(',').every(d => parseFloat(d) === 0)){ fn(); return; }
+    let done = false;
+    const go = ()=>{ if(done) return; done = true; gnStartBtn.removeEventListener('transitionend', onEnd); fn(); };
+    const onEnd = (e)=>{ if(e.target === gnStartBtn && e.propertyName === 'height') go(); };
+    gnStartBtn.addEventListener('transitionend', onEnd);
+    setTimeout(go, 700);
+  }
   gnFabScrim.addEventListener('click', ()=>closeGnSheet());
   gnStartBtn.querySelector('#gnSheetClose').addEventListener('click', ()=>closeGnSheet());
   document.addEventListener('keydown', (e)=>{
@@ -3039,7 +3052,7 @@ function initGameNight(){
   gnSelectGames.addEventListener('click', ()=>{
     closeGnSheet(false);
     gnState.mode = 'manual';
-    enterSelectionMode();
+    afterGnMorph(enterSelectionMode);
   });
   gnRandom.addEventListener('click', ()=>{
     closeGnSheet(false);
@@ -3049,7 +3062,7 @@ function initGameNight(){
     gnState.kept.clear();
     sampleSurprise();
     renderSurprise();
-    openGnBackdrop(document.getElementById('gnSurpriseBackdrop'));
+    afterGnMorph(()=>openGnBackdrop(document.getElementById('gnSurpriseBackdrop')));
   });
 
   // surprise view
