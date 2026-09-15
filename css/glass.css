@@ -90,22 +90,70 @@ a.glass:active,
 /* ---- Header controls: search field, filter + sort (44px, radius 14) ----
    44px is the standard thumb target; 52 read as oversized on the phone. */
 
-/* The controls sit in a position:sticky bar. On iOS a backdrop-filter layer
-   inside a sticky container drops out when the sticky state flips — which
-   the keyboard does by resizing the viewport — and the field vanished under
-   the keypad. So the controls here carry no backdrop-filter of their own
-   (at the top there is only the page gradient behind them, so the blur was
-   invisible anyway); the bar blurs the page as one layer once it sticks. */
+/* The full header scrolls away; the compact topbar below takes over past
+   150px. So the bar is no longer sticky, and its is-stuck chrome is off.
+   The controls in it carry no backdrop-filter of their own: at the top of
+   the page only the background gradient sits behind them, so the blur was
+   invisible, and a blurred layer inside a sticky container vanished on iOS
+   when the keyboard resized the viewport. */
+.filter-sort-bar{position:static;}
+.filter-sort-bar.is-stuck{
+  background:transparent;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
 .filter-sort-bar .glass,
 .filter-sort-bar .glass::before{
   -webkit-backdrop-filter:none; backdrop-filter:none;
 }
 .filter-sort-bar .glass{--glass-fill-a:.72;}
-.filter-sort-bar.is-stuck{
-  background:rgba(var(--bgs-bg-rgb),.55);
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
-  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+
+/* ---- Compact topbar: fixed glass bar, slides in once the header is gone ----
+   Search field + filter button only, no wordmark. The field and button inside
+   are plain (no glass of their own): the bar is the one blurred layer. */
+
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  position:fixed;
+  top:calc(10px + env(safe-area-inset-top));
+  left:12px;
+  right:12px;
+  z-index:40;
+  height:56px;
+  max-width:456px;
+  margin:0 auto;
+  padding:0 6px 0 8px;
+  border-radius:22px;
+  --glass-fill-a:.62;
+  transform:translateY(-140%) scale(.96);
+  opacity:0;
+  transition:transform var(--dur) var(--ease-liquid), opacity .3s ease,
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid);
 }
+.topbar.is-in{transform:none;opacity:1;}
+.topbar .search{
+  height:40px;
+  border:0;
+  border-radius:14px;
+  padding:0 12px;
+  background:rgba(var(--bgs-bg-rgb),.35);
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06);
+  color:var(--bgs-ivory);
+}
+.topbar .search:focus{box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.7);}
+.topbar .search::placeholder{color:var(--bgs-ivory-45);}
+.topbar .icon-btn{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:14px;
+  background:none;
+  color:var(--bgs-gold);
+}
+.topbar .icon-btn:hover{color:var(--bgs-ivory);}
+.topbar .icon-btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+.topbar .filter-badge{box-shadow:0 0 0 2px var(--bgs-plate);}
 .search.glass{
   height:44px;
   border-radius:14px;
@@ -202,27 +250,61 @@ a.glass:active,
 .bags-sheet.glass .bags-sheet__row:hover{background:rgba(var(--bgs-plate-rgb),.5);}
 .bags-sheet.glass .bags-sheet__row--new{background:transparent;}
 
-/* ---- Game Night pill (Commit 2 turns it into the morphing sheet) ----
-   The pill keeps its own centring transform, so the press scale is
-   composed with it rather than taken from .glass. */
+/* ---- Game Night: the pill that morphs into a sheet ----
+   The box's width/height/bottom/radius transitions live in shelf.html; the
+   material adds fill and shadow to that list. The press scale is on the pill
+   button inside, so the box itself never scales. */
 
 .gn-fab.glass{
   position:fixed; /* .glass says relative; the pill floats */
-  /* 48px: a standard thumb target, a touch taller than the plain pill (46). */
-  height:48px;
-  padding:0 20px 0 16px;
-  font-size:14px;
   --glass-fill-a:.58;
   color:var(--bgs-gold);
-  transition:background var(--dur) var(--ease-liquid),
-             box-shadow var(--dur) var(--ease-liquid),
-             transform .28s var(--ease-liquid),
-             opacity .18s ease;
+  transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid),
+             bottom var(--dur) var(--ease-liquid), border-radius var(--dur) var(--ease-liquid),
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid),
+             transform .28s var(--ease-liquid), opacity .18s ease;
 }
-.gn-fab.glass svg{width:18px;height:18px;}
-.gn-fab.glass:active{transform:translateX(-50%) scale(.97);}
-.gn-fab.glass:focus-visible{outline:none;}
+.gn-fab.glass.is-open{--glass-fill-a:.66;}
 body.is-selecting .gn-fab.glass{transform:translateX(-50%) translateY(14px) scale(.9);}
+/* Sheet option: lighter glass, no drop shadow, so it sits in the plate. */
+.gn-opt.glass{
+  --glass-fill-a:.3;
+  --glass-blur:10px;
+  --glass-shadow:none;
+}
+.gn-opt.glass:hover{--glass-fill-a:.45;}
+
+/* ---- Filter sheet tabs: a sliding glass puck under the active tab ---- */
+
+.filter-sheet.glass .mode-tabs{
+  padding:4px;
+  border-bottom:0;
+  border-radius:16px;
+  background:rgba(var(--bgs-bg-rgb),.4);
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06);
+}
+.filter-sheet.glass .mode-tab{
+  position:relative;
+  z-index:1;
+  padding:9px 6px 10px;
+  border-radius:12px;
+  text-align:center;
+}
+.filter-sheet.glass .mode-tab:nth-child(2){text-align:center;}
+.filter-sheet.glass .mode-ink{display:none;}
+.filter-sheet.glass .mode-puck{
+  display:block;
+  position:absolute;
+  top:4px;bottom:4px;left:4px;
+  width:calc((100% - 8px) / 2);
+  border-radius:12px;
+  --glass-fill-a:.5;
+  --glass-blur:8px;
+  --glass-shadow:0 2px 8px rgba(0,0,0,.35);
+  transition:transform .45s var(--ease-liquid),
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid);
+}
+.filter-sheet.glass .mode-tabs[data-mode=numbers] .mode-puck{transform:translateX(100%);}
 
 /* ---- Reduced motion: no transitions; the refraction ring is static and
    stays. Sheets still open and close, they just don't slide. ---- */
@@ -233,6 +315,12 @@ body.is-selecting .gn-fab.glass{transform:translateX(-50%) translateY(14px) scal
   .glass::after,
   .glass.open,
   .glass.is-open,
+  .filter-sheet.glass,
+  .bsheet.glass,
+  .bsheet.glass.is-open,
+  .topbar,
+  .gn-fab.glass,
+  .filter-sheet.glass .mode-puck,
   .sheet-scrim,
   .bsheet-scrim{transition:none;}
 }

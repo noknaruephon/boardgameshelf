@@ -69,6 +69,10 @@
   .sticky-sentinel{
     height:1px;
   }
+  /* Compact topbar and the tab puck belong to the glass motion set
+     (css/glass.css shows them); without it they do not exist on screen. */
+  .topbar{display:none;}
+  .mode-puck{display:none;}
   .search-wrap{
     position:relative;
     flex:1;
@@ -504,7 +508,8 @@
   @media (max-width:400px){ .mode-tab em{display:none;} }
 
   @media (prefers-reduced-motion:reduce){
-    .sheet-scrim, .filter-sheet, .mode-ink, .mode-tab{transition:none;}
+    .sheet-scrim, .filter-sheet, .mode-ink, .mode-tab, .mode-puck,
+    .topbar, .gn-fab, .gn-fab__pill, .gn-fab__sheet, .gn-fab-scrim{transition:none;}
   }
 
   .shelf-count{
@@ -628,28 +633,32 @@
 
 
   /* Footer lives in css/base.css. The shelf adds FAB clearance so the pill
-     never covers the legal lines: --fab-clearance = .gn-fab height (46px)
+     never covers the legal lines: --fab-clearance = .gn-fab height (48px)
      + its bottom offset (16px + safe-area) + 16px breathing room. */
-  .shelf-footer{--fab-clearance:calc(78px + env(safe-area-inset-bottom));}
+  .shelf-footer{--fab-clearance:calc(80px + env(safe-area-inset-bottom));}
 
   /* ==== Game Night (Stage 1: session creation) ==== */
 
   /* Floating entry point, bottom-centre. z-index 12 keeps it under the selection
      bar (15), tray (14), and scrim (13), and well under the filter sheet (21)
-     and detail modal (30) — it can never sit on top of a sheet or modal. */
+     and detail modal (30) — it can never sit on top of a sheet or modal.
+
+     One element, two states: closed it is the pill; .is-open morphs the same
+     box into a sheet (width, height, bottom, radius transition) while the
+     pill's content fades out and the sheet's content rises in. Nothing is
+     swapped, so there is no flash. The sheet holds the single entry action
+     the pill used to fire directly, plus close (docs/claude-code-spec-liquid-glass.md). */
   .gn-fab{
     position:fixed;
     left:50%;
     bottom:calc(16px + env(safe-area-inset-bottom));
     /* Centered. translateX lives here as the base transform; every other
-       transform on this element must include it or the pill jumps left. */
+       transform on this element must include it or the pill jumps left. It
+       also keeps the box centred while its width transitions. */
     transform:translateX(-50%);
     z-index:12;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    height:46px;
-    padding:0 18px 0 15px;
+    width:152px;
+    height:48px;
     /* Tinted glass. Tint stays >= .82: gold text is lower-contrast than ivory,
        and .82 is where it clears 4.5:1 over a white cover (4.87:1). */
     background:rgba(var(--bgs-plate-rgb),0.82);
@@ -658,19 +667,106 @@
     border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
     border-radius:999px;
     color:var(--bgs-gold);
-    font-family:'Inter',sans-serif;
-    font-size:13.5px;
-    font-weight:700;
-    letter-spacing:0.01em;
-    cursor:pointer;
-    white-space:nowrap;
+    overflow:hidden;
+    text-align:left;
     box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.08) inset,
                0 8px 24px -10px rgba(0,0,0,0.7);
-    transition:transform 0.18s cubic-bezier(.2,.8,.3,1), opacity 0.18s ease, border-color 0.18s ease;
+    transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid),
+               bottom var(--dur) var(--ease-liquid), border-radius var(--dur) var(--ease-liquid),
+               transform 0.18s cubic-bezier(.2,.8,.3,1), opacity 0.18s ease, border-color 0.18s ease;
   }
   .gn-fab:hover{border-color:var(--bgs-gold);}
-  .gn-fab:active{transform:translateX(-50%) scale(0.95);}
-  .gn-fab svg{width:17px;height:17px;flex:none;}
+  .gn-fab.is-open{
+    width:calc(100vw - 24px);
+    max-width:456px;
+    height:224px; /* title, line, one option */
+    bottom:calc(12px + env(safe-area-inset-bottom));
+    border-radius:30px;
+    z-index:60; /* above the compact topbar (40) and every bottom sheet; its scrim is 50 */
+  }
+  .gn-fab__pill{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:0;border:0;background:none;
+    color:inherit;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:0.01em;
+    white-space:nowrap;
+    cursor:pointer;
+    transition:opacity 0.2s ease, transform 0.35s var(--ease-liquid);
+  }
+  .gn-fab__pill svg{width:18px;height:18px;flex:none;}
+  .gn-fab__pill:active{transform:scale(0.97);}
+  .gn-fab__pill:focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--bgs-gold);border-radius:inherit;}
+  .gn-fab.is-open .gn-fab__pill{opacity:0;transform:scale(0.9);pointer-events:none;}
+  .gn-fab__sheet{
+    position:absolute;inset:0;
+    padding:22px 20px;
+    color:var(--bgs-ivory);
+    opacity:0;
+    transform:translateY(14px);
+    pointer-events:none;
+    transition:opacity 0.35s ease 0.18s, transform 0.5s var(--ease-liquid) 0.12s;
+  }
+  .gn-fab.is-open .gn-fab__sheet{opacity:1;transform:none;pointer-events:auto;}
+  .gn-fab__sheet h2{
+    margin:0;
+    display:flex;align-items:center;gap:12px;
+    font-family:'Fraunces',serif;font-weight:700;font-size:26px;line-height:1.1;letter-spacing:-0.01em;
+    color:var(--bgs-ivory);
+  }
+  .gn-fab__sheet h2 svg{width:26px;height:26px;flex:none;color:var(--bgs-gold);}
+  .gn-fab__sheet p{margin:6px 0 0;font-size:15px;color:var(--bgs-ivory-70);}
+  .gn-fab__close{
+    position:absolute;top:16px;right:16px;
+    width:36px;height:36px;
+    display:grid;place-items:center;
+    border:0;border-radius:12px;
+    background:rgba(var(--bgs-ivory-rgb),0.06);
+    color:var(--bgs-ivory-70);
+    font-size:18px;line-height:1;
+    cursor:pointer;
+  }
+  .gn-fab__close:hover{color:var(--bgs-ivory);}
+  .gn-fab__close:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  .gn-opt{
+    display:flex;align-items:center;gap:14px;
+    width:100%;
+    margin-top:22px;
+    padding:16px;
+    border:1px solid rgba(var(--bgs-gold-rgb),0.3);
+    border-radius:20px;
+    background:rgba(var(--bgs-ivory-rgb),0.05);
+    color:var(--bgs-ivory);
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+  }
+  .gn-opt:hover{border-color:var(--bgs-gold);}
+  .gn-opt:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  .gn-opt__ic{
+    width:44px;height:44px;flex:none;
+    display:grid;place-items:center;
+    border-radius:14px;
+    color:var(--bgs-gold);
+    background:rgba(var(--bgs-gold-rgb),0.12);
+  }
+  .gn-opt__ic svg{width:22px;height:22px;}
+  .gn-opt__txt{flex:1;min-width:0;}
+  .gn-opt__txt b{display:block;font-weight:600;font-size:16px;}
+  .gn-opt__txt span{display:block;margin-top:2px;font-size:13.5px;color:var(--bgs-ivory-70);}
+  .gn-opt__chev{flex:none;color:var(--bgs-ivory-45);font-size:18px;line-height:1;}
+  .gn-fab-scrim{
+    position:fixed;inset:0;
+    z-index:50;
+    background:rgba(var(--bgs-bg-rgb),0.45);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.35s ease;
+  }
+  .gn-fab-scrim.open{opacity:1;pointer-events:auto;}
   /* Solid plate when blur isn't available or the OS asks for less transparency. */
   @supports not (backdrop-filter:blur(1px)){
     .gn-fab{background:var(--bgs-plate);}
@@ -681,7 +777,6 @@
       -webkit-backdrop-filter:none;backdrop-filter:none;
     }
   }
-  .gn-fab:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;}
   /* Selection mode hands off to the bottom bar — the pill animates down and
      out. Packing a bag takes the same handoff. */
   body.is-selecting .gn-fab{
@@ -1450,6 +1545,26 @@
 </script>
 </head>
 <body>
+<!-- Compact topbar: fixed glass bar that slides in once the full header has
+     scrolled away (window.scrollY > 150). Search state is shared with the
+     header's field; its filter button opens the same sheet. Only shown by
+     css/glass.css; inert until it is in. -->
+<div class="topbar glass" id="topbar" aria-hidden="true" inert>
+  <div class="search-wrap">
+    <input class="search" id="searchCompact" type="text" placeholder="Search titles…" aria-label="Search titles">
+  </div>
+  <button class="icon-btn" id="filterBtnCompact" type="button" aria-label="Open filters" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterSheet">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="2.5" x2="15" y2="2.5" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="9.5" cy="2.5" r="2.2" fill="var(--bgs-plate)" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="0" y1="7.5" x2="15" y2="7.5" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="4.5" cy="7.5" r="2.2" fill="var(--bgs-plate)" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="0" y1="12.5" x2="15" y2="12.5" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="11" cy="12.5" r="2.2" fill="var(--bgs-plate)" stroke="currentColor" stroke-width="1.4"/>
+    </svg>
+    <span class="filter-badge" id="filterBadgeCompact" hidden>0</span>
+  </button>
+</div>
 <div class="wrap">
   <header>
     <p class="eyebrow" style="color:var(--bgs-ivory-70)" id="shelfOwner">&nbsp;</p>
@@ -1544,6 +1659,7 @@
       <button type="button" class="mode-tab" role="tab" id="tab-vibe" aria-selected="true" aria-controls="panel-vibe"><strong>Vibe</strong><em>What kind of night is it?</em></button>
       <button type="button" class="mode-tab" role="tab" id="tab-numbers" aria-selected="false" aria-controls="panel-numbers" tabindex="-1"><strong>Time &amp; weight</strong><em>If you already know</em></button>
       <span class="mode-ink" aria-hidden="true"></span>
+      <span class="mode-puck glass" aria-hidden="true"></span>
     </div>
     <div class="mode-panel" id="panel-vibe" role="tabpanel" aria-labelledby="tab-vibe" data-show>
       <div class="sheet-group">
@@ -1837,6 +1953,7 @@ function renderBagHeader(){
   acts.after(note);
 
   document.getElementById('search').placeholder = 'Search this bag…';
+  document.getElementById('searchCompact').placeholder = 'Search this bag…';
 }
 
 // Deleting a bag asks first, in the same dialog the game-night pages use.
@@ -2065,16 +2182,19 @@ function closeDetailModal(){
 // ---- Filter/sort bar: badge + chips ----
 
 function updateFilterButton(){
-  const btn = document.getElementById('filterBtn');
-  const badge = document.getElementById('filterBadge');
   const count = activeGroupCount(state.filters);
   const active = count > 0;
-  btn.classList.toggle('active', active);
-  if(active){
-    badge.hidden = false;
-    badge.textContent = String(count);
-  } else {
-    badge.hidden = true;
+  // The header's button and the compact topbar's show the same state.
+  for(const [btnId, badgeId] of [['filterBtn','filterBadge'], ['filterBtnCompact','filterBadgeCompact']]){
+    const btn = document.getElementById(btnId);
+    const badge = document.getElementById(badgeId);
+    btn.classList.toggle('active', active);
+    if(active){
+      badge.hidden = false;
+      badge.textContent = String(count);
+    } else {
+      badge.hidden = true;
+    }
   }
 }
 
@@ -2291,6 +2411,7 @@ function openSheet(){
   sheetScrim.classList.add('open');
   filterSheet.classList.add('open');
   document.getElementById('filterBtn').setAttribute('aria-expanded','true');
+  document.getElementById('filterBtnCompact').setAttribute('aria-expanded','true');
   syncScrollLock();
   const focusable = getFocusable();
   if(focusable.length) focusable[0].focus();
@@ -2299,6 +2420,7 @@ function closeSheet(){
   sheetScrim.classList.remove('open');
   filterSheet.classList.remove('open');
   document.getElementById('filterBtn').setAttribute('aria-expanded','false');
+  document.getElementById('filterBtnCompact').setAttribute('aria-expanded','false');
   syncScrollLock();
   if(sheetLastFocused) sheetLastFocused.focus();
 }
@@ -2308,6 +2430,7 @@ function isSheetOpen(){
 registerOverlay(isSheetOpen);
 
 document.getElementById('filterBtn').addEventListener('click', openSheet);
+document.getElementById('filterBtnCompact').addEventListener('click', openSheet);
 sheetScrim.addEventListener('click', closeSheet);
 document.getElementById('resetLink').addEventListener('click', ()=>{
   draftFilters = freshFilters();
@@ -2358,22 +2481,27 @@ sortBtn.addEventListener('click', ()=>{
 
 const searchInput = document.getElementById('search');
 const searchClear = document.getElementById('searchClear');
+const searchCompact = document.getElementById('searchCompact');
 
 function updateSearchClear(){
   searchClear.hidden = searchInput.value.length === 0;
 }
 
-searchInput.addEventListener('input', (e)=>{
-  state.search = e.target.value.toLowerCase();
+// One search, two fields: the header's and the compact topbar's. Typing in
+// either filters the shelf and is mirrored into the other.
+function setSearch(value, from){
+  state.search = value.toLowerCase();
+  if(from !== searchInput) searchInput.value = value;
+  if(from !== searchCompact) searchCompact.value = value;
   updateSearchClear();
   render();
-});
+}
+
+searchInput.addEventListener('input', (e)=>setSearch(e.target.value, searchInput));
+searchCompact.addEventListener('input', (e)=>setSearch(e.target.value, searchCompact));
 searchClear.addEventListener('click', ()=>{
-  searchInput.value = '';
-  state.search = '';
+  setSearch('', null);
   searchInput.focus();
-  updateSearchClear();
-  render();
 });
 
 // ==== Game Night (Stage 1: session creation) ====
@@ -2821,14 +2949,56 @@ function initGameNight(){
   // every bar, sheet, and modal. Labelled, because an icon alone would give no
   // clue what it does. Still built only when the flag is on, so with the flag
   // off it is absent from the DOM rather than merely hidden.
-  const gnStartBtn = document.createElement('button');
+  // The pill and the sheet it morphs into are one element (see .gn-fab).
+  // The pill button toggles it; the sheet holds the single entry action the
+  // pill used to fire directly, plus close.
+  const gnStartBtn = document.createElement('div');
   gnStartBtn.className = 'gn-fab glass';
-  gnStartBtn.type = 'button';
   gnStartBtn.id = 'gnStartBtn';
-  // Shorter label in the pill; the accessible name stays the full action.
-  gnStartBtn.setAttribute('aria-label', 'Start Game Night');
-  gnStartBtn.innerHTML = `${GN_DIE_SVG}Game Night`;
-  document.body.appendChild(gnStartBtn);
+  gnStartBtn.innerHTML = `
+    <button class="gn-fab__pill" id="gnPill" type="button" aria-label="Start Game Night" aria-expanded="false" aria-controls="gnSheet">${GN_DIE_SVG}Game Night</button>
+    <div class="gn-fab__sheet" id="gnSheet" role="dialog" aria-modal="true" aria-labelledby="gnSheetTitle" aria-hidden="true">
+      <button class="gn-fab__close" id="gnSheetClose" type="button" aria-label="Close">✕</button>
+      <h2 id="gnSheetTitle">${GN_DIE_SVG}Game night</h2>
+      <p>Pick how tonight starts.</p>
+      <button class="gn-opt glass" id="gnVoteNow" type="button">
+        <span class="gn-opt__ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+        <span class="gn-opt__txt"><b>Vote now</b><span>Everyone at the table picks from the shelf</span></span>
+        <span class="gn-opt__chev" aria-hidden="true">›</span>
+      </button>
+    </div>
+  `;
+  const gnFabScrim = document.createElement('div');
+  gnFabScrim.className = 'gn-fab-scrim';
+  document.body.append(gnFabScrim, gnStartBtn);
+  const gnPill = gnStartBtn.querySelector('#gnPill');
+  const gnSheet = gnStartBtn.querySelector('#gnSheet');
+  const gnVoteNow = gnStartBtn.querySelector('#gnVoteNow');
+
+  function isGnSheetOpen(){ return gnStartBtn.classList.contains('is-open'); }
+  function openGnSheet(){
+    gnStartBtn.classList.add('is-open');
+    gnFabScrim.classList.add('open');
+    gnPill.setAttribute('aria-expanded', 'true');
+    gnSheet.setAttribute('aria-hidden', 'false');
+    syncScrollLock();
+    gnVoteNow.focus({ preventScroll: true });
+  }
+  function closeGnSheet(refocus = true){
+    if(!isGnSheetOpen()) return;
+    gnStartBtn.classList.remove('is-open');
+    gnFabScrim.classList.remove('open');
+    gnPill.setAttribute('aria-expanded', 'false');
+    gnSheet.setAttribute('aria-hidden', 'true');
+    syncScrollLock();
+    if(refocus) gnPill.focus({ preventScroll: true });
+  }
+  registerOverlay(isGnSheetOpen);
+  gnFabScrim.addEventListener('click', ()=>closeGnSheet());
+  gnStartBtn.querySelector('#gnSheetClose').addEventListener('click', ()=>closeGnSheet());
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && isGnSheetOpen()){ e.preventDefault(); closeGnSheet(); }
+  });
 
   // Random: the surprise path, now an icon FAB inside selection mode rather
   // than an option on a chooser panel. Label shows briefly on entry.
@@ -2896,13 +3066,19 @@ function initGameNight(){
     </div>
   `);
 
-  // entry point → selection mode, directly
-  gnStartBtn.addEventListener('click', ()=>{
+  // entry point: the pill opens the sheet; "Vote now" is the action the pill
+  // used to fire directly. The pool check stays on the pill so a shelf with
+  // too few matches gets the toast instead of a sheet with nothing to do.
+  gnPill.addEventListener('click', ()=>{
     const pool = gnPool();
     if(pool.length < GN_MIN_POOL){
       showGnToast('Not enough games match these filters');
       return;
     }
+    openGnSheet();
+  });
+  gnVoteNow.addEventListener('click', ()=>{
+    closeGnSheet(false);
     gnState.mode = 'manual';
     enterSelectionMode();
   });
@@ -3079,6 +3255,36 @@ async function openBagEdit(){
     history.replaceState(null, '', location.pathname);
   }
 }
+
+// ---- Scroll: compact topbar + specular light drift ----
+// The topbar slides in once the full header has scrolled away. The light
+// (--light-x, read by .glass backgrounds) travels across every glass surface
+// as you scroll — set directly, no transition. While an overlay has locked
+// the body, scrollY reads 0, so the topbar is left where it was. While its
+// search field has focus the bar stays in too: a narrowing search shortens
+// the page, which pulls scrollY under the threshold mid-word.
+const topbar = document.getElementById('topbar');
+const topbarSearch = document.getElementById('searchCompact');
+let scrollRaf = 0;
+function onShelfScroll(){
+  if(scrollRaf) return;
+  scrollRaf = requestAnimationFrame(()=>{
+    scrollRaf = 0;
+    const y = window.scrollY;
+    if(!document.body.classList.contains('scroll-locked')){
+      const inView = y > 150 || document.activeElement === topbarSearch;
+      if(topbar.classList.contains('is-in') !== inView){
+        topbar.classList.toggle('is-in', inView);
+        topbar.inert = !inView;
+        topbar.setAttribute('aria-hidden', String(!inView));
+      }
+      document.documentElement.style.setProperty('--light-x', `${20 + (y / 8) % 60}%`);
+    }
+  });
+}
+window.addEventListener('scroll', onShelfScroll, { passive:true });
+topbarSearch.addEventListener('blur', onShelfScroll);
+onShelfScroll();
 
 // ---- Sticky bar background (only while actually pinned) ----
 
