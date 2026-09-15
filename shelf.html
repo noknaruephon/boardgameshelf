@@ -2100,7 +2100,7 @@ function render(){
       ${selectionOverlays ? '<span class="sel-ring"></span>' : ''}
       <div class="art">
         ${selectionOverlays ? `<span class="checkbox">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
-        <img src="${g.image}" alt="${g.title} cover" loading="lazy" decoding="async" onerror="this.closest('.art').style.background='var(--bgs-plate)';this.remove()">
+        <img src="${g.imageSmall || g.image}" alt="${g.title} cover" loading="lazy" decoding="async" data-orig="${g.image}" onerror="if(this.dataset.orig&&this.src!==this.dataset.orig){this.src=this.dataset.orig;delete this.dataset.orig;return}this.closest('.art').style.background='var(--bgs-plate)';this.remove()">
       </div>
       <div class="info">
         <h3 class="title">${g.title}</h3>

@@ -33,6 +33,14 @@ export async function fetchShelfStatus(slug) {
 
 // ---- row → legacy game ----
 
+// /_vercel/image resizes and re-encodes a BGG cover on the edge. Widths must
+// be ones listed in vercel.json. Anything that is not a BGG URL (a local
+// /covers/ file, an empty string) is returned as is.
+export function sizedCover(url, width) {
+  if (!/^https:\/\/cf\.geekdo-images\.com\//.test(url)) return url;
+  return `/_vercel/image?url=${encodeURIComponent(url)}&w=${width}&q=75`;
+}
+
 // Thresholds read off games.json: every "light" game there is under 2.0 and
 // every "heavy" one 3.3 or above, with "medium" between.
 export function weightBucket(score) {
@@ -85,6 +93,13 @@ export function toLegacyGame(ug) {
     // middle size can be derived. The thumbnail is only a fallback.
     image: g.image_url || g.thumbnail_url || '',
     imageLarge: g.image_url || g.thumbnail_url || '',
+    // Sized through Vercel's image optimiser (vercel.json "images"). The
+    // originals run to several thousand pixels a side; 197 of them decoded
+    // on a phone, plus one more per detail modal, is what made iOS Safari
+    // reload the shelf. 384 covers a 3x card, 1080 a 3x modal. Consumers
+    // fall back to `image` when the optimiser is unavailable.
+    imageSmall: sizedCover(g.image_url || g.thumbnail_url || '', 384),
+    imageMid: sizedCover(g.image_url || g.thumbnail_url || '', 1080),
     blurb: x.blurb || blurbFromDescription(g.description),
     why: Array.isArray(x.why) ? x.why : [],
     // js/vibes.js keys its rules off this string; two mechanics and a

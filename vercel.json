@@ -1,4 +1,10 @@
 {
+  "images": {
+    "sizes": [384, 1080],
+    "domains": ["cf.geekdo-images.com"],
+    "minimumCacheTTL": 2592000,
+    "formats": ["image/avif", "image/webp"]
+  },
   "headers": [
     {
       "source": "/covers/(.*)",
