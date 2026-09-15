@@ -144,6 +144,16 @@ a.glass:active,
   visibility:visible;
   transition:transform var(--dur) var(--ease-liquid), opacity .3s ease, visibility 0s;
 }
+/* While its search has focus (the keyboard is up) the bar drops its blur
+   for a near-solid fill: a blurred fixed element vanished under the iOS
+   keypad, as the old sticky field did. It also stops transitioning, since
+   JS pins it to the visual viewport as the keyboard moves. */
+.topbar.is-typing{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  --glass-fill-a:.94;
+  transition:none;
+}
+.topbar.is-typing::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
 /* Every overlay on the site locks the body while it is open; the topbar
    leaves for as long as one is, and returns when the lock lifts. */
 body.scroll-locked .topbar.is-in{

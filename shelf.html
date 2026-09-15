@@ -3332,7 +3332,28 @@ function onShelfScroll(){
   });
 }
 window.addEventListener('scroll', onShelfScroll, { passive:true });
-topbarSearch.addEventListener('blur', onShelfScroll);
+
+// While the compact search has focus the bar is pinned to the visual
+// viewport: when the keyboard opens, iOS scrolls the layout viewport and a
+// fixed element can end up above the visible area. Following
+// visualViewport.offsetTop keeps it at the top of what is on screen.
+const vv = window.visualViewport;
+function pinTopbar(){
+  topbar.style.transform = `translateY(${Math.round(vv?.offsetTop || 0)}px)`;
+}
+topbarSearch.addEventListener('focus', ()=>{
+  topbar.classList.add('is-typing');
+  pinTopbar();
+  vv?.addEventListener('resize', pinTopbar);
+  vv?.addEventListener('scroll', pinTopbar);
+});
+topbarSearch.addEventListener('blur', ()=>{
+  vv?.removeEventListener('resize', pinTopbar);
+  vv?.removeEventListener('scroll', pinTopbar);
+  topbar.style.transform = '';
+  topbar.classList.remove('is-typing');
+  onShelfScroll();
+});
 onShelfScroll();
 
 // ---- Sticky bar background (only while actually pinned) ----
