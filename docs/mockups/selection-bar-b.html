@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Game Night selection bar — Option B</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bgs-bg:#160F0A;--bgs-bg-rgb:22,15,10;--bgs-plate:#241A13;--bgs-plate-rgb:36,26,19;--bgs-ivory:#F3E9D8;--bgs-ivory-rgb:243,233,216;--bgs-gold:#D9B25C;--bgs-gold-rgb:217,178,92;--bgs-muted:rgba(var(--bgs-ivory-rgb),.55);
+--font-display:"Fraunces",serif;--font-ui:"Inter",sans-serif;--font-mono:"IBM Plex Mono",monospace;
+--glass-fill-a:.52;--glass-blur:22px;--glass-sat:1.6;--glass-rim-w:1.5px;--glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);--glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);--glass-shadow:0 12px 32px rgba(0,0,0,.45),0 1px 0 rgba(0,0,0,.4);--glass-sheen:rgba(var(--bgs-ivory-rgb),.10);--light-x:20%;--ease-liquid:cubic-bezier(.32,.72,0,1);--dur:.5s}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bgs-bg);color:var(--bgs-ivory);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;min-height:100vh}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+.glass{position:relative;isolation:isolate;background:linear-gradient(135deg,var(--glass-sheen) 0%,transparent 38%,transparent 70%,rgba(var(--bgs-ivory-rgb),.04) 100%) var(--light-x) 0/220% 100% no-repeat,rgba(var(--bgs-plate-rgb),var(--glass-fill-a));-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));box-shadow:inset 1px 1px 0 var(--glass-rim-light),inset -1px -1px 0 rgba(0,0,0,.45),inset 0 0 0 1px var(--glass-rim-gold),var(--glass-shadow);transition:background var(--dur) var(--ease-liquid),box-shadow var(--dur) var(--ease-liquid),transform .28s var(--ease-liquid),width var(--dur) var(--ease-liquid),opacity .3s}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;padding:var(--glass-rim-w);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;-webkit-backdrop-filter:blur(3px) brightness(1.35) saturate(2);backdrop-filter:blur(3px) brightness(1.35) saturate(2);background:conic-gradient(from 210deg,rgba(var(--bgs-ivory-rgb),.3),rgba(var(--bgs-gold-rgb),.18) 25%,transparent 45%,rgba(var(--bgs-ivory-rgb),.1) 60%,transparent 80%,rgba(var(--bgs-ivory-rgb),.3))}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;box-shadow:inset 0 0 18px rgba(var(--bgs-ivory-rgb),.05),inset 0 -10px 20px rgba(0,0,0,.18)}
+.glass:active{--glass-fill-a:.74;transform:scale(.97)}
+.gold{background:var(--bgs-gold)!important;color:var(--bgs-bg)!important;box-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35)!important}.gold::before,.gold::after{display:none}
+.hide{opacity:0;pointer-events:none;width:0!important;margin:0!important;padding:0!important;overflow:hidden}
+
+.demo{position:sticky;top:0;z-index:99;background:#0b0705;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:6px;align-items:center;padding:8px 12px;font-family:var(--font-mono);font-size:11px;color:#9a8e7e}
+.demo b{color:#c9bca8;font-weight:500}.demo button{padding:4px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.12);color:#c9bca8}
+
+/* shelf in selection mode */
+.page{max-width:430px;margin:0 auto;padding:14px 12px 170px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.c{border-radius:16px;overflow:hidden;background:var(--bgs-plate);display:flex;flex-direction:column;transition:box-shadow .25s,transform .28s var(--ease-liquid)}
+.c:active{transform:scale(.97)}
+.c .a{aspect-ratio:4/5;position:relative}.c img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.c .box{position:absolute;top:8px;left:8px;width:24px;height:24px;border-radius:8px;box-shadow:inset 0 0 0 1.5px rgba(var(--bgs-ivory-rgb),.75);background:rgba(var(--bgs-bg-rgb),.4);transition:background .25s}
+.c.sel .box{background:var(--bgs-gold);box-shadow:none}.c.sel .box::after{content:"";position:absolute;inset:6px 6px 8px 6px;border:2.5px solid var(--bgs-bg);border-top:0;border-right:0;transform:rotate(-45deg)}
+.c .info-i{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:999px;background:rgba(var(--bgs-bg-rgb),.55);display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:13px}
+.c.sel{box-shadow:0 0 0 2px var(--bgs-gold)}
+.c .t{padding:9px 10px 11px;font-family:var(--font-display);font-size:13px;line-height:1.2;font-weight:600;min-height:2.4em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c .m{display:flex;justify-content:space-between;padding:0 10px 11px;font-size:12px}.c .m span:first-child{color:var(--bgs-gold);font-weight:600;padding:2px 7px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45)}.c .m span:last-child{font-family:var(--font-mono);color:var(--bgs-muted)}
+
+/* bar */
+.scrim{position:fixed;inset:0;background:rgba(var(--bgs-bg-rgb),.4);opacity:0;pointer-events:none;transition:opacity .3s;z-index:40}.scrim.is-on{opacity:1;pointer-events:auto}
+.bar{position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:406px;margin:0 auto;z-index:50;display:flex;flex-direction:column;align-items:center;gap:10px}
+.chip{height:34px;padding:0 6px 0 14px;border-radius:999px;display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12.5px;color:var(--bgs-muted);--glass-fill-a:.45;--glass-shadow:0 4px 12px rgba(0,0,0,.35);--glass-blur:14px;transition:color .25s}
+.chip .chev{width:22px;height:22px;display:grid;place-items:center;color:var(--bgs-gold);transition:transform .35s var(--ease-liquid),opacity .2s}
+.chip.is-list .chev{transform:rotate(180deg)}
+.chip[disabled]{pointer-events:none}.chip[disabled] .chev{opacity:0;width:0}
+.chip.ok{color:var(--bgs-ivory)}
+.row{display:flex;align-items:center;gap:10px;width:100%;justify-content:center}
+.round{width:52px;height:52px;border-radius:999px;display:grid;place-items:center;color:var(--bgs-ivory);flex:none;--glass-fill-a:.5}
+.pill{height:56px;border-radius:999px;padding:0 26px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:17px;color:var(--bgs-muted);--glass-fill-a:.58;flex:1;max-width:260px;white-space:nowrap}
+.pill.gold{color:var(--bgs-bg)}
+
+/* selected list — rises from the chip */
+.list{position:absolute;left:0;right:0;bottom:calc(100% + 10px);border-radius:24px;padding:8px;--glass-fill-a:.66;transform-origin:50% 100%;transform:translateY(12px) scale(.94);opacity:0;pointer-events:none;transition:transform .45s var(--ease-liquid),opacity .25s}
+.list.is-open{transform:none;opacity:1;pointer-events:auto}
+.list h4{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--bgs-gold);padding:8px 10px 6px}
+.list .item{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 8px;border-radius:16px;width:100%}
+.list .item:hover{background:rgba(var(--bgs-ivory-rgb),.05)}
+.list .item img{width:36px;height:45px;border-radius:8px;object-fit:cover;object-position:center top;flex:none}
+.list .item b{font-family:var(--font-display);font-weight:600;font-size:15px;display:block;line-height:1.2}
+.list .item span{font-family:var(--font-mono);font-size:12px;color:var(--bgs-muted)}
+.list .item .rm{margin-left:auto;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--bgs-muted);background:rgba(var(--bgs-ivory-rgb),.06);flex:none}
+.list .item .rm:hover{color:var(--bgs-ivory)}
+.list .empty{padding:14px 12px 16px;color:var(--bgs-muted);font-size:14px}
+</style></head><body>
+<div class="demo"><b>Tap cards to select · tap the chip to see the list</b><span style="margin-left:auto">min 2</span></div>
+<main class="page"><div class="grid" id="grid"></div></main>
+
+<div class="scrim" id="scrim"></div>
+<div class="bar">
+  <div class="list glass" id="list"></div>
+  <button class="chip glass" id="chip" aria-expanded="false" aria-controls="list"><span id="chipTxt"></span><span class="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></svg></span></button>
+  <div class="row">
+    <button class="round glass" id="cancel" aria-label="Cancel"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="pill glass" id="pill"><svg id="pillIco" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".8" fill="currentColor"/><circle cx="15" cy="15" r=".8" fill="currentColor"/></svg><span id="pillTxt"></span></button>
+    <button class="round glass" id="share" aria-label="Share"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 11l8-4M8 13l8 4"/></svg></button>
+  </div>
+</div>
+
+<script>
+const covers=["https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg","https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg","https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg","https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg","https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg"];
+const games=[["Dune: Imperium","8.4","1–4"],["Hegemony: Lead Your Class","8.4","2–4"],["The Lord of the Rings: Duel","8.3","2"],["Spirit Island","8.3","1–4"],["Blood on the Clocktower","8.3","6–21"],["The Million Dollar Doodle","8.3","4–7"],["Brass: Birmingham","8.6","2–4"],["Ark Nova","8.6","1–4"],["Nippon: Zaibatsu","8.5","1–4"]];
+const MIN=2;let sel=[];
+const grid=document.getElementById('grid');
+grid.innerHTML=games.map((g,i)=>`<button class="c" data-i="${i}" aria-pressed="false"><div class="a"><img src="${covers[i%5]}" alt=""><span class="box"></span><span class="info-i">i</span></div><div class="t">${g[0]}</div><div class="m"><span>★ ${g[1]}</span><span>${g[2]}</span></div></button>`).join('');
+grid.addEventListener('click',e=>{const c=e.target.closest('.c');if(!c)return;toggle(+c.dataset.i)});
+function toggle(i){sel.includes(i)?sel=sel.filter(x=>x!==i):sel.push(i);render()}
+const chip=document.getElementById('chip'),chipTxt=document.getElementById('chipTxt'),pill=document.getElementById('pill'),pillTxt=document.getElementById('pillTxt'),pillIco=document.getElementById('pillIco'),share=document.getElementById('share'),list=document.getElementById('list'),scrim=document.getElementById('scrim');
+function render(){
+  const n=sel.length,ok=n>=MIN,need=MIN-n;
+  document.querySelectorAll('.c').forEach(c=>{const on=sel.includes(+c.dataset.i);c.classList.toggle('sel',on);c.setAttribute('aria-pressed',on)});
+  chipTxt.textContent=`${n} selected`;
+  chip.classList.toggle('ok',ok);chip.toggleAttribute('disabled',n===0);
+  if(n===0)closeList();
+  pill.classList.toggle('gold',ok);pillTxt.textContent=ok?`Continue · ${n}`:`Pick ${need} more`;pillIco.style.display=ok?'':'none';
+  share.classList.toggle('hide',!ok);
+  list.innerHTML=n?`<h4>Selected · ${n}</h4>`+sel.map(i=>`<div class="item"><img src="${covers[i%5]}" alt=""><div><b>${games[i][0]}</b><span>★ ${games[i][1]} · ${games[i][2]}</span></div><button class="rm" data-rm="${i}" aria-label="Remove ${games[i][0]}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>`).join(''):`<div class="empty">Nothing picked yet.</div>`;
+}
+function openList(){list.classList.add('is-open');chip.classList.add('is-list');chip.setAttribute('aria-expanded','true');scrim.classList.add('is-on')}
+function closeList(){list.classList.remove('is-open');chip.classList.remove('is-list');chip.setAttribute('aria-expanded','false');scrim.classList.remove('is-on')}
+chip.addEventListener('click',()=>list.classList.contains('is-open')?closeList():openList());
+scrim.addEventListener('click',closeList);
+list.addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(b)toggle(+b.dataset.rm)});
+document.getElementById('cancel').addEventListener('click',()=>{sel=[];render()});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeList()});
+render();
+</script></body></html>
