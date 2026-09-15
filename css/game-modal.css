@@ -17,8 +17,10 @@
 /* modal */
 .backdrop{
   position:fixed;inset:0;
-  background:rgba(var(--bgs-bg-rgb),0.66);
-  backdrop-filter:blur(3px);
+  /* A tint, not a blur: a full-viewport backdrop-filter over 197 covers is
+     re-created on every open, and with the sticky Close's blur below it was
+     what still reloaded iOS Safari when reading a few games in a row. */
+  background:rgba(var(--bgs-bg-rgb),0.78);
   display:none;
   align-items:center;
   justify-content:center;
@@ -311,11 +313,11 @@
 }
 .card-sticky .modal__add svg{width:15px;height:15px;}
 .card-sticky .modal__close{
-  /* Tinted glass. Tint must stay >= .65 so full-ivory text keeps 4.5:1
-     against a near-white cover scrolling behind it (.72 gives 5.7:1). */
-  background:rgba(var(--bgs-plate-rgb),0.72);
-  -webkit-backdrop-filter:blur(14px) saturate(1.2);
-  backdrop-filter:blur(14px) saturate(1.2);
+  /* Near-solid tint, no blur: the button sits over content that scrolls
+     under it, and a backdrop-filter there re-blurs on every frame of that
+     scroll — the heaviest thing in the modal on a phone. .92 keeps ivory
+     text well past 4.5:1 over any cover. */
+  background:rgba(var(--bgs-plate-rgb),0.92);
   border:1.5px solid rgba(var(--bgs-ivory-rgb),0.45);
   box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.10) inset,
              0 8px 24px -10px rgba(0,0,0,0.6);
@@ -325,15 +327,9 @@
 body:not(.gn-selecting) .card-sticky .modal__add{display:none;}
 body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
 
-/* Solid plate when blur isn't available or the OS asks for less transparency. */
-@supports not (backdrop-filter:blur(1px)){
-  .card-sticky .modal__close{background:var(--bgs-plate);}
-}
+/* Solid plate when the OS asks for less transparency. */
 @media (prefers-reduced-transparency:reduce){
-  .card-sticky .modal__close{
-    background:var(--bgs-plate);
-    -webkit-backdrop-filter:none;backdrop-filter:none;
-  }
+  .card-sticky .modal__close{background:var(--bgs-plate);}
 }
 
 /* ---- "Teach me in 60 seconds" ---- */
