@@ -87,24 +87,25 @@ a.glass:active,
   .glass::before{-webkit-backdrop-filter:none; backdrop-filter:none; background:none;}
 }
 
-/* ---- Header controls: search field, filter + sort (52px, radius 18) ---- */
+/* ---- Header controls: search field, filter + sort (44px, radius 14) ----
+   44px is the standard thumb target; 52 read as oversized on the phone. */
 
 .filter-sort-bar.is-stuck{
   background:transparent;
   -webkit-backdrop-filter:none; backdrop-filter:none;
 }
 .search.glass{
-  height:52px;
-  border-radius:18px;
-  padding:0 40px 0 18px;
+  height:44px;
+  border-radius:14px;
+  padding:0 36px 0 16px;
   color:var(--bgs-ivory);
 }
 .search.glass::placeholder{color:var(--bgs-ivory-45);}
-.search-wrap .search-clear{right:12px;}
+.search-wrap .search-clear{right:8px;}
 .icon-btn.glass{
-  width:52px;
-  height:52px;
-  border-radius:18px;
+  width:44px;
+  height:44px;
+  border-radius:14px;
   color:var(--bgs-gold);
 }
 .icon-btn.glass:hover{color:var(--bgs-ivory);}
