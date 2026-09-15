@@ -74,6 +74,7 @@
   .topbar{display:none;}
   .mode-puck{display:none;}
   .selbar{display:none;}
+  .gn-sheet__x{display:none;}
   .search-wrap{
     position:relative;
     flex:1;
@@ -3047,9 +3048,12 @@ function initGameNight(){
         <div class="gn-sheet__grab" aria-hidden="true"></div>
         <h3 id="gnSurpriseTitle">Tonight's surprise</h3>
         <p class="gn-sub">Tap a game to keep it. Re-roll swaps the rest.</p>
+        <!-- Glass path only (css/glass.css shows it): the header × takes over
+             from the Cancel link below; same handler. -->
+        <button class="gn-sheet__x glass" id="gnSurpriseX" type="button" aria-label="Cancel">${GN_X_SVG}</button>
         <div class="gn-surprise-grid" id="gnSurpriseGrid"></div>
         <div class="gn-row">
-          <button class="gn-secondary-btn" id="gnRerollBtn" type="button">${GN_ROLL_SVG} Re-roll <span id="gnRerollN"></span></button>
+          <button class="gn-secondary-btn glass" id="gnRerollBtn" type="button">${GN_ROLL_SVG} Re-roll <span id="gnRerollN"></span></button>
           <button class="gn-primary-btn" id="gnSurpriseContinue" type="button">Continue</button>
         </div>
         <button class="gn-cancel-link" id="gnSurpriseCancel" type="button">Cancel</button>
@@ -3192,6 +3196,7 @@ function initGameNight(){
     gnState.kept.clear();
   }
   document.getElementById('gnSurpriseCancel').addEventListener('click', dismissSurprise);
+  document.getElementById('gnSurpriseX').addEventListener('click', dismissSurprise);
   document.addEventListener('keydown', e => {
     if(e.key === 'Escape' && document.getElementById('gnSurpriseBackdrop').classList.contains('open')){
       dismissSurprise();

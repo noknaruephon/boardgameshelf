@@ -585,3 +585,88 @@ body.gn-tray-open .selbar__list{transform:none;opacity:1;pointer-events:auto;}
   .selbar__list,
   .gn-scrim{transition:none;}
 }
+
+/* ---- "Tonight's surprise": pinned glass footer, cancel as × ----
+   docs/claude-code-spec-surprise-footer.md. The sheet, its heading and the
+   cards are untouched; the action row becomes a footer pinned inside the
+   sheet, the Cancel link gives way to a × in the header. Same handlers. */
+
+.gn-sheet{position:relative;}
+.gn-sheet h3{padding-right:48px;}
+.gn-sheet .gn-sheet__x{
+  display:grid;
+  place-items:center;
+  position:absolute;
+  top:26px; /* centred on the 24px heading: 12px sheet padding + grab + 16px */
+  right:14px;
+  width:40px;
+  height:40px;
+  padding:0;
+  border-radius:999px;
+  color:var(--bgs-ivory);
+  cursor:pointer;
+  z-index:6;
+  --glass-fill-a:.4;
+  --glass-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.gn-sheet .gn-sheet__x svg{width:16px;height:16px;stroke-width:2.5;}
+.gn-sheet .gn-cancel-link{display:none;}
+
+/* The last card row clears the footer; the footer never scrolls. */
+.gn-sheet .gn-surprise-grid{margin-bottom:0;padding-bottom:110px;}
+.gn-sheet .gn-row{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  display:flex;
+  gap:10px;
+  z-index:5;
+}
+.gn-sheet .gn-row .gn-secondary-btn,
+.gn-sheet .gn-row .gn-primary-btn{
+  height:54px;
+  padding:0 18px;
+  border:0;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:16px;
+  white-space:nowrap;
+}
+.gn-sheet .gn-row .gn-secondary-btn{
+  flex:1;
+  color:var(--bgs-ivory);
+  --glass-fill-a:.55;
+}
+.gn-sheet .gn-row .gn-secondary-btn:hover{color:var(--bgs-ivory);}
+.gn-sheet .gn-row .gn-secondary-btn svg{width:20px;height:20px;}
+.gn-sheet .gn-row .gn-secondary-btn:disabled{opacity:.4;pointer-events:none;}
+.gn-sheet .gn-row #gnRerollN{
+  min-width:0;
+  padding:2px 8px;
+  border-radius:999px;
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:500;
+  font-size:14px;
+  color:var(--bgs-gold);
+  background:rgba(var(--bgs-gold-rgb),.14);
+}
+.gn-sheet .gn-row .gn-primary-btn{
+  flex:1.35;
+  background:var(--bgs-gold);
+  color:var(--bgs-bg);
+  box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .28s var(--ease-liquid);
+}
+.gn-sheet .gn-row .gn-primary-btn:hover{filter:none;}
+.gn-sheet .gn-row .gn-primary-btn:active{transform:scale(.97);}
+.gn-sheet .gn-row .gn-primary-btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold), 0 6px 18px rgba(0,0,0,.35);}
+
+@media (prefers-reduced-motion:reduce){
+  .gn-sheet .gn-row .gn-primary-btn{transition:none;}
+}
