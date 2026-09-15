@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tonight's surprise — Option A</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bgs-bg:#160F0A;--bgs-bg-rgb:22,15,10;--bgs-plate:#241A13;--bgs-plate-rgb:36,26,19;--bgs-ivory:#F3E9D8;--bgs-ivory-rgb:243,233,216;--bgs-gold:#D9B25C;--bgs-gold-rgb:217,178,92;--bgs-muted:rgba(var(--bgs-ivory-rgb),.55);
+--font-display:"Fraunces",serif;--font-ui:"Inter",sans-serif;--font-mono:"IBM Plex Mono",monospace;
+--glass-fill-a:.52;--glass-blur:22px;--glass-sat:1.6;--glass-rim-w:1.5px;--glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);--glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);--glass-shadow:0 12px 32px rgba(0,0,0,.45),0 1px 0 rgba(0,0,0,.4);--glass-sheen:rgba(var(--bgs-ivory-rgb),.10);--light-x:20%;--ease-liquid:cubic-bezier(.32,.72,0,1);--dur:.5s}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}body{background:var(--bgs-bg);color:var(--bgs-ivory);font-family:var(--font-ui);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+.glass{position:relative;isolation:isolate;background:linear-gradient(135deg,var(--glass-sheen) 0%,transparent 38%,transparent 70%,rgba(var(--bgs-ivory-rgb),.04) 100%) var(--light-x) 0/220% 100% no-repeat,rgba(var(--bgs-plate-rgb),var(--glass-fill-a));-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));box-shadow:inset 1px 1px 0 var(--glass-rim-light),inset -1px -1px 0 rgba(0,0,0,.45),inset 0 0 0 1px var(--glass-rim-gold),var(--glass-shadow);transition:background var(--dur) var(--ease-liquid),box-shadow var(--dur) var(--ease-liquid),transform .28s var(--ease-liquid),opacity .3s}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;padding:var(--glass-rim-w);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;-webkit-backdrop-filter:blur(3px) brightness(1.35) saturate(2);backdrop-filter:blur(3px) brightness(1.35) saturate(2);background:conic-gradient(from 210deg,rgba(var(--bgs-ivory-rgb),.3),rgba(var(--bgs-gold-rgb),.18) 25%,transparent 45%,rgba(var(--bgs-ivory-rgb),.1) 60%,transparent 80%,rgba(var(--bgs-ivory-rgb),.3))}
+.glass::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;box-shadow:inset 0 0 18px rgba(var(--bgs-ivory-rgb),.05),inset 0 -10px 20px rgba(0,0,0,.18)}
+.glass:active{--glass-fill-a:.74;transform:scale(.97)}
+.gold{background:var(--bgs-gold)!important;color:var(--bgs-bg)!important;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35)!important}.gold::before,.gold::after{display:none}
+
+.sheet{position:fixed;inset:0;max-width:430px;margin:0 auto;display:flex;flex-direction:column;background:var(--bgs-bg)}
+.hd{padding:10px 18px 6px;position:relative;flex:none}
+.grab{width:44px;height:5px;border-radius:999px;background:rgba(var(--bgs-ivory-rgb),.25);margin:0 auto 18px}
+.hd h2{font-family:var(--font-display);font-weight:700;font-size:30px;letter-spacing:-.01em}
+.hd p{color:var(--bgs-muted);font-size:15px;margin:6px 0 0}
+.x{position:absolute;top:30px;right:14px;width:40px;height:40px;border-radius:999px;display:grid;place-items:center;color:var(--bgs-ivory);--glass-fill-a:.4;--glass-shadow:0 4px 12px rgba(0,0,0,.3)}
+.scroll{flex:1;overflow-y:auto;padding:16px 14px 110px}.scroll::-webkit-scrollbar{display:none}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* ── cards: existing production treatment, untouched ── */
+.c{border-radius:16px;overflow:hidden;background:var(--bgs-plate);display:flex;flex-direction:column;position:relative;transition:opacity .25s,transform .28s var(--ease-liquid)}
+.c.swap{opacity:0;transform:scale(.92)}
+.c .a{aspect-ratio:4/5;position:relative}.c img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.c .t{padding:9px 10px 4px;font-family:var(--font-display);font-size:13px;line-height:1.2;font-weight:600;min-height:2.4em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c .m{padding:0 10px 11px;font-family:var(--font-mono);font-size:11.5px;color:var(--bgs-muted)}
+.c .one{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:999px;display:grid;place-items:center;color:var(--bgs-ivory);background:rgba(var(--bgs-bg-rgb),.5);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.25)}
+
+/* ── footer: Option A ── */
+.ft{position:absolute;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;z-index:5}
+.btn{height:54px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:16px;white-space:nowrap}
+.re{flex:1;--glass-fill-a:.55;color:var(--bgs-ivory)}
+.re .n{font-family:var(--font-mono);font-weight:500;color:var(--bgs-gold);font-size:14px;padding:2px 8px;border-radius:999px;background:rgba(var(--bgs-gold-rgb),.14)}
+.go{flex:1.35}
+</style></head><body>
+<div class="sheet">
+  <div class="hd"><div class="grab"></div><h2>Tonight's surprise</h2><p>Tap a game to keep it. Re-roll swaps the rest.</p><button class="x glass" aria-label="Cancel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="scroll"><div class="grid" id="grid"></div></div>
+  <div class="ft">
+    <button class="btn re glass" id="re"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".8" fill="currentColor"/><circle cx="15" cy="15" r=".8" fill="currentColor"/></svg>Re-roll <span class="n" id="n">6</span></button>
+    <button class="btn go gold">Continue</button>
+  </div>
+</div>
+<script>
+const covers=["https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg","https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg","https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg","https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg","https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg"];
+const pool=[["Sitting Ducks Gallery","3–6 · 20m"],["Madori-ism+","1–5 · 10–20m"],["Among Cultists","4–8 · 45–90m"],["SHASN","3–5 · 90–120m"],["Wondrous Creatures","1–4 · 40–80m"],["Awkward Guests","1–8 · 45–75m"],["Brass: Birmingham","2–4 · 60–120m"],["Ark Nova","1–4 · 90–150m"],["Concordia","2–5 · 100m"],["Root","2–4 · 60–90m"],["Spirit Island","1–4 · 90–120m"],["Scythe","1–5 · 90–115m"]];
+const die=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r=".8" fill="currentColor"/><circle cx="15" cy="15" r=".8" fill="currentColor"/></svg>`;
+let ids=[0,1,2,3,4,5];const grid=document.getElementById('grid');
+function render(){grid.innerHTML=ids.map((id,i)=>`<div class="c" data-i="${i}"><div class="a"><img src="${covers[id%5]}" alt=""><span class="one">${die}</span></div><div class="t">${pool[id][0]}</div><div class="m">${pool[id][1]}</div></div>`).join('')}
+function swap(idxs){idxs.forEach(i=>grid.querySelector(`[data-i="${i}"]`).classList.add('swap'));setTimeout(()=>{const used=new Set(ids);idxs.forEach(i=>{let nid;do{nid=Math.floor(Math.random()*pool.length)}while(used.has(nid));used.add(nid);ids[i]=nid});render()},220)}
+document.getElementById('re').addEventListener('click',()=>swap(ids.map((_,i)=>i)));
+render();
+</script></body></html>
