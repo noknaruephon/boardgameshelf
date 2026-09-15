@@ -90,9 +90,21 @@ a.glass:active,
 /* ---- Header controls: search field, filter + sort (44px, radius 14) ----
    44px is the standard thumb target; 52 read as oversized on the phone. */
 
-.filter-sort-bar.is-stuck{
-  background:transparent;
+/* The controls sit in a position:sticky bar. On iOS a backdrop-filter layer
+   inside a sticky container drops out when the sticky state flips — which
+   the keyboard does by resizing the viewport — and the field vanished under
+   the keypad. So the controls here carry no backdrop-filter of their own
+   (at the top there is only the page gradient behind them, so the blur was
+   invisible anyway); the bar blurs the page as one layer once it sticks. */
+.filter-sort-bar .glass,
+.filter-sort-bar .glass::before{
   -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+.filter-sort-bar .glass{--glass-fill-a:.72;}
+.filter-sort-bar.is-stuck{
+  background:rgba(var(--bgs-bg-rgb),.55);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
 .search.glass{
   height:44px;
