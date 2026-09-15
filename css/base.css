@@ -42,8 +42,8 @@
   --bgs-vote-pass-rgb:194,96,74;
 
   /* Liquid Glass (docs/claude-code-spec-liquid-glass.md). The material itself
-     lives in css/glass.css, loaded only behind ?glass=1; the tokens sit here
-     so a page can use the easing and the card layout with the flag off. */
+     lives in css/glass.css, which shelf.html loads; the tokens sit here so
+     every page can use the easing and the card layout without it. */
   --glass-fill-a:.52;                 /* plate tint alpha; pressed .74 */
   --glass-blur:22px;
   --glass-sat:1.6;

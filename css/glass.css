@@ -1,9 +1,9 @@
 /* Liquid Glass material — docs/claude-code-spec-liquid-glass.md.
 
-   Loaded by shelf.html only when localStorage.bgsGlass is set (?glass=1 sets
-   it, ?glass=0 clears it). Nothing in here is prefixed by a flag selector:
-   the .glass class sits in the markup regardless, and is inert until this
-   file loads. Dropping the flag later means loading this file unconditionally.
+   Loaded by shelf.html for everyone unless the device opted out with
+   ?glass=0 (localStorage.bgsGlass). Nothing in here is prefixed by a flag
+   selector: the .glass class sits in the markup regardless, and is inert
+   until this file loads.
 
    Rules (engineering-principles):
    - transitions only, never @keyframes — WebKit drops a transition that
