@@ -130,16 +130,31 @@ a.glass:active,
   --glass-fill-a:.62;
   transform:translateY(-140%) scale(.96);
   opacity:0;
+  /* visibility flips at the end of the slide out and at once on the way in:
+     an invisible blurred surface still holds its layers, a hidden one does not. */
+  visibility:hidden;
   transition:transform var(--dur) var(--ease-liquid), opacity .3s ease,
-             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid);
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid),
+             visibility 0s linear var(--dur);
 }
-.topbar.is-in{transform:none;opacity:1;}
+.topbar.is-in{
+  transform:none;
+  opacity:1;
+  visibility:visible;
+  transition:transform var(--dur) var(--ease-liquid), opacity .3s ease,
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid),
+             visibility 0s;
+}
 /* Every overlay on the site locks the body while it is open; the topbar
    leaves for as long as one is, and returns when the lock lifts. */
 body.scroll-locked .topbar.is-in{
   transform:translateY(-140%) scale(.96);
   opacity:0;
+  visibility:hidden;
   pointer-events:none;
+  transition:transform var(--dur) var(--ease-liquid), opacity .3s ease,
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid),
+             visibility 0s linear var(--dur);
 }
 .topbar .search{
   height:40px;
@@ -274,7 +289,25 @@ body.scroll-locked .topbar.is-in{
              transform .28s var(--ease-liquid), opacity .18s ease;
 }
 .gn-fab.glass.is-open{--glass-fill-a:.66;}
-body.is-selecting .gn-fab.glass{transform:translateX(-50%) translateY(14px) scale(.9);}
+body.is-selecting .gn-fab.glass{
+  transform:translateX(-50%) translateY(14px) scale(.9);
+  visibility:hidden;
+  transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid),
+             bottom var(--dur) var(--ease-liquid), border-radius var(--dur) var(--ease-liquid),
+             background var(--dur) var(--ease-liquid), box-shadow var(--dur) var(--ease-liquid),
+             transform .28s var(--ease-liquid), opacity .18s ease,
+             visibility 0s linear .28s;
+}
+/* The selection-mode entrance animates every card on the shelf at once.
+   A blurred surface re-samples what is behind it on every frame of that,
+   and with several of them (pill, Beta, bags, topbar, each with its rim)
+   iOS Safari ran out of memory and reloaded. So for the wave's duration
+   (body.gn-waving, 800ms) no surface blurs; the tint and rim stay, and the
+   blur returns as the wave ends. */
+body.gn-waving .glass,
+body.gn-waving .glass::before{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
 /* Sheet options: lighter fill, no drop shadow, and no backdrop-filter of
    their own. The box around them is already blurred and is resizing while
    they show; nesting more blur layers inside a resizing one is what tipped
@@ -335,7 +368,10 @@ body.is-selecting .gn-fab.glass{transform:translateX(-50%) translateY(14px) scal
   .bsheet.glass,
   .bsheet.glass.is-open,
   .topbar,
+  .topbar.is-in,
+  body.scroll-locked .topbar.is-in,
   .gn-fab.glass,
+  body.is-selecting .gn-fab.glass,
   .filter-sheet.glass .mode-puck,
   .sheet-scrim,
   .bsheet-scrim{transition:none;}
