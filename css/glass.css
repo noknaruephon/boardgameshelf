@@ -284,10 +284,10 @@ body.scroll-locked .topbar.is-in{
   /* No backdrop blur on this element or its rim. It resizes over half a
      second, and WebKit re-allocates a blurred, masked backdrop for the new
      size on every frame of that — the one thing that reliably made iOS
-     Safari reload the page. A near-solid plate under the scrim reads the
-     same; the sheen, rim and morph are untouched. */
+     Safari reload the page. A near-solid plate (fill .94, .97 open) under
+     the scrim reads the same; the sheen, rim and morph are untouched. */
   -webkit-backdrop-filter:none; backdrop-filter:none;
-  --glass-fill-a:.9;
+  --glass-fill-a:.94;
   color:var(--bgs-gold);
   transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid),
              bottom var(--dur) var(--ease-liquid), border-radius var(--dur) var(--ease-liquid),
@@ -295,7 +295,7 @@ body.scroll-locked .topbar.is-in{
              transform .28s var(--ease-liquid), opacity .18s ease;
 }
 .gn-fab.glass::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
-.gn-fab.glass.is-open{--glass-fill-a:.94;}
+.gn-fab.glass.is-open{--glass-fill-a:.97;}
 body.is-selecting .gn-fab.glass{
   transform:translateX(-50%) translateY(14px) scale(.9);
   visibility:hidden;
