@@ -14,7 +14,7 @@
 <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0A0B0D">
+<meta name="theme-color" content="#0B0E13">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -355,7 +355,7 @@ function runHost({ code, session, deck, hostName }) {
     const url = `${window.location.origin}/vote/${code}`;
     try {
       const svg = await QRCode.toString(url, {
-        type: 'svg', margin: 0, color: { dark: '#0A0B0D', light: '#00000000' },
+        type: 'svg', margin: 0, color: { dark: '#0B0E13', light: '#00000000' },
       });
       box.innerHTML = svg;
     } catch (e) {

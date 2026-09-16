@@ -87,7 +87,7 @@ export function toLegacyGame(ug) {
     weight: x.weight || weightBucket(weightScore),
     weightScore,
     bggRating: num(g.bgg_rating, 0),
-    color: x.color || '#15171B',
+    color: x.color || '#161A21',
     // Both use BGG's full cover. Its thumbnail is ~200px, which is blurry on
     // a phone at 2–3× density, and BGG signs each size into the URL so no
     // middle size can be derived. The thumbnail is only a fallback.
