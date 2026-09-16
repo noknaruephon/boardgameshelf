@@ -9,27 +9,30 @@
    and every page follows. */
 
 :root{
-  --bgs-bg:#0A0B0D;
-  --bgs-bg-rgb:10,11,13;
-  --bgs-bg-radial:#111318;
-  --bgs-plate:#15171B;
-  --bgs-plate-rgb:21,23,27;
-  --bgs-ivory:#F5F6F8;
-  --bgs-ivory-rgb:245,246,248;
-  --bgs-ivory-70:rgba(245,246,248,0.72);
-  --bgs-ivory-45:rgba(245,246,248,0.45);
-  --bgs-gold:#F5F6F8;
-  --bgs-gold-rgb:245,246,248;
-  /* ink on an accent fill — was implied by --bgs-bg/--bgs-plate while gold was a mid tone; white needs an explicit one */
-  --bgs-on-gold:#0A0B0D;
-  /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim */
-  --bgs-gold-dim:rgba(245,246,248,0.55);
-  --bgs-icon-gold:#F5F6F8;
+  --bgs-bg:#0B0E13;
+  --bgs-bg-rgb:11,14,19;
+  --bgs-bg-radial:#131821;
+  --bgs-plate:#161A21;
+  --bgs-plate-rgb:22,26,33;
+  --bgs-ivory:#EEF1F5;
+  --bgs-ivory-rgb:238,241,245;
+  --bgs-ivory-70:rgba(238,241,245,0.72);
+  --bgs-ivory-45:rgba(238,241,245,0.45);
+  --bgs-gold:#E4B54D;
+  --bgs-gold-rgb:228,181,77;
+  /* ink on a gold fill — warm, not the page bg; full-contrast black on brass glares */
+  --bgs-on-gold:#2A1F0C;
+  /* the brighter brass for :hover on a gold fill */
+  --bgs-gold-hover:#F0C455;
+  /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim.
+     Mixed from the brighter brass (#F0C455) at .80, not from --bgs-gold: the eyebrow and mono meta went muddy at .62 of the fill colour. */
+  --bgs-gold-dim:rgba(240,196,85,0.80);
+  --bgs-icon-gold:#E4B54D;
   /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
      base.css already draws on .deck-card; settings ledger rows and the link
      plate use these instead of repeating the literals */
-  --line:rgba(245,246,248,0.10);
-  --line-gold:rgba(245,246,248,0.16);
+  --line:rgba(238,241,245,0.10);
+  --line-gold:rgba(228,181,77,0.22);
   /* warning — a gap in what a bag covers (docs/bag-pack-bar-spec.md) */
   --bgs-amber:#E0A83A;
   /* destructive actions — cancelling a game night */
@@ -54,7 +57,7 @@
   --glass-sat:1.6;
   --glass-rim-w:1.5px;                /* refraction ring width */
   --glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);
-  --glass-rim-gold:rgba(var(--bgs-ivory-rgb),.14);
+  --glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
   --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);
   --glass-sheen:rgba(var(--bgs-ivory-rgb),.10);
   --light-x:20%;                      /* specular position; JS moves it on scroll */
