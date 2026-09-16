@@ -141,7 +141,7 @@
 .share-sheet__btn svg{width:16px;height:16px;}
 .share-sheet__btn--gold{
   background:var(--bgs-gold);
-  color:var(--bgs-bg);
+  color:var(--bgs-on-gold);
   font-weight:600;
   box-shadow:none;
 }

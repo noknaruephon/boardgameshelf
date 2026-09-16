@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#160F0A">
+<meta name="theme-color" content="#0A0B0D">
 <title>BoardgameShelf</title>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BoardgameShelf">
 <meta property="og:title" content="BoardgameShelf">
 <meta property="og:description" content="Track your games. Pick tonight's, together.">
 <meta property="og:url" content="https://boardgameshelf.vercel.app">
-<meta property="og:image" content="https://boardgameshelf.vercel.app/api/og">
+<meta property="og:image" content="https://boardgameshelf.vercel.app/api/og?v=20260916">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Pick tonight's game, together. Three fanned cards with a Play pill and a Pass dot.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BoardgameShelf">
 <meta name="twitter:description" content="Track your games. Pick tonight's, together.">
-<meta name="twitter:image" content="https://boardgameshelf.vercel.app/api/og">
+<meta name="twitter:image" content="https://boardgameshelf.vercel.app/api/og?v=20260916">
 <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/icon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/icon-64.png" sizes="64x64" type="image/png">
@@ -83,8 +83,8 @@
   .btn:active{transform:scale(.985);}
   .btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
   .btn[disabled]{opacity:.6;cursor:default;}
-  .btn.gold{background:var(--bgs-gold);color:var(--bgs-bg);border-color:var(--bgs-gold);}
-  .btn.gold:hover{background:#ecbd5b;}
+  .btn.gold{background:var(--bgs-gold);color:var(--bgs-on-gold);border-color:var(--bgs-gold);}
+  .btn.gold:hover{background:rgba(var(--bgs-ivory-rgb),.88);}
   .btn svg{width:18px;height:18px;flex:none;}
   /* Google G on a white disc — decorative; the button text is the name. */
   .g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none;}
@@ -132,11 +132,11 @@
 <div class="wrap">
   <p class="mark bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></p>
   <div class="hand" aria-hidden="true">
-    <div class="cover" style="--c:#3E5C3E"><img src="https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg" alt="" loading="eager" decoding="async"></div>
-    <div class="cover" style="--c:#3B4F76"><img src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" alt="" loading="eager" decoding="async"></div>
-    <div class="cover" style="--c:#7A3B2E"><img src="https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg" alt="" loading="eager" decoding="async"></div>
-    <div class="cover" style="--c:#A64B32"><img src="https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg" alt="" loading="eager" decoding="async"></div>
-    <div class="cover" style="--c:#8B3A3A"><img src="https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg" alt="" loading="eager" decoding="async"></div>
+    <div class="cover" style="--c:#15171B"><img src="https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg" alt="" loading="eager" decoding="async"></div>
+    <div class="cover" style="--c:#1A1D22"><img src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" alt="" loading="eager" decoding="async"></div>
+    <div class="cover" style="--c:#15171B"><img src="https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg" alt="" loading="eager" decoding="async"></div>
+    <div class="cover" style="--c:#1F232A"><img src="https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg" alt="" loading="eager" decoding="async"></div>
+    <div class="cover" style="--c:#15171B"><img src="https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg" alt="" loading="eager" decoding="async"></div>
   </div>
   <h1>Your shelf, judged by its covers.</h1>
   <p class="sub">A page for your collection and a vote for your table, from any phone.</p>

@@ -14,7 +14,7 @@
 <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#160F0A">
+<meta name="theme-color" content="#0A0B0D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -142,7 +142,7 @@
      >=90% region. */
   .stack .scrim{
     position:absolute;inset:0;pointer-events:none;z-index:1;
-    background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(20,18,15,.92) 100%);
+    background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(var(--bgs-bg-rgb),.92) 100%);
   }
 
   .stack .meta{position:absolute;left:18px;right:18px;bottom:18px;z-index:2;}
@@ -177,7 +177,7 @@
 
   /* full-card black wash — darkens the same way in both directions; the
      stamp colour below is what carries play/pass meaning. */
-  .wash{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:3;background:rgba(20,18,15,.55);}
+  .wash{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:3;background:rgba(var(--bgs-bg-rgb),.55);}
 
   .stamp{
     position:absolute;top:26px;z-index:4;opacity:0;pointer-events:none;
@@ -189,7 +189,7 @@
     border:2px solid currentColor;border-radius:6px;
     /* A clay outline over blackwashed light art is only ~1.8:1 on its own;
        this plate lifts it past the 3:1 non-text minimum. Do not remove. */
-    background:rgba(20,18,15,.6);
+    background:rgba(var(--bgs-bg-rgb),.6);
     transform-origin:center;
   }
   .stamp.play{left:22px;color:var(--bgs-vote-play);transform:rotate(-12deg) scale(1.4);}
@@ -373,7 +373,7 @@
     word-break:break-word;
   }
   .start-btn{
-    display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-plate);border:none;
+    display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-on-gold);border:none;
     border-radius:12px;padding:16px;font:inherit;font-size:14.5px;font-weight:700;
     cursor:pointer;transition:opacity .18s ease;text-align:center;text-decoration:none;
     box-sizing:border-box;
