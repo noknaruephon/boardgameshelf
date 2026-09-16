@@ -168,13 +168,6 @@
     color:var(--bgs-gold);white-space:nowrap;
   }
 
-  .info-btn{
-    position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;z-index:6;
-    background:rgba(0,0,0,.42);backdrop-filter:blur(3px);color:var(--bgs-ivory);
-    display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--bgs-ivory-rgb),.2);
-    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:14px;cursor:pointer;
-  }
-
   /* full-card black wash — darkens the same way in both directions; the
      stamp colour below is what carries play/pass meaning. */
   .wash{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:3;background:rgba(20,18,15,.55);}
@@ -240,27 +233,66 @@
   /* ---- vote buttons ----
      Neutral glass discs; the vote colour lives on the icon stroke only. The
      ring and fill used to be tinted too, which put a third colour signal on
-     screen competing with the stamp and the wash for the same meaning. */
-  .vote-actions{display:flex;justify-content:center;gap:18px;margin-bottom:6px;}
+     screen competing with the stamp and the wash for the same meaning.
+
+     docs/claude-code-spec-vote-actions.md: the row is a 4-column grid. × and
+     ✓ are pinned to the two auto columns, so the equal 1fr gutters keep them
+     centred where the old flex row put them; the game-info round (which used
+     to float on the card) sits in column 4, flush with the card's right edge.
+     This layout applies flag or not; css/glass.css (loaded below the styles
+     when the glass flag is on) only swaps the solid rings for the material. */
+  .vote-actions{
+    display:grid;grid-template-columns:1fr auto auto 1fr;column-gap:20px;align-items:center;
+    height:64px;margin-bottom:6px;
+    /* The glow below sits at z-index:-1; isolating keeps that inside the row
+       rather than behind the page background. */
+    position:relative;isolation:isolate;
+  }
   .vote-btn{
-    width:64px;height:64px;border-radius:50%;cursor:pointer;
-    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+    width:64px;height:64px;border-radius:50%;cursor:pointer;padding:0;
+    /* The solid fill goes through a variable so the press and the quieter
+       info round change only the number: once css/glass.css owns the
+       background, these rules cannot paint over the material. */
+    --vote-fill:.06;
+    background:rgba(255,255,255,var(--vote-fill));border:1px solid rgba(255,255,255,.14);
     color:var(--bgs-ivory);display:grid;place-items:center;
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    transition:transform .15s,background .15s;
+    /* The press is a transition on transform. Never add an animation to this
+       element: WebKit drops a transition that shares a property with one. */
+    transition:transform .18s cubic-bezier(.2,.8,.2,1),background .15s;
   }
-  .vote-btn:active{transform:scale(.92);}
-  .vote-btn:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:3px;}
-  .vote-btn.pass{color:var(--bgs-vote-pass);}
-  .vote-btn.play{color:var(--bgs-vote-play);}
+  .vote-btn:active{transform:scale(.94);--vote-fill:.1;}
+  /* Focus is a box-shadow ring, never an outline: a 3px gap in the page
+     colour, then 2px of gold. Pointer presses never focus these (see
+     renderVoting), so the ring only ever shows for keyboard focus. */
+  .vote-btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--bgs-bg),0 0 0 5px var(--bgs-gold);}
+  /* Explicit columns: the glow is out of flow, so auto-placement would put ×
+     in column 1. */
+  .vote-btn.pass{grid-column:2;color:var(--bgs-vote-pass);}
+  .vote-btn.play{grid-column:3;color:var(--bgs-vote-play);}
   .vote-btn svg{width:26px;height:26px;}
+  /* Game info: one step quieter than × / ✓, and 44px — the minimum tap
+     target, so no smaller. */
+  .vote-btn.info{
+    grid-column:4;justify-self:end;align-self:center;
+    width:44px;height:44px;
+    --vote-fill:.05;border-color:rgba(255,255,255,.12);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:18px;line-height:1;
+    color:rgba(var(--bgs-ivory-rgb),.65);
+  }
+  .vote-btn.info:active{--vote-fill:.08;}
+  /* Ambient glow: decorative, behind the row only. The row sits under the
+     two-line caption, so the 30px overhang never reaches the card, and it
+     takes no pointer events, so it can never catch a drag. Painted by
+     css/glass.css; without it this is an empty, invisible box. */
+  .vote-glow{position:absolute;inset:-30px -10px;z-index:-1;pointer-events:none;border-radius:999px;}
   /* Without the blur behind it, 6% white barely registers on this background,
      so the disc needs a little more body. The prefixed property is tested too:
      Safari only unprefixed `backdrop-filter` in 18, so testing the plain name
      alone would hand every earlier iPhone the fallback on top of a blur that
      is in fact working. */
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    .vote-btn{background:rgba(255,255,255,.1);}
+    .vote-btn{--vote-fill:.1;}
   }
   .vote-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin-top:16px;}
 
@@ -295,6 +327,8 @@
     .spinner{animation:none;}
     .stack .card,.stack .cover,.tally .roll span,.caption{transition:none!important;}
     .stamp.commit{animation-duration:.01s!important;}
+    /* The press still scales, it just snaps there. */
+    .vote-btn{transition:none;}
   }
 
   /* ---- roster ---- */
@@ -338,6 +372,27 @@
     box-sizing:border-box;
   }
 </style>
+<script>
+  // Liquid Glass (docs/claude-code-spec-liquid-glass.md). Same loader as
+  // shelf.html: live for everyone, ?glass=0 opts a device out (persisted to
+  // localStorage.bgsGlass) and ?glass=1 opts it back in. css/glass.css is
+  // appended last in <head>, so it wins over the styles above at equal
+  // specificity. Only the vote action row uses the material on this page;
+  // the .glass class sits in its markup regardless and is inert without it.
+  (function(){
+    var GLASS_ENABLED = true;
+    try{
+      var q = new URLSearchParams(location.search).get('glass');
+      if(q === '0') localStorage.setItem('bgsGlass', '0');
+      else if(q === '1') localStorage.removeItem('bgsGlass');
+      var off = localStorage.getItem('bgsGlass') === '0';
+      if(GLASS_ENABLED ? off : !(q === '1')) return;
+    }catch(e){ if(!GLASS_ENABLED) return; }
+    var link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = '/css/glass.css';
+    document.head.appendChild(link);
+  })();
+</script>
 </head>
 <body>
 
@@ -623,7 +678,6 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
       <div class="card-body">
         <div class="cover"><img src="${game.image}" alt="${game.title} cover" loading="lazy"></div>
         <div class="scrim"></div>
-        <button class="info-btn" data-i="${absoluteIndex}" aria-label="Game details">i</button>
         <div class="wash"></div>
         <div class="stamp play" style="--r:-12deg">PLAY</div>
         <div class="stamp pass" style="--r:12deg">PASS</div>
@@ -637,10 +691,6 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
           </ul>
         </div>
       </div>`;
-    el.querySelector('.info-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      openGameModal(game);
-    });
     return el;
   }
 
@@ -757,12 +807,14 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
       <div class="stack" id="stack"></div>
       <p class="caption" id="caption" aria-live="polite"></p>
       <div class="vote-actions">
-        <button class="vote-btn pass" id="btnPass" aria-label="Pass">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        <span class="vote-glow" aria-hidden="true"></span>
+        <button class="vote-btn pass glass" id="btnPass" aria-label="Pass">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
         </button>
-        <button class="vote-btn play" id="btnPlay" aria-label="Play">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+        <button class="vote-btn play glass" id="btnPlay" aria-label="Play">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
         </button>
+        <button class="vote-btn info glass" id="btnInfo" aria-label="Game info">i</button>
       </div>
       <p class="vote-hint">Drag right to play, left to pass — votes lock the moment you swipe</p>
     `;
@@ -774,8 +826,20 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     relayout();
     bindFront();
 
+    // A pointer press must never leave a focus ring on a round: cancelling
+    // pointerdown stops the button taking focus from mouse or touch, so
+    // :focus-visible only ever matches keyboard focus. Click still fires.
+    document.querySelector('.vote-actions').addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.vote-btn')) e.preventDefault();
+    });
     document.getElementById('btnPass').addEventListener('click', () => commit('pass'));
     document.getElementById('btnPlay').addEventListener('click', () => commit('play'));
+    // Same sheet the card's own round used to open, for whichever card is in
+    // front. `index` advances the moment a vote commits, so this always
+    // describes the card you can see; it does not touch the swipe lock.
+    document.getElementById('btnInfo').addEventListener('click', () => {
+      if (index < deck.length) openGameModal(deck[index]);
+    });
   }
 
   // Keyboard equivalent of the swipe, for anyone not using a touchscreen.

@@ -671,3 +671,49 @@ body.gn-tray-open .selbar__list{transform:none;opacity:1;pointer-events:auto;}
 @media (prefers-reduced-motion:reduce){
   .gn-sheet .gn-row .gn-primary-btn{transition:none;}
 }
+
+/* ---- Game Night vote screen: the action row as glass rounds ----
+   docs/claude-code-spec-vote-actions.md. The row's grid, sizes and the
+   game-info round live in vote-swipe.html and apply flag or not; this only
+   swaps the solid rings for the material. Blur, rim and shadow are .glass's
+   own. .glass already drops the page's border, fill and 10px blur. */
+
+.vote-btn.glass{
+  /* The spec's press: .94 over 180ms. One transform transition, no animation. */
+  transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.vote-btn.glass:active{transform:scale(.94);}
+/* Focus composes with the rim through the slot: 3px gap, then 2px gold. The
+   page's own :focus-visible rule is more specific than .glass, so the full
+   stack is restated here (as the Beta pill does) or the rim would vanish. */
+.vote-btn.glass:focus-visible{
+  --glass-focus:0 0 0 3px var(--bgs-bg), 0 0 0 5px var(--bgs-gold);
+  box-shadow:
+    var(--glass-focus),
+    inset 1px 1px 0 var(--glass-rim-light),
+    inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px var(--glass-rim-gold),
+    var(--glass-shadow);
+}
+/* Game info: one step quieter than × / ✓ — thinner tint, softer rim. */
+.vote-btn.info.glass{
+  --glass-fill-a:.28;
+  --glass-rim-light:rgba(var(--bgs-ivory-rgb),.12);
+  --glass-rim-gold:rgba(var(--bgs-ivory-rgb),.12);
+  --glass-shadow:0 6px 16px rgba(0,0,0,.35);
+}
+.vote-btn.info.glass:active{--glass-fill-a:.45;}
+/* Ambient glow behind the row: coral under ×, sage under ✓, gold under info.
+   The element is positioned and pointer-inert by the page; this only paints
+   it. It is a plain gradient with a filter, not a backdrop-filter, so it
+   costs nothing on top of the three rounds sampling it. */
+.vote-glow{
+  background:
+    radial-gradient(40% 70% at 30% 50%, rgba(var(--bgs-vote-pass-rgb),.22), transparent 70%),
+    radial-gradient(40% 70% at 60% 50%, rgba(var(--bgs-vote-play-rgb),.20), transparent 70%),
+    radial-gradient(30% 60% at 92% 50%, rgba(var(--bgs-gold-rgb),.18), transparent 70%);
+  filter:blur(18px);
+}
+@media (prefers-reduced-motion:reduce){
+  .vote-btn.glass{transition:none;}
+}
