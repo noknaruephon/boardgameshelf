@@ -1806,6 +1806,9 @@ async function loadGames(){
 function renderOwner(){
   const name = profile.display_name || profile.bgg_username || profile.slug;
   document.title = `${name} · BoardgameShelf`;
+  // For the share sheets that read the live page; a crawler sees none of
+  // this. The ?v= changes with a rename so link previews refetch the image.
+  setMeta('og:image', ogImageUrl(profile));
   const eyebrow = document.getElementById('shelfOwner');
   eyebrow.textContent = name;
   // Owner: Settings. Signed-in guest: their own shelf (/welcome routes to it,
@@ -1846,6 +1849,14 @@ function shareBag(opener){
   });
 }
 
+// /api/og/{slug} with a cache-buster from display_name_updated_at (unix
+// seconds), so previewers that cache the image for weeks pick up a rename.
+function ogImageUrl(p){
+  const t = Date.parse(p.display_name_updated_at || '');
+  const v = Number.isFinite(t) ? `?v=${Math.floor(t / 1000)}` : '';
+  return `${location.origin}/api/og/${encodeURIComponent(p.slug)}${v}`;
+}
+
 function setMeta(property, content){
   let m = document.querySelector(`meta[property="${property}"]`);
   if(!m){ m = document.createElement('meta'); m.setAttribute('property', property); document.head.appendChild(m); }
@@ -1866,7 +1877,7 @@ function renderBagHeader(){
   // Set for the share sheets that read the live page; a crawler sees none of
   // this until a bag OG route exists, and og:image stays the shelf's.
   setMeta('og:title', `${name} · a bag from ${ownerName}'s shelf`);
-  setMeta('og:image', `${location.origin}/api/og/${encodeURIComponent(profile.slug)}`);
+  setMeta('og:image', ogImageUrl(profile));
 
   // The header styles live in bag.css, which js/bag-ui.js only loads behind
   // the flag; a bag page needs them regardless. The confirm dialog is the

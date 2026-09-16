@@ -85,7 +85,7 @@ export function slugify(username) {
 const SLUG_RE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 export const isValidSlug = (slug) => SLUG_RE.test(slug);
 
-const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, is_public, show_expansions, last_synced_at, created_at';
+const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, display_name_updated_at, is_public, show_expansions, last_synced_at, created_at';
 
 /** The signed-in user's own profile row, or null before they have claimed one. */
 export async function fetchMyProfile() {
@@ -158,6 +158,18 @@ export async function updateMyProfile(patch) {
     .eq('id', user.id)
     .select(PROFILE_COLUMNS)
     .single();
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Renames the shelf's display name through update_display_name(), the only
+ * write path for that column (a trigger refuses a direct update). The RPC
+ * normalises and validates; its error message is what the sheet shows.
+ * @returns {Promise<object>} the updated profile row
+ */
+export async function updateDisplayName(name) {
+  const { data, error } = await supabase.rpc('update_display_name', { p_name: String(name ?? '') });
   if (error) throw error;
   return data;
 }

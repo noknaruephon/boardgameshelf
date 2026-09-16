@@ -235,11 +235,117 @@
   .empty{color:var(--bgs-ivory-70);font-size:15px;line-height:1.5;margin:22px 0 0;}
   .empty a{color:var(--bgs-gold);}
 
+  /* ---- display name: row + edit sheet (docs/claude-code-spec-display-name.md) ----
+     The sheet is the site's bottom-sheet scaffold (.bsheet, js/share-sheet.js);
+     with css/glass.css in, it, the × round and the toast take the material
+     through their .glass class. Without it they sit on --bgs-plate. */
+  .qrplate + [hidden] + .row{margin-top:6px;}   /* the display-name row is hidden without ?displayname=1 */
+  .dn-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;}
+  .dn-title{font-family:var(--serif);font-weight:500;font-size:22px;margin:0;letter-spacing:-.01em;}
+  .dn-close{
+    width:44px;height:44px;border-radius:50%;flex:none;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:var(--bgs-plate);color:var(--bgs-ivory);
+    box-shadow:inset 0 0 0 1px var(--line);
+  }
+  .dn-close svg{width:20px;height:20px;}
+  .dn-preview{
+    border-radius:18px;padding:22px 18px 18px;margin:0 0 18px;
+    background:rgba(var(--bgs-bg-rgb),.55);
+    box-shadow:inset 0 0 0 1px var(--line);
+  }
+  /* .eyebrow is the shelf header's class, declared inline in shelf.html
+     (IBM Plex Mono 12px, .14em, uppercase); the same declarations, verbatim,
+     since no shared stylesheet carries it. The owner line there is ivory-70. */
+  .dn-preview .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--bgs-ivory-70);
+    margin:0 0 10px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .dn-preview .eyebrow.is-empty{color:rgba(var(--bgs-ivory-rgb),.28);}
+  .dn-preview .bgs-wordmark{
+    font-family:var(--serif);font-weight:600;font-size:34px;line-height:1;
+    letter-spacing:-.01em;margin:0;
+  }
+  .dn-label{display:block;font-size:13px;color:var(--bgs-ivory-70);margin:0 0 8px;}
+  .dn-field{
+    display:flex;align-items:center;border-radius:14px;
+    background:rgba(var(--bgs-bg-rgb),.6);
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14);
+  }
+  .dn-field:focus-within{box-shadow:0 0 0 2px var(--bgs-gold);}
+  .dn-field.is-invalid{box-shadow:0 0 0 2px var(--bgs-danger);}
+  .dn-input{
+    flex:1;min-width:0;padding:14px 8px 14px 14px;
+    background:none;border:0;color:var(--bgs-ivory);
+    font:inherit;font-size:16px;   /* 16px: iOS Safari does not zoom on focus */
+  }
+  .dn-input:focus{outline:none;}   /* the ring is the wrapper's box-shadow above */
+  .dn-count{
+    flex:none;padding:0 14px;
+    font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;
+    color:var(--bgs-ivory-45);
+  }
+  .dn-count.is-over{color:var(--bgs-danger);}
+  .dn-msg{min-height:18px;margin:8px 0 0;font-size:13px;line-height:18px;color:var(--bgs-danger);}
+  .dn-save{
+    display:flex;align-items:center;justify-content:center;
+    width:100%;height:50px;margin-top:14px;border-radius:999px;
+    background:var(--bgs-gold);color:var(--bgs-bg);
+    font-size:15px;font-weight:600;
+    transition:opacity .15s var(--ease);   /* opacity only; the spinner animates on its own element */
+  }
+  .dn-save[disabled]{opacity:.35;cursor:default;}
+  .dn-spin{
+    width:18px;height:18px;border-radius:50%;
+    border:2px solid rgba(var(--bgs-bg-rgb),.3);border-top-color:var(--bgs-bg);
+    animation:dn-spin .8s linear infinite;
+  }
+  @keyframes dn-spin{to{transform:rotate(360deg);}}
+  .dn-toast,
+  .dn-toast.glass{
+    position:fixed;left:50%;bottom:calc(34px + env(safe-area-inset-bottom));z-index:50;
+    transform:translateX(-50%);
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 18px;border-radius:999px;
+    background:var(--bgs-plate);color:var(--bgs-ivory);
+    box-shadow:inset 0 0 0 1px var(--line-gold),0 12px 32px rgba(0,0,0,.45);
+    font-size:13.5px;font-weight:500;white-space:nowrap;
+    opacity:0;pointer-events:none;
+    transition:opacity .2s var(--ease);
+  }
+  .dn-toast.is-on{opacity:1;}
+  .dn-toast svg{width:18px;height:18px;color:var(--bgs-gold);stroke-width:2.25;}
+
   @media (prefers-reduced-motion:reduce){
-    .toggle,.toggle::after,.btn{transition:none;}
-    .pill.is-syncing::before{animation:none;}
+    .toggle,.toggle::after,.btn,.dn-save,.dn-toast{transition:none;}
+    .pill.is-syncing::before,.dn-spin{animation:none;}
   }
 </style>
+<script>
+  // Liquid Glass, the same loader as shelf.html: live for everyone, ?glass=0
+  // opts a device out (localStorage.bgsGlass) and ?glass=1 opts it back in.
+  // css/glass.css is appended last in <head> so it wins over the styles above
+  // at equal specificity. Only the display-name sheet, its × and the toast
+  // carry .glass on this page.
+  (function(){
+    var GLASS_ENABLED = true;
+    try{
+      var q = new URLSearchParams(location.search).get('glass');
+      if(q === '0') localStorage.setItem('bgsGlass', '0');
+      else if(q === '1') localStorage.removeItem('bgsGlass');
+      var off = localStorage.getItem('bgsGlass') === '0';
+      if(GLASS_ENABLED ? off : !(q === '1')) return;
+    }catch(e){ if(!GLASS_ENABLED) return; }
+    var link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = '/css/glass.css';
+    document.head.appendChild(link);
+  })();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -275,6 +381,13 @@
         <div class="ticket" id="share-qr-code" role="img" aria-label="QR code for your shelf"></div>
         <div class="qrhint" id="qrHint">Point a camera at it</div>
       </div>
+
+      <!-- behind ?displayname=1 (docs/claude-code-spec-display-name.md) -->
+      <button type="button" class="row" id="displayNameRow" hidden>
+        <span class="lab"><span class="t">Display name</span></span>
+        <span class="val" id="displayNameVal" data-display-name></span>
+        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
 
       <div class="row">
         <span class="lab" id="lbl-public"><span class="t">Public</span><span class="s" id="publicHint">Anyone with the link can browse and start a game night</span></span>
@@ -357,12 +470,13 @@
 <script src="/vendor/qrcode.min.js"></script>
 <script type="module">
 import {
-  getUser, getAccessToken, fetchMyProfile, updateMyProfile, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
+  getUser, getAccessToken, fetchMyProfile, updateMyProfile, updateDisplayName, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
 import { supabase } from '/js/supabase.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
+import { createBottomSheet } from '/js/share-sheet.js';
 
 const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
@@ -424,6 +538,8 @@ function renderSettings() {
   const url = `${location.origin}/u/${profile.slug}`;
   $('who').textContent = profile.display_name || userDisplayName(user) || `/u/${profile.slug}`;
   $('who').className = 'set-who';
+  $('displayNameVal').textContent = profile.display_name || userDisplayName(user) || '';
+  show('displayNameRow', DISPLAY_NAME_ENABLED);
   $('backLink').href = `/u/${profile.slug}`;
   show('backLink', true);
   $('shelfHost').textContent = `${location.host}/u/`;
@@ -755,6 +871,160 @@ $('confirmDelete').addEventListener('click', async () => {
     deleting = false;
   }
 });
+
+// ---- display name ----
+// Behind ?displayname=1 until reviewed on the deployed preview; the flag
+// gates only the row. Spec: docs/claude-code-spec-display-name.md.
+const DISPLAY_NAME_ENABLED = new URLSearchParams(location.search).get('displayname') === '1';
+const DN_MIN = 2;
+const DN_MAX = 32;
+// Letters (any script, with combining marks), digits, space, . - ' ’
+const DN_RE = /^[\p{L}\p{M}\p{N} .'’-]+$/u;
+const DN_LENGTH_MSG = `Use ${DN_MIN}–${DN_MAX} characters.`;
+const DN_CHARS_MSG = 'Letters, numbers, spaces, and . - \' only.';
+const TOAST_MS = 1800;
+const FOCUS_AFTER_OPEN_MS = 60;
+
+/** What update_display_name() stores: trimmed, inner whitespace collapsed. */
+function dnNorm(raw) {
+  return String(raw ?? '').trim().replace(/\s+/g, ' ');
+}
+/** Mirrors the RPC's checks in its order; '' when the name would be accepted. */
+function dnValidate(raw) {
+  const trimmed = String(raw ?? '').trim();
+  if (/[\r\n]/.test(trimmed)) return DN_CHARS_MSG;
+  const v = trimmed.replace(/\s+/g, ' ');
+  const n = [...v].length;   // code points, as char_length() counts
+  if (n < DN_MIN || n > DN_MAX) return DN_LENGTH_MSG;
+  if (!DN_RE.test(v)) return DN_CHARS_MSG;
+  return '';
+}
+
+const CLOSE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+const CHECK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 10-10"/></svg>';
+
+let dn = null;   // { sheet, input, ... } — built on first open
+let dnSaving = false;
+let toastTimer = 0;
+
+function showToast(text) {
+  let toast = $('dnToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'dnToast';
+    toast.className = 'dn-toast glass';
+    toast.setAttribute('role', 'status');
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `${CHECK_ICON}<span></span>`;
+  toast.lastChild.textContent = text;
+  clearTimeout(toastTimer);
+  // Two frames so the opacity transition runs from 0 on a freshly made node.
+  requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('is-on')));
+  toastTimer = setTimeout(() => toast.classList.remove('is-on'), TOAST_MS);
+}
+
+function buildDisplayNameSheet() {
+  const sheet = createBottomSheet({
+    className: 'dn-sheet',
+    titleId: 'dnTitle',
+    bodyHTML: `
+      <div class="dn-head">
+        <h3 class="dn-title" id="dnTitle">Display name</h3>
+        <button type="button" class="dn-close glass" aria-label="Close" data-sheet-close>${CLOSE_ICON}</button>
+      </div>
+      <div class="dn-preview" aria-hidden="true">
+        <p class="eyebrow" data-dn-preview>Your name</p>
+        <div class="bgs-wordmark">BoardgameShelf</div>
+      </div>
+      <form class="dn-form" novalidate>
+        <label class="dn-label" for="dnInput">Shown above your shelf’s name</label>
+        <div class="dn-field" data-dn-field>
+          <input class="dn-input" id="dnInput" type="text" autocomplete="nickname" autocapitalize="words" spellcheck="false" maxlength="40">
+          <span class="dn-count" data-dn-count aria-hidden="true">0 / ${DN_MAX}</span>
+        </div>
+        <p class="dn-msg" data-dn-msg aria-live="polite"></p>
+        <button type="submit" class="dn-save" data-dn-save disabled>Save</button>
+      </form>
+    `,
+    onClose: () => { setDnValue(dnStored()); },
+  });
+  const el = sheet.el;
+  dn = {
+    sheet,
+    close: el.querySelector('[data-sheet-close]'),
+    preview: el.querySelector('[data-dn-preview]'),
+    field: el.querySelector('[data-dn-field]'),
+    input: el.querySelector('#dnInput'),
+    count: el.querySelector('[data-dn-count]'),
+    msg: el.querySelector('[data-dn-msg]'),
+    save: el.querySelector('[data-dn-save]'),
+    form: el.querySelector('form'),
+  };
+  dn.input.addEventListener('input', refreshDn);
+  dn.form.addEventListener('submit', (e) => { e.preventDefault(); saveDisplayName(); });
+}
+
+const dnStored = () => profile?.display_name || '';
+
+function setDnValue(value) {
+  dn.input.value = value;
+  refreshDn();
+}
+
+/** Preview, counter, message and Save follow the input on every keystroke. */
+function refreshDn() {
+  const raw = dn.input.value;
+  const norm = dnNorm(raw);
+  const n = [...norm].length;
+  const dirty = norm !== dnStored();
+  const error = dnValidate(raw);
+
+  dn.preview.textContent = norm || 'Your name';
+  dn.preview.classList.toggle('is-empty', !norm);
+  dn.count.textContent = `${n} / ${DN_MAX}`;
+  dn.count.classList.toggle('is-over', n > DN_MAX);
+  // The message waits until the value is dirty: an untouched stored name
+  // that predates the rules is not an error until it is edited.
+  dn.msg.textContent = dirty ? error : '';
+  dn.field.classList.toggle('is-invalid', dirty && Boolean(error));
+  dn.save.disabled = dnSaving || !dirty || Boolean(error);
+}
+
+function openDisplayNameSheet() {
+  if (!dn) buildDisplayNameSheet();
+  setDnValue(dnStored());
+  // The scaffold focuses the × at once; the field takes focus once the
+  // sheet is up, so the keyboard does not rise into a moving sheet.
+  dn.sheet.open($('displayNameRow'), { focus: dn.close });
+  setTimeout(() => { if (dn.sheet.isOpen()) dn.input.focus({ preventScroll: true }); }, FOCUS_AFTER_OPEN_MS);
+}
+
+async function saveDisplayName() {
+  if (dnSaving || dn.save.disabled) return;
+  const value = dn.input.value;
+  dnSaving = true;
+  dn.save.disabled = true;
+  dn.save.innerHTML = '<span class="dn-spin" aria-hidden="true"></span>';
+  dn.save.setAttribute('aria-label', 'Saving');
+  try {
+    profile = await updateDisplayName(value);
+    renderSettings();
+    dnSaving = false;
+    dn.sheet.close();   // onClose resets the field to the new stored value
+    showToast('Display name saved');
+  } catch (err) {
+    dnSaving = false;
+    dn.msg.textContent = err.message || "Couldn't save that. Try again.";
+    dn.field.classList.add('is-invalid');
+  } finally {
+    dn.save.textContent = 'Save';
+    dn.save.removeAttribute('aria-label');
+    if (dnSaving === false && dn.sheet.isOpen()) dn.save.disabled = false;
+  }
+}
+
+$('displayNameRow').addEventListener('click', openDisplayNameSheet);
 
 // ---- boot ----
 try {
