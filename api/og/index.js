@@ -18,21 +18,21 @@ const SITE_URL = 'boardgameshelf.vercel.app';
 // Production tokens from css/base.css. Satori has no CSS variables, so they
 // are hardcoded here; keep them in step with the stylesheet.
 const T = {
-  bg: '#160F0A', // --bgs-bg
-  ivory: '#F4EBDA', // --bgs-ivory
-  ivory70: 'rgba(244,235,218,0.7)', // --bgs-ivory at 70%
-  ivory45: 'rgba(244,235,218,0.45)', // --bgs-ivory at 45%
-  gold: '#E3B04B', // --bgs-gold
-  goldRing: 'rgba(227,176,75,0.75)', // --bgs-gold at 75%
-  goldFrame: 'rgba(227,176,75,0.35)', // --bgs-gold at 35%
-  play: '#8FA75A', // --bgs-vote-play
-  pass: '#C2604A', // --bgs-vote-pass
+  bg: '#0A0B0D', // --bgs-bg
+  ivory: '#F5F6F8', // --bgs-ivory
+  ivory70: 'rgba(245,246,248,0.7)', // --bgs-ivory at 70%
+  ivory45: 'rgba(245,246,248,0.45)', // --bgs-ivory at 45%
+  gold: '#F5F6F8', // --bgs-gold
+  goldRing: 'rgba(245,246,248,0.75)', // --bgs-gold at 75%
+  goldFrame: 'rgba(245,246,248,0.35)', // --bgs-gold at 35%
+  play: '#5FB07F', // --bgs-vote-play
+  pass: '#D9645A', // --bgs-vote-pass
 };
 
 // Card face gradient and the ink on the pill and dot, literal in the mockup.
-const CARD_GRADIENT = 'linear-gradient(160deg, #4a3d34, #33291f)';
-const PLAY_INK = '#1f261a';
-const PASS_INK = '#2a1a12';
+const CARD_GRADIENT = 'linear-gradient(160deg, #1F232A, #15171B)';
+const PLAY_INK = '#0F2418';
+const PASS_INK = '#2A0F0D';
 
 // Satori accepts plain element objects, so no React (and no JSX transform)
 // is needed. Nested arrays of children are flattened, null/false are dropped,

@@ -28,13 +28,13 @@ const USER_AGENT = 'BoardgameShelf/1.0 (+https://boardgameshelf.app)';
 // Production tokens from css/base.css. Satori has no CSS variables, so they
 // are hardcoded here; keep them in step with the stylesheet.
 const T = {
-  bg: '#160F0A',
-  plate: '#241A10',
-  ivory: '#F4EBDA',
-  ivory70: 'rgba(244,235,218,0.72)',
-  ivory45: 'rgba(244,235,218,0.45)',
-  gold: '#E3B04B',
-  goldGlow: 'rgba(227,176,75,0.16)',
+  bg: '#0A0B0D',
+  plate: '#15171B',
+  ivory: '#F5F6F8',
+  ivory70: 'rgba(245,246,248,0.72)',
+  ivory45: 'rgba(245,246,248,0.45)',
+  gold: '#F5F6F8',
+  goldGlow: 'rgba(245,246,248,0.10)',
 };
 
 /** One PostgREST GET with the anon key. Returns the parsed rows and the response. */
