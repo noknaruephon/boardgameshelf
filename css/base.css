@@ -9,37 +9,42 @@
    and every page follows. */
 
 :root{
-  --bgs-bg:#160F0A;
-  --bgs-bg-rgb:22,15,10;
-  --bgs-bg-radial:#241708;
-  --bgs-plate:#241A10;
-  --bgs-plate-rgb:36,26,16;
-  --bgs-ivory:#F4EBDA;
-  --bgs-ivory-rgb:244,235,218;
-  --bgs-ivory-70:rgba(244,235,218,0.72);
-  --bgs-ivory-45:rgba(244,235,218,0.45);
-  --bgs-gold:#E3B04B;
-  --bgs-gold-rgb:227,176,75;
+  --bgs-bg:#0A0B0D;
+  --bgs-bg-rgb:10,11,13;
+  --bgs-bg-radial:#111318;
+  --bgs-plate:#15171B;
+  --bgs-plate-rgb:21,23,27;
+  --bgs-ivory:#F5F6F8;
+  --bgs-ivory-rgb:245,246,248;
+  --bgs-ivory-70:rgba(245,246,248,0.72);
+  --bgs-ivory-45:rgba(245,246,248,0.45);
+  --bgs-gold:#F5F6F8;
+  --bgs-gold-rgb:245,246,248;
+  /* ink on an accent fill — was implied by --bgs-bg/--bgs-plate while gold was a mid tone; white needs an explicit one */
+  --bgs-on-gold:#0A0B0D;
   /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim */
-  --bgs-gold-dim:rgba(227,176,75,0.62);
-  --bgs-icon-gold:#e2b463;
+  --bgs-gold-dim:rgba(245,246,248,0.55);
+  --bgs-icon-gold:#F5F6F8;
   /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
      base.css already draws on .deck-card; settings ledger rows and the link
      plate use these instead of repeating the literals */
-  --line:rgba(244,235,218,0.10);
-  --line-gold:rgba(227,176,75,0.22);
+  --line:rgba(245,246,248,0.10);
+  --line-gold:rgba(245,246,248,0.16);
   /* warning — a gap in what a bag covers (docs/bag-pack-bar-spec.md) */
-  --bgs-amber:#F0913A;
+  --bgs-amber:#E0A83A;
   /* destructive actions — cancelling a game night */
-  --bgs-danger:#A8503A;
-  --bgs-danger-hover:#C2705A;
+  --bgs-danger:#B84A40;
+  --bgs-danger-hover:#D2665B;
   /* swipe-vote colours — warm sage + warm clay, deliberately distinct from
      --bgs-danger above: passing on a game isn't destructive and must not
      borrow the cancel-a-game-night colour. */
-  --bgs-vote-play:#8FA75A;
-  --bgs-vote-play-rgb:143,167,90;
-  --bgs-vote-pass:#C2604A;
-  --bgs-vote-pass-rgb:194,96,74;
+  --bgs-vote-play:#5FB07F;
+  --bgs-vote-play-rgb:95,176,127;
+  --bgs-vote-pass:#D9645A;
+  --bgs-vote-pass-rgb:217,100,90;
+  /* live-voting / presence surfaces — reserved, nothing consumes it yet */
+  --bgs-info:#5B9CDB;
+  --bgs-info-rgb:91,156,219;
 
   /* Liquid Glass (docs/claude-code-spec-liquid-glass.md). The material itself
      lives in css/glass.css, which shelf.html loads; the tokens sit here so
@@ -49,7 +54,7 @@
   --glass-sat:1.6;
   --glass-rim-w:1.5px;                /* refraction ring width */
   --glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);
-  --glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
+  --glass-rim-gold:rgba(var(--bgs-ivory-rgb),.14);
   --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);
   --glass-sheen:rgba(var(--bgs-ivory-rgb),.10);
   --light-x:20%;                      /* specular position; JS moves it on scroll */

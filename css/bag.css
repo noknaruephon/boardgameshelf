@@ -36,7 +36,7 @@
 .bag-btn--primary{
   background:var(--bgs-gold);
   border-color:var(--bgs-gold);
-  color:var(--bgs-bg);
+  color:var(--bgs-on-gold);
   font-weight:700;
 }
 .bag-btn--primary:hover{border-color:var(--bgs-gold);}
@@ -372,8 +372,8 @@ body[data-bag-state="packing"]{padding-bottom:calc(102px + 44px + 12px + 24px + 
     0 0 0 4px var(--bgs-gold);
 }
 @supports not (backdrop-filter:blur(1px)){
-  .bag-dock__cancel{background:rgba(42,31,22,.92);}
-  .bag-dock__pack{background:rgba(var(--bgs-gold-rgb),.55);color:#1a1206;}
+  .bag-dock__cancel{background:rgba(var(--bgs-plate-rgb),.92);}
+  .bag-dock__pack{background:rgba(var(--bgs-gold-rgb),.55);color:var(--bgs-on-gold);}
 }
 
 /* The bar itself. 76px without the gap line, 102px with, before the safe area.
@@ -552,7 +552,7 @@ body[data-bag-state="packing"]{padding-bottom:calc(102px + 44px + 12px + 24px + 
   border:0;
   border-radius:12px;
   background:var(--bgs-gold);
-  color:#1a1206;
+  color:var(--bgs-on-gold);
   font-family:'Inter',sans-serif;
   font-size:16px;
   font-weight:600;
@@ -598,6 +598,6 @@ body[data-bag-state="packing"]{padding-bottom:calc(102px + 44px + 12px + 24px + 
 }
 
 @media (prefers-reduced-transparency:reduce){
-  .bag-dock__cancel{background:rgba(42,31,22,.92);-webkit-backdrop-filter:none;backdrop-filter:none;}
-  .bag-dock__pack{background:rgba(var(--bgs-gold-rgb),.55);color:#1a1206;-webkit-backdrop-filter:none;backdrop-filter:none;}
+  .bag-dock__cancel{background:rgba(var(--bgs-plate-rgb),.92);-webkit-backdrop-filter:none;backdrop-filter:none;}
+  .bag-dock__pack{background:rgba(var(--bgs-gold-rgb),.55);color:var(--bgs-on-gold);-webkit-backdrop-filter:none;backdrop-filter:none;}
 }

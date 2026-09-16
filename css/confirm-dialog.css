@@ -44,7 +44,7 @@
 }
 /* Go ahead, nothing is lost: skip the remaining voters and show results. */
 .confirm__force{
-  background:var(--bgs-gold);border:none;color:var(--bgs-plate);
+  background:var(--bgs-gold);border:none;color:var(--bgs-on-gold);
 }
 /* Go ahead, and it cannot be undone: end the game night. */
 .confirm__end{

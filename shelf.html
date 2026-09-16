@@ -9,7 +9,7 @@
 <link rel="icon" href="/assets/icon-64.png" sizes="64x64" type="image/png">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#160F0A">
+<meta name="theme-color" content="#0A0B0D">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cf.geekdo-images.com" crossorigin>
@@ -146,7 +146,7 @@
     height:16px;
     border-radius:50%;
     background:var(--bgs-gold);
-    color:var(--bgs-bg);
+    color:var(--bgs-on-gold);
     font-family:'IBM Plex Mono',monospace;
     font-size:9.5px;
     font-weight:700;
@@ -213,7 +213,7 @@
   .pill.active{
     background:var(--bgs-gold);
     border-color:var(--bgs-gold);
-    color:var(--bgs-bg);
+    color:var(--bgs-on-gold);
     font-weight:600;
   }
 
@@ -384,7 +384,7 @@
   .number-cue[aria-pressed="true"]{
     background:var(--bgs-gold);
     border-color:var(--bgs-gold);
-    color:var(--bgs-bg);
+    color:var(--bgs-on-gold);
     font-weight:600;
     opacity:1;
   }
@@ -452,7 +452,7 @@
   .apply-btn{
     width:100%;
     background:var(--bgs-gold);
-    color:var(--bgs-bg);
+    color:var(--bgs-on-gold);
     border:none;
     border-radius:12px;
     font-family:'Inter',sans-serif;
@@ -919,7 +919,7 @@
   .gn-secondary-btn:hover{border-color:var(--bgs-gold);color:var(--bgs-ivory);}
   .gn-primary-btn{
     background:var(--bgs-gold);
-    color:var(--bgs-bg);
+    color:var(--bgs-on-gold);
     border:none;
     font:inherit;
     font-size:13px;
@@ -1013,7 +1013,7 @@
     position:absolute;top:8px;right:8px;
     width:32px;height:32px;border-radius:999px;
     background:var(--bgs-gold);
-    color:var(--bgs-bg);
+    color:var(--bgs-on-gold);
     display:grid;place-items:center;
     transform:scale(0);
     transition:transform 0.18s cubic-bezier(0.2,0.9,0.3,1.3);
@@ -1025,7 +1025,7 @@
     position:absolute;top:8px;right:8px;
     width:32px;height:32px;border-radius:999px;
     border:1px solid rgba(255,255,255,0.25);
-    background:rgba(20,16,10,0.55);
+    background:rgba(var(--bgs-bg-rgb),0.55);
     backdrop-filter:blur(6px);
     color:var(--bgs-ivory);
     display:grid;place-items:center;
@@ -1067,10 +1067,10 @@
     .gn-surprise-card .lock{transition:none;}
   }
   @media (prefers-reduced-transparency:reduce){
-    .gn-surprise-card .swap{background:rgba(20,16,10,0.92);backdrop-filter:none;}
+    .gn-surprise-card .swap{background:rgba(var(--bgs-bg-rgb),0.92);backdrop-filter:none;}
   }
   @supports not (backdrop-filter:blur(1px)){
-    .gn-surprise-card .swap{background:rgba(20,16,10,0.92);}
+    .gn-surprise-card .swap{background:rgba(var(--bgs-bg-rgb),0.92);}
   }
   @media (min-width:640px){
     .gn-sheet{max-width:520px;margin:0 auto;}
@@ -1126,7 +1126,7 @@
   }
   .gn-error{
     font-size:12.5px;
-    color:#e07a5f;
+    color:var(--bgs-danger-hover);
     margin:0 0 14px;
     display:none;
   }
@@ -1200,7 +1200,7 @@
   .gn-bar__count:disabled .chev{display:none;}
   body.gn-tray-open .gn-bar__count .chev{transform:rotate(180deg);}
   .gn-bar__continue{
-    background:var(--bgs-gold);color:var(--bgs-bg);border:none;font:inherit;
+    background:var(--bgs-gold);color:var(--bgs-on-gold);border:none;font:inherit;
     font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;cursor:pointer;margin-left:auto;
   }
   .gn-bar__continue:disabled{opacity:0.35;cursor:not-allowed;}
@@ -1310,7 +1310,7 @@
     border:0;background:transparent;color:rgba(var(--bgs-ivory-rgb),.7);
     font:500 13px 'Inter',sans-serif;padding:8px 16px;border-radius:999px;cursor:pointer;
   }
-  .invite-seg button[aria-pressed="true"]{background:var(--bgs-gold);color:var(--bgs-bg);}
+  .invite-seg button[aria-pressed="true"]{background:var(--bgs-gold);color:var(--bgs-on-gold);}
 
   .invite-rows{border-top:1px solid rgba(var(--bgs-ivory-rgb),.1);}
   .invite-row{
@@ -1355,7 +1355,7 @@
   }
   .invite-edit__input:focus-visible{border-color:var(--bgs-gold);}
   .invite-edit__done{
-    border:0;border-radius:10px;background:var(--bgs-gold);color:var(--bgs-bg);
+    border:0;border-radius:10px;background:var(--bgs-gold);color:var(--bgs-on-gold);
     font:500 14px 'Inter',sans-serif;padding:0 14px;cursor:pointer;
   }
 
@@ -1379,10 +1379,10 @@
     background:rgba(var(--bgs-bg-rgb),.75);color:var(--bgs-ivory);
   }
   .invite-pick__star svg{width:13px;height:13px;}
-  .invite-pick.head .invite-pick__star{background:var(--bgs-gold);color:var(--bgs-bg);}
+  .invite-pick.head .invite-pick__star{background:var(--bgs-gold);color:var(--bgs-on-gold);}
   .invite-pick__tag{
     display:none;position:absolute;left:6px;bottom:6px;
-    font:500 10px 'IBM Plex Mono',monospace;background:var(--bgs-gold);color:var(--bgs-bg);
+    font:500 10px 'IBM Plex Mono',monospace;background:var(--bgs-gold);color:var(--bgs-on-gold);
     padding:2px 6px;border-radius:4px;
   }
   .invite-pick.head .invite-pick__tag{display:block;}
@@ -1399,7 +1399,7 @@
     border-top:1px solid rgba(var(--bgs-ivory-rgb),.1);background:var(--bgs-plate);
   }
   .invite-primary{
-    width:100%;height:52px;border:0;border-radius:14px;background:var(--bgs-gold);color:var(--bgs-bg);
+    width:100%;height:52px;border:0;border-radius:14px;background:var(--bgs-gold);color:var(--bgs-on-gold);
     font:500 16px 'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
   }
   .invite-primary .invite-ti{width:20px;height:20px;}
@@ -1425,7 +1425,7 @@
   .invite-viewer__hint b{color:var(--bgs-ivory);font-weight:500;}
   .invite-viewer__done{
     height:44px;padding:0 22px;border:0;border-radius:14px;
-    background:var(--bgs-gold);color:var(--bgs-bg);font:500 15px 'Inter',sans-serif;cursor:pointer;
+    background:var(--bgs-gold);color:var(--bgs-on-gold);font:500 15px 'Inter',sans-serif;cursor:pointer;
   }
   .invite-viewer__done:focus-visible,
   .invite-icon:focus-visible,.invite-row:focus-visible,.invite-seg button:focus-visible,
@@ -2504,7 +2504,7 @@ const GN_MIN_POOL = 2;
 const GN_SURPRISE_COUNT = 6;
 const GN_MIN_SELECT = 2;
 
-const GN_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#241A10" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+const GN_CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#0A0B0D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
 const GN_CHEV_SVG  = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
 const GN_X_SVG      = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 const GN_DIE_SVG    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>';
