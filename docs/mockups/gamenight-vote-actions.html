@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swipe to vote — glass buttons mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500&display=swap">
+<style>
+  :root{
+    --page:#f3efe8; --ink:#2a231c; --ink-2:#6f655a; --line:rgba(0,0,0,.1);
+    --app-bg:#1c1712; --app-bg-2:#241d16; --gold:#c9a45c; --cream:#f1e8d6; --sand:#a89c8a;
+    --coral:#d9644a; --sage:#9fbf6a;
+    --glass-fill:rgba(255,255,255,.07); --glass-edge:rgba(255,255,255,.16); --glass-hi:rgba(255,255,255,.28);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --page:#141210; --ink:#efe9df; --ink-2:#a79d90; --line:rgba(255,255,255,.12); }
+  }
+  :root[data-theme="dark"]{ --page:#141210; --ink:#efe9df; --ink-2:#a79d90; --line:rgba(255,255,255,.12); }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:100%;padding:24px 16px 48px;display:flex;flex-direction:column;align-items:center;gap:20px}
+  .controls{display:flex;flex-direction:column;gap:10px;width:100%;max-width:390px}
+  .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+  .seg button{flex:1;padding:9px 6px;border:0;background:transparent;color:var(--ink-2);font:inherit;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
+  .seg button:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+  .caption{font-size:12px;color:var(--ink-2);margin:0;text-align:center}
+
+  .phone{width:390px;max-width:100%;background:var(--app-bg);border-radius:44px;padding:14px 0 28px;color:var(--cream);position:relative;overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,0,0,.45)}
+  .status{display:flex;justify-content:space-between;padding:6px 30px 0;font-size:15px;font-weight:500;color:#fff}
+  .status span:last-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--sand)}
+
+  .eyebrow{text-align:center;margin:30px 0 8px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.24em;color:var(--gold)}
+  h1{margin:0;text-align:center;font-family:Fraunces,Georgia,serif;font-weight:600;font-size:34px;line-height:1.1;letter-spacing:-.01em;color:#fff}
+  .counter{display:inline-block;margin:22px auto 0;padding:7px 18px;border:1px solid rgba(255,255,255,.14);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--sand);letter-spacing:.14em}
+  .center{display:flex;justify-content:center}
+
+  .card{margin:24px 16px 0;height:392px;border-radius:24px;position:relative;overflow:hidden;border:1px solid rgba(201,164,92,.28)}
+  .art{position:absolute;inset:0;
+    background:
+      radial-gradient(120% 60% at 50% -10%, #6fb6e8 0%, rgba(111,182,232,0) 55%),
+      radial-gradient(80% 50% at 20% 45%, #c9b7a3 0%, rgba(201,183,163,0) 60%),
+      radial-gradient(70% 45% at 78% 40%, #a8653d 0%, rgba(168,101,61,0) 60%),
+      radial-gradient(90% 55% at 50% 95%, #37502d 0%, rgba(55,80,45,0) 65%),
+      linear-gradient(180deg,#9fd0ee 0%,#5f8fb8 30%,#4e6b52 62%,#2f4a30 100%)}
+  .art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,23,18,0) 45%,rgba(28,23,18,.92) 100%)}
+  .art .peak{position:absolute;left:8%;top:22%;width:0;height:0;border-left:70px solid transparent;border-right:70px solid transparent;border-bottom:120px solid rgba(255,255,255,.55);filter:blur(.3px)}
+  .art .peak.b{left:30%;top:34%;border-left:45px solid transparent;border-right:45px solid transparent;border-bottom:80px solid rgba(255,255,255,.4)}
+  .art .cone{position:absolute;left:44%;top:56%;width:0;height:0;border-left:80px solid transparent;border-right:80px solid transparent;border-bottom:110px solid rgba(50,60,40,.9)}
+  .art .cone::before{content:"";position:absolute;left:-14px;top:-2px;width:28px;height:10px;border-radius:50%;background:#f0a13a;box-shadow:0 0 18px 6px rgba(240,161,58,.6)}
+  .logo{position:absolute;left:0;right:0;top:40%;text-align:center;font-family:Inter,system-ui,sans-serif;font-weight:500;font-size:62px;letter-spacing:.02em;color:#fff;opacity:.95;text-shadow:0 2px 20px rgba(0,0,0,.35)}
+  .credit{position:absolute;top:14px;left:0;right:0;text-align:center;font-size:10.5px;color:rgba(255,255,255,.9);line-height:1.5}
+  .rating{position:absolute;left:18px;bottom:98px;padding:5px 12px;border:1px solid rgba(201,164,92,.5);border-radius:999px;background:rgba(28,23,18,.55);color:var(--gold);font-size:14px;font-weight:500}
+  .title{position:absolute;left:18px;bottom:50px;font-family:Fraunces,Georgia,serif;font-weight:600;font-size:30px;color:var(--cream)}
+  .meta{position:absolute;left:18px;bottom:22px;display:flex;gap:16px;font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--sand)}
+
+  /* old info button slot, shown ghosted for comparison */
+  .old-info{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:1px dashed rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-family:Fraunces,serif;font-style:italic;font-size:18px}
+  .phone[data-show-old="false"] .old-info{display:none}
+
+  .desc{margin:24px 20px 0;text-align:center;font-size:16px;line-height:1.5;color:var(--sand)}
+
+  /* ambient glow so the glass has something to refract */
+  .row-wrap{position:relative;margin:28px 16px 0}
+  .glow{position:absolute;inset:-30px -10px;pointer-events:none;
+    background:radial-gradient(45% 80% at 30% 50%, rgba(217,100,74,.22), transparent 70%),
+               radial-gradient(45% 80% at 60% 50%, rgba(159,191,106,.2), transparent 70%),
+               radial-gradient(30% 70% at 92% 50%, rgba(201,164,92,.18), transparent 70%);
+    filter:blur(18px)}
+  .phone[data-glow="false"] .glow{display:none}
+
+  .row{position:relative;display:grid;grid-template-columns:1fr auto auto 1fr;align-items:center;gap:20px;height:64px}
+  .row .cx{grid-column:2}
+  .row .ck{grid-column:3}
+  .row .in{grid-column:4;justify-self:end;width:44px;height:44px;background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12)}
+  .phone[data-layout="even"] .row{grid-template-columns:64px 64px 44px;justify-content:center;gap:28px}
+  .phone[data-layout="even"] .row .cx{grid-column:1}
+  .phone[data-layout="even"] .row .ck{grid-column:2}
+  .phone[data-layout="even"] .row .in{grid-column:3;justify-self:center}
+
+  .glass{width:64px;height:64px;border-radius:50%;border:1px solid var(--glass-edge);
+    background:var(--glass-fill);
+    -webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);
+    box-shadow:inset 0 1px 0 var(--glass-hi), inset 0 -8px 16px -10px rgba(255,255,255,.14), 0 10px 24px -12px rgba(0,0,0,.6);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
+    transition:transform .18s cubic-bezier(.2,.8,.2,1), background .18s}
+  .glass::before{content:"";position:absolute;inset:2px;border-radius:50%;
+    background:radial-gradient(80% 55% at 50% 0%, rgba(255,255,255,.18), rgba(255,255,255,0) 70%);pointer-events:none}
+  .glass:active{transform:scale(.94);background:rgba(255,255,255,.12)}
+  .glass:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  .glass svg{width:26px;height:26px;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .cx svg{stroke:var(--coral)}
+  .ck svg{stroke:var(--sage)}
+  .in svg{stroke:var(--cream)}
+  .in .i{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:600;font-size:18px;color:var(--sand);line-height:1;transform:translateY(-1px)}
+
+  .hint{margin:26px 20px 0;text-align:center;font-size:13.5px;line-height:1.45;color:#7f7466}
+  .home{width:130px;height:5px;border-radius:3px;background:rgba(255,255,255,.35);margin:34px auto 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Button row layout">
+      <button type="button" data-layout="edge" aria-pressed="true">Info at right edge</button>
+      <button type="button" data-layout="even" aria-pressed="false">Three, evenly spaced</button>
+    </div>
+    <div class="seg" role="group" aria-label="Toggles">
+      <button type="button" data-toggle="old" aria-pressed="false">Show old info spot</button>
+      <button type="button" data-toggle="glow" aria-pressed="true">Ambient glow behind row</button>
+    </div>
+  </div>
+
+  <div class="phone" id="phone" data-layout="edge" data-show-old="false" data-glow="true">
+    <div class="status"><span>22:55</span><span>4Z8B</span></div>
+
+    <p class="eyebrow">GAME NIGHT · 4Z8B</p>
+    <h1>Swipe to vote</h1>
+    <div class="center"><span class="counter">1 / 4</span></div>
+
+    <div class="card">
+      <div class="art">
+        <div class="peak"></div><div class="peak b"></div><div class="cone"></div>
+      </div>
+      <div class="credit">designed by Jamey Stegmaier<br>art by Valentina Filić, Sören Meding, and Emilien Rotival</div>
+      <div class="logo">VANTAGE</div>
+      <div class="old-info" title="Previous location">i</div>
+      <div class="rating">★ 8.2</div>
+      <div class="title">Vantage</div>
+      <div class="meta"><span>👥 1–6</span><span>◷ 120–180 min</span><span>⚖ 4.0</span></div>
+    </div>
+
+    <p class="desc">A heavy sci-fi exploration game that drops players into a hostile.</p>
+
+    <div class="row-wrap">
+      <div class="glow"></div>
+      <div class="row">
+        <button class="glass cx" type="button" aria-label="Pass">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <button class="glass ck" type="button" aria-label="Play">
+          <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+        </button>
+        <button class="glass in" type="button" aria-label="Game info">
+          <span class="i">i</span>
+        </button>
+      </div>
+    </div>
+
+    <p class="hint">Drag right to play, left to pass — votes lock the moment you swipe</p>
+    <div class="home"></div>
+  </div>
+
+  <p class="caption">Cover art is a placeholder. Tap the buttons to feel the press state.</p>
+</div>
+
+<script>
+  const phone=document.getElementById('phone');
+  document.querySelectorAll('[data-layout]').forEach(b=>{
+    if(b.tagName!=='BUTTON')return;
+    b.addEventListener('click',()=>{
+      phone.dataset.layout=b.dataset.layout;
+      document.querySelectorAll('button[data-layout]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+    });
+  });
+  document.querySelectorAll('button[data-toggle]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const on=b.getAttribute('aria-pressed')!=='true';
+      b.setAttribute('aria-pressed',String(on));
+      if(b.dataset.toggle==='old')phone.dataset.showOld=String(on);
+      if(b.dataset.toggle==='glow')phone.dataset.glow=String(on);
+    });
+  });
+</script>
+</body>
+</html>
