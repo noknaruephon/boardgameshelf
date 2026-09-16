@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BoardgameShelf — cool B&amp;W palette mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---- token names verbatim from css/base.css; values are the Ink proposal ---- */
+  :root{
+    --bgs-bg:#0A0B0D; --bgs-bg-rgb:10,11,13;
+    --bgs-bg-radial:#111318;
+    --bgs-plate:#15171B; --bgs-plate-rgb:21,23,27;
+    --bgs-ivory:#F5F6F8; --bgs-ivory-rgb:245,246,248;
+    --bgs-ivory-70:rgba(245,246,248,.72); --bgs-ivory-45:rgba(245,246,248,.45);
+    /* gold is retired as a hue: same token names, remapped to the mono accent */
+    --bgs-gold:#F5F6F8; --bgs-gold-rgb:245,246,248;
+    --bgs-gold-dim:rgba(245,246,248,.55);
+    --bgs-icon-gold:#F5F6F8;
+    --bgs-on-gold:#0A0B0D;                 /* new: ink on the accent fill */
+    --line:rgba(245,246,248,.10);
+    --line-gold:rgba(245,246,248,.16);
+    /* semantic — the only hues left */
+    --bgs-amber:#E0A83A;
+    --bgs-danger:#B84A40; --bgs-danger-hover:#D2665B;
+    --bgs-vote-play:#5FB07F; --bgs-vote-play-rgb:95,176,127;
+    --bgs-vote-pass:#D9645A; --bgs-vote-pass-rgb:217,100,90;
+    --bgs-info:#5B9CDB; --bgs-info-rgb:91,156,219;  /* new */
+    /* glass — rim loses its gold half */
+    --glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);
+    --glass-rim-gold:rgba(var(--bgs-ivory-rgb),.14);
+    --glass-sheen:rgba(var(--bgs-ivory-rgb),.10);
+    /* mockup-only aliases used below */
+    --bgs-mute:var(--bgs-ivory-45); --bgs-line:var(--line);
+    --bgs-accent:var(--bgs-gold); --bgs-accent-rgb:var(--bgs-gold-rgb); --bgs-on-accent:var(--bgs-on-gold);
+    --bgs-success:var(--bgs-vote-play); --bgs-warning:var(--bgs-amber);
+    --glass:rgba(var(--bgs-plate-rgb),.52); --glass-line:var(--glass-rim-light);
+    --dur:.55s; --ease:cubic-bezier(.32,.72,0,1);
+  }
+  [data-dir="b"]{ --bgs-bg:#121417; --bgs-bg-rgb:18,20,23; --bgs-bg-radial:#181B20; --bgs-plate:#1C1F24; --bgs-plate-rgb:28,31,36; --bgs-ivory:#E8EAEE; --bgs-ivory-rgb:232,234,238; --bgs-gold:#E8EAEE; --bgs-gold-rgb:232,234,238; --bgs-icon-gold:#E8EAEE; --bgs-on-gold:#121417; --bgs-ivory-45:rgba(232,234,238,.45); --line:rgba(232,234,238,.10); }
+  [data-dir="c"]{ --bgs-bg:#0D1219; --bgs-bg-rgb:13,18,25; --bgs-bg-radial:#141B25; --bgs-plate:#182029; --bgs-plate-rgb:24,32,41; --bgs-ivory:#EDF1F6; --bgs-ivory-rgb:237,241,246; --bgs-gold:#EDF1F6; --bgs-gold-rgb:237,241,246; --bgs-icon-gold:#EDF1F6; --bgs-on-gold:#0D1219; --bgs-ivory-45:rgba(237,241,246,.45); --line:rgba(237,241,246,.10); }
+  [data-accent="gray"]{ --bgs-gold:#B4BAC3; --bgs-gold-rgb:180,186,195; --bgs-icon-gold:#B4BAC3; }
+  [data-sem="current"]{ --bgs-vote-play:#8FA75A; --bgs-vote-play-rgb:143,167,90; --bgs-vote-pass:#C2604A; --bgs-vote-pass-rgb:194,96,74; --bgs-danger:#A8503A; --bgs-danger-hover:#C2705A; --bgs-amber:#F0913A; --bgs-info:#6FA0C8; }
+  [data-motion="off"] *{ transition:none !important; animation:none !important; }
+  [data-glass="off"] .glass{ background:var(--bgs-plate); backdrop-filter:none; -webkit-backdrop-filter:none; }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{ background:radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%), var(--bgs-bg); color:var(--bgs-ivory); font-family:Inter,system-ui,sans-serif; font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; padding-top:52px; padding-bottom:120px; transition:background var(--dur) var(--ease), color var(--dur) var(--ease); }
+  .mono{ font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12px; letter-spacing:.02em; }
+  button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  :focus-visible{ outline:none; box-shadow:0 0 0 2px var(--bgs-bg), 0 0 0 4px var(--bgs-accent); }
+
+  /* ---- demo bar ---- */
+  .demo{ position:fixed; top:0; left:0; right:0; z-index:50; display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; padding:8px 14px; background:#000; color:#ddd; font-family:"IBM Plex Mono",monospace; font-size:11px; border-bottom:1px solid #222; }
+  .demo b{ font-weight:500; color:#888; margin-right:4px; }
+  .demo .grp{ display:flex; gap:2px; }
+  .demo button{ padding:3px 8px; border-radius:6px; color:#bbb; }
+  .demo button[aria-pressed="true"]{ background:#fff; color:#000; }
+  .demo .note{ margin-left:auto; color:#666; }
+
+  /* ---- sticky glass header (compact bar: search + filter only) ---- */
+  .bar{ position:sticky; top:52px; z-index:20; display:flex; gap:8px; align-items:center; padding:10px 16px; margin:0 auto; max-width:1080px; }
+  .glass{ background:var(--glass); backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2); border:1px solid var(--glass-line); box-shadow:inset 0 1px 0 rgba(var(--bgs-ivory-rgb),.10); }
+  .search{ flex:1; display:flex; align-items:center; gap:10px; height:44px; padding:0 14px; border-radius:999px; color:var(--bgs-mute); }
+  .search span{ flex:1; }
+  .round{ width:44px; height:44px; border-radius:999px; display:grid; place-items:center; color:var(--bgs-ivory); }
+  .round.sm{ width:36px; height:36px; }
+  svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; }
+
+  main{ max-width:1080px; margin:0 auto; padding:8px 16px 0; }
+  .eyebrow{ color:var(--bgs-mute); margin-top:22px; }
+  .wordmark{ display:flex; align-items:baseline; gap:12px; margin:2px 0 4px; }
+  h1{ font-family:Fraunces,serif; font-weight:400; font-style:italic; font-size:clamp(40px,7vw,64px); line-height:1; letter-spacing:-.02em; margin:0; }
+  .beta{ font-family:"IBM Plex Mono",monospace; font-size:11px; padding:2px 7px; border-radius:999px; border:1px solid var(--bgs-line); color:var(--bgs-mute); }
+  .sub{ color:var(--bgs-mute); margin:0 0 22px; }
+
+  .vibes{ display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:22px; scrollbar-width:none; }
+  .vibes::-webkit-scrollbar{ display:none; }
+  .pill{ flex:none; height:36px; padding:0 14px; border-radius:999px; border:1px solid var(--bgs-line); color:var(--bgs-ivory); font-size:14px; }
+  .pill.on{ background:var(--bgs-accent); color:var(--bgs-on-accent); border-color:transparent; }
+
+  /* ---- cards: locked — solid plate info, 4:5 art, never under info ---- */
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .card{ position:relative; border-radius:14px; overflow:hidden; background:var(--bgs-plate); border:1px solid var(--bgs-line); transition:box-shadow var(--dur) var(--ease), background var(--dur) var(--ease); }
+  .card .art{ aspect-ratio:4/5; display:block; width:100%; object-fit:cover; background:#000; }
+  .card .info{ padding:10px 12px 12px; }
+  .card .title{ font-weight:500; font-size:14px; line-height:1.3; margin:0 0 2px; }
+  .card .meta{ color:var(--bgs-mute); }
+  .card.sel{ box-shadow:inset 0 0 0 2px var(--bgs-accent); border-color:transparent; }
+  .badge{ position:absolute; top:10px; left:10px; min-width:26px; height:26px; padding:0 8px; border-radius:999px; background:var(--bgs-accent); color:var(--bgs-on-accent); font-family:"IBM Plex Mono",monospace; font-size:12px; display:grid; place-items:center; }
+  .fav{ position:absolute; top:8px; right:8px; }
+
+  /* ---- semantic samples ---- */
+  h2{ font-family:Fraunces,serif; font-weight:400; font-size:26px; letter-spacing:-.01em; margin:40px 0 14px; }
+  .samples{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  .toast{ display:flex; gap:10px; align-items:center; padding:12px 14px; border-radius:12px; background:var(--bgs-plate); border:1px solid var(--bgs-line); }
+  .dot{ width:10px; height:10px; border-radius:50%; flex:none; }
+  .toast small{ display:block; color:var(--bgs-mute); }
+  .coverage{ padding:14px; border-radius:12px; background:var(--bgs-plate); border:1px solid var(--bgs-line); }
+  .cells{ display:flex; gap:4px; margin:8px 0; }
+  .cell{ flex:1; height:22px; border-radius:5px; background:rgba(var(--bgs-ivory-rgb),.10); display:grid; place-items:center; font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--bgs-mute); }
+  .cell.ok{ background:rgba(var(--bgs-ivory-rgb),.85); color:var(--bgs-bg); }
+  .cell.gap{ box-shadow:inset 0 0 0 1.5px var(--bgs-warning); color:var(--bgs-warning); }
+  .gapline{ color:var(--bgs-warning); }
+  .vote{ display:flex; justify-content:center; gap:14px; padding:14px; border-radius:12px; background:var(--bgs-plate); border:1px solid var(--bgs-line); }
+  .vote .round.no{ color:var(--bgs-danger); }
+  .vote .round.yes{ color:var(--bgs-success); }
+  .vote .round.big{ width:56px; height:56px; }
+  .btnrow{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .btn{ height:44px; padding:0 18px; border-radius:999px; font-weight:500; font-size:15px; }
+  .btn.primary{ background:var(--bgs-accent); color:var(--bgs-on-accent); }
+  .btn.danger{ background:var(--bgs-danger); color:#1A0B09; }
+  .btn.ghost{ border:1px solid var(--bgs-line); }
+
+  /* ---- selection bottom bar (option B: chip over morphing pill) ---- */
+  .selbar{ position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; flex-direction:column; align-items:center; gap:10px; padding:0 16px calc(18px + env(safe-area-inset-bottom)); pointer-events:none; }
+  .selbar > *{ pointer-events:auto; }
+  .chip{ height:34px; padding:0 14px; border-radius:999px; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--bgs-ivory); }
+  .actions{ display:flex; gap:10px; align-items:center; }
+  .cont{ height:52px; padding:0 22px; border-radius:999px; background:var(--bgs-accent); color:var(--bgs-on-accent); font-weight:500; font-size:16px; transition:background var(--dur) var(--ease), color var(--dur) var(--ease); }
+
+  footer{ max-width:1080px; margin:56px auto 0; padding:0 16px; color:var(--bgs-mute); font-size:13px; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  footer img{ height:22px; filter:grayscale(1) brightness(1.4); opacity:.8; }
+</style>
+</head>
+<body data-dir="a" data-accent="white" data-sem="tuned" data-glass="on" data-motion="on">
+
+<div class="demo" role="toolbar" aria-label="Mockup controls">
+  <span><b>direction</b><span class="grp" data-key="dir"><button aria-pressed="true" data-val="a">A ink</button><button aria-pressed="false" data-val="b">B graphite</button><button aria-pressed="false" data-val="c">C slate</button></span></span>
+  <span><b>accent</b><span class="grp" data-key="accent"><button aria-pressed="true" data-val="white">white</button><button aria-pressed="false" data-val="gray">gray</button></span></span>
+  <span><b>semantic</b><span class="grp" data-key="sem"><button aria-pressed="true" data-val="tuned">tuned</button><button aria-pressed="false" data-val="current">current sage/clay</button></span></span>
+  <span><b>glass</b><span class="grp" data-key="glass"><button aria-pressed="true" data-val="on">on</button><button aria-pressed="false" data-val="off">off</button></span></span>
+  <span><b>motion</b><span class="grp" data-key="motion"><button aria-pressed="true" data-val="on">on</button><button aria-pressed="false" data-val="off">reduced</button></span></span>
+  <span class="note">real covers + titles from games.json</span>
+</div>
+
+<header class="bar">
+  <div class="search glass"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search 196 games</span></div>
+  <button class="round glass" aria-label="Filter"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></button>
+  <button class="round glass mono" aria-label="Switch to Thai" style="font-size:12px">TH</button>
+</header>
+
+<main>
+  <div class="eyebrow">Nok Naruephon</div>
+  <div class="wordmark"><h1>Nok’s shelf</h1><span class="beta">Beta</span></div>
+  <p class="sub">196 games. Pick tonight’s game, together.</p>
+
+  <div class="vibes">
+    <button class="pill on">All</button><button class="pill">Party</button><button class="pill">Bluffing</button><button class="pill">Co-op</button><button class="pill">Duel</button><button class="pill">Strategy</button><button class="pill">Family</button><button class="pill">Chill</button><button class="pill">Story</button>
+  </div>
+
+  <div class="grid">
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">The Castles of Burgundy: Special Edition</p><div class="meta mono">1–4 · 70–120 min · 2.9</div></div>
+    </article>
+    <article class="card sel">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg" loading="lazy">
+      <span class="badge">1</span>
+      <div class="info"><p class="title">Dune: Imperium – Uprising</p><div class="meta mono">1–6 · 60–120 min · 3.4</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/aSwGrv9uvfRyBymlHJ-B8w__original/img/cHP3bhVFkJepWSfjWKBR-talnDc=/0x0/filters:format(jpeg)/pic6731109.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Terra Mystica: Big Box</p><div class="meta mono">1–5 · 30–150 min · 4.0</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__itemrep@2x/img/2FLfeGWkuKb1KEkjl1fO9MFsdHQ=/fit-in/492x600/filters:strip_icc()/pic3490053.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Brass: Birmingham</p><div class="meta mono">2–4 · 60–120 min · 3.9</div></div>
+    </article>
+    <article class="card sel">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" loading="lazy">
+      <span class="badge">2</span>
+      <div class="info"><p class="title">Ark Nova</p><div class="meta mono">1–4 · 90–150 min · 3.8</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/W8EPJfC44jq1ODa02UyMwg__original/img/5SyO-7_YlLy5XjQ34r3EhiYkCDU=/0x0/filters:format(jpeg)/pic9522732.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Lairs (Kickstarter Edition)</p><div class="meta mono">2 · 40 min · 2.8</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/bOs_Um4cUUOpKnypCMykJA__original/img/RE_9_-ioTp31Fq_r5GZ_XKVGwzw=/0x0/filters:format(png)/pic8844519.png" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Nippon: Zaibatsu</p><div class="meta mono">1–4 · 60–120 min · 3.8</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/b_Uo-x3szhupSWeQdw5bdg__original/img/FGqkNWPyWBiERARxf5eLuLt831o=/0x0/filters:format(jpeg)/pic7088918.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Dune: War for Arrakis</p><div class="meta mono">1–4 · 120 min · 3.6</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/7SrPNGBKg9IIsP4UQpOi8g__original/img/GKueTbkCk2Ramf6ai8mDj-BP6cI=/0x0/filters:format(jpeg)/pic4325841.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Star Wars: Rebellion</p><div class="meta mono">2–4 · 180–240 min · 4.0</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/PhjygpWSo-0labGrPBMyyg__original/img/mZzaBAEEJpMlHWWmC0R6Su0OibQ=/0x0/filters:format(jpeg)/pic5666597.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Dune: Imperium</p><div class="meta mono">1–4 · 60–120 min · 3.2</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/DCLgJlrvB-EqL6A3WgQLMQ__original/img/vGpYcxjDBCOVcI0BcWOevspTQMQ=/0x0/filters:format(jpeg)/pic5715770.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">Hegemony: Lead Your Class to Victory</p><div class="meta mono">2–4 · 90–180 min · 4.1</div></div>
+    </article>
+    <article class="card">
+      <img class="art" alt="" src="https://cf.geekdo-images.com/EybxJlUc9rz7F7HVFLqsdw__original/img/Ts4M5eOW38r2oTvJmkx0uwNodv4=/0x0/filters:format(jpeg)/pic8378939.jpg" loading="lazy">
+      <button class="round sm fav" aria-label="Favourite"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
+      <div class="info"><p class="title">The Lord of the Rings: Duel for Middle-earth</p><div class="meta mono">2 · 30 min · 2.3</div></div>
+    </article>
+  </div>
+
+  <h2>Semantic colour stays functional</h2>
+  <div class="samples">
+    <div class="toast"><span class="dot" style="background:var(--bgs-success)"></span><div>Added to the bag<small>Weekend trip · 7 games</small></div></div>
+    <div class="toast"><span class="dot" style="background:var(--bgs-danger)"></span><div>Couldn’t reach BGG<small>Sync paused. Retry</small></div></div>
+    <div class="toast"><span class="dot" style="background:var(--bgs-info)"></span><div>3 friends are voting<small>Live · rematch round 2</small></div></div>
+    <div class="coverage">
+      <div class="mono" style="color:var(--bgs-mute)">Players covered</div>
+      <div class="cells"><span class="cell ok">1</span><span class="cell gap">2</span><span class="cell ok">3</span><span class="cell ok">4</span><span class="cell gap">5</span><span class="cell">6</span></div>
+      <div class="gapline">Nothing for 2 players yet</div>
+    </div>
+    <div class="vote">
+      <button class="round big glass no" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button class="round big glass yes" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg></button>
+      <button class="round glass" aria-label="Info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button>
+    </div>
+    <div class="btnrow">
+      <button class="btn primary">Start game night</button>
+      <button class="btn ghost">Share</button>
+      <button class="btn danger">Leave night</button>
+    </div>
+  </div>
+</main>
+
+<div class="selbar">
+  <div class="chip glass"><span>2 selected</span><svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="m9 6 6 6-6 6"/></svg></div>
+  <div class="actions">
+    <button class="round glass" aria-label="Cancel"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="cont">Continue · 2</button>
+    <button class="round glass" aria-label="Share"><svg viewBox="0 0 24 24"><path d="M12 4v11M8 8l4-4 4 4M5 14v5h14v-5"/></svg></button>
+  </div>
+</div>
+
+<footer>
+  <img src="https://boardgameshelf.vercel.app/assets/powered-by-bgg.svg" alt="Powered by BGG">
+  <span>Game data and images courtesy of BoardGameGeek.</span>
+</footer>
+
+<script>
+  document.querySelectorAll('.demo .grp').forEach(function(g){
+    var key = g.dataset.key;
+    g.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.body.dataset[key] = b.dataset.val;
+        g.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+      });
+    });
+  });
+  try{
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      document.querySelector('.demo .grp[data-key="motion"] [data-val="off"]').click();
+    }
+  }catch(e){}
+</script>
+</body>
+</html>
