@@ -14,6 +14,7 @@
 
 import { ImageResponse } from '@vercel/og';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../js/config.js';
+import { loadFonts } from './_fonts.js';
 
 export const config = { runtime: 'edge' };
 
@@ -35,28 +36,6 @@ const T = {
   gold: '#E3B04B',
   goldGlow: 'rgba(227,176,75,0.16)',
 };
-
-// The fonts are static files on this same deployment, so the route fetches
-// them from its own origin at request time instead of bundling them into the
-// function. Vercel traces every file an Edge function imports or references
-// and counts it toward the function size limit; five fonts on top of
-// @vercel/og's wasm pushed the function over that limit, which failed the
-// build. Self-origin fetches are served from the edge cache and cost a few
-// milliseconds.
-const STATIC = {
-  frauncesRegular: '/assets/fonts/Fraunces-Regular.ttf',
-  frauncesMedium: '/assets/fonts/Fraunces-Medium.ttf',
-  interRegular: '/assets/fonts/Inter-Regular.ttf',
-  interSemiBold: '/assets/fonts/Inter-SemiBold.ttf',
-  plexMonoRegular: '/assets/fonts/IBMPlexMono-Regular.ttf',
-};
-
-async function loadStatic(origin, path) {
-  const res = await fetch(new URL(path, origin));
-  if (!res.ok) throw new Error(`Static asset ${path} returned ${res.status}`);
-  return res;
-}
-const loadBinary = (origin, path) => loadStatic(origin, path).then((r) => r.arrayBuffer());
 
 /** One PostgREST GET with the anon key. Returns the parsed rows and the response. */
 async function rest(path, extraHeaders = {}) {
@@ -299,14 +278,7 @@ export default async function handler(req) {
   if (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(slug)) return new Response('Not found', { status: 404 });
 
   const origin = url.origin;
-  const [shelf, fraunces, frauncesMed, inter, interSemi, mono] = await Promise.all([
-    loadShelf(slug),
-    loadBinary(origin, STATIC.frauncesRegular),
-    loadBinary(origin, STATIC.frauncesMedium),
-    loadBinary(origin, STATIC.interRegular),
-    loadBinary(origin, STATIC.interSemiBold),
-    loadBinary(origin, STATIC.plexMonoRegular),
-  ]);
+  const [shelf, fonts] = await Promise.all([loadShelf(slug), loadFonts(origin)]);
   if (!shelf) return new Response('Not found', { status: 404 });
   shelf.url = `${url.host}/u/${shelf.slug}`;
 
@@ -319,13 +291,7 @@ export default async function handler(req) {
   return new ImageResponse(Card({ shelf, count, covers }), {
     width: 1200,
     height: 630,
-    fonts: [
-      { name: 'Fraunces', data: fraunces, weight: 400, style: 'normal' },
-      { name: 'Fraunces', data: frauncesMed, weight: 500, style: 'normal' },
-      { name: 'Inter', data: inter, weight: 400, style: 'normal' },
-      { name: 'Inter', data: interSemi, weight: 600, style: 'normal' },
-      { name: 'IBM Plex Mono', data: mono, weight: 400, style: 'normal' },
-    ],
+    fonts,
     headers: {
       'cache-control': 'public, s-maxage=86400, stale-while-revalidate=604800',
     },
