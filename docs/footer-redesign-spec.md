@@ -21,7 +21,7 @@ Single commit. Stop for review after the discovery step described in the Claude 
 ┌──────────────────────────────────────┐  1px hairline, ivory @ 10%
 │  BoardgameShelf        ■ POWERED BY BGG │  wordmark left, small badge right
 │  Privacy   Terms                     │  13px Inter, muted
-│  © 2026 Naruephon Nateprachar.       │  11px Plex Mono, faint
+│  © 2026 BoardgameShelf.       │  11px Plex Mono, faint
 │  All rights reserved.                │
 │  Game data and images courtesy of    │
 │  BoardGameGeek.                      │
@@ -48,7 +48,7 @@ Left-aligned. No centred text anywhere in the footer.
     <a href="/privacy">Privacy</a>
     <a href="/terms">Terms</a>
   </nav>
-  <p class="shelf-footer__legal">© 2026 Naruephon Nateprachar. All rights reserved.</p>
+  <p class="shelf-footer__legal">© 2026 BoardgameShelf. All rights reserved.</p>
   <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
 </footer>
 ```
