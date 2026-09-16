@@ -1852,7 +1852,7 @@ function shareBag(opener){
 // /api/og/{slug} with a cache-buster from display_name_updated_at (unix
 // seconds), so previewers that cache the image for weeks pick up a rename.
 // Bumped when the OG renderer's palette changes, so link previews refetch.
-const OG_IMAGE_VERSION = '20260916';
+const OG_IMAGE_VERSION = '20260916b';
 function ogImageUrl(p){
   const t = Date.parse(p.display_name_updated_at || '');
   const v = Number.isFinite(t) ? `${OG_IMAGE_VERSION}-${Math.floor(t / 1000)}` : OG_IMAGE_VERSION;

@@ -18,19 +18,19 @@ const SITE_URL = 'boardgameshelf.vercel.app';
 // Production tokens from css/base.css. Satori has no CSS variables, so they
 // are hardcoded here; keep them in step with the stylesheet.
 const T = {
-  bg: '#0A0B0D', // --bgs-bg
-  ivory: '#F5F6F8', // --bgs-ivory
-  ivory70: 'rgba(245,246,248,0.7)', // --bgs-ivory at 70%
-  ivory45: 'rgba(245,246,248,0.45)', // --bgs-ivory at 45%
-  gold: '#F5F6F8', // --bgs-gold
-  goldRing: 'rgba(245,246,248,0.75)', // --bgs-gold at 75%
-  goldFrame: 'rgba(245,246,248,0.35)', // --bgs-gold at 35%
+  bg: '#0B0E13', // --bgs-bg
+  ivory: '#EEF1F5', // --bgs-ivory
+  ivory70: 'rgba(238,241,245,0.7)', // --bgs-ivory at 70%
+  ivory45: 'rgba(238,241,245,0.45)', // --bgs-ivory at 45%
+  gold: '#E4B54D', // --bgs-gold
+  goldRing: 'rgba(228,181,77,0.75)', // --bgs-gold at 75%
+  goldFrame: 'rgba(228,181,77,0.35)', // --bgs-gold at 35%
   play: '#5FB07F', // --bgs-vote-play
   pass: '#D9645A', // --bgs-vote-pass
 };
 
 // Card face gradient and the ink on the pill and dot, literal in the mockup.
-const CARD_GRADIENT = 'linear-gradient(160deg, #1F232A, #15171B)';
+const CARD_GRADIENT = 'linear-gradient(160deg, #232936, #161A21)';
 const PLAY_INK = '#0F2418';
 const PASS_INK = '#2A0F0D';
 
