@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Display name — mockup B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---- production token names (values approximated; see deviation note) ---- */
+  :root{
+    --bgs-bg:#160f09;
+    --bgs-bg-rgb:22,15,9;
+    --bgs-plate:#221810;
+    --bgs-plate-rgb:34,24,16;
+    --bgs-ivory:#f1e8d6;
+    --bgs-ivory-rgb:241,232,214;
+    --bgs-gold:#d3a24a;
+    --bgs-gold-rgb:211,162,74;
+    --bgs-muted:rgba(var(--bgs-ivory-rgb),.58);
+    --bgs-line:rgba(var(--bgs-ivory-rgb),.10);
+    --bgs-danger:#e0736a;
+    --font-display:"Fraunces",Georgia,serif;
+    --font-ui:"Inter",system-ui,-apple-system,sans-serif;
+    --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --ease:cubic-bezier(.2,.8,.2,1);
+    --dur:320ms;
+    --glass-bg:rgba(var(--bgs-ivory-rgb),.06);
+    --glass-line:rgba(var(--bgs-ivory-rgb),.14);
+  }
+  html[data-motion="reduced"]{ --dur:0ms; }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#0d0906;color:var(--bgs-ivory);font-family:var(--font-ui);-webkit-font-smoothing:antialiased}
+  button,input{font:inherit;color:inherit}
+  button{cursor:pointer;background:none;border:0;padding:0}
+  :focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+
+  /* ---- demo bar (mockup only) ---- */
+  .demo{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 14px;background:rgba(13,9,6,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--bgs-line);font-family:var(--font-mono);font-size:11.5px}
+  .demo .lbl{opacity:.5;margin-right:4px}
+  .demo button{padding:5px 10px;border-radius:999px;border:1px solid var(--glass-line);background:var(--glass-bg);color:var(--bgs-ivory)}
+  .demo button[aria-pressed="true"]{background:var(--bgs-gold);color:#1a1208;border-color:transparent}
+  .demo .sp{flex:1}
+
+  /* ---- phone frame ---- */
+  .stage{display:grid;place-items:center;padding:28px 12px 60px}
+  .phone{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:radial-gradient(120% 80% at 20% 0%,#2b1e12 0%,var(--bgs-bg) 55%,#100a06 100%);box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.08)}
+
+  /* ---- settings page ---- */
+  .page{position:absolute;inset:0;overflow:auto;padding:58px 20px 40px}
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+  .round{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:var(--glass-bg);border:1px solid var(--glass-line);backdrop-filter:blur(14px)}
+  .round svg{width:20px;height:20px;stroke:var(--bgs-ivory);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+  .top h1{margin:0;font-family:var(--font-display);font-weight:500;font-size:28px;letter-spacing:-.01em}
+
+  .group{margin-top:22px}
+  .group h2{margin:0 0 8px 4px;font:400 11.5px/1 var(--font-mono);letter-spacing:.14em;color:var(--bgs-muted)}
+  .plate{background:var(--bgs-plate);border-radius:18px;overflow:hidden;border:1px solid rgba(var(--bgs-ivory-rgb),.06)}
+  .row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 16px;border-top:1px solid var(--bgs-line)}
+  .plate .row:first-child{border-top:0}
+  .row .t{flex:1;min-width:0}
+  .row .k{font-size:15px;font-weight:500}
+  .row .v{margin-top:3px;font:400 12.5px var(--font-mono);color:var(--bgs-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .chev,.row .lock{width:18px;height:18px;stroke:var(--bgs-muted);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .row.static{cursor:default}
+  .hint{margin:8px 4px 0;font-size:12.5px;line-height:1.45;color:var(--bgs-muted)}
+  .hint code{font-family:var(--font-mono);font-size:12px;color:rgba(var(--bgs-ivory-rgb),.78)}
+  .row.danger .k{color:var(--bgs-danger)}
+
+  /* ---- scrim + sheet ---- */
+  .scrim{position:absolute;inset:0;background:rgba(var(--bgs-bg-rgb),.55);opacity:0;pointer-events:none;transition:opacity var(--dur) var(--ease)}
+  .sheet{position:absolute;left:10px;right:10px;bottom:10px;border-radius:28px;padding:18px 18px 16px;background:linear-gradient(180deg,rgba(var(--bgs-ivory-rgb),.10),rgba(var(--bgs-ivory-rgb),.05));border:1px solid var(--glass-line);backdrop-filter:blur(28px) saturate(140%);-webkit-backdrop-filter:blur(28px) saturate(140%);box-shadow:0 -12px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(var(--bgs-ivory-rgb),.12);transform:translateY(110%);transition:transform var(--dur) var(--ease)}
+  .phone[data-sheet="open"] .scrim{opacity:1;pointer-events:auto}
+  .phone[data-sheet="open"] .sheet{transform:translateY(0)}
+
+  .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .sh h3{margin:0;font-family:var(--font-display);font-weight:500;font-size:22px}
+
+  /* preview: exactly the shelf eyebrow */
+  .preview{padding:22px 18px 18px;border-radius:18px;background:radial-gradient(120% 90% at 15% 0%,#2a1c11,var(--bgs-bg) 70%);border:1px solid rgba(var(--bgs-ivory-rgb),.06)}
+  .eyebrow{font:400 13px/1 var(--font-mono);letter-spacing:.26em;text-transform:uppercase;color:rgba(var(--bgs-ivory-rgb),.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:13px}
+  .eyebrow.empty{color:rgba(var(--bgs-ivory-rgb),.28)}
+  .wordmark{margin-top:10px;font-family:var(--font-display);font-weight:600;font-size:34px;letter-spacing:-.02em;line-height:1;color:var(--bgs-ivory)}
+
+  .field{margin-top:16px}
+  .field label{display:block;margin:0 2px 8px;font-size:13px;color:var(--bgs-muted)}
+  .inputwrap{position:relative;display:flex;align-items:center;border-radius:14px;background:rgba(var(--bgs-bg-rgb),.55);border:1px solid var(--glass-line);transition:box-shadow 160ms var(--ease),border-color 160ms var(--ease)}
+  .inputwrap:focus-within{border-color:transparent;box-shadow:0 0 0 2px var(--bgs-gold)}
+  .inputwrap.invalid{border-color:transparent;box-shadow:0 0 0 2px var(--bgs-danger)}
+  .inputwrap input{flex:1;min-width:0;background:none;border:0;padding:14px 14px;font-size:16px}
+  .inputwrap input:focus{box-shadow:none}
+  .count{padding-right:14px;font:400 12px var(--font-mono);color:var(--bgs-muted);font-variant-numeric:tabular-nums}
+  .count.over{color:var(--bgs-danger)}
+  .msg{min-height:18px;margin:8px 2px 0;font-size:12.5px;line-height:1.4;color:var(--bgs-muted)}
+  .msg.err{color:var(--bgs-danger)}
+
+  .actions{margin-top:16px}
+  .save{width:100%;height:50px;border-radius:999px;background:var(--bgs-gold);color:#1a1208;font-weight:600;font-size:15px;display:grid;place-items:center;transition:opacity 160ms var(--ease),transform 160ms var(--ease)}
+  .save:disabled{opacity:.35;cursor:default}
+  .save .spin{width:18px;height:18px;border-radius:999px;border:2px solid rgba(26,18,8,.25);border-top-color:#1a1208;animation:spin .8s linear infinite}
+  html[data-motion="reduced"] .save .spin{animation:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* toast */
+  .toast{position:absolute;left:50%;bottom:34px;transform:translate(-50%,16px);opacity:0;display:flex;align-items:center;gap:8px;padding:10px 14px 10px 12px;border-radius:999px;background:var(--glass-bg);border:1px solid var(--glass-line);backdrop-filter:blur(18px);font-size:13.5px;font-weight:500;transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);pointer-events:none}
+  .toast svg{width:16px;height:16px;stroke:var(--bgs-gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .note{max-width:720px;margin:0 auto;padding:0 16px 40px;font-size:13px;line-height:1.55;color:rgba(241,232,214,.6)}
+  .note b{color:var(--bgs-ivory);font-weight:500}
+</style>
+</head>
+<body>
+
+<div class="demo" role="toolbar" aria-label="Demo states">
+  <span class="lbl">state</span>
+  <button data-state="settings" aria-pressed="true">Settings</button>
+  <button data-state="sheet">Sheet</button>
+  <button data-state="dirty">Edited</button>
+  <button data-state="invalid">Invalid</button>
+  <button data-state="saving">Saving</button>
+  <button data-state="saved">Saved</button>
+  <span class="sp"></span>
+  <button id="motion" aria-pressed="false">reduced motion</button>
+</div>
+
+<div class="stage">
+  <div class="phone" id="phone" data-sheet="closed">
+
+    <div class="page">
+      <div class="top">
+        <button class="round" aria-label="Back">
+          <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <h1>Settings</h1>
+      </div>
+
+      <section class="group">
+        <h2>SHELF</h2>
+        <div class="plate">
+          <button class="row" id="openRow">
+            <div class="t">
+              <div class="k">Display name</div>
+              <div class="v" id="rowValue">Naruephon Nateprachar</div>
+            </div>
+            <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+          <div class="row static">
+            <div class="t">
+              <div class="k">BGG username</div>
+              <div class="v">naruephon</div>
+            </div>
+            <svg class="lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </div>
+        </div>
+        <p class="hint">Your shelf lives at <code>boardgameshelf.vercel.app/naruephon</code>. It follows your BGG username and can’t be changed here.</p>
+      </section>
+
+      <section class="group">
+        <h2>APP</h2>
+        <div class="plate">
+          <button class="row">
+            <div class="t"><div class="k">Language</div><div class="v">English</div></div>
+            <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+          <button class="row">
+            <div class="t"><div class="k">Sync from BGG</div><div class="v">Last synced 2 days ago</div></div>
+            <svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>ACCOUNT</h2>
+        <div class="plate">
+          <button class="row">
+            <div class="t"><div class="k">Sign out</div><div class="v">nok@…gmail.com</div></div>
+          </button>
+          <button class="row danger">
+            <div class="t"><div class="k">Delete shelf</div></div>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div class="scrim" id="scrim"></div>
+
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sh">
+        <h3 id="sheetTitle">Display name</h3>
+        <button class="round" id="closeSheet" aria-label="Close">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="preview" aria-hidden="true">
+        <div class="eyebrow" id="pv">Naruephon Nateprachar</div>
+        <div class="wordmark">BoardgameShelf</div>
+      </div>
+
+      <div class="field">
+        <label for="dn">Shown above your shelf’s name</label>
+        <div class="inputwrap" id="wrap">
+          <input id="dn" type="text" autocomplete="nickname" autocapitalize="words" spellcheck="false" maxlength="40" value="Naruephon Nateprachar">
+          <span class="count" id="count">21 / 32</span>
+        </div>
+        <div class="msg" id="msg"></div>
+      </div>
+
+      <div class="actions">
+        <button class="save" id="save" disabled>Save</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">
+      <svg viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>
+      <span>Display name saved</span>
+    </div>
+
+  </div>
+</div>
+
+<p class="note">
+  <b>Mockup B — row → glass sheet with eyebrow preview.</b> Save enables only when the trimmed value differs from the stored one and passes validation (2–32 chars; letters in any script, digits, space, <code>.</code> <code>-</code> <code>’</code>). The preview is the real eyebrow treatment (Plex Mono, uppercase, .26em tracking) so the transform is visible before saving. Enter saves, Esc closes without saving. Stored as typed. Deviation to check against the repo: settings chrome and token <i>values</i> are approximated — token <i>names</i> match <code>css/base.css</code>; rows other than Display name are placeholders for whatever the live Settings already has.
+</p>
+
+<script>
+(() => {
+  const phone = document.getElementById('phone');
+  const input = document.getElementById('dn');
+  const wrap  = document.getElementById('wrap');
+  const count = document.getElementById('count');
+  const msg   = document.getElementById('msg');
+  const save  = document.getElementById('save');
+  const pv    = document.getElementById('pv');
+  const rowValue = document.getElementById('rowValue');
+  const toast = document.getElementById('toast');
+  const demoBtns = [...document.querySelectorAll('.demo [data-state]')];
+
+  let stored = 'Naruephon Nateprachar';
+  let saving = false;
+
+  const norm = s => s.replace(/\s+/g, ' ').trim();
+  const allowed = /^[\p{L}\p{M}\p{N} .'\u2019-]+$/u;
+
+  function validate(raw) {
+    const v = norm(raw);
+    if (v.length === 0) return { ok:false, err:'' };
+    if (v.length < 2)  return { ok:false, err:'Use at least 2 characters.' };
+    if (v.length > 32) return { ok:false, err:'Keep it under 32 characters.' };
+    if (!allowed.test(v)) return { ok:false, err:'Letters, numbers, spaces, . - and ’ only.' };
+    return { ok:true, err:'' , v };
+  }
+
+  function render() {
+    const raw = input.value;
+    const n = norm(raw);
+    const r = validate(raw);
+    pv.textContent = n || 'Your name';
+    pv.classList.toggle('empty', !n);
+    count.textContent = `${n.length} / 32`;
+    count.classList.toggle('over', n.length > 32);
+    const dirty = n !== stored;
+    wrap.classList.toggle('invalid', dirty && !r.ok && n.length > 0);
+    msg.textContent = dirty ? r.err : '';
+    msg.classList.toggle('err', !!r.err);
+    save.disabled = saving || !dirty || !r.ok;
+  }
+
+  function open()  { phone.dataset.sheet = 'open'; setTimeout(() => input.focus({preventScroll:true}), 60); }
+  function close() { phone.dataset.sheet = 'closed'; input.value = stored; saving = false; save.textContent = 'Save'; render(); }
+
+  function doSave() {
+    const r = validate(input.value);
+    if (!r.ok || saving) return;
+    saving = true; render();
+    save.innerHTML = '<span class="spin" aria-label="Saving"></span>';
+    setTimeout(() => {
+      stored = r.v;
+      rowValue.textContent = stored;
+      saving = false; save.textContent = 'Save';
+      close();
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }, 900);
+  }
+
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+    if (e.key === 'Escape') close();
+  });
+  save.addEventListener('click', doSave);
+  document.getElementById('openRow').addEventListener('click', open);
+  document.getElementById('closeSheet').addEventListener('click', close);
+  document.getElementById('scrim').addEventListener('click', close);
+
+  // ---- demo states ----
+  function setState(s) {
+    demoBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    toast.classList.remove('show');
+    saving = false; save.textContent = 'Save';
+    switch (s) {
+      case 'settings': close(); break;
+      case 'sheet':    input.value = stored; open(); render(); break;
+      case 'dirty':    open(); input.value = 'Nok'; render(); break;
+      case 'invalid':  open(); input.value = 'Nok 🎲'; render(); break;
+      case 'saving':   open(); input.value = 'Nok'; render(); saving = true; render(); save.innerHTML = '<span class="spin" aria-label="Saving"></span>'; break;
+      case 'saved':    close(); toast.classList.add('show'); break;
+    }
+  }
+  demoBtns.forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  const motion = document.getElementById('motion');
+  motion.addEventListener('click', () => {
+    const on = motion.getAttribute('aria-pressed') !== 'true';
+    motion.setAttribute('aria-pressed', String(on));
+    document.documentElement.dataset.motion = on ? 'reduced' : 'full';
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
