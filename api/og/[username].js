@@ -5,19 +5,22 @@
 // left. Rendered on the Vercel Edge runtime by @vercel/og (Satori + resvg).
 // See docs/og-image-spec.md and docs/mockups/og-image-mockup.html (layout C).
 //
-// v1 serves a single known shelf from games.json. The route shape already
-// matches /u/{username}; v2 swaps SHELVES + games.json for a Supabase lookup.
+// The shelf comes from Supabase by slug: the profile's display_name, its
+// owned games' covers and their count. Reads go through PostgREST with the
+// anon key, so RLS decides what is visible — a private shelf is a 404 here
+// exactly as it is at /u/{slug}. The `?v=` the pages put on this URL is a
+// cache-buster for link previewers (display_name_updated_at); the handler
+// ignores it.
 
 import { ImageResponse } from '@vercel/og';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../js/config.js';
 
 export const config = { runtime: 'edge' };
 
-const SHELVES = {
-  // v1 — one known shelf. Replace with a Supabase lookup in v2.
-  noknaruephon: { name: "Nok's shelf", url: 'boardgameshelf.vercel.app/u/noknaruephon' },
-};
-
 const COVER_COUNT = 5;
+// PostgREST's per-request cap. More than this many owned games only affects
+// which covers are candidates; the count comes from Content-Range.
+const GAMES_LIMIT = 1000;
 const COVER_FETCH_TIMEOUT_MS = 8000;
 const USER_AGENT = 'BoardgameShelf/1.0 (+https://boardgameshelf.app)';
 
@@ -33,15 +36,14 @@ const T = {
   goldGlow: 'rgba(227,176,75,0.16)',
 };
 
-// games.json and the fonts are static files on this same deployment, so the
-// route fetches them from its own origin at request time instead of bundling
-// them into the function. Vercel traces every file an Edge function imports
-// or references and counts it toward the function size limit; the 445 KB
-// games.json plus five fonts on top of @vercel/og's wasm pushed the function
-// over that limit, which failed the build. Self-origin fetches are served
-// from the edge cache and cost a few milliseconds.
+// The fonts are static files on this same deployment, so the route fetches
+// them from its own origin at request time instead of bundling them into the
+// function. Vercel traces every file an Edge function imports or references
+// and counts it toward the function size limit; five fonts on top of
+// @vercel/og's wasm pushed the function over that limit, which failed the
+// build. Self-origin fetches are served from the edge cache and cost a few
+// milliseconds.
 const STATIC = {
-  games: '/games.json',
   frauncesRegular: '/assets/fonts/Fraunces-Regular.ttf',
   frauncesMedium: '/assets/fonts/Fraunces-Medium.ttf',
   interRegular: '/assets/fonts/Inter-Regular.ttf',
@@ -55,7 +57,61 @@ async function loadStatic(origin, path) {
   return res;
 }
 const loadBinary = (origin, path) => loadStatic(origin, path).then((r) => r.arrayBuffer());
-const loadJson = (origin, path) => loadStatic(origin, path).then((r) => r.json());
+
+/** One PostgREST GET with the anon key. Returns the parsed rows and the response. */
+async function rest(path, extraHeaders = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      Accept: 'application/json',
+      ...extraHeaders,
+    },
+  });
+  if (!res.ok) throw new Error(`Supabase ${path.split('?')[0]} returned ${res.status}`);
+  return { rows: await res.json(), res };
+}
+
+/**
+ * The shelf behind /u/{slug}, or null when there is none the anon role may
+ * see. Name is display_name, falling back to the BGG username and the slug
+ * exactly as the shelf header does.
+ */
+async function loadShelf(slug) {
+  const { rows } = await rest(
+    `profiles?slug=eq.${encodeURIComponent(slug)}&select=id,slug,display_name,bgg_username,show_expansions&limit=1`,
+  );
+  const p = rows[0];
+  if (!p) return null;
+  return {
+    id: p.id,
+    slug: p.slug,
+    name: p.display_name || p.bgg_username || p.slug,
+    showExpansions: !!p.show_expansions,
+  };
+}
+
+/**
+ * Owned games in the shape pickCovers() reads ({ title, image, bggRating })
+ * plus the total count. Expansions count only when the owner shows them on
+ * the shelf, matching the shelf's own count line.
+ */
+async function loadGames(shelf) {
+  const filter = shelf.showExpansions ? '' : '&games.subtype=eq.boardgame';
+  const { rows, res } = await rest(
+    `user_games?user_id=eq.${encodeURIComponent(shelf.id)}&owned=is.true` +
+      `&select=games!inner(name,image_url,bgg_rating)${filter}&limit=${GAMES_LIMIT}`,
+    { Prefer: 'count=exact' },
+  );
+  const games = rows.map((r) => ({
+    title: r.games?.name || '',
+    image: r.games?.image_url || '',
+    bggRating: r.games?.bgg_rating,
+  }));
+  // Content-Range: 0-9/196 — the total is exact even when the rows are capped.
+  const total = Number((res.headers.get('content-range') || '').split('/')[1]);
+  return { games, count: Number.isFinite(total) ? total : games.length };
+}
 
 // Satori accepts plain element objects, so no React (and no JSX transform)
 // is needed. Nested arrays of children are flattened, null/false are dropped,
@@ -239,26 +295,28 @@ export function Card({ shelf, count, covers }) {
 
 export default async function handler(req) {
   const url = new URL(req.url);
-  const username = decodeURIComponent(url.pathname.split('/').pop() || '');
-  const shelf = SHELVES[username];
-  if (!shelf) return new Response('Not found', { status: 404 });
+  const slug = decodeURIComponent(url.pathname.split('/').pop() || '').toLowerCase();
+  if (!/^[a-z0-9][a-z0-9._-]{0,63}$/.test(slug)) return new Response('Not found', { status: 404 });
 
   const origin = url.origin;
-  const [games, fraunces, frauncesMed, inter, interSemi, mono] = await Promise.all([
-    loadJson(origin, STATIC.games),
+  const [shelf, fraunces, frauncesMed, inter, interSemi, mono] = await Promise.all([
+    loadShelf(slug),
     loadBinary(origin, STATIC.frauncesRegular),
     loadBinary(origin, STATIC.frauncesMedium),
     loadBinary(origin, STATIC.interRegular),
     loadBinary(origin, STATIC.interSemiBold),
     loadBinary(origin, STATIC.plexMonoRegular),
   ]);
+  if (!shelf) return new Response('Not found', { status: 404 });
+  shelf.url = `${url.host}/u/${shelf.slug}`;
 
+  const { games, count } = await loadGames(shelf);
   const picked = pickCovers(games, COVER_COUNT);
   const covers = await Promise.all(
     picked.map(async (c) => ({ title: c.title, src: await coverDataUrl(c.src) })),
   );
 
-  return new ImageResponse(Card({ shelf, count: games.length, covers }), {
+  return new ImageResponse(Card({ shelf, count, covers }), {
     width: 1200,
     height: 630,
     fonts: [
