@@ -239,7 +239,6 @@
      The sheet is the site's bottom-sheet scaffold (.bsheet, js/share-sheet.js);
      with css/glass.css in, it, the × round and the toast take the material
      through their .glass class. Without it they sit on --bgs-plate. */
-  .qrplate + [hidden] + .row{margin-top:6px;}   /* the display-name row is hidden without ?displayname=1 */
   .dn-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;}
   .dn-title{font-family:var(--serif);font-weight:500;font-size:22px;margin:0;letter-spacing:-.01em;}
   .dn-close{
@@ -382,8 +381,8 @@
         <div class="qrhint" id="qrHint">Point a camera at it</div>
       </div>
 
-      <!-- behind ?displayname=1 (docs/claude-code-spec-display-name.md) -->
-      <button type="button" class="row" id="displayNameRow" hidden>
+      <!-- docs/claude-code-spec-display-name.md -->
+      <button type="button" class="row" id="displayNameRow">
         <span class="lab"><span class="t">Display name</span></span>
         <span class="val" id="displayNameVal" data-display-name></span>
         <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
@@ -539,7 +538,6 @@ function renderSettings() {
   $('who').textContent = profile.display_name || userDisplayName(user) || `/u/${profile.slug}`;
   $('who').className = 'set-who';
   $('displayNameVal').textContent = profile.display_name || userDisplayName(user) || '';
-  show('displayNameRow', DISPLAY_NAME_ENABLED);
   $('backLink').href = `/u/${profile.slug}`;
   show('backLink', true);
   $('shelfHost').textContent = `${location.host}/u/`;
@@ -873,9 +871,7 @@ $('confirmDelete').addEventListener('click', async () => {
 });
 
 // ---- display name ----
-// Behind ?displayname=1 until reviewed on the deployed preview; the flag
-// gates only the row. Spec: docs/claude-code-spec-display-name.md.
-const DISPLAY_NAME_ENABLED = new URLSearchParams(location.search).get('displayname') === '1';
+// Spec: docs/claude-code-spec-display-name.md.
 const DN_MIN = 2;
 const DN_MAX = 32;
 // Letters (any script, with combining marks), digits, space, . - ' ’
