@@ -543,6 +543,12 @@
      artwork never runs under the info and there is no gradient: hard edge.
      Cards stay solid with the glass flag on too — no backdrop-filter here. */
   .game-card{
+    /* Cards off screen are not laid out, painted or decoded until they come
+       near the viewport: 197 fully rendered cards were most of what the
+       page held on a phone. `auto` keeps the last rendered size once seen;
+       230px is a 3-column card until then. */
+    content-visibility:auto;
+    contain-intrinsic-size:auto 230px;
     border-radius:18px;
     overflow:hidden;
     background:var(--bgs-plate);

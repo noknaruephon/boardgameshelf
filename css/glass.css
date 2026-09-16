@@ -38,8 +38,11 @@
     var(--glass-shadow);
   transition:transform .28s var(--ease-liquid);
 }
-/* Refraction ring: a band along the edge with its own, stronger
-   backdrop-filter, so the world behind bends and brightens at the rim. */
+/* Refraction ring: a masked band along the edge lit by a conic gradient.
+   It used to carry its own backdrop-filter as well; a masked layer with a
+   backdrop-filter is a combination WebKit allocates full-size buffers for
+   and has crashed on, and the shelf page kept reloading on iOS until every
+   such layer was gone. The gradient alone reads as the same rim. */
 .glass::before{
   content:"";
   position:absolute; inset:0;
@@ -50,8 +53,6 @@
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
-  -webkit-backdrop-filter:blur(3px) brightness(1.35) saturate(2) contrast(1.1);
-  backdrop-filter:blur(3px) brightness(1.35) saturate(2) contrast(1.1);
   background:conic-gradient(from 210deg at 50% 50%,
     rgba(var(--bgs-ivory-rgb),.30), rgba(var(--bgs-gold-rgb),.18) 25%,
     transparent 45%, rgba(var(--bgs-ivory-rgb),.10) 60%, transparent 80%,
@@ -87,7 +88,7 @@ a.glass:active,
 }
 @media (prefers-reduced-transparency:reduce){
   .glass{--glass-fill-a:.92; -webkit-backdrop-filter:none; backdrop-filter:none;}
-  .glass::before{-webkit-backdrop-filter:none; backdrop-filter:none; background:none;}
+  .glass::before{background:none;}
 }
 
 /* ---- Header controls: search field, filter + sort (44px, radius 14) ----
