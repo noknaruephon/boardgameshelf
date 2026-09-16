@@ -163,6 +163,18 @@ export async function updateMyProfile(patch) {
 }
 
 /**
+ * Renames the shelf's display name through update_display_name(), the only
+ * write path for that column (a trigger refuses a direct update). The RPC
+ * normalises and validates; its error message is what the sheet shows.
+ * @returns {Promise<object>} the updated profile row
+ */
+export async function updateDisplayName(name) {
+  const { data, error } = await supabase.rpc('update_display_name', { p_name: String(name ?? '') });
+  if (error) throw error;
+  return data;
+}
+
+/**
  * Live check of a BGG username through /api/bgg/lookup.
  * @returns {Promise<{ found: boolean, username?: string, count?: number|null }>}
  *   throws with `retryAfter` (seconds) when the endpoint asks to slow down
