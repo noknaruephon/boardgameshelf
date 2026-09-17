@@ -107,6 +107,30 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .row:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);border-radius:8px;}
   .row[aria-disabled="true"]{opacity:.6;cursor:default;}
 
+  /* ---- theme strip (docs/claude-code-spec-themes.md, option B) ----
+     Five fixed columns so four themes sit in equal slots with the fifth
+     empty; six or more wrap to another row of five. Swatch colours are set
+     per button from js/themes.js, so a new theme needs no markup here. */
+  .theme-strip{
+    display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:auto;
+    row-gap:14px;padding:6px 12px 18px;
+  }
+  .theme-swatch{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:0;background:none;border:0;cursor:pointer;
+    font-family:var(--mono);font-size:12px;color:var(--bgs-ivory-45);
+  }
+  .theme-swatch b{
+    display:block;width:40px;height:40px;border-radius:50%;position:relative;
+    background:var(--swatch-plate);border:1px solid rgba(255,255,255,.14);
+  }
+  .theme-swatch b::before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--swatch-line);}
+  /* Selected and focused share the ring: inset gold with a plate gap, never outline. */
+  .theme-swatch[aria-checked="true"] b,
+  .theme-swatch:focus-visible b{box-shadow:inset 0 0 0 2px var(--bgs-gold),inset 0 0 0 5px var(--bgs-plate);}
+  .theme-swatch[aria-checked="true"]{color:var(--bgs-ivory);}
+  .theme-swatch:focus-visible{outline:none;}
+
   /* ---- share mode: Link | QR on the heading row ---- */
   .h2row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
   .mode{display:flex;padding:3px;border-radius:999px;background:var(--bgs-plate);}
@@ -418,6 +442,16 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
       </div>
     </section>
 
+    <!-- docs/claude-code-spec-themes.md — behind ?themes=1 until the flag lifts -->
+    <section class="set-group" id="lookGroup" aria-labelledby="g-look" hidden>
+      <h2 id="g-look">Look</h2>
+      <div class="row">
+        <span class="lab"><span class="t">Theme</span></span>
+        <span class="val" id="themeVal"></span>
+      </div>
+      <div class="theme-strip" id="themeStrip" role="radiogroup" aria-label="Theme"></div>
+    </section>
+
     <section class="set-group" aria-labelledby="g-bgg">
       <h2 id="g-bgg">BoardGameGeek</h2>
 
@@ -489,14 +523,14 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 <script src="/vendor/qrcode.min.js"></script>
 <script type="module">
 import {
-  getUser, getAccessToken, fetchMyProfile, updateMyProfile, updateDisplayName, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
+  getUser, getAccessToken, fetchMyProfile, updateMyProfile, updateDisplayName, updateTheme, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
 import { supabase } from '/js/supabase.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { createBottomSheet } from '/js/share-sheet.js';
-import { applyProfileTheme } from '/js/themes.js';
+import { THEMES, isTheme, currentTheme, applyTheme, rememberTheme, applyProfileTheme } from '/js/themes.js';
 
 const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
@@ -556,6 +590,7 @@ function renderPill() {
 
 function renderSettings() {
   applyProfileTheme(profile);
+  renderTheme();
   const url = `${location.origin}/u/${profile.slug}`;
   $('who').textContent = profile.display_name || userDisplayName(user) || `/u/${profile.slug}`;
   $('who').className = 'set-who';
@@ -923,6 +958,81 @@ const CHECK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5
 
 let dn = null;   // { sheet, input, ... } — built on first open
 let dnSaving = false;
+// ---- theme strip (docs/claude-code-spec-themes.md) ----
+// Behind ?themes=1: the group stays hidden without it. Swatches are built
+// from the registry once; a tap applies the theme at once (cross-fade,
+// meta theme-color, localStorage), then saves it to the profile. A failed
+// save puts the previous theme back and says so.
+
+const THEMES_FLAG = (() => {
+  try { return new URLSearchParams(location.search).get('themes') === '1'; } catch { return false; }
+})();
+let themeSaving = false;
+
+function buildThemeStrip() {
+  const strip = $('themeStrip');
+  if (strip.childElementCount) return;
+  for (const t of THEMES) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'theme-swatch';
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', 'false');
+    b.dataset.theme = t.id;
+    b.style.setProperty('--swatch-plate', t.plate);
+    b.style.setProperty('--swatch-line', t.line);
+    b.innerHTML = '<b aria-hidden="true"></b>';
+    b.append(document.createTextNode(t.name));
+    b.addEventListener('click', () => pickTheme(t.id));
+    strip.appendChild(b);
+  }
+  // Arrow keys move between swatches (roving tabindex); Enter and Space
+  // pick, which a button already does on its own.
+  strip.addEventListener('keydown', (e) => {
+    const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    if (!(e.key in keys)) return;
+    const items = [...strip.querySelectorAll('.theme-swatch')];
+    const i = items.indexOf(document.activeElement);
+    if (i < 0) return;
+    e.preventDefault();
+    items[(i + keys[e.key] + items.length) % items.length].focus();
+  });
+}
+
+/** The row value and the checked swatch follow whatever theme is on the page. */
+function renderTheme() {
+  $('lookGroup').hidden = !THEMES_FLAG;
+  if (!THEMES_FLAG) return;
+  buildThemeStrip();
+  const id = currentTheme();
+  $('themeVal').textContent = THEMES.find((t) => t.id === id)?.name || '';
+  for (const b of $('themeStrip').querySelectorAll('.theme-swatch')) {
+    const on = b.dataset.theme === id;
+    b.setAttribute('aria-checked', String(on));
+    b.tabIndex = on ? 0 : -1;
+  }
+}
+
+async function pickTheme(id) {
+  if (themeSaving || !isTheme(id)) return;
+  const prev = currentTheme();
+  if (id === prev) return;
+  applyTheme(id, { fade: true });
+  rememberTheme(id);
+  renderTheme();
+  themeSaving = true;
+  try {
+    profile = await updateTheme(id);
+  } catch {
+    applyTheme(prev, { fade: true });
+    rememberTheme(prev);
+    renderTheme();
+    showToast("Couldn't save theme. Try again.");
+  } finally {
+    themeSaving = false;
+  }
+}
+
 let toastTimer = 0;
 
 function showToast(text) {
