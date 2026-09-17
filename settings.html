@@ -442,8 +442,8 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
       </div>
     </section>
 
-    <!-- docs/claude-code-spec-themes.md — behind ?themes=1 until the flag lifts -->
-    <section class="set-group" id="lookGroup" aria-labelledby="g-look" hidden>
+    <!-- docs/claude-code-spec-themes.md -->
+    <section class="set-group" id="lookGroup" aria-labelledby="g-look">
       <h2 id="g-look">Look</h2>
       <div class="row">
         <span class="lab"><span class="t">Theme</span></span>
@@ -959,14 +959,10 @@ const CHECK_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5
 let dn = null;   // { sheet, input, ... } — built on first open
 let dnSaving = false;
 // ---- theme strip (docs/claude-code-spec-themes.md) ----
-// Behind ?themes=1: the group stays hidden without it. Swatches are built
-// from the registry once; a tap applies the theme at once (cross-fade,
-// meta theme-color, localStorage), then saves it to the profile. A failed
-// save puts the previous theme back and says so.
+// Swatches are built from the registry once; a tap applies the theme at
+// once (cross-fade, meta theme-color, localStorage), then saves it to the
+// profile. A failed save puts the previous theme back and says so.
 
-const THEMES_FLAG = (() => {
-  try { return new URLSearchParams(location.search).get('themes') === '1'; } catch { return false; }
-})();
 let themeSaving = false;
 
 function buildThemeStrip() {
@@ -1001,8 +997,6 @@ function buildThemeStrip() {
 
 /** The row value and the checked swatch follow whatever theme is on the page. */
 function renderTheme() {
-  $('lookGroup').hidden = !THEMES_FLAG;
-  if (!THEMES_FLAG) return;
   buildThemeStrip();
   const id = currentTheme();
   $('themeVal').textContent = THEMES.find((t) => t.id === id)?.name || '';
