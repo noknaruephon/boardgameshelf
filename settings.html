@@ -570,6 +570,7 @@ function setSyncEnabled(on) {
 function signedWith() {
   const provider = user?.app_metadata?.provider;
   if (provider === 'google') return 'Signed in with Google';
+  if (provider === 'facebook') return 'Signed in with Facebook';
   if (provider === 'email') return `Signed in as ${user.email}`;
   return user?.email ? `Signed in as ${user.email}` : 'Signed in';
 }

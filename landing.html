@@ -108,6 +108,11 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .gsi{position:absolute;inset:0;overflow:hidden;opacity:0;display:flex;align-items:center;justify-content:center;}
   .gsi > div{transform:scale(1.08,1.3);transform-origin:center;}
   .gsi > div,.gsi iframe{width:100%!important;}
+  /* Facebook's f in its own blue, sized like the Google disc beside it. The
+     button itself stays the page's secondary style so Google keeps the one
+     primary; Meta allows its mark on a neutral button. */
+  .btn .fb{width:22px;height:22px;flex:none;}
+  .btn.alt{margin-top:10px;}
   .more{margin:18px 0 0;font-size:15px;color:var(--bgs-ivory-70);}
   .link{background:none;border:0;padding:0;font:500 15px 'Inter',sans-serif;color:var(--bgs-gold);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(var(--bgs-gold-rgb),.4);cursor:pointer;}
   .link:hover{text-decoration-color:var(--bgs-gold);}
@@ -168,6 +173,11 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
       <div id="gsiBtn" class="gsi" hidden aria-hidden="true"></div>
     </div>
 
+    <button class="btn alt" id="facebookBtn" type="button">
+      <svg class="fb" viewBox="0 0 24 24" aria-hidden="true"><path fill="#1877F2" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/><path fill="#fff" d="M16.67 15.56l.53-3.49h-3.33V9.82c0-.96.47-1.89 1.96-1.89h1.51V4.96s-1.37-.24-2.68-.24c-2.74 0-4.53 1.67-4.53 4.69v2.66H7.08v3.49h3.05V24a12.6 12.6 0 0 0 3.74 0v-8.44h2.8z"/></svg>
+      Continue with Facebook
+    </button>
+
     <p class="more">Prefer email?
       <button class="link" id="emailToggle" type="button" aria-expanded="false" aria-controls="emailPanel">Send me a sign-in link</button>
     </p>
@@ -208,7 +218,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 </footer>
 
 <script type="module">
-import { getUser, signInWithGoogle, signInWithGoogleCredential, makeNonce, GOOGLE_CLIENT_ID, signInWithEmail, fetchMyProfile, userDisplayName } from '/js/auth.js';
+import { getUser, signInWithGoogle, signInWithGoogleCredential, makeNonce, GOOGLE_CLIENT_ID, signInWithFacebook, signInWithEmail, fetchMyProfile, userDisplayName } from '/js/auth.js';
 import { fetchPublicShelves } from '/js/shelf-picker.js';
 
 const msg = document.getElementById('msg');
@@ -222,6 +232,16 @@ googleBtn.addEventListener('click', async () => {
   say('Opening Google…');
   try { await signInWithGoogle(); }
   catch (err) { say(err.message || "Couldn't start Google sign-in.", 'err'); googleBtn.disabled = false; }
+});
+
+// Facebook has no on-site button flow, so this is the plain redirect: off to
+// Facebook and back to /welcome.
+const facebookBtn = document.getElementById('facebookBtn');
+facebookBtn.addEventListener('click', async () => {
+  facebookBtn.disabled = true;
+  say('Opening Facebook…');
+  try { await signInWithFacebook(); }
+  catch (err) { say(err.message || "Couldn't start Facebook sign-in.", 'err'); facebookBtn.disabled = false; }
 });
 
 // ---- Google's button on this site (Google Identity Services) ----

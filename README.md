@@ -52,7 +52,7 @@ You need Node 20+ and the [Vercel CLI](https://vercel.com/docs/cli)
    npm test
    ```
 
-## Enabling Google sign-in in Supabase
+## Enabling Google and Facebook sign-in in Supabase
 
 Magic-link email works out of the box. Google needs a one-time setup:
 
@@ -68,8 +68,26 @@ Magic-link email works out of the box. Google needs a one-time setup:
    and any Vercel preview domain you use to **Redirect URLs**. Both sign-in
    methods land on `/settings`, so that path must be on the list.
 
-Nothing in the repo changes for this; `js/auth.js` only asks Supabase for the
-`google` provider.
+Facebook is the same shape of setup:
+
+1. In [Meta for Developers](https://developers.facebook.com/) create an app of
+   type *Consumer* and add the **Facebook Login** product.
+2. Under Facebook Login → Settings, add
+   `https://<project-ref>.supabase.co/auth/v1/callback` to **Valid OAuth
+   Redirect URIs**.
+3. Copy the **App ID** and **App Secret** from Settings → Basic into Supabase →
+   Authentication → Providers → Facebook, and turn it on.
+4. Still in Settings → Basic, set the Privacy Policy URL to
+   `https://boardgameshelf.vercel.app/privacy` and the Terms of Service URL to
+   `https://boardgameshelf.vercel.app/terms`, then take the app out of
+   development mode so people other than you can sign in.
+
+The site asks Facebook only for `email`, which Facebook Login grants without a
+review. Supabase rejects a Facebook account with no email address, which the
+landing page shows as a sign-in error.
+
+Nothing else in the repo changes for this; `js/auth.js` only asks Supabase for
+the `google` and `facebook` providers.
 
 ## Running the migration script
 
