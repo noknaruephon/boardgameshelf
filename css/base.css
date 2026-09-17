@@ -62,6 +62,29 @@
   --dur:.55s;
 }
 
+/* Brown themes. The hairline and muted roles the spec names --bgs-line and
+   --bgs-muted are the existing --line and --bgs-ivory-45: the spec's opaque
+   line colour is what each theme's ivory at .10 lands on over its plate, and
+   its muted colour is ivory at .45 over the plate, so the alpha tokens keep
+   compositing correctly over covers and glass. --bgs-bg-radial sits between
+   bg and plate, the same step navy takes.
+
+   Walnut is the default: :root carries it so a page with no data-theme, or
+   an unknown one, renders walnut. It comes first because :root and an
+   attribute selector tie on specificity, so the later block wins and every
+   named theme has to follow it. */
+:root, [data-theme="walnut"]{
+  --bgs-bg:#171110;
+  --bgs-bg-rgb:23,17,16;
+  --bgs-bg-radial:#1F1816;
+  --bgs-plate:#211915;
+  --bgs-plate-rgb:33,25,21;
+  --bgs-ivory:#F2E9DA;
+  --bgs-ivory-rgb:242,233,218;
+  --bgs-ivory-70:rgba(242,233,218,0.72);
+  --bgs-ivory-45:rgba(242,233,218,0.45);
+  --line:rgba(242,233,218,0.10);
+}
 /* Navy — the values :root carried before themes existed, moved here
    unchanged. */
 [data-theme="navy"]{
@@ -80,27 +103,6 @@
   --line:rgba(238,241,245,0.10);
 }
 
-/* Brown themes. The hairline and muted roles the spec names --bgs-line and
-   --bgs-muted are the existing --line and --bgs-ivory-45: the spec's opaque
-   line colour is what each theme's ivory at .10 lands on over its plate, and
-   its muted colour is ivory at .45 over the plate, so the alpha tokens keep
-   compositing correctly over covers and glass. --bgs-bg-radial sits between
-   bg and plate, the same step navy takes.
-
-   Walnut is the default: :root carries it so a page with no data-theme, or
-   an unknown one, renders walnut. */
-:root, [data-theme="walnut"]{
-  --bgs-bg:#171110;
-  --bgs-bg-rgb:23,17,16;
-  --bgs-bg-radial:#1F1816;
-  --bgs-plate:#211915;
-  --bgs-plate-rgb:33,25,21;
-  --bgs-ivory:#F2E9DA;
-  --bgs-ivory-rgb:242,233,218;
-  --bgs-ivory-70:rgba(242,233,218,0.72);
-  --bgs-ivory-45:rgba(242,233,218,0.45);
-  --line:rgba(242,233,218,0.10);
-}
 [data-theme="mahogany"]{
   --bgs-bg:#1A100D;
   --bgs-bg-rgb:26,16,13;
