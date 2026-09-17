@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en" data-theme="navy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BoardgameShelf — Settings › Theme (B)</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ---------- theme registry: one block per theme, gold shared ---------- */
+  :root{ --bgs-gold:#E6B85C; --bgs-gold-rgb:230,184,92; }
+  [data-theme="navy"]    { --bgs-bg:#0E1116; --bgs-plate:#161B22; --bgs-line:#262C36; --bgs-ivory:#F1EEE6; --bgs-muted:#8A8F9A; --bgs-plate-rgb:22,27,34; }
+  [data-theme="walnut"]  { --bgs-bg:#171110; --bgs-plate:#211915; --bgs-line:#33281F; --bgs-ivory:#F2E9DA; --bgs-muted:#A08F7C; --bgs-plate-rgb:33,25,21; }
+  [data-theme="mahogany"]{ --bgs-bg:#1A100D; --bgs-plate:#2A1812; --bgs-line:#46281D; --bgs-ivory:#F4E8D8; --bgs-muted:#B09280; --bgs-plate-rgb:42,24,18; }
+  [data-theme="oak"]     { --bgs-bg:#1E1812; --bgs-plate:#2B231A; --bgs-line:#463A2A; --bgs-ivory:#F3EBDA; --bgs-muted:#B4A385; --bgs-plate-rgb:43,35,26; }
+
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:#0B0A09;color:#F1EEE6;font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .bar{position:sticky;top:0;z-index:9;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 14px;background:rgba(11,10,9,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #2A2521}
+  .bar .t{font:12px "IBM Plex Mono",monospace;color:#9A8F80;margin-right:auto}
+  .seg{display:flex;gap:4px;padding:3px;border:1px solid #33281F;border-radius:999px;background:#171110}
+  .seg button{border:0;background:transparent;color:#A08F7C;font:500 13px "IBM Plex Mono",monospace;padding:6px 12px;border-radius:999px;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--bgs-gold);color:#2A1812}
+  .seg button:focus-visible{box-shadow:0 0 0 2px var(--bgs-gold);outline:0}
+  .rm{display:flex;align-items:center;gap:6px;font:12px "IBM Plex Mono",monospace;color:#9A8F80}
+  .rm input{accent-color:var(--bgs-gold)}
+
+  .stage{display:grid;gap:26px;padding:22px 14px 60px;justify-content:center}
+  .panel{display:none}.panel.on{display:block}
+  
+  .panel h2{font:600 14px "Inter";margin:0 0 4px}
+  .panel p.desc{font:13px/1.5 "Inter";color:#9A8F80;margin:0 0 12px;max-width:390px}
+
+  /* ---------- phone + settings page (candidate tokens) ---------- */
+  .phone{width:390px;max-width:100%;height:760px;border-radius:34px;overflow:hidden;background:var(--bgs-bg);color:var(--bgs-ivory);position:relative;border:1px solid var(--bgs-line);box-shadow:0 30px 60px -20px rgba(0,0,0,.7)}
+  .th{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
+  body.reduced .th{transition:none}
+  .pad{padding:56px 20px 40px}
+  .top{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .top .back{width:40px;height:40px;border-radius:14px;border:1px solid var(--bgs-line);background:var(--bgs-plate);display:grid;place-items:center}
+  .top .back svg{width:18px;height:18px;stroke:var(--bgs-gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .top h1{font:700 30px/1 "Fraunces",serif;margin:0}
+  .group{font:500 12px "IBM Plex Mono",monospace;letter-spacing:.14em;color:var(--bgs-muted);margin:20px 4px 8px}
+  .rows{border:1px solid var(--bgs-line);border-radius:20px;background:var(--bgs-plate);overflow:hidden}
+  .rowi{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-top:1px solid var(--bgs-line);font:500 16px "Inter"}
+  .rowi:first-child{border-top:0}
+  .rowi .v{display:flex;align-items:center;gap:10px;color:var(--bgs-muted);font:14px "IBM Plex Mono",monospace}
+  .rowi .v svg{width:16px;height:16px;stroke:var(--bgs-muted);fill:none;stroke-width:2;stroke-linecap:round}
+  .rowi.dim{color:var(--bgs-muted)}
+
+  /* theme chip: bg + plate + gold, the 3 colours that actually differ */
+  .chip{width:26px;height:26px;border-radius:9px;border:1px solid rgba(255,255,255,.12);position:relative;overflow:hidden;flex:none}
+  .chip::before{content:"";position:absolute;inset:0 0 0 50%;background:var(--chip-plate)}
+  .chip::after{content:"";position:absolute;right:5px;bottom:5px;width:7px;height:7px;border-radius:50%;background:var(--bgs-gold)}
+
+  /* --- shape A: row → sheet with 2×2 tiles --- */
+  .scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bgs-plate);border:1px solid var(--bgs-line);border-bottom:0;border-radius:28px 28px 0 0;padding:14px 20px 34px}
+  .sheet .hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .sheet .hd h3{font:700 22px "Fraunces",serif;margin:0}
+  .x{width:36px;height:36px;border-radius:50%;border:1px solid var(--bgs-line);display:grid;place-items:center;font:16px "Inter";color:var(--bgs-muted)}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{border-radius:18px;border:1px solid var(--bgs-line);background:var(--tile-bg);color:var(--tile-ivory);padding:14px;height:92px;display:flex;flex-direction:column;justify-content:space-between;position:relative}
+  .tile .sw{display:flex;gap:5px}.tile .sw i{width:18px;height:18px;border-radius:6px;display:block;border:1px solid rgba(255,255,255,.1)}
+  .tile .nm{font:600 15px "Inter"}
+  .tile.sel{box-shadow:inset 0 0 0 2px var(--bgs-gold)}
+  .tile.sel::after{content:"✓";position:absolute;top:10px;right:12px;font:700 13px "Inter";color:var(--bgs-gold)}
+
+  /* --- shape B: inline strip inside the settings card --- */
+  .strip{display:grid;grid-template-columns:repeat(5,1fr);padding:6px 12px 18px}
+  .strip::-webkit-scrollbar{display:none}
+  .dot{flex:none;display:flex;flex-direction:column;align-items:center;gap:8px;font:12px "IBM Plex Mono",monospace;color:var(--bgs-muted)}
+  .dot b{width:40px;height:40px;border-radius:50%;background:var(--tile-plate);border:1px solid rgba(255,255,255,.14);display:block;position:relative}
+  .dot b::before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--tile-line)}
+      .dot.sel b{box-shadow:inset 0 0 0 2px var(--bgs-gold),inset 0 0 0 5px var(--bgs-plate)}
+  .dot.sel{color:var(--bgs-ivory)}
+
+  /* --- shape C: full page picker with mini shelf preview --- */
+  .cards{display:grid;gap:12px}
+  .tcard{border-radius:20px;border:1px solid var(--bgs-line);background:var(--tile-bg);color:var(--tile-ivory);padding:14px;display:flex;align-items:center;gap:14px;position:relative}
+  .tcard.sel{box-shadow:inset 0 0 0 2px var(--bgs-gold)}
+  .tcard.sel::after{content:"✓";position:absolute;top:12px;right:14px;font:700 13px "Inter";color:var(--bgs-gold)}
+  .mini{display:flex;gap:5px;flex:none}
+  .mini i{display:block;width:34px;border-radius:7px;background:var(--tile-plate);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+  .mini i::before{content:"";display:block;height:30px}
+  .mini i:nth-child(1)::before{background:linear-gradient(180deg,#8fc3ea,#3d6b3a)}
+  .mini i:nth-child(2)::before{background:linear-gradient(160deg,#4a5d78,#1d2738)}
+  .mini i:nth-child(3)::before{background:linear-gradient(180deg,#5a4630,#e3c39a)}
+  .mini i::after{content:"";display:block;height:12px;margin:4px 5px 5px;border-radius:3px;background:rgba(var(--bgs-gold-rgb),.35)}
+  .tcard .txt{display:flex;flex-direction:column;gap:3px}
+  .tcard .nm{font:600 16px "Inter"}
+  .tcard .sub{font:12px "IBM Plex Mono",monospace;opacity:.7}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span class="t">settings › theme · option B · plate + hairline pairing</span>
+  <div class="seg" role="group" aria-label="Theme">
+    <button data-theme="navy" aria-pressed="true">Navy</button><button data-theme="walnut" aria-pressed="false">Walnut</button><button data-theme="mahogany" aria-pressed="false">Mahogany</button><button data-theme="oak" aria-pressed="false">Oak</button>
+  </div>
+  <label class="rm"><input type="checkbox" id="rm"> reduced motion</label>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<script>
+  const THEMES=[
+    {id:"navy",     name:"Navy",     sub:"the original", bg:"#0E1116", plate:"#161B22", line:"#262C36", ivory:"#F1EEE6"},
+    {id:"walnut",   name:"Walnut",   sub:"neutral brown", bg:"#171110", plate:"#211915", line:"#33281F", ivory:"#F2E9DA"},
+    {id:"mahogany", name:"Mahogany", sub:"red brown",     bg:"#1A100D", plate:"#2A1812", line:"#46281D", ivory:"#F4E8D8"},
+    {id:"oak",      name:"Oak",      sub:"warm brown",    bg:"#1E1812", plate:"#2B231A", line:"#463A2A", ivory:"#F3EBDA"},
+  ];
+  let current="navy";
+  const tv=t=>`--tile-bg:${t.bg};--tile-plate:${t.plate};--tile-line:${t.line};--tile-ivory:${t.ivory}`;
+  const cur=()=>THEMES.find(t=>t.id===current);
+
+  const back=`<div class="back th"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></div>`;
+  const chevron=`<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>`;
+  const chip=()=>`<span class="chip th" style="background:${cur().bg};--chip-plate:${cur().plate}"></span>`;
+
+  function settings(inner, extraRows=""){
+    return `<div class="pad">
+      <div class="top">${back}<h1>Settings</h1></div>
+      <div class="group">SHELF</div>
+      <div class="rows th">
+        <div class="rowi">Display name<span class="v">Nok ${chevron}</span></div>
+        <div class="rowi dim">URL<span class="v">/noknaruephon</span></div>
+      </div>
+      <div class="group">LOOK</div>
+      <div class="rows th">${inner}</div>
+      <div class="group">ACCOUNT</div>
+      <div class="rows th">
+        <div class="rowi">Language<span class="v">EN ${chevron}</span></div>
+        <div class="rowi">Sign out<span class="v"></span></div>
+      </div>
+    </div>${extraRows}`;
+  }
+
+  const shapes={
+    b:{name:"B · Inline strip", desc:"Each dot pairs the theme's plate colour (outer) with its hairline colour (inner disc), name underneath. Tap and the whole page changes at once.",
+       render:()=>settings(
+         `<div class="rowi">Theme<span class="v">${cur().name}</span></div>
+          <div class="strip">${THEMES.map(t=>`<div class="dot${t.id===current?' sel':''}" data-pick="${t.id}" style="${tv(t)}"><b></b>${t.name}</div>`).join("")}</div>`)}
+  };
+  const stage=document.getElementById('stage');
+  function draw(){
+    stage.innerHTML="";
+    for(const k of Object.keys(shapes)){
+      const s=shapes[k], p=document.createElement('section');
+      p.className='panel on';
+      p.innerHTML=`<h2>${s.name}</h2><p class="desc">${s.desc}</p><div class="phone th">${s.render()}</div>`;
+      stage.appendChild(p);
+    }
+    document.querySelectorAll('[data-pick]').forEach(el=>el.addEventListener('click',()=>setTheme(el.dataset.pick)));
+  }
+  function setTheme(id){
+    current=id; document.documentElement.dataset.theme=id;
+    document.querySelectorAll('.seg [data-theme]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.theme===id));
+    draw();
+  }
+  document.querySelectorAll('.seg [data-theme]').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.theme)));
+  document.getElementById('rm').addEventListener('change',e=>document.body.classList.toggle('reduced',e.target.checked));
+  draw();
+</script>
+</body>
+</html>
