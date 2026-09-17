@@ -14,10 +14,23 @@
 <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0B0E13">
+<meta name="theme-color" content="#171110">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+/* Theme resolver (docs/claude-code-spec-themes.md), before the stylesheet so
+   the first frame is already the right theme: ?theme= (preview only) →
+   localStorage['bgs:theme'] → walnut. Ids are shape-checked here only; an
+   unknown id matches no [data-theme] block and renders walnut, and
+   js/themes.js normalises it later. The meta theme-color follows the
+   applied theme's --bgs-bg once the stylesheet has resolved. */
+(function(){var d=document.documentElement,ok=/^[a-z][a-z0-9-]{0,23}$/,q=null,s=null;
+try{q=new URLSearchParams(location.search).get('theme');}catch(e){}
+try{s=localStorage.getItem('bgs:theme');}catch(e){}
+d.dataset.theme=ok.test(q||'')?q:ok.test(s||'')?s:'walnut';
+document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('meta[name="theme-color"]'),bg=getComputedStyle(d).getPropertyValue('--bgs-bg').trim();if(m&&bg)m.content=bg;});})();
+</script>
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/game-modal.css">
 <style>

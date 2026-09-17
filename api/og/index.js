@@ -10,27 +10,27 @@
 
 import { ImageResponse } from '@vercel/og';
 import { loadFonts } from './_fonts.js';
+import { surfaceTokens, themeFromUrl } from './_themes.js';
 
 export const config = { runtime: 'edge' };
 
 const SITE_URL = 'boardgameshelf.vercel.app';
 
 // Production tokens from css/base.css. Satori has no CSS variables, so they
-// are hardcoded here; keep them in step with the stylesheet.
-const T = {
-  bg: '#0B0E13', // --bgs-bg
-  ivory: '#EEF1F5', // --bgs-ivory
-  ivory70: 'rgba(238,241,245,0.7)', // --bgs-ivory at 70%
-  ivory45: 'rgba(238,241,245,0.45)', // --bgs-ivory at 45%
+// are hardcoded here; keep them in step with the stylesheet. The surfaces
+// (bg, ivory, the card face) come from ./_themes.js per theme; this image
+// has no shelf, so it renders the default theme unless ?theme= asks for
+// another (a preview, and what a themed share link would carry).
+const SHARED = {
   gold: '#E4B54D', // --bgs-gold
   goldRing: 'rgba(228,181,77,0.75)', // --bgs-gold at 75%
   goldFrame: 'rgba(228,181,77,0.35)', // --bgs-gold at 35%
   play: '#5FB07F', // --bgs-vote-play
   pass: '#D9645A', // --bgs-vote-pass
 };
+const tokens = (theme) => ({ ...SHARED, ...surfaceTokens(theme) });
 
-// Card face gradient and the ink on the pill and dot, literal in the mockup.
-const CARD_GRADIENT = 'linear-gradient(160deg, #232936, #161A21)';
+// The ink on the pill and dot, literal in the mockup.
 const PLAY_INK = '#0F2418';
 const PASS_INK = '#2A0F0D';
 
@@ -55,7 +55,7 @@ const CARDS = [
   { transform: 'rotate(0deg)', dim: 0 },
 ];
 
-function CardTile({ transform, dim }) {
+function CardTile({ transform, dim }, T) {
   return h('div', {
     style: {
       position: 'absolute',
@@ -65,7 +65,7 @@ function CardTile({ transform, dim }) {
       height: 330,
       display: 'flex',
       borderRadius: 18,
-      backgroundImage: CARD_GRADIENT,
+      backgroundImage: T.cardGradient,
       boxShadow: `0 0 0 2px ${T.goldRing}, 0 18px 40px rgba(0,0,0,0.45)`,
       transformOrigin: '50% 120%',
       transform,
@@ -107,7 +107,7 @@ function CardTile({ transform, dim }) {
   );
 }
 
-function PlayPill() {
+function PlayPill(T) {
   return h('div', {
     style: {
       position: 'absolute',
@@ -140,7 +140,7 @@ function PlayPill() {
   );
 }
 
-function PassDot() {
+function PassDot(T) {
   return h('div', {
     style: {
       position: 'absolute',
@@ -163,7 +163,7 @@ function PassDot() {
   }, '×');
 }
 
-export function Card() {
+export function Card(T) {
   return h('div', {
     style: {
       position: 'relative',
@@ -244,16 +244,17 @@ export function Card() {
         display: 'flex',
       },
     },
-      CARDS.map(CardTile),
-      PassDot(),
-      PlayPill(),
+      CARDS.map((card) => CardTile(card, T)),
+      PassDot(T),
+      PlayPill(T),
     ),
   );
 }
 
 export default async function handler(req) {
-  const fonts = await loadFonts(new URL(req.url).origin);
-  return new ImageResponse(Card(), {
+  const url = new URL(req.url);
+  const fonts = await loadFonts(url.origin);
+  return new ImageResponse(Card(tokens(themeFromUrl(url))), {
     width: 1200,
     height: 630,
     fonts,

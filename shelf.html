@@ -9,12 +9,25 @@
 <link rel="icon" href="/assets/icon-64.png" sizes="64x64" type="image/png">
 <link rel="apple-touch-icon" href="/assets/icon-180.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0B0E13">
+<meta name="theme-color" content="#171110">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cf.geekdo-images.com" crossorigin>
 <link rel="dns-prefetch" href="https://cf.geekdo-images.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* Theme resolver (docs/claude-code-spec-themes.md), before the stylesheet so
+   the first frame is already the right theme: ?theme= (preview only) →
+   localStorage['bgs:theme'] → walnut. Ids are shape-checked here only; an
+   unknown id matches no [data-theme] block and renders walnut, and
+   js/themes.js normalises it later. The meta theme-color follows the
+   applied theme's --bgs-bg once the stylesheet has resolved. */
+(function(){var d=document.documentElement,ok=/^[a-z][a-z0-9-]{0,23}$/,q=null,s=null;
+try{q=new URLSearchParams(location.search).get('theme');}catch(e){}
+try{s=localStorage.getItem('bgs:theme');}catch(e){}
+d.dataset.theme=ok.test(q||'')?q:ok.test(s||'')?s:'walnut';
+document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('meta[name="theme-color"]'),bg=getComputedStyle(d).getPropertyValue('--bgs-bg').trim();if(m&&bg)m.content=bg;});})();
+</script>
 <link rel="stylesheet" href="/css/base.css">
 <script type="module" src="/js/beta-tag.js"></script>
 <link rel="stylesheet" href="/css/game-modal.css">
@@ -1688,6 +1701,7 @@ import { VIBES, applyVibes } from '/js/vibes.js';
 import { bagStore } from '/js/bag-store.js';
 import { coverage as bagCoverage, timeLabel as bagTimeLabel, cellsHTML as bagCellsHTML } from '/js/bag-coverage.js';
 import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
+import { applyProfileTheme } from '/js/themes.js';
 import { getUser, fetchMyProfile, signOut, userDisplayName } from '/js/auth.js';
 
 // ---- Game Night feature flag ----
@@ -1804,6 +1818,9 @@ async function loadGames(){
 }
 
 function renderOwner(){
+  // Visitors see the shelf the way the owner styled it; the owner's own
+  // device caches it so the next load paints it before this runs.
+  applyProfileTheme(profile);
   const name = profile.display_name || profile.bgg_username || profile.slug;
   document.title = `${name} · BoardgameShelf`;
   // For the share sheets that read the live page; a crawler sees none of
@@ -1852,10 +1869,13 @@ function shareBag(opener){
 // /api/og/{slug} with a cache-buster from display_name_updated_at (unix
 // seconds), so previewers that cache the image for weeks pick up a rename.
 // Bumped when the OG renderer's palette changes, so link previews refetch.
-const OG_IMAGE_VERSION = '20260916b';
+const OG_IMAGE_VERSION = '20260917';
 function ogImageUrl(p){
+  // The image renders in the owner's theme, so the theme is part of the
+  // cache key too: a theme change refetches like a rename does.
   const t = Date.parse(p.display_name_updated_at || '');
-  const v = Number.isFinite(t) ? `${OG_IMAGE_VERSION}-${Math.floor(t / 1000)}` : OG_IMAGE_VERSION;
+  const stamp = Number.isFinite(t) ? `-${Math.floor(t / 1000)}` : '';
+  const v = `${OG_IMAGE_VERSION}${p.theme ? `-${p.theme}` : ''}${stamp}`;
   return `${location.origin}/api/og/${encodeURIComponent(p.slug)}?v=${v}`;
 }
 
