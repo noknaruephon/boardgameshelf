@@ -50,6 +50,21 @@ export async function signInWithGoogleCredential(credential, nonce) {
   if (error) throw error;
 }
 
+/**
+ * Facebook Login, through Supabase's OAuth redirect. There is no on-site
+ * button flow for Facebook the way Google Identity Services gives one, so
+ * this takes the visitor to Facebook and back to /welcome. Facebook accounts
+ * without an email address are rejected by Supabase, which surfaces here as
+ * an error on the landing page.
+ */
+export async function signInWithFacebook() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'facebook',
+    options: { redirectTo: AFTER_SIGN_IN_URL(), scopes: 'email' },
+  });
+  if (error) throw error;
+}
+
 export { GOOGLE_CLIENT_ID };
 
 /** A random nonce and its SHA-256 hex digest, for the Google ID-token flow. */

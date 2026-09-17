@@ -270,7 +270,21 @@ actually changed, then deletes the rows BGG no longer lists. When `missing`
 comes back empty the client skips the thing loop entirely, so an unchanged
 collection is one request.
 
-### 11.11 What this sandbox could not verify
+### 11.11 Facebook sign-in
+
+The landing page offers three ways in: Google (primary, gold), Facebook
+(secondary) and a magic-link email behind "Prefer email?". Facebook uses
+`supabase.auth.signInWithOAuth({ provider: 'facebook' })` with `scopes:
+'email'` and the same `redirectTo` as Google, so it lands on `/welcome` and
+picks up the identical claim-and-sync flow. There is no on-site button flow
+for it the way Google Identity Services gives one, so the visitor does go to
+facebook.com and back. `profiles` is untouched: the claim step seeds
+`display_name` from `user_metadata.full_name || name`, which Supabase fills
+from Facebook exactly as it does from Google, and Settings labels the provider
+from `app_metadata.provider`. The Meta
+app must be configured once in Supabase; the README has the steps.
+
+### 11.12 What this sandbox could not verify
 
 The implementation was written without outbound access to Supabase, BGG or
 esm.sh, so the migration has not been applied to the live project and the
