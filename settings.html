@@ -20,6 +20,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script>
+/* Theme resolver (docs/claude-code-spec-themes.md), before the stylesheet so
+   the first frame is already the right theme: ?theme= (preview only) →
+   localStorage['bgs:theme'] → navy. Ids are shape-checked here only; an
+   unknown id matches no [data-theme] block and renders navy, and
+   js/themes.js normalises it later. The meta theme-color follows the
+   applied theme's --bgs-bg once the stylesheet has resolved. */
+(function(){var d=document.documentElement,ok=/^[a-z][a-z0-9-]{0,23}$/,q=null,s=null;
+try{q=new URLSearchParams(location.search).get('theme');}catch(e){}
+try{s=localStorage.getItem('bgs:theme');}catch(e){}
+d.dataset.theme=ok.test(q||'')?q:ok.test(s||'')?s:'navy';
+document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('meta[name="theme-color"]'),bg=getComputedStyle(d).getPropertyValue('--bgs-bg').trim();if(m&&bg)m.content=bg;});})();
+</script>
 <link rel="stylesheet" href="/css/base.css">
 <script defer src="/_vercel/insights/script.js"></script>
 <style>
@@ -483,6 +496,7 @@ import { mountShelfPicker } from '/js/shelf-picker.js';
 import { supabase } from '/js/supabase.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { createBottomSheet } from '/js/share-sheet.js';
+import { applyProfileTheme } from '/js/themes.js';
 
 const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
@@ -541,6 +555,7 @@ function renderPill() {
 }
 
 function renderSettings() {
+  applyProfileTheme(profile);
   const url = `${location.origin}/u/${profile.slug}`;
   $('who').textContent = profile.display_name || userDisplayName(user) || `/u/${profile.slug}`;
   $('who').className = 'set-who';

@@ -85,7 +85,7 @@ export function slugify(username) {
 const SLUG_RE = /^[a-z0-9][a-z0-9._-]{0,63}$/;
 export const isValidSlug = (slug) => SLUG_RE.test(slug);
 
-const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, display_name_updated_at, is_public, show_expansions, last_synced_at, created_at';
+const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, display_name_updated_at, is_public, show_expansions, theme, last_synced_at, created_at';
 
 /** The signed-in user's own profile row, or null before they have claimed one. */
 export async function fetchMyProfile() {
@@ -170,6 +170,17 @@ export async function updateMyProfile(patch) {
  */
 export async function updateDisplayName(name) {
   const { data, error } = await supabase.rpc('update_display_name', { p_name: String(name ?? '') });
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Save the shelf's theme (docs/claude-code-spec-themes.md) through
+ * update_theme(), which validates the id against the registry server-side.
+ * null clears it. Resolves to the updated profile row.
+ */
+export async function updateTheme(theme) {
+  const { data, error } = await supabase.rpc('update_theme', { p_theme: theme ?? null });
   if (error) throw error;
   return data;
 }

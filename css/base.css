@@ -8,16 +8,14 @@
    showed the browser's white canvas. Change a token or the page chrome here
    and every page follows. */
 
+/* Themes (docs/claude-code-spec-themes.md). The surface tokens — page bg,
+   plate, ivory, their RGB variants and the ivory hairline — live in one
+   block per theme below. Everything else, gold above all, is shared and
+   stays in :root. <html data-theme="…"> is set by the inline resolver in
+   each page's <head> and by js/themes.js; a theme is one block here plus
+   one entry in the registry. */
+
 :root{
-  --bgs-bg:#0B0E13;
-  --bgs-bg-rgb:11,14,19;
-  --bgs-bg-radial:#131821;
-  --bgs-plate:#161A21;
-  --bgs-plate-rgb:22,26,33;
-  --bgs-ivory:#EEF1F5;
-  --bgs-ivory-rgb:238,241,245;
-  --bgs-ivory-70:rgba(238,241,245,0.72);
-  --bgs-ivory-45:rgba(238,241,245,0.45);
   --bgs-gold:#E4B54D;
   --bgs-gold-rgb:228,181,77;
   /* ink on a gold fill — warm, not the page bg; full-contrast black on brass glares */
@@ -31,7 +29,6 @@
   /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
      base.css already draws on .deck-card; settings ledger rows and the link
      plate use these instead of repeating the literals */
-  --line:rgba(238,241,245,0.10);
   --line-gold:rgba(228,181,77,0.22);
   /* warning — a gap in what a bag covers (docs/bag-pack-bar-spec.md) */
   --bgs-amber:#E0A83A;
@@ -65,8 +62,86 @@
   --dur:.55s;
 }
 
+/* Navy — the default. These are the values :root carried before themes
+   existed, moved here unchanged. */
+:root, [data-theme="navy"]{
+  --bgs-bg:#0B0E13;
+  --bgs-bg-rgb:11,14,19;
+  --bgs-bg-radial:#131821;
+  --bgs-plate:#161A21;
+  --bgs-plate-rgb:22,26,33;
+  --bgs-ivory:#EEF1F5;
+  --bgs-ivory-rgb:238,241,245;
+  --bgs-ivory-70:rgba(238,241,245,0.72);
+  --bgs-ivory-45:rgba(238,241,245,0.45);
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line:rgba(238,241,245,0.10);
+}
+
+/* Brown themes. The hairline and muted roles the spec names --bgs-line and
+   --bgs-muted are the existing --line and --bgs-ivory-45: the spec's opaque
+   line colour is what each theme's ivory at .10 lands on over its plate, and
+   its muted colour is ivory at .45 over the plate, so the alpha tokens keep
+   compositing correctly over covers and glass. --bgs-bg-radial sits between
+   bg and plate, the same step navy takes. */
+[data-theme="walnut"]{
+  --bgs-bg:#171110;
+  --bgs-bg-rgb:23,17,16;
+  --bgs-bg-radial:#1F1816;
+  --bgs-plate:#211915;
+  --bgs-plate-rgb:33,25,21;
+  --bgs-ivory:#F2E9DA;
+  --bgs-ivory-rgb:242,233,218;
+  --bgs-ivory-70:rgba(242,233,218,0.72);
+  --bgs-ivory-45:rgba(242,233,218,0.45);
+  --line:rgba(242,233,218,0.10);
+}
+[data-theme="mahogany"]{
+  --bgs-bg:#1A100D;
+  --bgs-bg-rgb:26,16,13;
+  --bgs-bg-radial:#241611;
+  --bgs-plate:#2A1812;
+  --bgs-plate-rgb:42,24,18;
+  --bgs-ivory:#F4E8D8;
+  --bgs-ivory-rgb:244,232,216;
+  --bgs-ivory-70:rgba(244,232,216,0.72);
+  --bgs-ivory-45:rgba(244,232,216,0.45);
+  --line:rgba(244,232,216,0.10);
+}
+[data-theme="oak"]{
+  --bgs-bg:#1E1812;
+  --bgs-bg-rgb:30,24,18;
+  --bgs-bg-radial:#28201A;
+  --bgs-plate:#2B231A;
+  --bgs-plate-rgb:43,35,26;
+  --bgs-ivory:#F3EBDA;
+  --bgs-ivory-rgb:243,235,218;
+  --bgs-ivory-70:rgba(243,235,218,0.72);
+  --bgs-ivory-45:rgba(243,235,218,0.45);
+  --line:rgba(243,235,218,0.10);
+}
+
+/* Theme cross-fade. js/themes.js puts .theme-switching on <html> for the
+   250ms around a switch, so these surfaces fade instead of snapping. Inert
+   surfaces only: WebKit silently drops a transition whose property an
+   animation on the same element already owns, so nothing that animates
+   background-color, border-color or color (the Game Night pill, toasts,
+   pulse rings, .sel-ring) is listed here; those snap, which is fine. */
+html.theme-switching, html.theme-switching body,
+html.theme-switching .game-card{
+  transition:background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+@media (prefers-reduced-motion:reduce){
+  html.theme-switching *{transition:none !important;}
+}
+
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
+/* The theme's ground behind everything, so overscroll and the first frame
+   are already the theme's colour, never a literal. */
+html{background:var(--bgs-bg);color:var(--bgs-ivory);}
 
 body{
   /* The solid colour under the gradient is load-bearing: a gradient alone

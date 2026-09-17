@@ -11,7 +11,7 @@ import { DEFAULT_SHELF_SLUG } from './config.js';
 
 const PAGE = 1000; // PostgREST's default max rows per request
 
-const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, display_name_updated_at, is_public, show_expansions, last_synced_at';
+const PROFILE_COLUMNS = 'id, slug, bgg_username, display_name, display_name_updated_at, is_public, show_expansions, theme, last_synced_at';
 
 /** @returns {Promise<object|null>} null when unknown — or private and not yours */
 export async function fetchProfileBySlug(slug) {
@@ -32,6 +32,17 @@ export async function fetchShelfStatus(slug) {
 }
 
 // ---- row → legacy game ----
+
+/**
+ * The current theme's plate colour as a hex string, for a game with no
+ * curated colour of its own. Read from the cascade (css/base.css) so it
+ * follows the theme; callers append alpha digits and paint it on canvas,
+ * so this has to be a real hex, never var().
+ */
+function plateColor() {
+  if (typeof document === 'undefined') return '';
+  return getComputedStyle(document.documentElement).getPropertyValue('--bgs-plate').trim();
+}
 
 // /_vercel/image resizes and re-encodes a BGG cover on the edge. Widths must
 // be ones listed in vercel.json. Anything that is not a BGG URL (a local
@@ -87,7 +98,7 @@ export function toLegacyGame(ug) {
     weight: x.weight || weightBucket(weightScore),
     weightScore,
     bggRating: num(g.bgg_rating, 0),
-    color: x.color || '#161A21',
+    color: x.color || plateColor(),
     // Both use BGG's full cover. Its thumbnail is ~200px, which is blurry on
     // a phone at 2–3× density, and BGG signs each size into the URL so no
     // middle size can be derived. The thumbnail is only a fallback.

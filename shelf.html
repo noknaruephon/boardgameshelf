@@ -15,6 +15,19 @@
 <link rel="preconnect" href="https://cf.geekdo-images.com" crossorigin>
 <link rel="dns-prefetch" href="https://cf.geekdo-images.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* Theme resolver (docs/claude-code-spec-themes.md), before the stylesheet so
+   the first frame is already the right theme: ?theme= (preview only) →
+   localStorage['bgs:theme'] → navy. Ids are shape-checked here only; an
+   unknown id matches no [data-theme] block and renders navy, and
+   js/themes.js normalises it later. The meta theme-color follows the
+   applied theme's --bgs-bg once the stylesheet has resolved. */
+(function(){var d=document.documentElement,ok=/^[a-z][a-z0-9-]{0,23}$/,q=null,s=null;
+try{q=new URLSearchParams(location.search).get('theme');}catch(e){}
+try{s=localStorage.getItem('bgs:theme');}catch(e){}
+d.dataset.theme=ok.test(q||'')?q:ok.test(s||'')?s:'navy';
+document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('meta[name="theme-color"]'),bg=getComputedStyle(d).getPropertyValue('--bgs-bg').trim();if(m&&bg)m.content=bg;});})();
+</script>
 <link rel="stylesheet" href="/css/base.css">
 <script type="module" src="/js/beta-tag.js"></script>
 <link rel="stylesheet" href="/css/game-modal.css">
@@ -1688,6 +1701,7 @@ import { VIBES, applyVibes } from '/js/vibes.js';
 import { bagStore } from '/js/bag-store.js';
 import { coverage as bagCoverage, timeLabel as bagTimeLabel, cellsHTML as bagCellsHTML } from '/js/bag-coverage.js';
 import { fetchProfileBySlug, fetchShelfStatus, fetchShelfGames } from '/js/shelf-data.js';
+import { applyProfileTheme } from '/js/themes.js';
 import { getUser, fetchMyProfile, signOut, userDisplayName } from '/js/auth.js';
 
 // ---- Game Night feature flag ----
@@ -1804,6 +1818,9 @@ async function loadGames(){
 }
 
 function renderOwner(){
+  // Visitors see the shelf the way the owner styled it; the owner's own
+  // device caches it so the next load paints it before this runs.
+  applyProfileTheme(profile);
   const name = profile.display_name || profile.bgg_username || profile.slug;
   document.title = `${name} · BoardgameShelf`;
   // For the share sheets that read the live page; a crawler sees none of
