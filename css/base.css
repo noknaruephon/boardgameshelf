@@ -10,8 +10,8 @@
 
 /* Themes (docs/claude-code-spec-themes.md). The surface tokens — page bg,
    plate, ivory, their RGB variants and the ivory hairline — live in one
-   block per theme below. Everything else, gold above all, is shared and
-   stays in :root. <html data-theme="…"> is set by the inline resolver in
+   block per theme below, walnut doubling as the :root default. Everything
+   else, gold above all, is shared and stays in :root. <html data-theme="…"> is set by the inline resolver in
    each page's <head> and by js/themes.js; a theme is one block here plus
    one entry in the registry. */
 
@@ -62,9 +62,9 @@
   --dur:.55s;
 }
 
-/* Navy — the default. These are the values :root carried before themes
-   existed, moved here unchanged. */
-:root, [data-theme="navy"]{
+/* Navy — the values :root carried before themes existed, moved here
+   unchanged. */
+[data-theme="navy"]{
   --bgs-bg:#0B0E13;
   --bgs-bg-rgb:11,14,19;
   --bgs-bg-radial:#131821;
@@ -85,8 +85,11 @@
    line colour is what each theme's ivory at .10 lands on over its plate, and
    its muted colour is ivory at .45 over the plate, so the alpha tokens keep
    compositing correctly over covers and glass. --bgs-bg-radial sits between
-   bg and plate, the same step navy takes. */
-[data-theme="walnut"]{
+   bg and plate, the same step navy takes.
+
+   Walnut is the default: :root carries it so a page with no data-theme, or
+   an unknown one, renders walnut. */
+:root, [data-theme="walnut"]{
   --bgs-bg:#171110;
   --bgs-bg-rgb:23,17,16;
   --bgs-bg-radial:#1F1816;

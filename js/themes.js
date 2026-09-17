@@ -7,7 +7,7 @@
 // navy's are its --bgs-plate and its --line hairline flattened over that plate.
 //
 // First paint is handled by the inline script in every page's <head>, which
-// runs before the stylesheet: ?theme= → localStorage → navy. This module takes
+// runs before the stylesheet: ?theme= → localStorage → walnut. This module takes
 // over once the page's own code runs, and is what applies the shelf owner's
 // saved theme when their profile arrives.
 
@@ -17,7 +17,7 @@ export const THEMES = [
   { id: 'mahogany', name: 'Mahogany', plate: '#2A1812', line: '#46281D' },
   { id: 'oak',      name: 'Oak',      plate: '#2B231A', line: '#463A2A' },
 ];
-export const DEFAULT_THEME = 'navy';
+export const DEFAULT_THEME = 'walnut';
 export const STORAGE_KEY = 'bgs:theme';
 export const isTheme = (id) => THEMES.some((t) => t.id === id);
 
@@ -42,7 +42,7 @@ export function syncThemeColor() {
 }
 
 /**
- * Apply a theme to the page. Unknown ids fall back to navy. With `fade`,
+ * Apply a theme to the page. Unknown ids fall back to walnut. With `fade`,
  * <html> carries .theme-switching for the switch so inert surfaces
  * cross-fade (css/base.css); reduced motion skips the class entirely.
  * @returns {string} the id actually applied
@@ -80,7 +80,7 @@ export function previewTheme() {
  * the shelf the way the owner styled it, and the owner's own device caches
  * it for next time. A ?theme= preview on the URL wins over it (the cache
  * is still written, the preview itself never is). A profile with no theme
- * leaves the page as resolved, with an unknown stored id settled to navy.
+ * leaves the page as resolved, with an unknown stored id settled to walnut.
  * @returns {string|null} the id applied, or null when the profile has none
  */
 export function applyProfileTheme(profile) {

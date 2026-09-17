@@ -2,7 +2,7 @@
 --
 -- profiles.theme is the shelf owner's chosen theme id (navy / walnut /
 -- mahogany / oak), null until they pick one, in which case the site renders
--- navy. Visitors read it with the rest of the public profile, so the shelf
+-- walnut, the default. Visitors read it with the rest of the public profile, so the shelf
 -- looks the way its owner styled it. The check constraint keeps unknown ids
 -- out whichever path writes the column; update_theme() is the client's write
 -- path, mirroring update_display_name(), and validates before the constraint
