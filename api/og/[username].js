@@ -15,6 +15,7 @@
 import { ImageResponse } from '@vercel/og';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../../js/config.js';
 import { loadFonts } from './_fonts.js';
+import { surfaceTokens, themeFromUrl } from './_themes.js';
 
 export const config = { runtime: 'edge' };
 
@@ -26,16 +27,15 @@ const COVER_FETCH_TIMEOUT_MS = 8000;
 const USER_AGENT = 'BoardgameShelf/1.0 (+https://boardgameshelf.app)';
 
 // Production tokens from css/base.css. Satori has no CSS variables, so they
-// are hardcoded here; keep them in step with the stylesheet.
-const T = {
-  bg: '#0B0E13',
-  plate: '#161A21',
-  ivory: '#EEF1F5',
-  ivory70: 'rgba(238,241,245,0.72)',
-  ivory45: 'rgba(238,241,245,0.45)',
+// are hardcoded here; keep them in step with the stylesheet. The surfaces
+// (bg, plate, ivory) come from ./_themes.js for the shelf owner's saved
+// theme (profiles.theme, default walnut), so the preview looks like the
+// shelf; ?theme= overrides it for previews.
+const SHARED = {
   gold: '#E4B54D',
   goldGlow: 'rgba(228,181,77,0.16)',
 };
+const tokens = (theme) => ({ ...SHARED, ...surfaceTokens(theme) });
 
 /** One PostgREST GET with the anon key. Returns the parsed rows and the response. */
 async function rest(path, extraHeaders = {}) {
@@ -58,7 +58,7 @@ async function rest(path, extraHeaders = {}) {
  */
 async function loadShelf(slug) {
   const { rows } = await rest(
-    `profiles?slug=eq.${encodeURIComponent(slug)}&select=id,slug,display_name,bgg_username,show_expansions&limit=1`,
+    `profiles?slug=eq.${encodeURIComponent(slug)}&select=id,slug,display_name,bgg_username,show_expansions,theme&limit=1`,
   );
   const p = rows[0];
   if (!p) return null;
@@ -67,6 +67,7 @@ async function loadShelf(slug) {
     slug: p.slug,
     name: p.display_name || p.bgg_username || p.slug,
     showExpansions: !!p.show_expansions,
+    theme: p.theme || null,
   };
 }
 
@@ -179,7 +180,7 @@ const FAN = [
   'rotate(22deg) translateY(-6px)',
 ];
 
-function Tile(cover, i) {
+function Tile(cover, i, T) {
   const base = {
     position: 'absolute',
     display: 'flex',
@@ -216,7 +217,7 @@ function Tile(cover, i) {
   );
 }
 
-export function Card({ shelf, count, covers }) {
+export function Card({ shelf, count, covers, T }) {
   return h('div', {
     style: {
       width: 1200,
@@ -267,7 +268,7 @@ export function Card({ shelf, count, covers }) {
           backgroundImage: `radial-gradient(60% 55% at 60% 62%, ${T.goldGlow}, transparent 70%)`,
         },
       }),
-      covers.map(Tile),
+      covers.map((cover, i) => Tile(cover, i, T)),
     ),
   );
 }
@@ -288,7 +289,8 @@ export default async function handler(req) {
     picked.map(async (c) => ({ title: c.title, src: await coverDataUrl(c.src) })),
   );
 
-  return new ImageResponse(Card({ shelf, count, covers }), {
+  const T = tokens(themeFromUrl(url) || shelf.theme);
+  return new ImageResponse(Card({ shelf, count, covers, T }), {
     width: 1200,
     height: 630,
     fonts,
