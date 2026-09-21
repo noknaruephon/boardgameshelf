@@ -539,7 +539,7 @@ if (coverLightOn) screen.classList.add('coverlight');
 let lightIdx = 0;
 
 /**
- * Cross-fades the screen light to a cover. Call with nothing to fade it out.
+ * Cross-fades the screen light to a cover. Call with null to fade it out.
  *
  * The two images take turns: the incoming one takes the src and `.on`, the
  * outgoing one only loses `.on`. So the swap is a plain opacity transition
@@ -1011,6 +1011,20 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     index += 1;
     const deckDone = index >= deck.length;
     rewardTally(deckDone ? 'Done' : index + 1, deckDone);
+    // The light moves now, on the same tick the card starts to fly, not in
+    // onfinish: the 0.6s cross-fade then runs underneath the 340ms exit and
+    // the screen has already taken the next cover's colour by the time that
+    // card lands. Waiting for the exit would make the background change look
+    // like a second, later event.
+    //
+    // A drag that snaps back never reaches here — js/swipe.js only calls
+    // onCommit for a committed vote — so an undecided card cannot relight the
+    // screen and then have to take it back.
+    //
+    // The last vote has no next cover, so the light goes out and the screen
+    // returns to the plain theme background for the waiting panel. Results is
+    // a separate page and never had one.
+    setCoverLight(deckDone ? null : deck[index].image);
     // Fades out with the card it describes, on the same beat as the exit;
     // bindFront fades the next one back in.
     document.getElementById('caption')?.classList.add('swap');
