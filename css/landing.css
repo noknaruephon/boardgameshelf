@@ -102,12 +102,17 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 .stamp.play{left:14px;background:var(--bgs-vote-play);color:#10210f}
 .stamp.pass{right:14px;background:var(--bgs-vote-pass);color:#fff}
 
-.actions{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:26px}
-.round{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--bgs-ivory-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),inset 0 1px 0 rgba(255,255,255,.16);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4)}
+/* The row is allowed to be wider than the deck, the way the seats row is: the
+   deck is capped by viewport HEIGHT (29svh) so that the hero fits one screen,
+   and on a short phone that cap leaves less width than ✕ + counter + ✓ need.
+   Without the negative margins and flex:none below, the two rounds are flex
+   items with nothing to stop them, and they shrink into ovals. */
+.actions{display:flex;justify-content:center;align-items:center;gap:22px;margin:26px -40px 0}
+.round{flex:none;width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--bgs-ivory-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),inset 0 1px 0 rgba(255,255,255,.16);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4)}
 .round svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .round.no{color:var(--bgs-vote-pass)}
 .round.yes{color:var(--bgs-vote-play)}
-.actions .mono{min-width:44px;text-align:center}
+.actions .mono{flex:none;min-width:44px;text-align:center}
 
 /* Four friends and you. While voting a chip only marks who has already voted
    on the current card — never how. Votes are revealed on the winner, at the
@@ -377,8 +382,15 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 
 /* A dark ellipse behind the focal block plus top and bottom fades, so the
    shelf recedes around the headline and the small pieces stay readable over
-   the bright near tiles. Every stop is the theme's own background. */
-.f8 .veil{position:absolute;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(ellipse 120% 44% at 50% 50%,rgba(var(--bgs-bg-rgb),.92) 0,rgba(var(--bgs-bg-rgb),.6) 62%,transparent 100%),linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.6) 14%,rgba(var(--bgs-bg-rgb),.15) 34%,rgba(var(--bgs-bg-rgb),.15) 64%,rgba(var(--bgs-bg-rgb),.62) 84%,var(--bgs-bg) 100%)}
+   the bright near tiles. Every stop is the theme's own background.
+
+   Eased from the mockup's .92/.6 ellipse and .6/.62 end fades. Those were
+   tuned against the mockup's own tiles; real covers are much darker, and at
+   the mockup's strengths the floor only survived in the lit band under the
+   horizon — below that the section read as flat black, with no shelf behind
+   the sign-in at all. The windows are wider and the ellipse lighter so the
+   floor carries the whole section; the headline keeps its own text-shadow. */
+.f8 .veil{position:absolute;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(ellipse 118% 40% at 50% 48%,rgba(var(--bgs-bg-rgb),.80) 0,rgba(var(--bgs-bg-rgb),.42) 64%,transparent 100%),linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.42) 12%,rgba(var(--bgs-bg-rgb),.08) 30%,rgba(var(--bgs-bg-rgb),.08) 68%,rgba(var(--bgs-bg-rgb),.45) 88%,var(--bgs-bg) 100%)}
 .f8 .horizon{position:absolute;left:0;right:0;top:0;height:26%;z-index:-2;pointer-events:none;background:radial-gradient(ellipse 70% 100% at 50% 22%,rgba(var(--bgs-gold-rgb),.34),transparent 70%)}
 .f8 .big{text-shadow:0 2px 30px rgba(var(--bgs-bg-rgb),.9)}
 .f8 .subl,.f8 .alts{text-shadow:0 1px 12px rgba(var(--bgs-bg-rgb),.95)}
@@ -503,7 +515,7 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   .seats{margin-bottom:10px}
   .seat{width:30px;height:30px}
   .seat svg{width:16px;height:16px}
-  .actions{margin-top:18px}
+  .actions{margin:18px -40px 0}
   .round{width:52px;height:52px}
   .top{padding:8px 0}
   .winner{width:min(48%,27svh)!important}
