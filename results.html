@@ -97,6 +97,74 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   /* Nobody won: the card never turns — no game earned the reveal. */
   .flip.nobody{animation:none;opacity:.55;transition:opacity .6s ease;}
 
+  /* ---- count-then-crown reveal (docs/claude-code-spec-results-reveal.md) ----
+     Behind ?reveal=1, alongside the flip above rather than instead of it: the
+     flag-off path still uses .reveal / .flip / .face.
+
+     WebKit rule: .rv-mini, .rv-mini .c, .rv-chip and .rv-pips i use TRANSITIONS
+     only; .rv-cover, .rv-flash, h1.rv-swap and the confetti use ANIMATIONS
+     only. Never both on one element. */
+  .rv-stage{display:flex;flex-direction:column;align-items:center;min-height:250px;margin-bottom:18px;-webkit-tap-highlight-color:transparent;}
+  .rv-stage.skippable{cursor:pointer;}
+  .rv-seats{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:2px 0 18px;max-width:330px;}
+  .rv-seat{position:relative;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;
+    font:600 12px/1 'Inter',sans-serif;color:var(--bgs-ivory-70);background:rgba(var(--bgs-ivory-rgb),.07);border:1px solid rgba(var(--bgs-ivory-rgb),.16);}
+  .rv-seat.me{color:var(--bgs-gold);border-color:rgba(var(--bgs-gold-rgb),.6);}
+  .rv-chip{position:absolute;right:-6px;bottom:-5px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;
+    font:700 10px/1 'Inter',sans-serif;opacity:0;transform:scale(.5);transition:opacity .22s ease,transform .22s ease;}
+  .rv-chip.show{opacity:1;transform:none;}
+  .rv-chip.ok{background:var(--bgs-ivory);color:var(--bgs-bg);}
+  /* Gold, not sage: same reasoning as .vchip.play above. */
+  .rv-chip.play{background:var(--bgs-gold);color:var(--bgs-on-gold);}
+  .rv-chip.pass{background:var(--bgs-plate);color:var(--bgs-ivory-45);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.22);}
+  .rv-chip.novote{background:var(--bgs-bg);color:var(--bgs-ivory-45);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.28);font-weight:500;}
+
+  .rv-minis{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 10px;}
+  .rv-mini{width:var(--mw,56px);flex:none;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .4s ease;}
+  .rv-mini .c{aspect-ratio:3/4;border-radius:7px;overflow:hidden;background:var(--bgs-bg-radial);border:1px solid rgba(var(--bgs-gold-rgb),.18);transition:box-shadow .4s ease;}
+  .rv-mini .c img{width:100%;height:100%;object-fit:cover;display:block;}
+  .rv-pips{display:flex;justify-content:center;gap:2px;margin-top:7px;min-height:6px;}
+  .rv-pips i{width:var(--pip,5px);height:var(--pip,5px);flex:none;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.18);transition:background-color .25s ease;}
+  .rv-pips i.on{background:var(--bgs-gold);}
+  .rv-num{font:400 10.5px/1 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45);text-align:center;margin-top:7px;}
+  .rv-mini.win{transform:translateY(-9px) scale(1.13);}
+  .rv-mini.win .c{box-shadow:0 0 0 2px var(--bgs-gold),0 0 26px rgba(var(--bgs-gold-rgb),.3);}
+  .rv-minis.decided .rv-mini:not(.win){opacity:.36;}
+
+  .rv-crown{display:none;position:relative;justify-content:center;gap:16px;}
+  .rv-stage.done{min-height:0;}
+  .rv-stage.done .rv-seats,.rv-stage.done .rv-minis{display:none;}
+  .rv-stage.done .rv-crown{display:flex;}
+  .rv-cover{position:relative;width:236px;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),.3);box-shadow:0 0 44px rgba(var(--bgs-gold-rgb),.28),0 18px 34px -10px rgba(0,0,0,.55);}
+  .rv-crown.duo .rv-cover{width:150px;}
+  .rv-crown.trio .rv-cover{width:104px;}
+  .rv-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  @keyframes rv-crown{0%{transform:scale(.5) rotate(-12deg);opacity:0;}55%{transform:scale(1.08) rotate(1.5deg);opacity:1;}75%{transform:scale(.98) rotate(-1deg);}100%{transform:none;opacity:1;}}
+  @keyframes rv-flash{0%{opacity:0;transform:translate(-50%,-50%) scale(.3);}25%{opacity:.9;}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7);}}
+  @keyframes rv-rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .rv-stage.done.play .rv-cover{animation:rv-crown .75s cubic-bezier(.2,.9,.25,1) both;}
+  .rv-stage.done.play .rv-cover:nth-child(3){animation-delay:.12s;}
+  /* Two rules here are load-bearing rather than decoration, because an
+     absolutely positioned box still widens the page at opacity 0:
+     `display:none` by default, since only a single winner ever flashes and at
+     150% of a two- or three-cover crown the disc is wider than a phone; and the
+     resting `transform`, because only the keyframes centre it, so without it the
+     solo disc sits offset by half its own width whenever the animation is NOT
+     running (skip tap, refresh, reduced motion). Both push the results screen
+     into horizontal scroll. A static transform is not a transition, so the
+     animation-only rule still holds for this element. */
+  .rv-flash{display:none;position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;border-radius:50%;pointer-events:none;opacity:0;z-index:-1;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.75),rgba(var(--bgs-gold-rgb),.15) 55%,transparent 72%);}
+  .rv-stage.solo .rv-flash{display:block;}
+  .rv-stage.done.play.solo .rv-flash{animation:rv-flash 1s ease-out both;}
+  .rv-burst{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none;z-index:3;}
+  .rv-burst i{position:absolute;left:-4px;top:-6px;width:8px;height:12px;border-radius:2px;opacity:0;}
+  h1.rv-swap{animation:rv-rise .35s ease both;}
+  /* the seats move under the count pill once the winner is up */
+  .winner-meta .rv-seats{margin:14px auto 0;}
+
   /* ---- winner meta ---- */
   .winner-meta{
     text-align:center;margin-bottom:26px;opacity:0;transform:translateY(6px);
@@ -214,6 +282,8 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     .face.cover{transition:none;}
     .winner-meta,.rest,.actions,.result-row{transition:none;}
     .req-dot{animation:none;}
+    .rv-mini,.rv-mini .c,.rv-chip,.rv-pips i{transition:none;}
+    .rv-cover,.rv-flash,h1.rv-swap{animation:none;}
   }
 </style>
 </head>
@@ -258,11 +328,28 @@ import {
 import { joinSessionChannel } from '/js/presence.js';
 import { deckFromSession, openGameModal } from '/js/waiting-room.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
+import { initCoverLight, setCoverLight } from '/js/cover-light.js';
+
+// ---- count reveal flag (docs/claude-code-spec-results-reveal.md) ----
+// Kill switch, same shape as COVER_LIGHT_ENABLED on the swipe screen. Ships
+// false: with the flag off this page still teases and flips exactly as it does
+// today, and ?reveal=1 is what shows the count-then-crown reveal.
+const COUNT_REVEAL_ENABLED = false;
+const countRevealOn =
+  COUNT_REVEAL_ENABLED || new URLSearchParams(location.search).get('reveal') === '1';
+// Built once, before any render: the wash reaches past #screen into the page's
+// gutters, and #screen's contents are replaced wholesale on every render.
+if (countRevealOn) initCoverLight();
 
 const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.
 let shelfHref = '/';
 let backLabel = 'Back to the shelf';
+
+// Participant names are typed by people and reach markup as attribute values
+// (the seat's title), where a quote would break out of the attribute. Same
+// helper the shelf picker uses.
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 function codeFromPath() {
   // /results/{code}
@@ -493,6 +580,119 @@ function runResults({ code, session, deck, myName, participants, votes }) {
     wireActions();
   }
 
+  // ---- count reveal (docs/claude-code-spec-results-reveal.md) ----
+  // Layout maths for the minis: narrower covers as the deck grows, rows
+  // balanced so the last one is never an orphan (6 → 3+3, 10 → 5+5), and one
+  // pip per person — unless a pip would come out under 3px, when a counted-up
+  // number reads better than a row of specks.
+  const mw = deck.length <= 5 ? 56 : deck.length <= 8 ? 50 : 44;
+  const miniRows = Math.ceil(deck.length / 5);
+  const perRow = Math.ceil(deck.length / miniRows);
+  const minisW = perRow * mw + (perRow - 1) * 10;
+  const pip = Math.min(5, Math.floor((mw - (total - 1) * 2) / total));
+  const usePips = pip >= 3;
+
+  // The minis render in DECK order, not ranking order, so the row cannot give
+  // the result away before the count reaches it.
+  const deckRows = deck.map((g) => rows.find((r) => r.game.bggId === g.bggId)).filter(Boolean);
+
+  function stageHTML() {
+    const crownClass = winners.length === 2 ? 'duo' : winners.length > 2 ? 'trio' : '';
+    return `
+      <div class="rv-stage skippable ${tie ? '' : 'solo'}" id="stage">
+        <div class="rv-seats" id="seats">
+          ${participants.map((n, i) => `
+            <span class="rv-seat ${n === myName ? 'me' : ''}" data-seat="${i}" title="${esc(n)}">${esc(Array.from(n)[0] || '?')}<span class="rv-chip"></span></span>`).join('')}
+        </div>
+        <div class="rv-minis" id="minis" style="--mw:${mw}px;--pip:${pip}px;max-width:${minisW}px">
+          ${deckRows.map((r) => `
+            <div class="rv-mini" data-mini="${r.game.bggId}">
+              <div class="c"><img src="${r.game.image}" alt=""></div>
+              ${usePips ? `<div class="rv-pips">${'<i></i>'.repeat(total)}</div>` : '<div class="rv-num">0</div>'}
+            </div>`).join('')}
+        </div>
+        <div class="rv-crown ${crownClass}" id="crown">
+          <div class="rv-flash"></div>
+          ${winners.slice(0, 3).map((r) => `
+            <div class="rv-cover">
+              <button class="info-btn" data-info="${r.game.bggId}" aria-label="About ${r.game.title}">i</button>
+              <img src="${r.game.image}" alt="${r.game.title} cover">
+            </div>`).join('')}
+          <div class="rv-burst" id="burst"></div>
+        </div>
+      </div>`;
+  }
+
+  // Seats are addressed by INDEX, never by name: names are user-typed and a
+  // quote in one would not survive a selector.
+  const REVEAL_KEY = `gamenight:${code}:revealed:${session.round}`;
+  const finalHeadline = nobody ? "Nobody's feeling it tonight" : tie ? "It's a tie" : 'Tonight we play';
+  const seatChip = (i) => screen.querySelector(`.rv-seat[data-seat="${i}"] .rv-chip`);
+  const setChip = (i, kind) => {
+    const c = seatChip(i);
+    if (!c) return;
+    c.className = `rv-chip show ${kind}`;
+    c.textContent = { ok: '\u2713', play: '\u2713', pass: '\u2715', novote: '\u2013' }[kind];
+  };
+  const miniOf = (r) => screen.querySelector(`.rv-mini[data-mini="${r.game.bggId}"]`);
+  /** Did the host's "Show results now" cut this person off on any game? */
+  const unfinished = (n) => rows.some((r) => r.noVote.includes(n));
+  let revealFinished = false;
+
+  /**
+   * Lands on the finished result. `animated` is false for a skip tap, a
+   * refresh and reduced motion, which land with no crown pop and no confetti.
+   */
+  function finishReveal(animated) {
+    if (revealFinished) return;
+    revealFinished = true;
+    timers.forEach(clearTimeout);
+    timers = [];
+    try { sessionStorage.setItem(REVEAL_KEY, '1'); } catch (e) { /* private mode: the count just plays again */ }
+    const stage = document.getElementById('stage');
+    stage.classList.remove('skippable');
+    document.getElementById('headline').textContent = finalHeadline;
+
+    // Every pip in its final state, whatever the count had reached.
+    rows.forEach((r) => {
+      const m = miniOf(r);
+      if (!m) return;
+      if (usePips) m.querySelectorAll('.rv-pips i').forEach((p, k) => p.classList.toggle('on', k < r.play.length));
+      else m.querySelector('.rv-num').textContent = r.play.length;
+    });
+
+    if (nobody) {
+      // No crown at all — the minis stay, dimmed. Nothing earned the reveal.
+      document.getElementById('minis').classList.add('decided');
+    } else {
+      stage.classList.add('done');
+      if (animated) stage.classList.add('play');
+      // A tie has no single game to light the screen with.
+      setCoverLight(tie ? null : winners[0].game.image);
+      if (animated && !tie) { confetti(); buzz([18, 40, 30]); }
+      if (!tie) {
+        // The seats move under the count pill and turn over each person's vote
+        // on the winning game, one by one.
+        document.getElementById('winnerMeta').appendChild(document.getElementById('seats'));
+        const w = winners[0];
+        participants.forEach((n, i) => {
+          const kind = w.play.includes(n) ? 'play' : w.pass.includes(n) ? 'pass' : 'novote';
+          seatChip(i).className = 'rv-chip';
+          timers.push(setTimeout(() => setChip(i, kind), animated ? 650 + i * 130 : 0));
+        });
+      }
+    }
+
+    const d = animated ? [500, 1300, 1700] : [0, 0, 0];
+    timers.push(setTimeout(() => document.getElementById('winnerMeta').classList.add('show'), d[0]));
+    timers.push(setTimeout(() => document.getElementById('rest').classList.add('show'), d[1]));
+    timers.push(setTimeout(() => document.getElementById('actions').classList.add('show'), d[2]));
+  }
+
+  // The timeline, the confetti and the buzz arrive with the next commit.
+  function confetti() {}
+  function buzz() {}
+
   function render() {
     timers.forEach(clearTimeout);
     timers = [];
@@ -501,6 +701,9 @@ function runResults({ code, session, deck, myName, participants, votes }) {
 
     screen.innerHTML = `
       <div class="eyebrow">Game Night · ${code}</div>
+      ${countRevealOn ? `
+      <h1 id="headline" style="transition:none">Votes are sealed</h1>
+      ${stageHTML()}` : `
       <h1 id="headline">And the table says…</h1>
       <div class="reveal" id="reveal">
         ${revealCards.map((r) => `
@@ -513,7 +716,7 @@ function runResults({ code, session, deck, myName, participants, votes }) {
               </div>
             </div>
           </div>`).join('')}
-      </div>
+      </div>`}
       <div class="winner-meta" id="winnerMeta">
         ${nobody ? `
           <p class="winner-title">Everyone passed on everything.</p>
@@ -579,17 +782,24 @@ function runResults({ code, session, deck, myName, participants, votes }) {
       });
     });
 
-    // tease → flip → title + count → ranking → actions
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const t = reduced ? [0, 0, 0, 0] : [1100, 1750, 2350, 2750];
-    timers.push(setTimeout(() => {
-      screen.querySelectorAll('.flip').forEach((f) => f.classList.add(nobody ? 'nobody' : 'revealed'));
-      document.getElementById('headline').textContent =
-        nobody ? "Nobody's feeling it tonight" : (tie ? "It's a tie" : "Tonight's game");
-    }, t[0]));
-    timers.push(setTimeout(() => document.getElementById('winnerMeta').classList.add('show'), t[1]));
-    timers.push(setTimeout(() => document.getElementById('rest').classList.add('show'), t[2]));
-    timers.push(setTimeout(() => document.getElementById('actions').classList.add('show'), t[3]));
+    if (countRevealOn) {
+      // Sealed: a tick for everyone who finished, a dash for anyone the host's
+      // "Show results now" cut off.
+      participants.forEach((n, i) => setChip(i, unfinished(n) ? 'novote' : 'ok'));
+      finishReveal(false);                       // the count timeline lands next commit
+    } else {
+      // tease → flip → title + count → ranking → actions
+      const t = reduced ? [0, 0, 0, 0] : [1100, 1750, 2350, 2750];
+      timers.push(setTimeout(() => {
+        screen.querySelectorAll('.flip').forEach((f) => f.classList.add(nobody ? 'nobody' : 'revealed'));
+        document.getElementById('headline').textContent =
+          nobody ? "Nobody's feeling it tonight" : (tie ? "It's a tie" : "Tonight's game");
+      }, t[0]));
+      timers.push(setTimeout(() => document.getElementById('winnerMeta').classList.add('show'), t[1]));
+      timers.push(setTimeout(() => document.getElementById('rest').classList.add('show'), t[2]));
+      timers.push(setTimeout(() => document.getElementById('actions').classList.add('show'), t[3]));
+    }
   }
 
   render();
