@@ -46,61 +46,17 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
     text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
   }
+  /* No transition here, deliberately: h1.rv-swap animates opacity on this very
+     element, and an animation and a transition on the same property of the same
+     element is the WebKit bug that drops the transition. The opacity transition
+     this rule used to carry belonged to the tease-and-flip reveal and went with
+     it. */
   h1{
     font-family:'Fraunces',serif;font-weight:600;font-size:22px;text-align:center;
-    margin:0 0 20px;letter-spacing:-.01em;min-height:28px;transition:opacity .3s ease;
+    margin:0 0 20px;letter-spacing:-.01em;min-height:28px;
   }
-
-  /* ---- the reveal ----
-     The wiggle sits on .flip and the rotation transition on .flip-inner, and
-     they must stay on separate elements: an animation and a transition on the
-     same property of the same element makes WebKit silently drop the
-     transition, so the card snaps instead of turning — correct in Chrome,
-     broken on every iPhone at the table. */
-  .reveal{display:flex;justify-content:center;gap:16px;margin-bottom:18px;}
-  .flip{perspective:1100px;}
-  .flip.solo{width:196px;}
-  .flip.duo{width:150px;}
-  .flip-inner{
-    position:relative;width:100%;aspect-ratio:3/4;
-    transform-style:preserve-3d;transition:transform .75s cubic-bezier(.3,0,.25,1);
-  }
-  .flip:not(.revealed){animation:tease 1.1s ease-in-out infinite;}
-  @keyframes tease{0%,100%{transform:rotate(-1.6deg);}50%{transform:rotate(1.6deg);}}
-  .flip.revealed{animation:none;}
-  .flip.revealed .flip-inner{transform:rotateY(180deg);}
-  .face{
-    position:absolute;inset:0;border-radius:14px;overflow:hidden;
-    backface-visibility:hidden;-webkit-backface-visibility:hidden;
-    border:1px solid rgba(var(--bgs-gold-rgb),.3);
-  }
-  /* The two faces are `.facedown` / `.cover`, deliberately NOT `.front` /
-     `.back`: the face-down side reuses the shared `.deck-card.back` component,
-     so a face class named `.back` would also match it — silently overriding
-     its hatch and rotating it out of view, leaving the reveal to start from an
-     empty screen. */
-
-  /* The shared card back, resized for the reveal — same override pattern the
-     tallying shuffle uses in vote-swipe.html, not a second card back. */
-  .face.facedown.deck-card{
-    width:auto;aspect-ratio:auto;border-radius:14px;font-size:34px;
-    box-shadow:0 18px 34px -10px rgba(0,0,0,.55);
-  }
-  .face.cover{
-    transform:rotateY(180deg);background:var(--bgs-plate);
-    transition:box-shadow .6s ease .25s;
-  }
-  .face.cover img{width:100%;height:100%;object-fit:cover;display:block;}
-  .flip.revealed .face.cover{
-    box-shadow:0 0 44px rgba(var(--bgs-gold-rgb),.28), 0 18px 34px -10px rgba(0,0,0,.55);
-  }
-  /* Nobody won: the card never turns — no game earned the reveal. */
-  .flip.nobody{animation:none;opacity:.55;transition:opacity .6s ease;}
 
   /* ---- count-then-crown reveal (docs/claude-code-spec-results-reveal.md) ----
-     Behind ?reveal=1, alongside the flip above rather than instead of it: the
-     flag-off path still uses .reveal / .flip / .face.
-
      WebKit rule: .rv-mini, .rv-mini .c, .rv-chip and .rv-pips i use TRANSITIONS
      only; .rv-cover, .rv-flash, h1.rv-swap and the confetti use ANIMATIONS
      only. Never both on one element. */
@@ -111,10 +67,9 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
      the stage is only as wide as the column, and clipping there would cut the
      gold glow off two or three tied covers. `clip` not `hidden`: hidden on one
      axis forces the other to `auto`, which would cut the confetti's vertical
-     travel. The class is set only behind the flag, so nothing changes with the
-     reveal off, and Safari below 16 drops the declaration and behaves as it
-     does today. */
-  html.reveal-on{overflow-x:clip;}
+     travel. Safari below 16 drops the declaration, and the page is then
+     draggable sideways for the second the confetti is in the air. */
+  html{overflow-x:clip;}
   .rv-stage.skippable{cursor:pointer;}
   .rv-seats{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:2px 0 18px;max-width:330px;}
   .rv-seat{position:relative;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;
@@ -291,9 +246,6 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
      here depends on animation-fill-mode, so a dropped animation can never
      leave a blank hole where the winner should be. */
   @media (prefers-reduced-motion:reduce){
-    .flip{animation:none;}
-    .flip-inner{transition:none;}
-    .face.cover{transition:none;}
     .winner-meta,.rest,.actions,.result-row{transition:none;}
     .req-dot{animation:none;}
     .rv-mini,.rv-mini .c,.rv-chip,.rv-pips i{transition:none;}
@@ -344,19 +296,14 @@ import { deckFromSession, openGameModal } from '/js/waiting-room.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
 import { initCoverLight, setCoverLight } from '/js/cover-light.js';
 
-// ---- count reveal flag (docs/claude-code-spec-results-reveal.md) ----
-// Kill switch, same shape as COVER_LIGHT_ENABLED on the swipe screen. Ships
-// false: with the flag off this page still teases and flips exactly as it does
-// today, and ?reveal=1 is what shows the count-then-crown reveal.
-const COUNT_REVEAL_ENABLED = false;
-const countRevealOn =
-  COUNT_REVEAL_ENABLED || new URLSearchParams(location.search).get('reveal') === '1';
+// The count-then-crown reveal is the only result screen now
+// (docs/claude-code-spec-results-reveal.md). No kill switch survives the
+// cleanup: with the tease and the flip deleted there is no second path for a
+// flag to choose, and a false one would leave the screen blank.
+//
 // Built once, before any render: the wash reaches past #screen into the page's
 // gutters, and #screen's contents are replaced wholesale on every render.
-if (countRevealOn) {
-  document.documentElement.classList.add('reveal-on');
-  initCoverLight();
-}
+initCoverLight();
 
 const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.
@@ -795,26 +742,10 @@ function runResults({ code, session, deck, myName, participants, votes }) {
     timers.forEach(clearTimeout);
     timers = [];
 
-    const revealCards = nobody ? [rows[0]] : winners;
-
     screen.innerHTML = `
       <div class="eyebrow">Game Night · ${code}</div>
-      ${countRevealOn ? `
-      <h1 id="headline" style="transition:none">Votes are sealed</h1>
-      ${stageHTML()}` : `
-      <h1 id="headline">And the table says…</h1>
-      <div class="reveal" id="reveal">
-        ${revealCards.map((r) => `
-          <div class="flip ${tie ? 'duo' : 'solo'}">
-            <div class="flip-inner">
-              <div class="face facedown deck-card back">?</div>
-              <div class="face cover">
-                <button class="info-btn" data-info="${r.game.bggId}" aria-label="About ${r.game.title}">i</button>
-                <img src="${r.game.image}" alt="${r.game.title} cover">
-              </div>
-            </div>
-          </div>`).join('')}
-      </div>`}
+      <h1 id="headline">Votes are sealed</h1>
+      ${stageHTML()}
       <div class="winner-meta" id="winnerMeta">
         ${nobody ? `
           <p class="winner-title">Everyone passed on everything.</p>
@@ -881,29 +812,17 @@ function runResults({ code, session, deck, myName, participants, votes }) {
     });
 
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (countRevealOn) {
-      // Sealed: a tick for everyone who finished, a dash for anyone the host's
-      // "Show results now" cut off.
-      participants.forEach((n, i) => setChip(i, unfinished(n) ? 'novote' : 'ok'));
-      // Seen this round's reveal already (refresh, back-navigation), or
-      // reduced motion: land on the result rather than counting it out again.
-      let seen = false;
-      try { seen = sessionStorage.getItem(REVEAL_KEY) === '1'; } catch (e) { /* private mode: count it again */ }
-      if (seen || reduced) finishReveal(false);
-      else runCount();
-    } else {
-      // tease → flip → title + count → ranking → actions
-      const t = reduced ? [0, 0, 0, 0] : [1100, 1750, 2350, 2750];
-      timers.push(setTimeout(() => {
-        screen.querySelectorAll('.flip').forEach((f) => f.classList.add(nobody ? 'nobody' : 'revealed'));
-        document.getElementById('headline').textContent =
-          nobody ? "Nobody's feeling it tonight" : (tie ? "It's a tie" : "Tonight's game");
-      }, t[0]));
-      timers.push(setTimeout(() => document.getElementById('winnerMeta').classList.add('show'), t[1]));
-      timers.push(setTimeout(() => document.getElementById('rest').classList.add('show'), t[2]));
-      timers.push(setTimeout(() => document.getElementById('actions').classList.add('show'), t[3]));
-    }
+    // Sealed: a tick for everyone who finished, a dash for anyone the host's
+    // "Show results now" cut off.
+    participants.forEach((n, i) => setChip(i, unfinished(n) ? 'novote' : 'ok'));
+    // Seen this round's reveal already (refresh, back-navigation), or reduced
+    // motion: land on the result rather than counting it out again.
+    let seen = false;
+    try { seen = sessionStorage.getItem(REVEAL_KEY) === '1'; } catch (e) { /* private mode: count it again */ }
+    if (seen || reduced) finishReveal(false);
+    else runCount();
   }
+
 
   render();
 
