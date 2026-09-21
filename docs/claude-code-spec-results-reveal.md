@@ -500,7 +500,7 @@ Stop for review.
 - [ ] Commit 1: swipe screen wash unchanged in every respect
 - [ ] `?reveal=1`, single winner: sealed → count → decided → crown with flash and confetti → seats turn over one by one → ranking → actions; about 4.3 s to the winner with 5 voters
 - [ ] Minis are in deck order, not ranking order
-- [ ] Count duration stays near 1.5 s with 2 voters × 2 games and with 8 voters × 10 games
+- [ ] Count duration reaches about 1.5 s once there are ~14 play votes to show — 8 voters × 10 games, and a typical 5 × 6 night — and is proportionally shorter below that: a 2 voters × 2 games night counts in about a third of a second. The 110 ms ceiling in `step` is deliberate and wins over stretching a small count: half a second between pips stops reading as counting and starts reading as a stuck page. (This line previously asked for 1.5 s at every table size, which the `step` formula above cannot produce; decided in favour of the formula, which is also what the mockup does.)
 - [ ] 6 games wrap 3+3, 10 games wrap 5+5; pips never overflow the mini; numbers replace pips when a pip would be under 3px
 - [ ] Tie (2 and 3 games): tied minis lift together, covers side by side, no flash, no confetti, no light, no seats, rematch actions and "wants a rematch" line work, presence updates do not restart the reveal
 - [ ] Nobody: nothing lifts, all minis dim, no crown, existing "Everyone passed on everything." copy

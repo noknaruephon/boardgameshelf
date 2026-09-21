@@ -281,6 +281,66 @@ body.scroll-locked{
   .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
 }
 
+/* ---- cover light (docs/claude-code-spec-vote-cover-light.md) ----
+   Behind ?coverlight=1. The screen takes the colour of the card on top of
+   the deck: one heavily blurred, enlarged copy of that card's cover sits
+   behind everything, and a veil fades it back to the theme background so the
+   heading, the caption and the rounds stay legible over a bright cover.
+
+   The two copies cross-fade on OPACITY ONLY, and neither carries an
+   animation: an animation and a transition on the same property of the same
+   element is the WebKit bug that drops the transition altogether. Their
+   transform is static.
+
+   The source box is 160x200 and scaled up from there, so the blur is
+   computed at that size and stays cheap on a phone.
+
+   The layer is fixed to the viewport, not parented to #screen. #screen is a
+   400px column inside the page's 16px gutters, so a light scoped to it
+   stopped in dark bands down both sides and cut off in a hard line under the
+   hint — the whole screen is meant to take the colour, and on a phone the
+   column is not the screen. Fixed also means the wash holds still while the
+   page scrolls, and clipping it here keeps the enlarged image from widening
+   the page.
+
+   It sits at z-index:0 rather than behind everything at -1, because a
+   negative layer inside <body> paints *under* body's own background and
+   would never be seen. Everything the page draws is lifted over it instead,
+   below. The confirm dialog and the game modal are both z-index:30 and so
+   stay clear of this without help. */
+.cover-light{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+/* #screen is already positioned; the footer is not, and a static block
+   paints under a positioned layer however early it comes in the markup. */
+body.coverlight #screen,
+body.coverlight .shelf-footer{position:relative;z-index:1;}
+.cover-light img{
+  position:absolute;left:50%;top:50%;
+  width:160px;height:200px;object-fit:cover;
+  opacity:0;transition:opacity .6s;
+  filter:blur(22px) saturate(1.6);
+  /* Scaled, never resized: the blur is computed on the small box and the
+     result is scaled by the compositor, which is what keeps it cheap on a
+     phone. 4.6 is the locked value and covers a phone at 736x920; a desktop
+     window is wider than that, so it steps up rather than leaving the wash
+     as a blob with dark edges either side. */
+  transform:translate(-50%,-50%) scale(var(--cl-scale,4.6));
+}
+@media (min-width:560px){ .cover-light img{--cl-scale:9;} }
+.cover-light img.on{opacity:.62;}
+/* Tokens only: the veil fades to whichever theme is on, so Walnut, Navy,
+   Mahogany and Oak each fade to their own background with no per-theme rule. */
+.cover-light::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    var(--bgs-bg) 0,
+    rgba(var(--bgs-bg-rgb),.35) 22%,
+    rgba(var(--bgs-bg-rgb),.25) 70%,
+    rgba(var(--bgs-bg-rgb),.85) 100%);
+}
+@media (prefers-reduced-motion:reduce){
+  .cover-light img{transition:none;}
+}
+
 /* Site footer colophon, shared by every page (docs/footer-redesign-spec.md,
    Option A, centred to match the centred pages). A stack: BGG badge,
    links, then the legal lines. Pages override max-width to
