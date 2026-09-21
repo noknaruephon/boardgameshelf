@@ -105,6 +105,16 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
      only; .rv-cover, .rv-flash, h1.rv-swap and the confetti use ANIMATIONS
      only. Never both on one element. */
   .rv-stage{display:flex;flex-direction:column;align-items:center;min-height:250px;margin-bottom:18px;-webkit-tap-highlight-color:transparent;}
+  /* The flash and the confetti are meant to spill past the column, and both
+     widen the page while they do — a phone can be dragged sideways through the
+     one second that matters most. Clipped at the viewport, not at the stage:
+     the stage is only as wide as the column, and clipping there would cut the
+     gold glow off two or three tied covers. `clip` not `hidden`: hidden on one
+     axis forces the other to `auto`, which would cut the confetti's vertical
+     travel. The class is set only behind the flag, so nothing changes with the
+     reveal off, and Safari below 16 drops the declaration and behaves as it
+     does today. */
+  html.reveal-on{overflow-x:clip;}
   .rv-stage.skippable{cursor:pointer;}
   .rv-seats{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:2px 0 18px;max-width:330px;}
   .rv-seat{position:relative;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;
@@ -158,7 +168,11 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     transform:translate(-50%,-50%);
     background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.75),rgba(var(--bgs-gold-rgb),.15) 55%,transparent 72%);}
   .rv-stage.solo .rv-flash{display:block;}
-  .rv-stage.done.play.solo .rv-flash{animation:rv-flash 1s ease-out both;}
+  /* No fill: `both` would hold the final keyframe, and that keyframe is
+     scale(1.7) — a 600px disc pinned over a 390px screen for the rest of the
+     page's life. It ends at opacity 0 and the resting state is opacity 0 too,
+     so dropping the fill is invisible and the disc returns to its own size. */
+  .rv-stage.done.play.solo .rv-flash{animation:rv-flash 1s ease-out;}
   .rv-burst{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none;z-index:3;}
   .rv-burst i{position:absolute;left:-4px;top:-6px;width:8px;height:12px;border-radius:2px;opacity:0;}
   h1.rv-swap{animation:rv-rise .35s ease both;}
@@ -339,7 +353,10 @@ const countRevealOn =
   COUNT_REVEAL_ENABLED || new URLSearchParams(location.search).get('reveal') === '1';
 // Built once, before any render: the wash reaches past #screen into the page's
 // gutters, and #screen's contents are replaced wholesale on every render.
-if (countRevealOn) initCoverLight();
+if (countRevealOn) {
+  document.documentElement.classList.add('reveal-on');
+  initCoverLight();
+}
 
 const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.
@@ -689,9 +706,90 @@ function runResults({ code, session, deck, myName, participants, votes }) {
     timers.push(setTimeout(() => document.getElementById('actions').classList.add('show'), d[2]));
   }
 
-  // The timeline, the confetti and the buzz arrive with the next commit.
-  function confetti() {}
-  function buzz() {}
+  /**
+   * Swaps the headline and replays the rise. The class has to come off and go
+   * back on with a reflow between, or a second swap re-uses the finished
+   * animation and nothing moves.
+   */
+  function say(text) {
+    const h = document.getElementById('headline');
+    h.textContent = text;
+    h.classList.remove('rv-swap');
+    void h.offsetWidth;
+    h.classList.add('rv-swap');
+  }
+
+  /**
+   * Sealed → counting → decided → crowned. Every timeout goes into `timers`,
+   * so the rematch and cancelled handlers clear the whole thing by clearing
+   * that array.
+   */
+  function runCount() {
+    const stage = document.getElementById('stage');
+    // Tap anywhere on the count to skip to the result.
+    stage.addEventListener('click', () => { if (!revealFinished) finishReveal(false); });
+
+    let t = 0;
+    const at = (ms, f) => { t += ms; timers.push(setTimeout(f, t)); };
+
+    at(900, () => say('Counting the votes'));
+
+    // Ballots tick in round-robin across the deck — pip k of every game, then
+    // pip k+1 — so the whole count lasts about 1.5s however many votes there
+    // are, rather than dragging out with the table size.
+    const totalPlays = rows.reduce((a, r) => a + r.play.length, 0);
+    const step = Math.max(40, Math.min(110, Math.round(1500 / Math.max(totalPlays, 1))));
+    for (let k = 0; k < total; k++) {
+      deckRows.forEach((r) => {
+        if (k >= r.play.length) return;
+        at(step, () => {
+          const m = miniOf(r);
+          if (!m) return;
+          if (usePips) m.querySelectorAll('.rv-pips i')[k].classList.add('on');
+          else m.querySelector('.rv-num').textContent = k + 1;
+        });
+      });
+    }
+    // Nobody played anything: nothing ticks, so hold the table instead.
+    if (!totalPlays) at(1100, () => {});
+
+    at(450, () => {
+      say(nobody ? finalHeadline : tie ? "It's a tie" : 'The table has decided');
+      document.getElementById('minis').classList.add('decided');
+      winners.forEach((r) => miniOf(r)?.classList.add('win'));
+      if (!nobody && !tie) setCoverLight(winners[0].game.image);
+      buzz(8);
+    });
+    at(nobody ? 300 : 950, () => finishReveal(true));
+  }
+
+  function buzz(pattern) { try { navigator.vibrate && navigator.vibrate(pattern); } catch (e) { /* not supported */ } }
+
+  /**
+   * The gold burst behind the winner. Pieces are created fresh and carry no
+   * transition, so animating them is safe under the WebKit rule, and each one
+   * removes itself when it lands.
+   */
+  function confetti() {
+    const host = document.getElementById('burst');
+    if (!host) return;
+    host.innerHTML = '';
+    const cols = ['var(--bgs-gold)', 'var(--bgs-vote-play)', 'var(--bgs-vote-pass)', 'var(--bgs-ivory)', 'var(--bgs-gold)'];
+    for (let n = 0; n < 34; n++) {
+      const el = document.createElement('i');
+      el.style.background = cols[n % 5];
+      host.appendChild(el);
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 100 + Math.random() * 160;
+      const x = Math.cos(ang) * dist;
+      const y = Math.sin(ang) * dist - 60;
+      el.animate([
+        { transform: 'translate(0,0) rotate(0) scale(.4)', opacity: 1 },
+        { transform: `translate(${x}px,${y}px) rotate(${Math.random() * 540 - 270}deg) scale(1)`, opacity: 1, offset: 0.6 },
+        { transform: `translate(${x * 1.1}px,${y + 120}px) rotate(${Math.random() * 720 - 360}deg) scale(.9)`, opacity: 0 },
+      ], { duration: 1100 + Math.random() * 700, easing: 'cubic-bezier(.15,.8,.3,1)', fill: 'forwards' }).onfinish = () => el.remove();
+    }
+  }
 
   function render() {
     timers.forEach(clearTimeout);
@@ -787,7 +885,12 @@ function runResults({ code, session, deck, myName, participants, votes }) {
       // Sealed: a tick for everyone who finished, a dash for anyone the host's
       // "Show results now" cut off.
       participants.forEach((n, i) => setChip(i, unfinished(n) ? 'novote' : 'ok'));
-      finishReveal(false);                       // the count timeline lands next commit
+      // Seen this round's reveal already (refresh, back-navigation), or
+      // reduced motion: land on the result rather than counting it out again.
+      let seen = false;
+      try { seen = sessionStorage.getItem(REVEAL_KEY) === '1'; } catch (e) { /* private mode: count it again */ }
+      if (seen || reduced) finishReveal(false);
+      else runCount();
     } else {
       // tease → flip → title + count → ranking → actions
       const t = reduced ? [0, 0, 0, 0] : [1100, 1750, 2350, 2750];
@@ -821,6 +924,8 @@ function runResults({ code, session, deck, myName, participants, votes }) {
         // A rematch started — everyone lands on the swipe screen together.
         navigated = true;
         timers.forEach(clearTimeout);
+        // Fade the wash before navigating, so it does not flash on the way out.
+        setCoverLight(null);
         controller.leave();
         window.location.href = `/vote/${code}/swipe`;
       } else if (status === 'cancelled') {
