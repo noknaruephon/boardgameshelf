@@ -330,21 +330,37 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
      The source box is 160x200 and scaled up from there, so the blur is
      computed at that size and stays cheap on a phone.
 
-     Clipping sits on .cover-light rather than on .screen. At scale 4.6 the
-     image is 736x920 and would otherwise spill past the column and scroll the
-     page — but .screen itself has to stay unclipped, because the card leaving
-     the stack travels 620px and must be able to go with it (see the note on
-     .stack .card). .cover-light is inset:0, so it clips the light to exactly
-     the same box .screen would have. */
-  .screen.coverlight{isolation:isolate;}
-  .cover-light{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;}
+     The layer is fixed to the viewport, not parented to #screen. #screen is a
+     400px column inside the page's 16px gutters, so a light scoped to it
+     stopped in dark bands down both sides and cut off in a hard line under the
+     hint — the whole screen is meant to take the colour, and on a phone the
+     column is not the screen. Fixed also means the wash holds still while the
+     page scrolls, and clipping it here keeps the enlarged image from widening
+     the page.
+
+     It sits at z-index:0 rather than behind everything at -1, because a
+     negative layer inside <body> paints *under* body's own background and
+     would never be seen. Everything the page draws is lifted over it instead,
+     below. The confirm dialog and the game modal are both z-index:30 and so
+     stay clear of this without help. */
+  .cover-light{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+  /* #screen is already positioned; the footer is not, and a static block
+     paints under a positioned layer however early it comes in the markup. */
+  body.coverlight #screen,
+  body.coverlight .shelf-footer{position:relative;z-index:1;}
   .cover-light img{
     position:absolute;left:50%;top:50%;
     width:160px;height:200px;object-fit:cover;
     opacity:0;transition:opacity .6s;
     filter:blur(22px) saturate(1.6);
-    transform:translate(-50%,-50%) scale(4.6);
+    /* Scaled, never resized: the blur is computed on the small box and the
+       result is scaled by the compositor, which is what keeps it cheap on a
+       phone. 4.6 is the locked value and covers a phone at 736x920; a desktop
+       window is wider than that, so it steps up rather than leaving the wash
+       as a blob with dark edges either side. */
+    transform:translate(-50%,-50%) scale(var(--cl-scale,4.6));
   }
+  @media (min-width:560px){ .cover-light img{--cl-scale:9;} }
   .cover-light img.on{opacity:.62;}
   /* Tokens only: the veil fades to whichever theme is on, so Walnut, Navy,
      Mahogany and Oak each fade to their own background with no per-theme rule. */
@@ -357,9 +373,9 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
       rgba(var(--bgs-bg-rgb),.85) 100%);
   }
   /* The wash replaces the ambient gold behind the rounds; both together read
-     muddy. Two classes, so this still outranks the bare .vote-glow rule in
-     css/glass.css, which is appended to <head> after these styles. */
-  .screen.coverlight .vote-glow{display:none;}
+     muddy. Outranks the bare .vote-glow rule in css/glass.css, which is
+     appended to <head> after these styles. */
+  body.coverlight .vote-glow{display:none;}
   @media (prefers-reduced-motion:reduce){
     .cover-light img{transition:none;}
   }
@@ -533,9 +549,20 @@ registerOverlay(() => confirmDialog.classList.contains('open'));
 const COVER_LIGHT_ENABLED = true;
 const coverLightOn =
   COVER_LIGHT_ENABLED || new URLSearchParams(location.search).get('coverlight') === '1';
-// #screen itself survives every render — each one replaces its contents, not
-// the element — so the class is set once here rather than inside renderVoting.
-if (coverLightOn) screen.classList.add('coverlight');
+// The layer belongs to the page, not to #screen: it has to reach past the
+// column into the gutters, and #screen's contents are replaced wholesale on
+// every render, which would throw it away. Built once here — this script runs
+// at the end of <body>, so the element already exists — and left in place for
+// the life of the page. setCoverLight(null) is what turns it off, so the fade
+// out at the end of a deck now plays in full instead of being cut short by the
+// waiting panel rendering over it.
+if (coverLightOn) {
+  document.body.classList.add('coverlight');
+  document.body.insertAdjacentHTML(
+    'afterbegin',
+    '<div class="cover-light" aria-hidden="true"><img alt=""><img alt=""></div>',
+  );
+}
 
 let lightIdx = 0;
 
@@ -910,7 +937,6 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
   function renderVoting() {
     const total = deck.length;
     screen.innerHTML = `
-      ${coverLightOn ? '<div class="cover-light" aria-hidden="true"><img alt=""><img alt=""></div>' : ''}
       <div class="eyebrow">Game Night · ${code}</div>
       <h1>Swipe to vote</h1>
       <div class="tally-row">
