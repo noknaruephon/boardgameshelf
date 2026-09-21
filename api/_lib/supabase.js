@@ -26,7 +26,8 @@ export function adminClient() {
  */
 export async function requireProfile(req) {
   const { user, profile } = await requireProfileOrUser(req);
-  if (!profile) throw new HttpError(404, 'Set your BGG username in Settings before syncing.');
+  // A row can exist before the username is claimed; that is not a profile to sync.
+  if (!profile?.bgg_username) throw new HttpError(404, 'Set your BGG username in Settings before syncing.');
   return { user, profile };
 }
 

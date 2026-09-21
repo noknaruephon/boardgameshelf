@@ -1799,6 +1799,9 @@ async function loadGames(){
     if(!viewer){ location.replace('/'); throw new ShelfError('redirect'); }
     const mine = await fetchMyProfile();
     if(mine?.slug){ location.replace(`/u/${mine.slug}`); throw new ShelfError('redirect'); }
+    // A slugless row can already carry a theme, picked in Settings before
+    // connecting: the empty shelf wears it too.
+    applyProfileTheme(mine);
     throw new ShelfError('empty-own');
   }
   if(isBagRoute){

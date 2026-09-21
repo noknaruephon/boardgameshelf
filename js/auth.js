@@ -100,8 +100,24 @@ export async function fetchMyProfile() {
   return data;
 }
 
+/** The user's profile row, created without a shelf address if they have none yet. */
+export async function ensureMyProfile() {
+  const existing = await fetchMyProfile();
+  if (existing) return existing;
+  const user = await getUser();
+  if (!user) throw new Error('Not signed in');
+  const { error } = await supabase
+    .from('profiles')
+    .insert({ id: user.id, display_name: userDisplayName(user) || null });
+  // 23505: another tab got there first. Either way the row exists now.
+  if (error && error.code !== '23505') throw error;
+  return fetchMyProfile();
+}
+
 /**
- * First-login step: claim a BGG username as this user's slug.
+ * First-login step: claim a BGG username as this user's slug. The row may
+ * already exist without one (Settings creates it), so this either fills the
+ * address in or inserts the whole row.
  * @returns {Promise<{ profile?: object, error?: 'taken' | 'invalid' }>}
  */
 export async function claimProfile({ bggUsername, displayName }) {
@@ -111,16 +127,27 @@ export async function claimProfile({ bggUsername, displayName }) {
   const slug = slugify(bgg);
   if (!isValidSlug(slug)) return { error: 'invalid' };
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .insert({
-      id: user.id,
-      slug,
-      bgg_username: bgg,
-      display_name: (displayName || '').trim() || bgg,
-    })
-    .select(PROFILE_COLUMNS)
-    .single();
+  const existing = await fetchMyProfile();
+  // Already has a shelf address: never re-claim over it.
+  if (existing?.slug) return { profile: existing };
+
+  const write = existing
+    // The row is there, slugless. display_name stays out of it: the guard
+    // refuses a direct update and it was seeded at insert.
+    ? supabase
+        .from('profiles')
+        .update({ slug, bgg_username: bgg })
+        .eq('id', user.id)
+    : supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          slug,
+          bgg_username: bgg,
+          display_name: (displayName || '').trim() || bgg,
+        });
+
+  const { data, error } = await write.select(PROFILE_COLUMNS).single();
 
   if (error) {
     // 23505 = unique_violation. First claim wins; this one lost.
