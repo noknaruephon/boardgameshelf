@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="walnut">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Results reveal — mockup (count, then crown)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>/* ── css/base.css, verbatim from the repo ── */
+/* Shared foundation for every page: design tokens and page chrome.
+   Link this before any other stylesheet and before the page's own <style>,
+   so a page can still override what it needs to.
+
+   This exists because the shelf and the waiting-room pages each carried their
+   own copy of the palette and the body background, and the copies drifted —
+   the waiting room's background lost its solid colour layer and overscrolling
+   showed the browser's white canvas. Change a token or the page chrome here
+   and every page follows. */
+
+/* Themes (docs/claude-code-spec-themes.md). The surface tokens — page bg,
+   plate, ivory, their RGB variants and the ivory hairline — live in one
+   block per theme below, walnut doubling as the :root default. Everything
+   else, gold above all, is shared and stays in :root. <html data-theme="…"> is set by the inline resolver in
+   each page's <head> and by js/themes.js; a theme is one block here plus
+   one entry in the registry. */
+
+:root{
+  --bgs-gold:#E4B54D;
+  --bgs-gold-rgb:228,181,77;
+  /* ink on a gold fill — warm, not the page bg; full-contrast black on brass glares */
+  --bgs-on-gold:#2A1F0C;
+  /* the brighter brass for :hover on a gold fill */
+  --bgs-gold-hover:#F0C455;
+  /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim.
+     Mixed from the brighter brass (#F0C455) at .80, not from --bgs-gold: the eyebrow and mono meta went muddy at .62 of the fill colour. */
+  --bgs-gold-dim:rgba(240,196,85,0.80);
+  --bgs-icon-gold:#E4B54D;
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line-gold:rgba(228,181,77,0.22);
+  /* warning — a gap in what a bag covers (docs/bag-pack-bar-spec.md) */
+  --bgs-amber:#E0A83A;
+  /* destructive actions — cancelling a game night */
+  --bgs-danger:#B84A40;
+  --bgs-danger-hover:#D2665B;
+  /* swipe-vote colours — warm sage + warm clay, deliberately distinct from
+     --bgs-danger above: passing on a game isn't destructive and must not
+     borrow the cancel-a-game-night colour. */
+  --bgs-vote-play:#5FB07F;
+  --bgs-vote-play-rgb:95,176,127;
+  --bgs-vote-pass:#D9645A;
+  --bgs-vote-pass-rgb:217,100,90;
+  /* live-voting / presence surfaces — reserved, nothing consumes it yet */
+  --bgs-info:#5B9CDB;
+  --bgs-info-rgb:91,156,219;
+
+  /* Liquid Glass (docs/claude-code-spec-liquid-glass.md). The material itself
+     lives in css/glass.css, which shelf.html loads; the tokens sit here so
+     every page can use the easing and the card layout without it. */
+  --glass-fill-a:.52;                 /* plate tint alpha; pressed .74 */
+  --glass-blur:22px;
+  --glass-sat:1.6;
+  --glass-rim-w:1.5px;                /* refraction ring width */
+  --glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);
+  --glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
+  --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);
+  --glass-sheen:rgba(var(--bgs-ivory-rgb),.10);
+  --light-x:20%;                      /* specular position; JS moves it on scroll */
+  --ease-liquid:cubic-bezier(.32,.72,0,1);
+  --dur:.55s;
+}
+
+/* Brown themes. The hairline and muted roles the spec names --bgs-line and
+   --bgs-muted are the existing --line and --bgs-ivory-45: the spec's opaque
+   line colour is what each theme's ivory at .10 lands on over its plate, and
+   its muted colour is ivory at .45 over the plate, so the alpha tokens keep
+   compositing correctly over covers and glass. --bgs-bg-radial sits between
+   bg and plate, the same step navy takes.
+
+   Walnut is the default: :root carries it so a page with no data-theme, or
+   an unknown one, renders walnut. It comes first because :root and an
+   attribute selector tie on specificity, so the later block wins and every
+   named theme has to follow it. */
+:root, [data-theme="walnut"]{
+  --bgs-bg:#171110;
+  --bgs-bg-rgb:23,17,16;
+  --bgs-bg-radial:#1F1816;
+  --bgs-plate:#211915;
+  --bgs-plate-rgb:33,25,21;
+  --bgs-ivory:#F2E9DA;
+  --bgs-ivory-rgb:242,233,218;
+  --bgs-ivory-70:rgba(242,233,218,0.72);
+  --bgs-ivory-45:rgba(242,233,218,0.45);
+  --line:rgba(242,233,218,0.10);
+}
+/* Navy — the values :root carried before themes existed, moved here
+   unchanged. */
+[data-theme="navy"]{
+  --bgs-bg:#0B0E13;
+  --bgs-bg-rgb:11,14,19;
+  --bgs-bg-radial:#131821;
+  --bgs-plate:#161A21;
+  --bgs-plate-rgb:22,26,33;
+  --bgs-ivory:#EEF1F5;
+  --bgs-ivory-rgb:238,241,245;
+  --bgs-ivory-70:rgba(238,241,245,0.72);
+  --bgs-ivory-45:rgba(238,241,245,0.45);
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line:rgba(238,241,245,0.10);
+}
+
+[data-theme="mahogany"]{
+  --bgs-bg:#1A100D;
+  --bgs-bg-rgb:26,16,13;
+  --bgs-bg-radial:#241611;
+  --bgs-plate:#2A1812;
+  --bgs-plate-rgb:42,24,18;
+  --bgs-ivory:#F4E8D8;
+  --bgs-ivory-rgb:244,232,216;
+  --bgs-ivory-70:rgba(244,232,216,0.72);
+  --bgs-ivory-45:rgba(244,232,216,0.45);
+  --line:rgba(244,232,216,0.10);
+}
+[data-theme="oak"]{
+  --bgs-bg:#1E1812;
+  --bgs-bg-rgb:30,24,18;
+  --bgs-bg-radial:#28201A;
+  --bgs-plate:#2B231A;
+  --bgs-plate-rgb:43,35,26;
+  --bgs-ivory:#F3EBDA;
+  --bgs-ivory-rgb:243,235,218;
+  --bgs-ivory-70:rgba(243,235,218,0.72);
+  --bgs-ivory-45:rgba(243,235,218,0.45);
+  --line:rgba(243,235,218,0.10);
+}
+
+/* Theme cross-fade. js/themes.js puts .theme-switching on <html> for the
+   250ms around a switch, so these surfaces fade instead of snapping. Inert
+   surfaces only: WebKit silently drops a transition whose property an
+   animation on the same element already owns, so nothing that animates
+   background-color, border-color or color (the Game Night pill, toasts,
+   pulse rings, .sel-ring) is listed here; those snap, which is fine. */
+html.theme-switching, html.theme-switching body,
+html.theme-switching .game-card{
+  transition:background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+@media (prefers-reduced-motion:reduce){
+  html.theme-switching *{transition:none !important;}
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+/* The theme's ground behind everything, so overscroll and the first frame
+   are already the theme's colour, never a literal. */
+html{background:var(--bgs-bg);color:var(--bgs-ivory);}
+
+body{
+  /* The solid colour under the gradient is load-bearing: a gradient alone
+     leaves background-color transparent, and overscrolling then shows the
+     browser's white canvas. */
+  background:
+    radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%),
+    var(--bgs-bg);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  /* svh, not vh: on a phone 100vh is the *large* viewport — the height with the
+     toolbars retracted — so it makes the body taller than what's actually visible
+     and the page scrolls even when nothing overflows. 100svh is the smallest
+     visible viewport, so a page whose content fits cannot scroll. dvh would track
+     the toolbars sliding in and out and reflow mid-scroll. The vh line stays as a
+     fallback for Safari <15.4 / Chrome <108. */
+  min-height:100vh;
+  min-height:100svh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Set by js/scroll-lock.js while any overlay is open, so the page behind it
+   cannot scroll. `overflow:hidden` alone is ignored by iOS Safari, so the body
+   is taken out of flow and offset by the scroll position it was locked at —
+   the offset cancels the scroll, leaving the view unchanged with nothing left
+   to scroll. The offset and the scrollbar-gutter padding are set inline. */
+body.scroll-locked{
+  position:fixed;
+  left:0;
+  right:0;
+  overflow:hidden;
+}
+
+/* Each page sets its own body padding — the shelf is a wide grid, the
+   game-night pages are a narrow phone column with a safe-area inset. */
+
+/* The face-down/face-up deck-preview card, shared by night-host.html,
+   vote.html and vote-swipe.html (the waiting room's deck preview and the
+   swipe screen's tallying shuffle both draw the same card back — one
+   component, not a third copy). */
+.deck-card{
+  width:44px;aspect-ratio:3/4;border-radius:6px;flex-shrink:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  background:var(--bgs-plate);
+  border:1px solid rgba(var(--bgs-gold-rgb),.22);
+}
+.deck-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.deck-card.back{
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(var(--bgs-gold-rgb),.07) 0 4px,
+      transparent 4px 8px),
+    var(--bgs-plate);
+  color:var(--bgs-gold-dim);font-size:15px;
+}
+.deck-card.clickable{cursor:pointer;transition:transform .12s ease;}
+.deck-card.clickable:active{transform:scale(.92);}
+
+/* Three face-down cards being shuffled — the waiting animation for every
+   game-night screen that has to hold the table for a moment: waiting for the
+   host to start, waiting for the others to finish, and tallying.
+   Built from .deck-card.back above rather than drawn again, and face-down
+   deliberately, so a screen that must not leak a result cannot.
+   Markup comes from shuffleHTML() in js/waiting-room.js. */
+.shuffle-wrap{height:66px;display:flex;align-items:center;justify-content:center;}
+.shuffle{position:relative;width:104px;height:64px;}
+.shuffle .deck-card{
+  position:absolute;top:0;left:30px;width:46px;height:62px;
+  box-shadow:0 7px 15px rgba(0,0,0,.5);
+  animation:bgs-deal 1.9s cubic-bezier(.45,0,.3,1) infinite;
+}
+@keyframes bgs-deal{
+  0%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+  28%{transform:translateX(-36px) rotate(-13deg) scale(.97);opacity:1;}
+  62%{transform:translateX(36px) rotate(10deg) scale(.94);opacity:.7;}
+  100%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+}
+.shuffle .deck-card:nth-child(1){z-index:3;}
+.shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
+.shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
+
+/* Four face-down cards dealt into a neat deck, then a gold ring pulse — the
+   loading animation for every game-night screen's static shell, the stretch
+   between page load and the first render. Built from .deck-card.back above,
+   like the shuffle, and distinct from it on purpose: the shuffle holds the
+   table, this one gathers the games.
+   Pure CSS, so it runs before a page's module script resolves — an import
+   that 404s leaves the shell on screen, and it should still look alive.
+   Cards animate transform+opacity only; the ring animates box-shadow only, on
+   its own element. One animation per element and no transition on an animated
+   property: WebKit silently drops a transition that fights an animation, which
+   is also why these cards never take .clickable. */
+.deal-wrap{height:120px;display:flex;align-items:center;justify-content:center;margin:26px 0 0;}
+.deal{position:relative;width:64px;height:85px;}
+.deal .deck-card{
+  position:absolute;inset:0;width:64px;height:85px;
+  border-radius:8px;font-size:18px;
+  box-shadow:0 8px 18px rgba(0,0,0,.45);
+  opacity:0;
+  animation:bgs-deal-in 3.4s cubic-bezier(.3,.7,.3,1) infinite;
+}
+.deal .deck-card:nth-child(1){--rest:rotate(-5deg);}
+.deal .deck-card:nth-child(2){--rest:rotate(4deg);animation-delay:.22s;}
+.deal .deck-card:nth-child(3){--rest:rotate(-2deg);animation-delay:.44s;}
+.deal .deck-card:nth-child(4){--rest:rotate(0deg);animation-delay:.66s;}
+@keyframes bgs-deal-in{
+  0%   {opacity:0;transform:translate(110px,-90px) rotate(28deg);}
+  12%  {opacity:1;transform:translate(0,0) var(--rest);}   /* lands, tilted */
+  16%  {transform:translate(0,0) var(--rest);}
+  30%  {transform:translate(0,0) rotate(0deg);}            /* squares up */
+  84%  {opacity:1;transform:translate(0,0) rotate(0deg);}
+  94%,100%{opacity:0;transform:translate(0,0) rotate(0deg);}
+}
+/* Gold ring: inset box-shadow, never outline. */
+.deal-ring{
+  position:absolute;inset:-7px;border-radius:13px;pointer-events:none;
+  box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);
+  animation:bgs-ring-pulse 3.4s infinite;
+}
+@keyframes bgs-ring-pulse{
+  0%,30%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+  40%   {box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.7);}
+  58%,100%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+}
+
+/* Reduced motion: a static assembled deck under a steady half-strength ring
+   says the same thing the motion did. Nothing here needs an animation to
+   become visible, so dropping it can never leave the shell blank. */
+@media (prefers-reduced-motion:reduce){
+  .shuffle .deck-card{animation:none;}
+  .deal .deck-card{animation:none;opacity:1;transform:translate(0,0) rotate(0deg);}
+  .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
+}
+
+/* Site footer colophon, shared by every page (docs/footer-redesign-spec.md,
+   Option A, centred to match the centred pages). A stack: BGG badge,
+   links, then the legal lines. Pages override max-width to
+   match their own column, and the shelf sets --fab-clearance so the Game
+   Night FAB never covers the legal lines. The badge is never tinted, dimmed
+   or hidden: BGG's API terms want the logo legible wherever their data is
+   shown. */
+.shelf-footer{
+  max-width:960px;
+  margin:40px auto 0;
+  border-top:1px solid rgba(var(--bgs-ivory-rgb),.10);
+  padding:22px 0 calc(22px + var(--fab-clearance,0px));
+  text-align:center;
+}
+.shelf-footer__row{display:flex;justify-content:center;}
+.shelf-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;flex:none;}
+.shelf-footer .bgg-badge--small{height:28px;}
+.shelf-footer .bgg-badge--small img{display:block;height:28px;width:auto;}
+.shelf-footer .bgg-badge:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+.shelf-footer__links{display:flex;justify-content:center;gap:18px;margin:18px 0 20px;font:500 13px/1 'Inter',sans-serif;}
+/* Same text-link treatment as body links on the privacy and terms pages. */
+.shelf-footer__links a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
+.shelf-footer__links a:hover{color:var(--bgs-ivory);}
+.shelf-footer__links a:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+.shelf-footer__legal{
+  margin:0;font:400 11px/1.55 'IBM Plex Mono',monospace;
+  color:rgba(var(--bgs-ivory-rgb),.36);
+}
+.shelf-footer__legal + .shelf-footer__legal{margin-top:2px;}
+
+/* Beta pill beside the wordmark (spec: docs/beta-tag-spec.md). Each page
+   carries its own wordmark markup, so the pill is placed per page; the styles
+   live here once. A <button>, not a <span>, so the tooltip is keyboard
+   reachable. Upright and mono on purpose: the wordmark's italic serif must
+   not leak into it. Negative vertical margins cancel the pill's own height
+   against the wordmark line so the header does not grow. */
+.bgs-wordmark{position:relative;}
+.bgs-beta{
+  display:inline-block;
+  margin:-4px 0 -4px 10px;
+  padding:3px 8px;
+  border:1px solid rgba(var(--bgs-gold-rgb),0.6);
+  border-radius:999px;
+  background:transparent;
+  color:var(--bgs-gold);
+  font-family:'IBM Plex Mono',monospace;
+  font-style:normal;
+  font-weight:500;
+  font-size:11px;
+  letter-spacing:0.14em;
+  line-height:1;
+  text-transform:uppercase;
+  vertical-align:middle;
+  position:relative;
+  top:-1px;
+  cursor:default;
+  -webkit-appearance:none;
+  appearance:none;
+}
+/* Gold ring via box-shadow, same as every other focus ring on the site. */
+.bgs-beta:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+
+/* Beta tooltip, built by js/beta-tag.js as the pill's next sibling inside
+   .bgs-wordmark, so it positions against the wordmark. Transition only —
+   never an animation on this element too; WebKit drops a transition that
+   fights an animation. The pill's uppercase mono styling is reset here since
+   the wordmark's italic serif would otherwise cascade in. */
+.bgs-beta-tip{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:0;
+  z-index:30;
+  width:max-content;
+  max-width:260px;
+  padding:10px 12px 11px;
+  /* A callout, not a field: the search box is plate + faint gold hairline +
+     12px radius, so this sits on the darker page ground with a firmer gold
+     edge, a tight radius, a lifted shadow and a caret at the pill. */
+  border:1px solid rgba(var(--bgs-gold-rgb),0.45);
+  border-radius:5px;
+  background:var(--bgs-bg);
+  box-shadow:0 14px 28px -12px rgba(0,0,0,.85),0 2px 6px rgba(0,0,0,.35);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  font-style:normal;
+  font-weight:400;
+  font-size:13px;
+  line-height:1.45;
+  letter-spacing:0;
+  text-transform:none;
+  text-align:left;
+  opacity:0;
+  transform:translateY(-4px);
+  transition:opacity 120ms ease-out,transform 120ms ease-out;
+  pointer-events:none;
+}
+.bgs-beta-tip.is-open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+/* Caret under the pill. js/beta-tag.js sets --bgs-tip-caret to the pill's
+   centre measured from the tooltip's left edge, so it stays under the pill
+   when the tooltip flips or is pinned to the viewport gutter. A rotated
+   square that shares the border, clipped to its top-left half by the tip. */
+.bgs-beta-tip::before{
+  content:"";
+  position:absolute;
+  top:-6px;
+  left:calc(var(--bgs-tip-caret,18px) - 5px);
+  width:10px;height:10px;
+  background:inherit;
+  border:inherit;
+  border-right:0;border-bottom:0;
+  border-radius:1px 0 0 0;
+  transform:rotate(45deg);
+}
+/* Would overflow the right edge of the viewport: hang from the wordmark's
+   right edge instead. */
+.bgs-beta-tip.is-flipped{left:auto;right:0;}
+/* Two classes: the legal pages' own `.mark a{color:inherit;text-decoration:none}`
+   would otherwise win over the link styling. */
+.bgs-beta-tip .bgs-beta-tip__link{
+  display:block;
+  margin-top:6px;
+  color:var(--bgs-gold);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  border-radius:3px;
+}
+.bgs-beta-tip .bgs-beta-tip__link:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+@media (prefers-reduced-motion:reduce){
+  .bgs-beta-tip{transition:none;transform:none;}
+}
+</style>
+<style>/* ── results.html <style>, verbatim from the repo (.reveal/.flip rules are now unused) ── */
+
+  /* Tokens, page chrome and .deck-card / .deck-card.back come from
+     css/base.css. The face-down card below is that same component scaled up —
+     the one the table watched shuffle on the tallying screen. */
+  body{
+    padding:18px 16px calc(46px + env(safe-area-inset-bottom));
+  }
+  .screen{max-width:400px;margin:0 auto;}
+  .shelf-footer{max-width:400px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center;margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:22px;text-align:center;
+    margin:0 0 20px;letter-spacing:-.01em;min-height:28px;transition:opacity .3s ease;
+  }
+
+  /* ---- the reveal ----
+     The wiggle sits on .flip and the rotation transition on .flip-inner, and
+     they must stay on separate elements: an animation and a transition on the
+     same property of the same element makes WebKit silently drop the
+     transition, so the card snaps instead of turning — correct in Chrome,
+     broken on every iPhone at the table. */
+  .reveal{display:flex;justify-content:center;gap:16px;margin-bottom:18px;}
+  .flip{perspective:1100px;}
+  .flip.solo{width:196px;}
+  .flip.duo{width:150px;}
+  .flip-inner{
+    position:relative;width:100%;aspect-ratio:3/4;
+    transform-style:preserve-3d;transition:transform .75s cubic-bezier(.3,0,.25,1);
+  }
+  .flip:not(.revealed){animation:tease 1.1s ease-in-out infinite;}
+  @keyframes tease{0%,100%{transform:rotate(-1.6deg);}50%{transform:rotate(1.6deg);}}
+  .flip.revealed{animation:none;}
+  .flip.revealed .flip-inner{transform:rotateY(180deg);}
+  .face{
+    position:absolute;inset:0;border-radius:14px;overflow:hidden;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border:1px solid rgba(var(--bgs-gold-rgb),.3);
+  }
+  /* The two faces are `.facedown` / `.cover`, deliberately NOT `.front` /
+     `.back`: the face-down side reuses the shared `.deck-card.back` component,
+     so a face class named `.back` would also match it — silently overriding
+     its hatch and rotating it out of view, leaving the reveal to start from an
+     empty screen. */
+
+  /* The shared card back, resized for the reveal — same override pattern the
+     tallying shuffle uses in vote-swipe.html, not a second card back. */
+  .face.facedown.deck-card{
+    width:auto;aspect-ratio:auto;border-radius:14px;font-size:34px;
+    box-shadow:0 18px 34px -10px rgba(0,0,0,.55);
+  }
+  .face.cover{
+    transform:rotateY(180deg);background:var(--bgs-plate);
+    transition:box-shadow .6s ease .25s;
+  }
+  .face.cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .flip.revealed .face.cover{
+    box-shadow:0 0 44px rgba(var(--bgs-gold-rgb),.28), 0 18px 34px -10px rgba(0,0,0,.55);
+  }
+  /* Nobody won: the card never turns — no game earned the reveal. */
+  .flip.nobody{animation:none;opacity:.55;transition:opacity .6s ease;}
+
+  /* ---- winner meta ---- */
+  .winner-meta{
+    text-align:center;margin-bottom:26px;opacity:0;transform:translateY(6px);
+    transition:opacity .4s ease,transform .4s ease;
+  }
+  .winner-meta.show{opacity:1;transform:none;}
+  .winner-title{font-family:'Fraunces',serif;font-weight:600;font-size:19px;line-height:1.3;margin:0 0 4px;}
+  .winner-title .amp{color:var(--bgs-ivory-45);font-style:italic;padding:0 2px;}
+  .count-pill{
+    display:inline-flex;align-items:center;gap:6px;margin-top:8px;cursor:pointer;
+    background:rgba(var(--bgs-gold-rgb),.12);border:1px solid rgba(var(--bgs-gold-rgb),.42);
+    color:var(--bgs-gold);border-radius:99px;padding:6px 13px;font-size:12px;font-weight:700;
+    font-family:inherit;transition:background .15s ease;
+  }
+  .count-pill .chev{font-size:10px;transition:transform .2s ease;}
+  .count-pill[aria-expanded="true"] .chev{transform:rotate(90deg);}
+  .winner-names{margin-top:10px;}
+
+  /* ---- vote name chips ----
+     Gold, not sage: --bgs-vote-play belongs to the act of swiping right, and
+     by this screen that's history — what's on display is a winner. */
+  .vchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+  .vchip{font-size:11px;font-weight:600;border-radius:99px;padding:4px 11px;}
+  .vchip.play{background:rgba(var(--bgs-gold-rgb),.12);color:var(--bgs-gold);border:1px solid rgba(var(--bgs-gold-rgb),.4);}
+  .vchip.pass{background:transparent;color:var(--bgs-ivory-45);border:1px solid rgba(var(--bgs-ivory-rgb),.15);}
+  .vchip.novote{background:transparent;color:var(--bgs-ivory-45);border:1px dashed rgba(var(--bgs-ivory-rgb),.28);font-style:italic;}
+
+  /* ---- the rest of the ranking ---- */
+  .rest{opacity:0;transform:translateY(8px);transition:opacity .45s ease,transform .45s ease;}
+  .rest.show{opacity:1;transform:none;}
+  .rest h2{font-family:'Fraunces',serif;font-weight:600;font-size:14px;color:var(--bgs-ivory-70);text-align:center;margin:0 0 12px;}
+  .result-row{
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.08);
+    border-radius:12px;margin-bottom:7px;overflow:hidden;
+    opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease;
+  }
+  .rest.show .result-row{opacity:1;transform:none;}
+  .row-main{
+    display:flex;align-items:center;gap:11px;width:100%;padding:10px 13px;
+    background:none;border:none;color:inherit;font:inherit;cursor:pointer;text-align:left;
+  }
+  .rank{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-ivory-45);min-width:18px;}
+  .row-thumb{
+    width:34px;aspect-ratio:3/4;border-radius:5px;overflow:hidden;flex-shrink:0;
+    background:var(--bgs-bg-radial);border:1px solid rgba(var(--bgs-gold-rgb),.18);
+  }
+  .row-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .row-info{flex:1;min-width:0;}
+  .row-title{font-size:12.5px;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .row-sub{display:flex;align-items:center;gap:7px;margin-top:4px;}
+  .row-count{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--bgs-ivory-45);white-space:nowrap;}
+  .row-names{padding:0 13px 12px 42px;}
+  .row-names .vchips{justify-content:flex-start;}
+  .row-names[hidden]{display:none;}
+
+  /* ---- footer actions ---- */
+  .actions{margin-top:22px;opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease;}
+  .actions.show{opacity:1;transform:none;}
+  .btn-primary{
+    display:block;width:100%;background:var(--bgs-gold);color:var(--bgs-on-gold);border:none;
+    border-radius:12px;padding:16px;font:inherit;font-size:14.5px;font-weight:700;
+    cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box;
+  }
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .actions-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin:9px 0 0;}
+  .req-line{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    font-size:12px;font-weight:600;color:var(--bgs-gold);margin:0 0 10px;
+  }
+  .req-dot{width:6px;height:6px;border-radius:50%;background:var(--bgs-gold);animation:reqpulse 1.6s ease-in-out infinite;}
+  @keyframes reqpulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .btn-primary.requested{
+    background:rgba(var(--bgs-gold-rgb),.12);color:var(--bgs-gold);
+    border:1px solid rgba(var(--bgs-gold-rgb),.45);cursor:default;
+  }
+  .btn-ghost{
+    display:block;width:100%;margin-top:12px;background:transparent;color:var(--bgs-gold-dim);
+    border:1px solid rgba(var(--bgs-gold-rgb),.35);border-radius:12px;padding:14px;
+    font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-align:center;
+    text-decoration:none;box-sizing:border-box;transition:color .15s ease,border-color .15s ease;
+  }
+  .btn-ghost:hover{color:var(--bgs-gold);border-color:rgba(var(--bgs-gold-rgb),.6);}
+
+  /* ---- info buttons: same affordance as the swipe screen ---- */
+  .info-btn{
+    position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;z-index:2;
+    background:rgba(0,0,0,.42);backdrop-filter:blur(3px);color:var(--bgs-ivory);
+    display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--bgs-ivory-rgb),.2);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:14px;cursor:pointer;
+  }
+  .row-head{display:flex;align-items:center;}
+  .row-head .row-main{flex:1;min-width:0;}
+  .row-ibtn{
+    width:28px;height:28px;border-radius:50%;flex-shrink:0;margin-right:11px;
+    background:rgba(var(--bgs-ivory-rgb),.06);color:var(--bgs-ivory-45);
+    display:flex;align-items:center;justify-content:center;border:1px solid rgba(var(--bgs-ivory-rgb),.14);
+    font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:12.5px;cursor:pointer;
+    transition:color .15s ease,border-color .15s ease;
+  }
+  .row-ibtn:hover{color:var(--bgs-gold);border-color:rgba(var(--bgs-gold-rgb),.4);}
+
+  /* ---- ended / not found ---- */
+  .ended p{text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;}
+  .ended-detail{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.5;
+    color:var(--bgs-ivory-45);text-align:center;margin:-10px 0 22px;word-break:break-word;
+  }
+
+  /* Reduced motion: everything lands at its resting state instantly. Nothing
+     here depends on animation-fill-mode, so a dropped animation can never
+     leave a blank hole where the winner should be. */
+  @media (prefers-reduced-motion:reduce){
+    .flip{animation:none;}
+    .flip-inner{transition:none;}
+    .face.cover{transition:none;}
+    .winner-meta,.rest,.actions,.result-row{transition:none;}
+    .req-dot{animation:none;}
+  }
+</style>
+<style>/* ---- cover light (docs/claude-code-spec-vote-cover-light.md) ----
+     Behind ?coverlight=1. The screen takes the colour of the card on top of
+     the deck: one heavily blurred, enlarged copy of that card's cover sits
+     behind everything, and a veil fades it back to the theme background so the
+     heading, the caption and the rounds stay legible over a bright cover.
+
+     The two copies cross-fade on OPACITY ONLY, and neither carries an
+     animation: an animation and a transition on the same property of the same
+     element is the WebKit bug that drops the transition altogether. Their
+     transform is static.
+
+     The source box is 160x200 and scaled up from there, so the blur is
+     computed at that size and stays cheap on a phone.
+
+     The layer is fixed to the viewport, not parented to #screen. #screen is a
+     400px column inside the page's 16px gutters, so a light scoped to it
+     stopped in dark bands down both sides and cut off in a hard line under the
+     hint — the whole screen is meant to take the colour, and on a phone the
+     column is not the screen. Fixed also means the wash holds still while the
+     page scrolls, and clipping it here keeps the enlarged image from widening
+     the page.
+
+     It sits at z-index:0 rather than behind everything at -1, because a
+     negative layer inside <body> paints *under* body's own background and
+     would never be seen. Everything the page draws is lifted over it instead,
+     below. The confirm dialog and the game modal are both z-index:30 and so
+     stay clear of this without help. */
+  .cover-light{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+  /* #screen is already positioned; the footer is not, and a static block
+     paints under a positioned layer however early it comes in the markup. */
+  body.coverlight #screen,
+  body.coverlight .shelf-footer{position:relative;z-index:1;}
+  .cover-light img{
+    position:absolute;left:50%;top:50%;
+    width:160px;height:200px;object-fit:cover;
+    opacity:0;transition:opacity .6s;
+    filter:blur(22px) saturate(1.6);
+    /* Scaled, never resized: the blur is computed on the small box and the
+       result is scaled by the compositor, which is what keeps it cheap on a
+       phone. 4.6 is the locked value and covers a phone at 736x920; a desktop
+       window is wider than that, so it steps up rather than leaving the wash
+       as a blob with dark edges either side. */
+    transform:translate(-50%,-50%) scale(var(--cl-scale,4.6));
+  }
+  @media (min-width:560px){ .cover-light img{--cl-scale:9;} }
+  .cover-light img.on{opacity:.62;}
+  /* Tokens only: the veil fades to whichever theme is on, so Walnut, Navy,
+     Mahogany and Oak each fade to their own background with no per-theme rule. */
+  .cover-light::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(to bottom,
+      var(--bgs-bg) 0,
+      rgba(var(--bgs-bg-rgb),.35) 22%,
+      rgba(var(--bgs-bg-rgb),.25) 70%,
+      rgba(var(--bgs-bg-rgb),.85) 100%);
+  }
+    body.coverlight #screen{position:relative;z-index:1;}
+</style>
+<style>
+/* ═════ NEW: the count-and-crown reveal (replaces .reveal / .flip / tease→flip) ═════
+   WebKit rule kept: .rv-mini and .rv-chip use TRANSITIONS only; .rv-cover, .rv-flash, the confetti pieces and the
+   headline use ANIMATIONS only. No element has both on the same property. */
+.rv-stage{display:flex;flex-direction:column;align-items:center;min-height:250px;margin-bottom:18px;-webkit-tap-highlight-color:transparent}
+.rv-stage.skippable{cursor:pointer}
+.rv-seats{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:2px 0 18px;max-width:330px}
+.rv-seat{position:relative;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font:600 12px/1 'Inter',sans-serif;color:var(--bgs-ivory-70);background:rgba(var(--bgs-ivory-rgb),.07);border:1px solid rgba(var(--bgs-ivory-rgb),.16)}
+.rv-seat.me{color:var(--bgs-gold);border-color:rgba(var(--bgs-gold-rgb),.6)}
+.rv-chip{position:absolute;right:-6px;bottom:-5px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;
+  font:700 10px/1 'Inter',sans-serif;opacity:0;transform:scale(.5);transition:opacity .22s ease,transform .22s ease}
+.rv-chip.show{opacity:1;transform:none}
+.rv-chip.ok{background:var(--bgs-ivory);color:var(--bgs-bg)}
+/* Gold, not sage — same reasoning as .vchip.play: by this screen a play vote is history, what is on display is a winner. */
+.rv-chip.play{background:var(--bgs-gold);color:var(--bgs-on-gold)}
+.rv-chip.pass{background:var(--bgs-plate);color:var(--bgs-ivory-45);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.22)}
+.rv-chip.novote{background:var(--bgs-bg);color:var(--bgs-ivory-45);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.28);font-weight:500}
+
+.rv-minis{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 10px}
+.rv-mini{width:var(--mw,56px);flex:none;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .4s ease}
+.rv-mini .c{aspect-ratio:3/4;border-radius:7px;overflow:hidden;background:var(--bgs-bg-radial);border:1px solid rgba(var(--bgs-gold-rgb),.18);transition:box-shadow .4s ease}
+.rv-mini .c img{width:100%;height:100%;object-fit:cover;display:block}
+.rv-pips{display:flex;justify-content:center;gap:2px;margin-top:7px;min-height:6px}
+.rv-pips i{width:var(--pip,5px);height:var(--pip,5px);flex:none;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.18);transition:background-color .25s ease}
+.rv-pips i.on{background:var(--bgs-gold)}
+.rv-num{font:400 10.5px/1 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45);text-align:center;margin-top:7px}
+.rv-mini.win{transform:translateY(-9px) scale(1.13)}
+.rv-mini.win .c{box-shadow:0 0 0 2px var(--bgs-gold),0 0 26px rgba(var(--bgs-gold-rgb),.3)}
+.rv-minis.decided .rv-mini:not(.win){opacity:.36}
+
+.rv-crown{display:none;position:relative;justify-content:center;gap:16px}
+.rv-stage.done .rv-seats,.rv-stage.done .rv-minis{display:none}
+.rv-stage.done{min-height:0}
+.rv-stage.done .rv-crown{display:flex}
+.rv-cover{position:relative;width:236px;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--bgs-plate);
+  border:1px solid rgba(var(--bgs-gold-rgb),.3);box-shadow:0 0 44px rgba(var(--bgs-gold-rgb),.28),0 18px 34px -10px rgba(0,0,0,.55)}
+.rv-crown.duo .rv-cover{width:150px}
+.rv-crown.trio .rv-cover{width:104px}
+.rv-cover img{width:100%;height:100%;object-fit:cover;display:block}
+@keyframes rv-crown{0%{transform:scale(.5) rotate(-12deg);opacity:0}55%{transform:scale(1.08) rotate(1.5deg);opacity:1}75%{transform:scale(.98) rotate(-1deg)}100%{transform:none;opacity:1}}
+@keyframes rv-flash{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}25%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
+@keyframes rv-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.rv-stage.done.play .rv-cover{animation:rv-crown .75s cubic-bezier(.2,.9,.25,1) both}
+.rv-stage.done.play .rv-cover:nth-child(3){animation-delay:.12s}
+.rv-flash{position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;border-radius:50%;pointer-events:none;opacity:0;z-index:-1;
+  background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.75),rgba(var(--bgs-gold-rgb),.15) 55%,transparent 72%)}
+.rv-stage.done.play.solo .rv-flash{animation:rv-flash 1s ease-out both}
+.rv-burst{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none;z-index:3}
+.rv-burst i{position:absolute;left:-4px;top:-6px;width:8px;height:12px;border-radius:2px;opacity:0}
+h1.rv-swap{animation:rv-rise .35s ease both}
+/* the seats move under the count pill once the winner is up */
+.winner-meta .rv-seats{margin:14px auto 0}
+@media (prefers-reduced-motion:reduce){.rv-mini,.rv-mini .c,.rv-chip,.rv-pips i{transition:none}.rv-cover,.rv-flash,h1.rv-swap{animation:none!important}}
+html.rm .rv-mini,html.rm .rv-mini .c,html.rm .rv-chip,html.rm .rv-pips i,html.rm .winner-meta,html.rm .rest,html.rm .actions,html.rm .result-row,html.rm .cover-light img{transition:none!important}
+html.rm .rv-cover,html.rm .rv-flash,html.rm h1.rv-swap{animation:none!important}
+
+/* mockup-only demo bar */
+.demobar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:6px;align-items:center;padding:9px 10px calc(9px + env(safe-area-inset-bottom,0px));overflow-x:auto;white-space:nowrap;background:#0b0908;border-top:1px solid rgba(255,255,255,.1);font:400 11.5px/1 'IBM Plex Mono',monospace;color:#eee}
+.demobar b{font-weight:500;opacity:.55;margin:0 2px 0 8px}
+.demobar button{padding:7px 10px;border-radius:99px;border:1px solid rgba(255,255,255,.16);background:none;color:inherit;font:inherit;flex:none;cursor:pointer}
+.demobar button[aria-pressed="true"]{background:#f3eadb;color:#111}
+body{padding-bottom:70px!important}
+</style>
+</head>
+<body class="coverlight">
+<div class="cover-light" aria-hidden="true"><img alt=""><img alt=""></div>
+<div class="screen" id="screen"></div>
+
+<div class="demobar" role="group" aria-label="Mockup controls">
+  <button id="replay">↻ Replay</button>
+  <b>Outcome</b>
+  <button data-outcome="winner" aria-pressed="true">Winner</button>
+  <button data-outcome="tie" aria-pressed="false">Tie</button>
+  <button data-outcome="nobody" aria-pressed="false">Nobody</button>
+  <button data-outcome="forced" aria-pressed="false">Forced (no-votes)</button>
+  <b>Table</b>
+  <button data-table="3" aria-pressed="false">3</button><button data-table="5" aria-pressed="true">5</button><button data-table="8" aria-pressed="false">8</button>
+  <b>Deck</b>
+  <button data-deck="3" aria-pressed="false">3</button><button data-deck="6" aria-pressed="true">6</button><button data-deck="10" aria-pressed="false">10</button>
+  <b>Theme</b>
+  <button data-theme="walnut" aria-pressed="true">Walnut</button><button data-theme="navy" aria-pressed="false">Navy</button>
+  <b>State</b>
+  <button id="seen" aria-pressed="false">Seen already</button>
+  <button id="rm" aria-pressed="false">Reduced motion</button>
+</div>
+<script>
+const DECK_ALL = [{"bggId": "295947", "title": "Cascadia", "image": "https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg"}, {"bggId": "178900", "title": "Codenames", "image": "https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg"}, {"bggId": "148228", "title": "Splendor", "image": "https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg"}, {"bggId": "30549", "title": "Pandemic", "image": "https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg"}, {"bggId": "254640", "title": "Just One", "image": "https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg"}, {"bggId": "342942", "title": "Ark Nova", "image": "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg"}, {"bggId": "163412", "title": "Patchwork", "image": "https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg"}, {"bggId": "237182", "title": "Root", "image": "https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg"}, {"bggId": "262543", "title": "Wavelength", "image": "https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png"}, {"bggId": "225694", "title": "Decrypto", "image": "https://cf.geekdo-images.com/X6HDeg8AhGXGhB8je65MTw__original/img/A2cgVhqNzUMUGg7_GJ5omWcdkt8=/0x0/filters:format(jpeg)/pic7303572.jpg"}];
+const NAMES = ['Nok','Theo','Priya','Sam','Mai','Ben','June','Ken'];
+const screen = document.getElementById('screen');
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const state = { outcome:'winner', table:5, deck:6, seen:false };
+const rm = () => document.documentElement.classList.contains('rm') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ── cover light: same function as vote-swipe.html ── */
+let lightIdx = 0;
+function setCoverLight(url){const imgs=$$('.cover-light img');if(imgs.length!==2)return;
+  if(!url){imgs.forEach(i=>i.classList.remove('on'));return}
+  const next=imgs[lightIdx^=1],prev=imgs[lightIdx^1];next.onerror=()=>next.classList.remove('on');next.src=url;next.classList.add('on');prev.classList.remove('on')}
+
+/* ── mock votes (mockup only). Deterministic per setting so a state looks the same every replay. ── */
+function mockVotes(deck, people, outcome){
+  let seed = deck.length*31 + people.length*7 + outcome.length; const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
+  const votes=[]; const put=(g,n,v)=>votes.push({game_id:g.bggId,participant_name:n,vote:v});
+  const plays = deck.map(()=>people.map(()=>rnd()<.48));
+  if(outcome==='nobody'){ plays.forEach(r=>r.fill(false)); }
+  else {
+    const counts=()=>plays.map(r=>r.filter(Boolean).length);
+    const w = 1 % deck.length, w2 = deck.length>2?2:0;
+    plays[w] = people.map((_,i)=>i!==people.length-1 || people.length<4);          // nearly everyone plays the winner
+    const top = plays[w].filter(Boolean).length;
+    plays.forEach((r,gi)=>{ if(gi===w) return; while(r.filter(Boolean).length >= top) r[r.indexOf(true)] = false; });
+    if(outcome==='tie'){ plays[w2] = plays[w].slice().reverse(); }
+  }
+  deck.forEach((g,gi)=>people.forEach((n,pi)=>{
+    if(outcome==='forced' && pi>=people.length-1 && gi>=Math.ceil(deck.length/2)) return;    // host forced results: last voter never finished
+    put(g,n,plays[gi][pi]?'play':'pass')}));
+  return votes;
+}
+
+/* ── tally(): copied from results.html unchanged ── */
+function tally(deck, participants, votes){
+  const byGame=new Map(deck.map(g=>[g.bggId,{play:[],pass:[]}]));
+  for(const v of votes){const e=byGame.get(v.game_id);if(!e)continue;(v.vote==='play'?e.play:e.pass).push(v.participant_name)}
+  const rows=deck.map(g=>{const {play,pass}=byGame.get(g.bggId);const voted=new Set([...play,...pass]);
+    return {game:g,play:participants.filter(n=>play.includes(n)),pass:participants.filter(n=>pass.includes(n)),noVote:participants.filter(n=>!voted.has(n))}});
+  const sorted=[...rows].sort((a,b)=>b.play.length-a.play.length);let rank=0,prev=-1;
+  return sorted.map(r=>{if(r.play.length!==prev){rank+=1;prev=r.play.length}return {...r,rank}});
+}
+
+let timers=[];
+const clearTimers=()=>{timers.forEach(clearTimeout);timers=[]};
+
+function run(){
+  clearTimers(); setCoverLight(null);
+  const participants = NAMES.slice(0,state.table), deck = DECK_ALL.slice(0,state.deck), myName='Nok', hostName='Nok';
+  const outcome = state.outcome, votes = mockVotes(deck, participants, outcome);
+  const total = participants.length, rows = tally(deck, participants, votes);
+  const nobody = rows.length===0 || rows[0].play.length===0;
+  const winners = nobody ? [] : rows.filter(r=>r.rank===1);
+  const rest = nobody ? rows : rows.filter(r=>r.rank!==1);
+  const tie = winners.length>1;
+  const anyoneUnfinished = n => rows.some(r=>r.noVote.includes(n));
+
+  const chipsHTML=r=>`<div class="vchips">${r.play.map(n=>`<span class="vchip play">${n}</span>`).join('')}${r.pass.map(n=>`<span class="vchip pass">${n}</span>`).join('')}${r.noVote.map(n=>`<span class="vchip novote">${n} · no vote</span>`).join('')}</div>`;
+  const countText=r=>{const nv=r.noVote.length;return `${r.play.length} of ${total}${nv?` · ${nv} no vote`:''}`};
+  const mw = deck.length<=5?56:deck.length<=8?50:44;
+  // balanced rows (6 → 3+3, 10 → 5+5), never an orphan on its own line
+  const rowsN = Math.ceil(deck.length/5), perRow = Math.ceil(deck.length/rowsN), minisW = perRow*mw + (perRow-1)*10;
+  // one pip per person; pips shrink to fit under the cover, and below 3px the count becomes a number
+  const pip = Math.min(5, Math.floor((mw - (total-1)*2)/total)), usePips = pip>=3;
+
+  screen.innerHTML = `
+    <div class="eyebrow">Game Night · K7QP</div>
+    <h1 id="headline">Votes are sealed</h1>
+    <div class="rv-stage skippable ${tie?'':'solo'}" id="stage">
+      <div class="rv-seats" id="seats">${participants.map(n=>`<span class="rv-seat ${n===myName?'me':''}" data-n="${n}" title="${n}">${n[0]}<span class="rv-chip"></span></span>`).join('')}</div>
+      <div class="rv-minis" id="minis" style="--mw:${mw}px;--pip:${pip}px;max-width:${minisW}px">${deck.map(g=>`<div class="rv-mini" data-g="${g.bggId}"><div class="c"><img src="${g.image}" alt=""></div>${usePips?`<div class="rv-pips">${'<i></i>'.repeat(total)}</div>`:`<div class="rv-num">0</div>`}</div>`).join('')}</div>
+      <div class="rv-crown ${winners.length===2?'duo':winners.length>2?'trio':''}" id="crown">
+        <div class="rv-flash"></div>
+        ${winners.slice(0,3).map(r=>`<div class="rv-cover"><button class="info-btn" aria-label="About ${r.game.title}">i</button><img src="${r.game.image}" alt="${r.game.title} cover"></div>`).join('')}
+        <div class="rv-burst" id="burst"></div>
+      </div>
+    </div>
+    <div class="winner-meta" id="winnerMeta">
+      ${nobody?`<p class="winner-title">Everyone passed on everything.</p><p class="actions-hint" style="margin-top:6px;">The shelf awaits — maybe a different deck.</p>`
+      :`<p class="winner-title">${winners.map(w=>w.game.title).join(' <span class="amp">&</span> ')}</p>
+        <button class="count-pill" id="winnerPill" aria-expanded="false">${tie?`Tied — ${winners[0].play.length} of ${total} would play ${winners.length===2?'both':'each'}`:`${winners[0].play.length} of ${total} would play`}<span class="chev">›</span></button>
+        <div class="winner-names" id="winnerNames" hidden>${chipsHTML(winners[0])}</div>`}
+    </div>
+    <div class="rest" id="rest"><h2>${nobody?'How the votes fell':'How the rest stacked up'}</h2>
+      ${rest.map((r,i)=>`<div class="result-row" style="transition-delay:${(0.08*i).toFixed(2)}s"><div class="row-head"><button class="row-main" aria-expanded="false"><span class="rank">${nobody?'–':r.rank}</span><span class="row-thumb"><img src="${r.game.image}" alt="" loading="lazy"></span><span class="row-info"><span class="row-title">${r.game.title}</span><span class="row-sub"><span class="row-count">${countText(r)}</span></span></span></button><button class="row-ibtn" aria-label="About ${r.game.title}">i</button></div><div class="row-names" hidden>${chipsHTML(r)}</div></div>`).join('')}
+    </div>
+    <div class="actions" id="actions">${tie?`<button class="btn-primary" type="button">Rematch</button><p class="actions-hint">Everyone votes again — just the ${winners.length} tied games.</p><a class="btn-ghost" href="#">Back to the shelf</a>`:`<a class="btn-primary" href="#">Back to the shelf</a>`}</div>`;
+
+  const pill=$('#winnerPill'); if(pill) pill.onclick=()=>{const n=$('#winnerNames');n.hidden=!n.hidden;pill.setAttribute('aria-expanded',String(!n.hidden))};
+  $$('.row-main').forEach(b=>b.onclick=()=>{const n=b.closest('.result-row').querySelector('.row-names');n.hidden=!n.hidden;b.setAttribute('aria-expanded',String(!n.hidden))});
+
+  const stage=$('#stage'), headline=$('#headline');
+  const say=t=>{headline.textContent=t;headline.classList.remove('rv-swap');void headline.offsetWidth;headline.classList.add('rv-swap')};
+  const seat=n=>$(`.rv-seat[data-n="${n}"] .rv-chip`);
+  const chip=(n,kind)=>{const c=seat(n);c.className='rv-chip show '+kind;c.textContent={ok:'✓',play:'✓',pass:'✕',novote:'–'}[kind]};
+  const mini=r=>$(`.rv-mini[data-g="${r.game.bggId}"]`);
+  // sealed: a tick for everyone who finished, a dash for anyone the host's "Show results now" cut off
+  participants.forEach(n=>chip(n, anyoneUnfinished(n)?'novote':'ok'));
+
+  const finalHeadline = nobody ? "Nobody's feeling it tonight" : tie ? "It's a tie" : 'Tonight we play';
+  let finished=false;
+  function finish(animated){
+    if(finished) return; finished=true; clearTimers(); stage.classList.remove('skippable');
+    headline.textContent=finalHeadline;
+    rows.forEach(r=>{const m=mini(r); if(usePips) m.querySelectorAll('.rv-pips i').forEach((p,k)=>p.classList.toggle('on',k<r.play.length)); else m.querySelector('.rv-num').textContent=r.play.length});
+    if(nobody){ $('#minis').classList.add('decided'); }
+    else {
+      stage.classList.add('done'); if(animated) stage.classList.add('play');
+      setCoverLight(tie?null:winners[0].game.image);
+      if(animated && !tie){ confetti(); buzz([18,40,30]); }
+      // the seats move under the pill and turn over each person's vote on the winning game
+      if(!tie){ $('#winnerMeta').appendChild($('#seats'));
+      const w=winners[0]; participants.forEach((n,i)=>{const kind=w.play.includes(n)?'play':w.pass.includes(n)?'pass':'novote';
+        const c=seat(n); c.className='rv-chip'; timers.push(setTimeout(()=>chip(n,kind), animated?650+i*130:0))}); }
+    }
+    const d=animated?[500,1300,1700]:[0,0,0];
+    timers.push(setTimeout(()=>$('#winnerMeta').classList.add('show'),d[0]));
+    timers.push(setTimeout(()=>$('#rest').classList.add('show'),d[1]));
+    timers.push(setTimeout(()=>$('#actions').classList.add('show'),d[2]));
+  }
+  stage.onclick=e=>{ if(!finished && !e.target.closest('.info-btn')) finish(false) };     // tap anywhere on the count to skip it
+
+  // Seen this round's reveal already (refresh, back-navigation), or reduced motion: land on the result.
+  if(state.seen || rm()) return finish(false);
+
+  let t=0; const at=(ms,f)=>{t+=ms;timers.push(setTimeout(f,t))};
+  at(900,()=>say('Counting the votes'));
+  // ballots tick in round-robin across the deck; the whole count lasts about 1.5s however many votes there are
+  const totalPlays=rows.reduce((a,r)=>a+r.play.length,0), step=Math.max(40,Math.min(110,Math.round(1500/Math.max(totalPlays,1))));
+  for(let k=0;k<total;k++) rows.forEach(r=>{ if(k<r.play.length) at(step,()=>{const m=mini(r); if(usePips) m.querySelectorAll('.rv-pips i')[k].classList.add('on'); else m.querySelector('.rv-num').textContent=k+1}) });
+  if(!totalPlays) at(1100,()=>{});
+  at(450,()=>{ say(nobody?finalHeadline:tie?"It's a tie":'The table has decided'); $('#minis').classList.add('decided');
+    winners.forEach(r=>mini(r).classList.add('win')); if(!nobody&&!tie) setCoverLight(winners[0].game.image); buzz(8); });
+  at(nobody?300:950,()=>finish(true));
+}
+
+function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+function confetti(){const host=$('#burst');if(!host||rm())return;host.innerHTML='';
+  const cols=['var(--bgs-gold)','var(--bgs-vote-play)','var(--bgs-vote-pass)','var(--bgs-ivory)','var(--bgs-gold)'];
+  for(let n=0;n<34;n++){const el=document.createElement('i');el.style.background=cols[n%5];host.appendChild(el);
+    const ang=Math.random()*Math.PI*2,dist=100+Math.random()*160,x=Math.cos(ang)*dist,y=Math.sin(ang)*dist-60;
+    el.animate([{transform:'translate(0,0) rotate(0) scale(.4)',opacity:1},{transform:`translate(${x}px,${y}px) rotate(${Math.random()*540-270}deg) scale(1)`,opacity:1,offset:.6},
+      {transform:`translate(${x*1.1}px,${y+120}px) rotate(${Math.random()*720-360}deg) scale(.9)`,opacity:0}],{duration:1100+Math.random()*700,easing:'cubic-bezier(.15,.8,.3,1)',fill:'forwards'}).onfinish=()=>el.remove()}}
+
+/* demo bar */
+function press(k,v){$$(`.demobar [data-${k}]`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset[k]===String(v))))}
+['outcome','table','deck'].forEach(k=>$$(`.demobar [data-${k}]`).forEach(b=>b.onclick=()=>{state[k]=k==='outcome'?b.dataset[k]:+b.dataset[k];press(k,b.dataset[k]);run()}));
+$$('.demobar [data-theme]').forEach(b=>b.onclick=()=>{document.documentElement.dataset.theme=b.dataset.theme;press('theme',b.dataset.theme)});
+$('#seen').onclick=e=>{state.seen=!state.seen;e.currentTarget.setAttribute('aria-pressed',String(state.seen));run()};
+$('#rm').onclick=e=>{const on=document.documentElement.classList.toggle('rm');e.currentTarget.setAttribute('aria-pressed',String(on));run()};
+$('#replay').onclick=run;
+run();
+
+</script>
+</body>
+</html>
