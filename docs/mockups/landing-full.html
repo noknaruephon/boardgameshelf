@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en" data-theme="walnut">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BoardgameShelf — landing page, full mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>/* ═════ HERO (approved: landing-hero-c.html) ═════ */
+
+/* Tokens are the production values from css/base.css (walnut + shared). Styles are written mobile first;
+   the only breakpoint (900px) adds the two-column desktop layout. */
+:root{
+  --bgs-bg:#171110;--bgs-bg-rgb:23,17,16;--bgs-plate:#211915;--bgs-plate-rgb:33,25,21;--bgs-bg-radial:#1F1816;
+  --bgs-ivory:#F2E9DA;--bgs-ivory-rgb:242,233,218;--bgs-ivory-70:rgba(242,233,218,0.72);--bgs-ivory-45:rgba(242,233,218,0.45);--line:rgba(242,233,218,0.10);
+  --bgs-gold:#E4B54D;--bgs-gold-rgb:228,181,77;--bgs-on-gold:#2A1F0C;--bgs-gold-dim:rgba(240,196,85,0.80);
+  --bgs-vote-play:#5FB07F;--bgs-vote-pass:#D9645A;
+  /* Liquid Glass tokens, verbatim from css/base.css */
+  --glass-fill-a:.52;--glass-blur:22px;--glass-sat:1.6;--glass-rim-w:1.5px;--glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);--glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
+  --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);--glass-sheen:rgba(var(--bgs-ivory-rgb),.10);--light-x:20%;--ease-liquid:cubic-bezier(.32,.72,0,1);--bgs-gold-hover:#F0C455;
+  --mk-play:var(--bgs-vote-play);--mk-pass:var(--bgs-vote-pass);--mk-ink:#2a1a0c;
+  --mk-hair:rgba(var(--bgs-ivory-rgb),.12);--mk-dim:rgba(var(--bgs-ivory-rgb),.74);
+  --mk-display:"Fraunces",Georgia,serif;--mk-ui:"Inter",system-ui,sans-serif;--mk-mono:"IBM Plex Mono",ui-monospace,monospace;
+  --mk-focus:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+  --demo:46px;          /* mockup-only: height of the demo bar pinned to the top */
+  --sticky:86px;        /* mobile sticky CTA height */
+  --wall-o:.26;         /* wall prominence: locked at Soft */
+  --light-s:5;          /* cover light scale: small source scaled up, as in the vote screen spec */
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bgs-bg);color:var(--bgs-ivory);font:400 16px/1.5 var(--mk-ui);-webkit-font-smoothing:antialiased;padding-top:var(--demo)}
+img{display:block;max-width:100%}a{color:inherit}p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a:focus-visible,button:focus-visible{outline:0;box-shadow:var(--mk-focus)}
+.mono{font:400 12px/1.4 var(--mk-mono);color:var(--mk-dim)}
+
+/* ── Hero shell */
+.hero{position:relative;overflow:hidden;isolation:isolate;min-height:calc(100svh - var(--demo));display:flex;flex-direction:column;padding:0 20px calc(var(--sticky) + 12px)}
+.bg{position:absolute;inset:0;z-index:-1;pointer-events:none}
+
+/* 1. Cover wall: desaturated and faint. Only the columns' transform animates. */
+.wall{position:absolute;inset:-18% -30%;display:flex;justify-content:center;gap:10px;transform:rotate(-9deg);opacity:var(--wall-o);filter:grayscale(.75) contrast(1.05)}
+.col{flex:0 0 clamp(84px,24vw,170px);display:flex;flex-direction:column;gap:10px}
+.col:nth-child(n+7){display:none}
+.col img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:9px;background:var(--bgs-plate)}
+@keyframes up{to{transform:translateY(-16%)}}@keyframes down{from{transform:translateY(-16%)}to{transform:translateY(0)}}
+.col:nth-child(odd){animation:up 60s linear infinite alternate}.col:nth-child(even){animation:down 60s linear infinite alternate}
+
+/* 2. Cover light OVER the wall: the whole wall takes the top card's colour. Opacity-only cross-fade. */
+.light{position:absolute;inset:0}
+.light img{position:absolute;left:50%;top:50%;width:160px;height:200px;max-width:none;object-fit:cover;opacity:0;transition:opacity .7s;filter:blur(22px) saturate(1.6);transform:translate(-50%,-50%) scale(var(--light-s))}
+.light img.on{opacity:.5}
+
+/* 3. Veil: back to the theme colour at the top bar and the bottom edge, and a little behind the copy */
+.veil{position:absolute;inset:0;background:linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.62) 16%,rgba(var(--bgs-bg-rgb),.34) 58%,rgba(var(--bgs-bg-rgb),.7) 86%,var(--bgs-bg) 100%)}
+
+/* ── Content */
+.top{display:flex;align-items:center;gap:8px;padding:14px 0}
+.wordmark{font:italic 500 20px/1 var(--mk-display)}
+.beta{font:500 10px/1 var(--mk-mono);padding:4px 6px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--mk-hair);color:var(--mk-dim)}
+.signin{margin-left:auto;font-weight:500;font-size:14px;text-decoration:none;min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border-radius:99px;background:rgba(var(--bgs-bg-rgb),.45);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.inner{flex:1;display:flex;flex-direction:column;justify-content:flex-start;gap:16px;padding-top:4px}
+h1{font-family:var(--mk-display);font-weight:500;margin:0;letter-spacing:-.02em;font-variation-settings:"opsz" 144;font-size:clamp(36px,10.4vw,48px);line-height:1}
+.lede{font-size:16px;color:var(--mk-dim);margin-top:12px;max-width:30em}
+.cta{display:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:99px;font-weight:600;font-size:16px;text-decoration:none}
+.btn.sm{min-height:44px;padding:0 18px;font-size:14.5px}
+.btn-gold{background:var(--bgs-gold);color:var(--mk-ink)}
+.btn-glass{background:rgba(var(--bgs-ivory-rgb),.09);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.textlink{font-size:14.5px;color:var(--mk-dim);text-underline-offset:3px}
+
+/* Vote table. Deck width is capped by viewport HEIGHT too, so headline + deck + buttons fit one phone screen. */
+.table{position:relative;align-self:center;margin:auto 0;width:min(64vw,29svh,300px)}   /* copy stays put; the table centres in what is left */
+.deck{position:relative;aspect-ratio:4/5;width:100%}
+.slot{position:absolute;inset:0;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
+.card{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 26px 50px -16px rgba(0,0,0,.9),inset 0 0 0 1px var(--mk-hair);touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.card.snap{transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+.card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.stamp{position:absolute;top:14px;padding:6px 12px;border-radius:99px;font:600 14px/1 var(--mk-ui);opacity:0}
+.stamp.play{left:14px;background:var(--mk-play);color:#10210f}.stamp.pass{right:14px;background:var(--mk-pass);color:#fff}
+.actions{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:26px}
+.round{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--bgs-ivory-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),inset 0 1px 0 rgba(255,255,255,.16);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4)}
+.round svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.round.no{color:var(--mk-pass)}.round.yes{color:var(--mk-play)}
+.actions .mono{min-width:44px;text-align:center}
+.result{display:none;text-align:center}
+.winner{width:min(68%,31svh);margin:14px auto 0;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 0 0 2px var(--bgs-gold),0 24px 50px -18px #000;transform:rotate(-2deg)}
+.winner img{width:100%;height:100%;object-fit:cover}
+
+/* The table: four friends + you. While voting, a neutral chip marks who has already voted on the current card; votes are only revealed on the winner, at the end. */
+.seats{display:flex;justify-content:center;gap:10px;margin:0 -60px 16px}
+.seat{position:relative;flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--tint) 26%,rgba(var(--bgs-bg-rgb),.6));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tint) 55%,transparent)}
+.seat svg{width:19px;height:19px;fill:var(--tint)}
+.seat.you{box-shadow:inset 0 0 0 1.5px var(--bgs-gold)}
+.seat.you::after{content:"You";position:absolute;top:-15px;left:50%;transform:translateX(-50%);font:500 10px/1 var(--mk-mono);color:var(--bgs-gold)}
+.chip{position:absolute;right:-6px;bottom:-5px;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font:700 11px/1 var(--mk-ui);opacity:0;transform:scale(.5);transition:opacity .22s,transform .22s}
+.chip.show{opacity:1;transform:none}
+.chip.y{background:var(--mk-play);color:#10210f}.chip.n{background:var(--mk-pass);color:#fff}.chip.ok{background:var(--bgs-ivory);color:var(--bgs-bg)}
+.dots{position:absolute;right:-8px;bottom:-5px;display:none;gap:2px;padding:5px 5px;border-radius:99px;background:rgba(var(--bgs-bg-rgb),.85);box-shadow:inset 0 0 0 1px var(--mk-hair)}
+.seat.slow .dots{display:flex}
+.dots i{width:3px;height:3px;border-radius:50%;background:var(--bgs-ivory)}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}           /* animation only; these dots have no transition */
+.dots i{animation:blink 1s infinite}.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}
+
+/* Phase 2: everyone has voted but one. Five mini covers, five pips each. */
+.counting{display:none;text-align:center}
+.counting h3,.result h3{font:500 26px/1.1 var(--mk-display);margin:0}
+.minis{display:flex;justify-content:center;gap:10px;margin-top:18px}
+.mini{width:48px;flex:none;overflow:visible;transition:width .45s cubic-bezier(.2,.8,.2,1),margin .45s cubic-bezier(.2,.8,.2,1),transform .45s cubic-bezier(.2,.8,.2,1),opacity .4s,filter .4s} /* transitions only: never add an animation to .mini */
+.mini .c{aspect-ratio:4/5;border-radius:8px;overflow:hidden;background:var(--bgs-plate);box-shadow:inset 0 0 0 1px var(--mk-hair)}
+.mini .c img{width:100%;height:100%;object-fit:cover}
+.pips{display:flex;justify-content:center;gap:3px;margin-top:7px}
+.pips i{width:5px;height:5px;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.2);transition:background-color .3s}
+.pips i.on{background:var(--mk-play)}
+.pips i.on{transform:scale(1.25)}
+.mini.win{transform:translateY(-10px) scale(1.14)}.mini.win .c{box-shadow:0 0 0 2px var(--bgs-gold)}.mini.win .pips i.on{background:var(--bgs-gold)}
+.minis.decided .mini:not(.win){opacity:.4}
+.counting p{margin-top:16px}
+
+.table.waiting,.table.done{width:min(88vw,340px)}
+.table.waiting .deck,.table.waiting .actions,.table.done .deck,.table.done .actions{display:none}
+.table.waiting .counting{display:block}
+.table.done .seats{order:3;margin:30px 0 0}
+.table.done{display:flex;flex-direction:column}
+.table.done .result{display:block;order:1;position:relative}
+/* Winner entrance: animations live on elements that have NO transitions (WebKit rule) */
+@keyframes crown{0%{transform:scale(.5) rotate(-12deg);opacity:0}55%{transform:scale(1.08) rotate(1.5deg);opacity:1}75%{transform:scale(.98) rotate(-3deg)}100%{transform:scale(1) rotate(-2deg);opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes flash{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}25%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
+.table.done .winner{animation:crown .75s cubic-bezier(.2,.9,.25,1) both}
+.table.done .result h3{animation:rise .5s .1s both}
+.table.done .after{animation:rise .5s .95s both}
+.flash{position:absolute;left:50%;top:56%;width:130%;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.75),rgba(var(--bgs-gold-rgb),.15) 55%,transparent 72%);pointer-events:none;opacity:0;z-index:-1}
+.table.done .flash{animation:flash 1s ease-out both}
+.burst{position:absolute;left:50%;top:56%;width:0;height:0;pointer-events:none;z-index:3}
+.burst i{position:absolute;left:-4px;top:-6px;width:8px;height:12px;border-radius:2px;opacity:0}
+.table.done .after{order:4}
+.after{display:none;text-align:center}.table.done .after{display:block}
+.after p{color:var(--mk-dim);font-size:14.5px;margin-top:12px}
+.after .row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:14px}
+
+@media (max-width:899px){.inner:has(.table.done) .lede,.inner:has(.table.waiting) .lede{display:none}}
+
+/* Mobile floating CTA: no bar. One Liquid Glass pill floating over the page (the .glass recipe from css/glass.css,
+   with a gold tint and a stronger gold rim so it still reads as the primary action). Transitions move transform only. */
+.sticky{position:fixed;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;justify-content:center;pointer-events:none}
+.sticky .fab{width:min(100%,420px)}
+.cta .fab{padding:0 30px}
+.fab{pointer-events:auto;position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;gap:9px;min-height:56px;border-radius:99px;
+  font-weight:700;font-size:16.5px;color:var(--bgs-gold-hover);text-decoration:none;
+  background:
+    linear-gradient(135deg,var(--glass-sheen) 0%,transparent 38%,transparent 70%,rgba(var(--bgs-ivory-rgb),.04) 100%) var(--light-x) 0 / 220% 100% no-repeat,
+    linear-gradient(rgba(var(--bgs-gold-rgb),.20),rgba(var(--bgs-gold-rgb),.12)),
+    rgba(var(--bgs-plate-rgb),var(--glass-fill-a));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  --glass-focus:0 0 0 0 transparent;
+  box-shadow:var(--glass-focus),inset 1px 1px 0 var(--glass-rim-light),inset -1px -1px 0 rgba(0,0,0,.45),inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55),0 0 28px rgba(var(--bgs-gold-rgb),.22),var(--glass-shadow);
+  transition:transform .28s var(--ease-liquid)}
+.fab::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;padding:var(--glass-rim-w);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  background:conic-gradient(from 210deg at 50% 50%,rgba(var(--bgs-ivory-rgb),.30),rgba(var(--bgs-ivory-rgb),.18) 25%,transparent 45%,rgba(var(--bgs-gold-rgb),.35) 60%,transparent 80%,rgba(var(--bgs-ivory-rgb),.30))}
+.fab:active{transform:scale(.97)}
+.fab:focus-visible{outline:0;--glass-focus:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.fab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Short phones: shrink the deck first, then the type, so the ✕ / ✓ stay above the sticky CTA */
+@media (max-height:720px) and (max-width:899px){h1{font-size:32px}.lede{font-size:15px;margin-top:8px}.inner{gap:10px}.table{width:min(56vw,21svh)}.seats{margin-bottom:10px}.seat{width:30px;height:30px}.seat svg{width:16px;height:16px}.winner{width:min(48%,27svh)!important}.inner:has(.table.done) .lede,.inner:has(.table.waiting) .lede{display:none}.table.done .seats{margin-top:24px}.after p{margin-top:8px}.after .row{margin-top:10px}.actions{margin-top:18px}.round{width:52px;height:52px}.top{padding:8px 0}}
+
+/* ── Desktop */
+@media (min-width:900px){
+  :root{--light-s:9}
+  .hero{padding:0 max(24px,calc((100vw - 1180px)/2 + 24px)) 0;min-height:min(880px,calc(100svh - var(--demo)))}
+  .wall{inset:-22% -10%;gap:16px}.col{flex-basis:clamp(130px,12vw,180px);gap:16px}.col:nth-child(n+7){display:flex}
+  .col img{border-radius:12px}
+  .veil{background:radial-gradient(ellipse 70% 90% at 25% 55%,rgba(var(--bgs-bg-rgb),.72) 0,rgba(var(--bgs-bg-rgb),.3) 70%,transparent 100%),linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.5) 16%,rgba(var(--bgs-bg-rgb),.3) 70%,var(--bgs-bg) 100%)}
+  .top{padding:20px 0}.wordmark{font-size:22px}
+  .inner{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:40px 0 90px}
+  h1{font-size:clamp(56px,6.2vw,84px);line-height:.98}
+  .lede{font-size:19px;margin-top:22px}
+  .cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:30px}
+  .table{width:min(360px,40svh)}.table.waiting,.table.done{width:400px}.winner{width:min(78%,42svh)}.seat{width:42px;height:42px}.seat svg{width:22px;height:22px}.seats{gap:14px;margin-bottom:22px}
+  .card{border-radius:22px}.round{width:64px;height:64px}
+  .sticky{display:none}
+}
+
+
+/* ═════ STORY (approved: pinned phone, A2 "pieces fly out") ═════ */
+.mono{font:400 12px/1.4 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45)}
+h2{font:600 clamp(28px,7.6vw,44px)/1.06 'Fraunces',serif;letter-spacing:-.015em;margin:0}
+h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
+.sec{padding:56px 20px 72px;max-width:1120px;margin:0 auto}
+.sec .intro p{color:var(--bgs-ivory-70);margin-top:12px;max-width:30em}
+.step-n{font:600 12px/1 'IBM Plex Mono',monospace;color:var(--bgs-gold)}
+.step p{color:var(--bgs-ivory-70);margin-top:8px;max-width:30em;font-size:15.5px}
+.opt{display:none}
+[data-opt="a"] .opt-a,[data-opt="b"] .opt-b,[data-opt="c"] .opt-c{display:block}
+
+
+/* ── The four mini screens (shared by every option). Schematic, but built from the real UI: gold selection rings,
+      "{n} selected" chip + "Continue · N" pill, 64/44px vote rounds, cover light wash, the new results crown. */
+.scr{position:relative;width:100%;aspect-ratio:9/16.5;border-radius:26px;overflow:hidden;background:var(--bgs-bg);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.12),0 30px 60px -28px #000;padding:16px 13px;isolation:isolate}
+.scr .eb{font:400 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center}
+.scr .wm{font:italic 500 19px/1.1 'Fraunces',serif;text-align:center;margin-top:5px}
+.scr .ttl{font:600 17px/1.15 'Fraunces',serif;text-align:center;margin-top:6px}
+.scr .url{margin:12px auto 0;width:max-content;max-width:100%;padding:7px 11px;border-radius:99px;background:rgba(var(--bgs-ivory-rgb),.06);font:400 9.5px/1 'IBM Plex Mono',monospace;color:var(--bgs-ivory-70)}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}
+.tile{position:relative;aspect-ratio:3/4;border-radius:7px;overflow:hidden;background:var(--bgs-plate)}
+.tile img{width:100%;height:100%;object-fit:cover}
+.tile.sel::after{content:"";position:absolute;inset:0;border-radius:7px;box-shadow:inset 0 0 0 2.5px var(--bgs-gold)}
+.g3.picking .tile:not(.sel){opacity:.5}
+.dock{position:absolute;left:12px;right:12px;bottom:14px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.s-chip{font:600 10px/1 'IBM Plex Mono',monospace;padding:7px 10px;border-radius:99px;background:rgba(var(--bgs-plate-rgb),.7);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.pillrow{display:flex;gap:7px;width:100%}
+.gpill{flex:1;text-align:center;white-space:nowrap;padding:12px 6px;border-radius:99px;background:var(--bgs-gold);color:var(--bgs-on-gold);font-weight:700;font-size:12.5px}
+.ground{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(var(--bgs-ivory-rgb),.09);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18);font-size:14px}
+.wash{position:absolute;inset:-20%;z-index:-1;background-size:cover;background-position:center;filter:blur(28px) saturate(1.6);opacity:.6}
+.wash::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,var(--bgs-bg) 12%,rgba(var(--bgs-bg-rgb),.3) 40%,rgba(var(--bgs-bg-rgb),.3) 75%,rgba(var(--bgs-bg-rgb),.9))}
+.vcard{width:70%;margin:14px auto 0;aspect-ratio:3/4;border-radius:13px;overflow:hidden;transform:rotate(2.5deg);box-shadow:0 18px 32px -14px #000}
+.vcard img{width:100%;height:100%;object-fit:cover}
+.vrow{position:relative;width:88%;margin:16px auto 0;height:40px;display:flex;justify-content:center;align-items:center;gap:12px}
+.vrow span{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:rgba(var(--bgs-ivory-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2)}
+.vrow .x{color:var(--bgs-vote-pass)}.vrow .v{color:var(--bgs-vote-play)}
+.vrow .i{position:absolute;right:0;width:28px;height:28px;font:italic 600 13px 'Fraunces',serif}
+.roster{display:flex;justify-content:center;gap:5px;margin-top:9px}
+.roster i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:600 9px/1 'Inter',sans-serif;font-style:normal;color:var(--bgs-ivory-70);background:rgba(var(--bgs-ivory-rgb),.08);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16)}
+.roster i.g{color:var(--bgs-on-gold);background:var(--bgs-gold);box-shadow:none}
+.crown{width:62%;margin:14px auto 0;aspect-ratio:3/4;border-radius:12px;overflow:hidden;border:1px solid rgba(var(--bgs-gold-rgb),.3);box-shadow:0 0 36px rgba(var(--bgs-gold-rgb),.3),0 16px 30px -12px #000}
+.crown img{width:100%;height:100%;object-fit:cover}
+.cpill{margin:9px auto 0;width:max-content;padding:6px 11px;border-radius:99px;font-size:10.5px;font-weight:700;color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),.12);border:1px solid rgba(var(--bgs-gold-rgb),.42)}
+
+
+/* ═════ Shared pinned-phone mechanics (approved option A) ═════ */
+.story{position:relative;isolation:isolate}
+.a-wrap{margin-top:24px}
+.a-pin{position:sticky;top:var(--demo);z-index:2;margin:0 -20px;padding:12px 20px 12px;
+  background:rgba(var(--bgs-bg-rgb),.72);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 var(--line);overflow:hidden}   /* clips the floating pieces and dealt cards at the screen edge; overflow on the sticky element itself does not break sticky */
+.stage{position:relative;width:min(50vw,24svh,240px);margin:0 auto;aspect-ratio:9/16.5}
+.a-phone{position:absolute;inset:0;transition:transform .6s cubic-bezier(.32,.72,0,1)}
+.a-phone .scr{position:absolute;inset:0;opacity:0;transition:opacity .45s,transform .6s cubic-bezier(.32,.72,0,1)}
+.a-phone .scr.on{opacity:1}
+.a-tabs{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.a-tabs span{font:600 11px/1 'IBM Plex Mono',monospace;padding:6px 9px;border-radius:99px;color:var(--bgs-ivory-45);transition:color .3s,background-color .3s}
+.a-tabs span.on{color:var(--bgs-on-gold);background:var(--bgs-gold)}
+.a-steps{list-style:none;margin:0;padding:0}
+.a-steps .step{min-height:52svh;padding:22px 0;opacity:.3;transition:opacity .3s}
+.a-steps .step.on{opacity:1}
+
+@media (min-width:900px){
+  .a-wrap{display:grid;grid-template-columns:400px 1fr;gap:72px;margin-top:48px}
+  .a-pin{top:calc(var(--demo) + 32px);align-self:start;margin:0;padding:24px 0;overflow:visible;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+  .stage{width:270px}
+  .a-steps .step{min-height:66vh;display:flex;flex-direction:column;justify-content:center}
+}
+
+/* ═════ A2 — Pieces fly out: bits of each screen lift off the phone and float around it; the phone leans a little each step ═════ */
+.frags{position:absolute;inset:0;pointer-events:none}
+.frag{position:absolute;opacity:0;transform:translate(var(--fx,0),var(--fy,0)) scale(.6);transition:opacity .45s,transform .6s cubic-bezier(.32,.72,0,1)}  /* outer: in/out (transition only) */
+.frag.on{opacity:1;transform:none}
+.frag>*{display:block;animation:bob 4.5s ease-in-out infinite}                                                                              /* inner: idle float (animation only) */
+.frag:nth-child(2n)>*{animation-delay:-1.6s}.frag:nth-child(3n)>*{animation-delay:-3s}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-7px) rotate(var(--rot,0deg))}}
+.f-tile{width:58px;aspect-ratio:3/4;border-radius:8px;overflow:hidden;box-shadow:0 14px 26px -10px #000,inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14)}
+.f-tile img{width:100%;height:100%;object-fit:cover}
+.f-tile.ring{box-shadow:0 14px 26px -10px #000,0 0 0 2.5px var(--bgs-gold)}
+.f-chip{font:600 11px/1 'IBM Plex Mono',monospace;padding:8px 11px;border-radius:99px;white-space:nowrap;background:rgba(var(--bgs-plate-rgb),.75);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),0 10px 22px -8px #000;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.f-gold{font:700 12.5px/1 'Inter',sans-serif;padding:11px 15px;border-radius:99px;white-space:nowrap;background:var(--bgs-gold);color:var(--bgs-on-gold);box-shadow:0 12px 24px -8px rgba(var(--bgs-gold-rgb),.5)}
+.f-round{width:48px;height:48px;border-radius:50%;display:grid!important;place-items:center;font-weight:700;font-size:17px;background:rgba(var(--bgs-ivory-rgb),.12);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.24),0 12px 22px -8px #000;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.f-round.v{color:var(--bgs-vote-play)}.f-round.x{color:var(--bgs-vote-pass)}
+.f-seats{display:flex!important;gap:0}
+.f-seats i{width:26px;height:26px;margin-left:-7px;border-radius:50%;display:grid;place-items:center;font:600 10.5px/1 'Inter',sans-serif;font-style:normal;color:var(--bgs-ivory);background:var(--bgs-plate);box-shadow:0 0 0 2px var(--bgs-bg),inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.25)}
+.f-seats i:first-child{margin-left:0;color:var(--bgs-on-gold);background:var(--bgs-gold)}
+.f-conf{width:70px;height:60px;position:relative}
+.f-conf b{position:absolute;width:7px;height:11px;border-radius:2px}
+.story[data-step="0"] .a-phone{transform:rotate(-2.5deg)}
+.story[data-step="1"] .a-phone{transform:rotate(2deg)}
+.story[data-step="2"] .a-phone{transform:rotate(-1.5deg)}
+.story[data-step="3"] .a-phone{transform:rotate(1.5deg) scale(1.03)}
+.story .stage::before{content:"";position:absolute;inset:-18% -55%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.16),transparent)}
+
+
+
+/* ═════ Rest of the page (first pass, not yet reviewed section by section) ═════ */
+.band{border-top:1px solid var(--line)}
+.sec .intro p{color:var(--bgs-ivory-70)}
+.extras{display:grid;gap:10px;margin-top:28px}
+.x{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;padding:18px;border-radius:20px;background:rgba(var(--bgs-plate-rgb),.7);box-shadow:inset 0 0 0 1px var(--line)}
+.x .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--bgs-gold-rgb),.12);box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.3)}
+.x svg{width:22px;height:22px;fill:none;stroke:var(--bgs-gold);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.x b{display:block;font-weight:600;font-size:16.5px}
+.x span{display:block;color:var(--bgs-ivory-70);font-size:15px;margin-top:3px}
+@media (min-width:700px){.extras{grid-template-columns:1fr 1fr}}
+@media (min-width:1000px){.extras{grid-template-columns:repeat(6,1fr)}.x{grid-column:span 2}.x:nth-child(4){grid-column:2/span 2}}
+/* Three steps (approved: S2 "Big numerals"): no cards; giant outlined numerals on a dashed gold path */
+.path{list-style:none;padding:0;margin:34px 0 0;position:relative}
+.path::before{content:"";position:absolute;left:38px;top:40px;bottom:60px;border-left:2px dashed rgba(var(--bgs-gold-rgb),.35)}
+.path li{position:relative;display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center;padding:6px 0 30px}
+.num{font:600 92px/1 'Fraunces',serif;text-align:center;color:var(--bgs-bg);-webkit-text-stroke:1.5px var(--bgs-gold);background:var(--bgs-bg);padding:4px 0;position:relative}
+.path b{display:block;font:600 21px/1.2 'Fraunces',serif}
+.path span{display:block;color:var(--bgs-ivory-70);font-size:15.5px;margin-top:5px;max-width:24em}
+.path li:last-child .num{color:var(--bgs-gold)}
+@media (min-width:860px){
+  .path{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px}
+  .path::before{left:8%;right:8%;top:74px;bottom:auto;border-left:0;border-top:2px dashed rgba(var(--bgs-gold-rgb),.35)}
+  .path li{display:block;padding:0;text-align:center}.num{font-size:150px;width:max-content;margin:0 auto 14px;padding:0 22px}.path span{margin:8px auto 0}
+}
+
+/* ═════ CLOSING (approved: F8 — voting pieces up front, the long shelf with lights behind, shelf at Full) ═════ */
+.g{width:20px;height:20px;flex:none}
+.cbtn{display:flex;align-items:center;justify-content:center;gap:11px;width:min(100%,360px);min-height:60px;margin:0 auto;border-radius:99px;font-weight:700;font-size:17px;text-decoration:none;position:relative}
+.alts{display:grid;gap:8px;margin-top:18px;font-size:14.5px}
+.alts a,.alts button{text-decoration:underline;text-underline-offset:3px;font:inherit}
+.big{font-size:clamp(42px,12vw,92px);line-height:.98}
+.subl{color:var(--bgs-ivory-70);font-size:17px;margin:16px auto 0;max-width:24em}
+.gold{background:var(--bgs-gold);color:var(--bgs-on-gold);box-shadow:0 14px 40px -10px rgba(var(--bgs-gold-rgb),.7),inset 0 1px 0 rgba(255,255,255,.45)}
+.ctawrap{position:relative;margin-top:32px}
+.halo{position:absolute;left:50%;top:50%;width:min(120%,440px);height:150px;transform:translate(-50%,-50%);z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.55),transparent);filter:blur(14px);animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(.92)}50%{opacity:.9;transform:translate(-50%,-50%) scale(1.06)}}
+.alts{color:var(--bgs-ivory-70)}.alts a,.alts button{color:var(--bgs-gold)}
+
+
+/* ═════ F8 — Voting up front, the shelf behind.
+   Background (secondary, subtle): the cover wall with the drifting cover light = "your shelf".
+   Accent (primary): pieces of the vote fly in and settle around the button = "pick tonight's game, together". ═════ */
+.f8{position:relative;isolation:isolate;overflow:hidden;text-align:center;min-height:calc(100svh - var(--demo));display:grid;place-items:center;padding:212px 20px 222px;--floor-o:.85}   /* shelf strength locked at Full */
+.f8 .floor{position:absolute;inset:0;z-index:-5;perspective:900px;perspective-origin:50% 6%;overflow:hidden;opacity:var(--floor-o)}
+.f8 .plane{position:absolute;left:50%;top:4%;width:190vw;transform:translateX(-50%) rotateX(58deg);transform-origin:50% 0}     /* static tilt; never animated */
+.f8 .drift{display:grid;grid-template-columns:repeat(var(--cols,10),1fr);gap:1.8vw;animation:towards 46s linear infinite}     /* animation only, inner wrapper */
+@keyframes towards{to{transform:translateY(-25%)}}
+.f8:not(.live) .drift,.f8:not(.live) .pz>*,.f8:not(.live) .halo{animation-play-state:paused}                                                                            /* 16 rows with a 4-row period → seamless */
+.f8 .drift img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:1.2vw;background:var(--bgs-plate)}
+.f8 .horizon{position:absolute;left:0;right:0;top:0;height:26%;z-index:-2;pointer-events:none;background:radial-gradient(ellipse 70% 100% at 50% 22%,rgba(var(--bgs-gold-rgb),.34),transparent 70%)}
+.f8 .light{position:absolute;inset:0;z-index:-4;pointer-events:none}
+.f8 .light img{position:absolute;left:50%;top:50%;width:160px;height:200px;max-width:none;object-fit:cover;opacity:0;transition:opacity 1.6s;filter:blur(22px) saturate(1.6);transform:translate(-50%,-50%) scale(6)}
+.f8 .light img.on{opacity:.5}
+.f8 .veil{position:absolute;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(ellipse 120% 44% at 50% 50%,rgba(var(--bgs-bg-rgb),.92) 0,rgba(var(--bgs-bg-rgb),.6) 62%,transparent 100%),linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.6) 14%,rgba(var(--bgs-bg-rgb),.15) 34%,rgba(var(--bgs-bg-rgb),.15) 64%,rgba(var(--bgs-bg-rgb),.62) 84%,var(--bgs-bg) 100%)}
+.f8 .big{text-shadow:0 2px 30px rgba(var(--bgs-bg-rgb),.9)}.f8 .subl,.f8 .alts{text-shadow:0 1px 12px rgba(var(--bgs-bg-rgb),.95)}.f8 .subl{color:var(--bgs-ivory)}
+@media (min-width:900px){.f8{padding:200px 20px 210px}.f8 .floor{perspective:1400px}.f8 .plane{width:124vw}.f8 .drift{gap:.8vw}.f8 .drift img{border-radius:.5vw}.f8 .light img{transform:translate(-50%,-50%) scale(11)}}
+
+/* voting pieces (outer = fly-in transition only; inner = idle float animation only) */
+.pieces{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.pz{position:absolute;opacity:0;transform:translate(var(--fx),var(--fy)) scale(.5) rotate(var(--fr,0deg));transition:opacity .7s,transform 1s cubic-bezier(.2,.9,.25,1);transition-delay:var(--d,0s)}
+.f8.in .pz{opacity:1;transform:none}
+.pz>*{display:block;animation:bob8 5s ease-in-out infinite;animation-delay:var(--bd,0s)}
+@keyframes bob8{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-5px) rotate(var(--rot,0deg))}}
+.v-card{position:relative;width:var(--w,70px);aspect-ratio:3/4;border-radius:9px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 22px 40px -14px #000,inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16)}
+.v-card img{width:100%;height:100%;object-fit:cover}
+.v-card em{position:absolute;left:6px;top:6px;font:600 9.5px/1 'Inter',sans-serif;font-style:normal;padding:4px 7px;border-radius:99px;background:#5FB07F;color:#10210f}
+.v-win{position:relative;width:var(--w,70px)}
+.v-win .c{display:block;aspect-ratio:3/4;border-radius:9px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 0 0 2px var(--bgs-gold),0 0 24px rgba(var(--bgs-gold-rgb),.4),0 16px 30px -12px #000}
+.v-win img{width:100%;height:100%;object-fit:cover}
+.v-win span:not(.c){display:none;margin-top:7px;font:600 11px/1 'Fraunces',serif;color:var(--bgs-ivory);text-shadow:0 1px 10px #000}
+.v-round{width:42px;height:42px;border-radius:50%;display:grid!important;place-items:center;font-weight:700;font-size:15px;background:rgba(var(--bgs-ivory-rgb),.13);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.26),inset 0 1px 0 rgba(255,255,255,.18),0 14px 26px -8px #000;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.v-round.v{color:#5FB07F}.v-round.x{color:#D9645A}
+.v-seats{display:flex!important;gap:5px;padding:6px 8px;border-radius:99px;background:rgba(var(--bgs-plate-rgb),.78);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16),0 12px 24px -10px #000;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.v-seats i{position:relative;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;font:600 9px/1 'Inter',sans-serif;font-style:normal;color:var(--bgs-ivory-70);background:rgba(var(--bgs-ivory-rgb),.08);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18)}
+.v-seats i.me{color:var(--bgs-gold);box-shadow:inset 0 0 0 1.5px rgba(var(--bgs-gold-rgb),.7)}
+.v-seats i.ok::after{content:"✓";position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;border-radius:50%;display:grid;place-items:center;font-size:6.5px;font-weight:700;background:var(--bgs-ivory);color:var(--bgs-bg)}
+.v-seats i.wait::after{content:"…";position:absolute;right:-5px;bottom:-4px;width:12px;height:10px;border-radius:99px;display:grid;place-items:center;font-size:7px;line-height:.4;background:var(--bgs-bg);color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.25)}
+.v-count{display:flex!important;gap:5px;padding:7px;border-radius:11px;background:rgba(var(--bgs-plate-rgb),.78);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16),0 12px 24px -10px #000;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.v-count div{width:21px}.v-count img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:4px;background:var(--bgs-bg-radial)}
+.v-count b{display:flex;justify-content:center;gap:1.5px;margin-top:4px}.v-count b u{width:3px;height:3px;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.2)}.v-count b u.on{background:var(--bgs-gold)}
+.v-count div.w img{box-shadow:0 0 0 1.5px var(--bgs-gold)}
+.v-gold{font:700 11px/1 'Inter',sans-serif;padding:9px 12px;border-radius:99px;white-space:nowrap;background:var(--bgs-gold);color:var(--bgs-on-gold);box-shadow:0 12px 24px -8px rgba(var(--bgs-gold-rgb),.5)}
+.v-chip{font:600 10px/1 'IBM Plex Mono',monospace;padding:7px 10px;border-radius:99px;white-space:nowrap;background:rgba(var(--bgs-plate-rgb),.8);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),0 10px 22px -8px #000;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.v-conf{position:relative;width:50px;height:40px;scale:.72;transform-origin:0 0}.v-conf b{position:absolute;width:7px;height:11px;border-radius:2px}
+@media (min-width:1200px){.v-card,.v-win{--w:132px}
+  .v-card{border-radius:13px}.v-win .c{border-radius:13px}.v-card em{left:9px;top:9px;font-size:12px;padding:5px 9px}
+  .v-win span:not(.c){font-size:14px;margin-top:9px}
+  .v-round{width:58px;height:58px;font-size:21px}
+  .v-seats{gap:7px;padding:8px 10px}.v-seats i{width:29px;height:29px;font-size:11.5px}
+  .v-seats i.ok::after{width:13px;height:13px;font-size:8px}.v-seats i.wait::after{width:15px;height:13px;font-size:9px}
+  .v-count{gap:7px;padding:9px;border-radius:14px}.v-count div{width:32px}.v-count b{gap:2px;margin-top:5px}.v-count b u{width:4px;height:4px}
+  .v-gold{font-size:13.5px;padding:12px 17px}.v-chip{font-size:12px;padding:9px 13px}.v-conf{scale:1}.v-win span:not(.c){display:block}.f8 .big{font-size:76px;max-width:10em;margin:0 auto}}
+
+.foot{padding:26px 20px calc(var(--sticky) + 26px);text-align:center;border-top:1px solid var(--line)}
+.foot .mono{display:block;margin-top:8px}
+.foot img{height:30px;margin:0 auto}
+.sticky{transition:transform .35s var(--ease-liquid)}
+.sticky.away{transform:translateY(160%)}
+@media (min-width:900px){.foot{padding-bottom:40px}}
+
+
+.demobar{position:fixed;left:0;right:0;top:0;z-index:60;height:var(--demo);display:flex;gap:6px;align-items:center;padding:0 10px;overflow-x:auto;white-space:nowrap;background:#0b0908;border-bottom:1px solid var(--line);font:400 11.5px/1 'IBM Plex Mono',monospace}
+.demobar b{font-weight:400;color:var(--bgs-ivory-45);margin:0 2px 0 8px}
+.demobar button,.demobar a{padding:7px 10px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--line);flex:none;text-decoration:none;color:inherit}
+.demobar button[aria-pressed="true"]{background:var(--bgs-ivory);color:var(--bgs-bg)}
+html{scroll-behavior:smooth;scroll-padding-top:var(--demo)}
+html.rm{scroll-behavior:auto}html.rm *{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="demobar" role="group" aria-label="Mockup controls">
+  <b>Hero</b>
+  <button data-state="deck" aria-pressed="true">Voting</button>
+  <button data-state="waiting" aria-pressed="false">Last vote</button>
+  <button data-state="result" aria-pressed="false">Winner</button>
+  <button data-state="outvoted" aria-pressed="false">Winner (you passed)</button>
+  <b>Jump</b><a href="#story">Story</a><a href="#signin">Sign-in</a>
+  <b>Motion</b><button id="rm" aria-pressed="false">Reduced</button>
+</div>
+<section class="hero" id="hero">
+  <div class="bg" aria-hidden="true">
+    <div class="wall" id="wall"></div>
+    <div class="light" id="light"><img alt=""><img alt=""></div>
+    <div class="veil"></div>
+  </div>
+
+  <header class="top"><span class="wordmark">BoardgameShelf</span><span class="beta">Beta</span><a class="signin" href="#signin">Sign in</a></header>
+
+  <div class="inner">
+    <div class="copy">
+      <h1>Pick tonight's game, together.</h1>
+      <p class="lede">Turn your BoardGameGeek collection into a page your friends vote on. Four friends are at this table. Swipe right to play, left to pass.</p>
+      <div class="cta"><a class="fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a><a class="textlink" href="#story">See how it works</a></div>
+    </div>
+
+    <div class="table" id="table" aria-label="Try a vote">
+      <div class="seats" id="seats" aria-hidden="true"><div class="seat " style="--tint:#d98a6f"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat " style="--tint:#9cc096"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat you" style="--tint:#f3eadb"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat " style="--tint:#8db4dc"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat late" style="--tint:#c3a0d2"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div></div>
+      <div class="deck" id="deck"></div>
+      <div class="actions">
+        <button class="round no" id="btnNo" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <span class="mono" id="count">1 of 5</span>
+        <button class="round yes" id="btnYes" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+      <div class="counting" aria-live="polite">
+        <h3 id="cntTitle">One vote to go</h3>
+        <div class="minis" id="minis"></div>
+        <p class="mono" id="cntText">Four of five have voted. There's always one.</p>
+      </div>
+      <div class="result" aria-live="polite">
+        <h3>Tonight we play</h3>
+        <div class="flash"></div>
+        <div class="winner" id="winner"></div>
+        <div class="burst" id="burst"></div>
+      </div>
+      <div class="after">
+        <p id="resText"></p>
+        <div class="row"><button class="btn sm btn-glass" id="again">Deal again</button><a class="btn sm btn-gold" href="#signin">Vote on my shelf</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="sticky"><a class="fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a></div>
+
+
+
+<section class="story band" id="story" data-step="0">
+  <div class="sec">
+    <div class="intro"><h2>From the shelf to the table in four steps</h2><p>The same loop every game night, minus the twenty minutes of "I don't mind, you choose."</p></div>
+    <div class="a-wrap">
+      <div class="a-pin">
+        <div class="stage"><div class="a-phone" id="aPhone"></div><div class="frags" id="frags"></div></div>
+        <div class="a-tabs" id="aTabs"><span>Shelf</span><span>Pick</span><span>Vote</span><span>Play</span></div>
+      </div>
+      <ol class="a-steps" id="aSteps"></ol>
+    </div>
+  </div>
+</section>
+
+<section class="band"><div class="sec">
+  <div class="intro"><h2>Also on the shelf</h2><p>The parts you find on the second visit.</p></div>
+  <div class="extras"><div class="x"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></span><div><b>Filter by vibe</b><span>Party, Co-op, Duel, Chill and five more, next to player count, time and weight.</span></div></div><div class="x"><span class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M12 12h.01M9 15h.01M15 15h.01"/></svg></span><div><b>Tonight's surprise</b><span>Can't even agree on a shortlist? Let the shelf deal one, and re-roll the cards you don't fancy.</span></div></div><div class="x"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 8h12l1.5 12h-15zM9 8V6a3 3 0 016 0v2"/></svg></span><div><b>Bags for trips</b><span>Pack part of the shelf and see what it covers: player counts, play times, and where the gaps are.</span></div></div><div class="x"><span class="ic"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span><div><b>Invite posters</b><span>Schedule a night, collect RSVPs, and send a poster your group chat will actually open.</span></div></div><div class="x"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 000 18c2 0 2-2 1-3s0-3 2-3h3a3 3 0 003-3"/></svg></span><div><b>Themes</b><span>Walnut, Navy, Mahogany or Oak. Visitors see your shelf in the colours you chose.</span></div></div></div>
+</div></section>
+
+<section class="band"><div class="sec">
+  <div class="intro"><h2>Three steps to your own shelf</h2><p>Your owned games come straight from BGG. Nothing to upload.</p></div>
+  <ol class="path">
+    <li><div class="num">1</div><div><b>Sign in</b><span>With Google, or an emailed sign-in link.</span></div></li>
+    <li><div class="num">2</div><div><b>Enter your BGG username</b><span>Same as your BGG login. It becomes your shelf's address too.</span></div></li>
+    <li><div class="num">3</div><div><b>Get your shelf</b><span>Your games arrive with their covers, on a page of your own with a link to share. Free while we're in beta.</span></div></li>
+  </ol>
+</div></section>
+
+<section class="f8" id="signin">
+  <div class="floor" aria-hidden="true"><div class="plane"><div class="drift" id="drift"></div></div></div><div class="light" id="f8light" aria-hidden="true"><img alt=""><img alt=""></div><div class="veil"></div><div class="horizon"></div>
+  <div class="pieces" id="pieces" aria-hidden="true"></div>
+  <div>
+    <h2 class="big">Your shelf, judged by its covers.</h2>
+    <p class="subl">A page for your collection and a vote for your table, from any phone.</p>
+    <div class="ctawrap"><div class="halo"></div><a class="cbtn gold" href="#"><svg class="g" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.6 12.23c0-.68-.06-1.34-.17-1.97H12v3.73h5.39a4.6 4.6 0 01-2 3.02v2.5h3.23c1.9-1.74 2.98-4.3 2.98-7.28z"/><path fill="currentColor" opacity=".75" d="M12 22c2.7 0 4.96-.9 6.62-2.43l-3.23-2.5c-.9.6-2.04.95-3.39.95-2.6 0-4.81-1.76-5.6-4.12H3.06v2.58A10 10 0 0012 22z"/><path fill="currentColor" opacity=".55" d="M6.4 13.9a6 6 0 010-3.8V7.52H3.06a10 10 0 000 8.96L6.4 13.9z"/><path fill="currentColor" opacity=".85" d="M12 5.98c1.47 0 2.79.5 3.83 1.5l2.86-2.87C16.95 2.99 14.7 2 12 2a10 10 0 00-8.94 5.52L6.4 10.1C7.19 7.74 9.4 5.98 12 5.98z"/></svg>Continue with Google</a></div>
+    <div class="alts"><span>Prefer email? <button type="button">Send me a sign-in link</button></span><span>Just looking? <a href="https://boardgameshelf.vercel.app/u/noknaruephon">Browse as a guest</a></span></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <a href="https://boardgamegeek.com"><img src="https://boardgameshelf.vercel.app/assets/powered-by-bgg.svg" alt="Powered by BGG" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mono',textContent:'Powered by BGG'}))"></a>
+  <span class="mono">© 2026 BoardgameShelf. Game data and images courtesy of BoardGameGeek.</span>
+  <span class="mono"><a href="#">Privacy</a> · <a href="#">Terms</a></span>
+</footer>
+<script>
+{ /* ═════ hero ═════ */
+
+/* Real covers from the live landing fan. Production: the wall draws ~30 thumbnails from the shelf (R2), so it will not repeat like this. */
+const COVERS=["https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg", "https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg", "https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg", "https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg", "https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg"];
+const WALL=["https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg", "https://cf.geekdo-images.com/aSwGrv9uvfRyBymlHJ-B8w__original/img/cHP3bhVFkJepWSfjWKBR-talnDc=/0x0/filters:format(jpeg)/pic6731109.jpg", "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg", "https://cf.geekdo-images.com/bOs_Um4cUUOpKnypCMykJA__original/img/RE_9_-ioTp31Fq_r5GZ_XKVGwzw=/0x0/filters:format(png)/pic8844519.png", "https://cf.geekdo-images.com/7SrPNGBKg9IIsP4UQpOi8g__original/img/GKueTbkCk2Ramf6ai8mDj-BP6cI=/0x0/filters:format(jpeg)/pic4325841.jpg", "https://cf.geekdo-images.com/DCLgJlrvB-EqL6A3WgQLMQ__original/img/vGpYcxjDBCOVcI0BcWOevspTQMQ=/0x0/filters:format(jpeg)/pic5715770.jpg", "https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg", "https://cf.geekdo-images.com/kjCm4ZvPjIZxS-mYgSPy1g__itemrep@2x/img/-avAay86cuC29LAZVlTE84r5SSA=/fit-in/492x600/filters:strip_icc()/pic7013651.jpg", "https://cf.geekdo-images.com/i7n6LkRIskDq1438AgO0VA__original/img/TN6iOwF4cCaGnNyK61R9E_uXXrU=/0x0/filters:format(jpeg)/pic7437242.jpg", "https://cf.geekdo-images.com/t4fIRE_dryAV9eFFH1pfPw__original/img/HWiGfzBUGW9tbdtSvmhwsivn2y0=/0x0/filters:format(png)/pic8472819.png", "https://cf.geekdo-images.com/M0e9l-SHH2H4RMSAcnsDgg__original/img/nT1NtVviWxSBgVv5lvM4RmemITs=/0x0/filters:format(jpeg)/pic8658546.jpg", "https://cf.geekdo-images.com/Zz_iJ2cr4kS4jgT_pFw27g__original/img/Qybhex8ea62HVk6RAaqiDHH5BN8=/0x0/filters:format(png)/pic8652703.png", "https://cf.geekdo-images.com/oSM_AuKYfGIwOtKbVEsoVg__original/img/7DlaMCmuoJzm9AzelmStYIDgutI=/0x0/filters:format(png)/pic4503733.png", "https://cf.geekdo-images.com/e6QPQ_JaSSy-R1c2bJkYXA__original/img/wNhou5aff1JGRJF_ppcTVD66ZQc=/0x0/filters:format(jpeg)/pic7889099.jpg", "https://cf.geekdo-images.com/7CFgBadtCNf5Mzi1nsrL2Q__original/img/Iv0VzhyEa74-sGfbtt9nwrRKZlw=/0x0/filters:format(jpeg)/pic5822480.jpg", "https://cf.geekdo-images.com/reK4-IeMo2T6HMnACMkmGw__original/img/MlkgXfMGT1IdIzwy3Sj2Ul45b4o=/0x0/filters:format(png)/pic7710928.png", "https://cf.geekdo-images.com/MaeErIfx2AbLjmpmLwD-qQ__large/img/jw3MDqU9CNfvvWxXlENl7Ob-APM=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic8975321.jpg", "https://cf.geekdo-images.com/KWzepkM_pNKLOCdDDJLg0g__original/img/gTkkZV8qMZ2p4IxzFBVqnOeCb0w=/0x0/filters:format(jpeg)/pic6535570.jpg", "https://cf.geekdo-images.com/pDiHT-n1xpW71Ck_wiR8_g__original/img/pho_viNg1Jk28LoXbMkTTvVHOIw=/0x0/filters:format(png)/pic7375477.png", "https://cf.geekdo-images.com/GeswS76PRQQV0TUvNdUGew__original/img/U2DZO2y6vsJPabsjpGID0HeEpAE=/0x0/filters:format(jpeg)/pic4788657.jpg", "https://cf.geekdo-images.com/h1dXXGGcCjaGdCip6Q_oGQ__itemrep@2x/img/Z_ktul2p0wcyZ_6MiDknQJ-gviw=/fit-in/492x600/filters:strip_icc()/pic6786604.jpg", "https://cf.geekdo-images.com/1XA2-niwTBa0HEB7hOz3Dw__original/img/MIJgG_K2IS1QT2mE0dyRFiWLSpg=/0x0/filters:format(jpeg)/pic4530974.jpg", "https://cf.geekdo-images.com/gBPzZsgm9nrUYVfdK216NA__itemrep@2x/img/I7lESA5b_RNSWN27orgv02GlepY=/fit-in/492x600/filters:strip_icc()/pic4557340.png", "https://cf.geekdo-images.com/DvvSoTrB3-UMEgz2rBraHg__original/img/a70U9DGHGxiyo8WWMOb9Zd4hrxc=/0x0/filters:format(jpeg)/pic7533289.jpg", "https://cf.geekdo-images.com/y7Rqd3S6J7vyVhicR1bqTQ__original/img/tQFXv1w2R-J-1cjyaKG9LAS2UOs=/0x0/filters:format(jpeg)/pic6091101.jpg", "https://cf.geekdo-images.com/co36SqyPYlM1QwVW6XSwyQ__original/img/ErbrDNguZzKtnCCAUiQCh1xwldc=/0x0/filters:format(jpeg)/pic8933083.jpg", "https://cf.geekdo-images.com/cf0xxkevbwTGF3VUZymKjg__original/img/vkElrRCPJxy7Q3TH9olpq20egA4=/0x0/filters:format(png)/pic6398727.png", "https://cf.geekdo-images.com/tyv6lPMlyU7YIUztlILQYQ__itemrep@2x/img/lQMHypGthw9PcbLsx2hiBK2n4V4=/fit-in/492x600/filters:strip_icc()/pic8587890.png", "https://cf.geekdo-images.com/v_BidaaTXux6j_UJQol6Jw__original/img/RDmxiiYALGFFD3ElKLTlR5C5xa8=/0x0/filters:format(jpeg)/pic8918996.jpg", "https://cf.geekdo-images.com/F-J1_JTJMhg_71RFfDAe4w__original/img/v8kYC6F9MEOzXRraUKQCywAbhdk=/0x0/filters:format(png)/pic8766964.png"];
+const STANDIN=[['#c8442e','#f2b33d'],['#2f8f83','#d7e26a'],['#6b3fa0','#e86aa6'],['#2a63c9','#7fd0f0'],['#d9772b','#7a2d2d']]
+  .map(([a,b])=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="4" height="5" fill="url(#g)"/></svg>`));
+const src=COVERS.slice();let lit=0;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const rm=()=>document.documentElement.classList.contains('rm');
+window.coverFail=(el,i)=>{src[i]=STANDIN[i];el.onerror=null;el.src=STANDIN[i];if(i===lit)light(i)}; /* mockup-only stand-in */
+const img=(i,lazy)=>`<img src="${src[i%5]}" alt="" draggable="false" referrerpolicy="no-referrer" ${lazy?'loading="lazy" decoding="async"':''} onerror="coverFail(this,${i%5})">`;
+
+$('#wall').innerHTML=Array.from({length:9},(_,c)=>`<div class="col">${Array.from({length:7},(_,r)=>`<img src="${WALL[(c*7+r)%WALL.length]}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`).join('')}</div>`).join('');
+
+const lights=$$('#light img');let li=0;
+function light(i){lit=i;const n=lights[li^=1];n.referrerPolicy='no-referrer';n.src=src[i];n.classList.add('on');lights[li^1].classList.remove('on')}
+
+/* ── The table. Seats: 0,1 = friends, 2 = you, 3 = friend, 4 = the late voter.
+   Three friends vote live on every card. The late voter's ballots land at the end and are chosen so that
+   exactly ONE game wins, preferring a game the visitor said play to. The demo never ends in a tie. */
+const table=$('#table'),deck=$('#deck'),seats=$$('#seats .seat');
+const LIVE=[0,1,3],YOU=2,LATE=4;
+const FRIENDS=[[1,0,1],[0,1,0],[1,1,0],[0,1,1],[0,0,1]];      // per game: votes of the three live friends
+let idx=0,mine=[],timers=[];
+const later=(f,ms)=>timers.push(setTimeout(f,rm()?0:ms));
+const clearTimers=()=>{timers.forEach(clearTimeout);timers=[]};
+function chip(seat,kind){const c=seats[seat].querySelector('.chip');c.className='chip'+(kind?' show '+kind:'');c.textContent=kind==='y'||kind==='ok'?'✓':kind==='n'?'✕':''}
+function clearChips(){seats.forEach((_,i)=>chip(i,null))}
+
+const REST=[[0,0,0],[9,11,3.5],[-8,20,-3.5]];
+function layout(){
+  $$('#deck .slot').forEach(s=>{const d=+s.dataset.i-idx;
+    if(d<0){s.style.opacity=0;s.style.pointerEvents='none';return}
+    const [x,y,r]=REST[Math.min(d,2)];
+    s.style.transform=`translate(${x}px,${y}px) rotate(${r}deg) scale(${1-Math.min(d,2)*.04})`;
+    s.style.opacity=d>2?0:1;s.style.zIndex=10-d});
+  $('#count').textContent=`${Math.min(idx+1,5)} of 5`;
+  if(idx<5){light(idx);clearChips();const g=idx;
+    LIVE.forEach((seat,k)=>later(()=>{if(idx===g)chip(seat,'ok')},450+k*520))}   // during voting: WHO has voted on this card, never WHAT they voted
+}
+function deal(){clearTimers();idx=0;mine=[];table.classList.remove('done','waiting');
+  seats[LATE].classList.add('slow');
+  deck.innerHTML=src.map((_,i)=>`<div class="slot" data-i="${i}"><div class="card">${img(i)}<span class="stamp play">Play</span><span class="stamp pass">Pass</span></div></div>`).join('');
+  $$('#deck .card').forEach(bindDrag);layout()}
+function vote(dir){const slot=$(`#deck .slot[data-i="${idx}"]`);if(!slot)return;clearTimers();
+  const card=slot.firstElementChild;card.classList.add('snap');
+  card.style.transform=`translate(${dir*460}px,-30px) rotate(${dir*24}deg)`;
+  card.querySelector(dir>0?'.play':'.pass').style.opacity=1;
+  mine[idx]=dir>0?1:0;idx++;
+  if(idx<5)layout();else later(waiting,260)}
+
+/* Phase 2: the reveal. Votes stay sealed until everyone is in, then they are counted and the winner is shown. No eliminations, no showdown. */
+const base=()=>FRIENDS.map((f,g)=>f.reduce((a,b)=>a+b,0)+(mine[g]||0));
+function pickWinner(){const b=base(),max=Math.max(...b),tops=b.map((v,g)=>v===max?g:-1).filter(g=>g>=0);
+  const w=tops.find(g=>mine[g])??tops[0],final=b.map((v,g)=>v+(g===w?1:0));
+  return {w,final}}
+const say=(t,sub)=>{$('#cntTitle').textContent=t;$('#cntText').textContent=sub};
+const mini=g=>$(`#minis [data-g="${g}"]`);
+function drawMinis(){$('#minis').className='minis';
+  $('#minis').innerHTML=src.map((_,g)=>`<div class="mini" data-g="${g}"><div class="c">${img(g)}</div><div class="pips">${'<i></i>'.repeat(5)}</div></div>`).join('')}
+function waiting(){clearTimers();table.classList.remove('done');table.classList.add('waiting');
+  [...LIVE,YOU].forEach(i=>chip(i,'ok'));chip(LATE,null);seats[LATE].classList.add('slow');
+  say('One vote to go',"Four of five have voted. There's always one.");drawMinis();
+  const r=pickWinner(),hold=table.dataset.hold;
+  if(hold==='wait')return;
+  if(rm())return result(r);
+  let t=1500;const at=(ms,f)=>{t+=ms;later(f,t)};
+  at(0,()=>{seats[LATE].classList.remove('slow');chip(LATE,'ok');say('All five are in','Votes stay sealed until now.');buzz(12)});
+  at(750,()=>say('Counting the votes',''));
+  // ballots tick in one at a time, round-robin across the five games
+  for(let k=0;k<5;k++)for(let g=0;g<5;g++)if(k<r.final[g])at(75,()=>{mini(g).querySelectorAll('.pips i')[k].classList.add('on')});
+  // count done: the game with the most votes lifts for a beat, then the result
+  at(450,()=>{say('The table has decided','');$('#minis').classList.add('decided');mini(r.w).classList.add('win');light(r.w);buzz(8)});
+  at(900,()=>result(r));
+}
+
+/* Phase 3: one winner. Crown animation, gold flash, confetti, then each seat turns over its vote on the winner. */
+function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+function confetti(){const host=$('#burst');host.innerHTML='';if(rm())return;
+  const cols=['var(--bgs-gold)','var(--mk-play)','var(--mk-pass)','var(--bgs-ivory)','var(--bgs-gold)'];
+  for(let n=0;n<34;n++){const el=document.createElement('i');el.style.background=cols[n%5];host.appendChild(el);
+    const ang=Math.random()*Math.PI*2,dist=90+Math.random()*150,x=Math.cos(ang)*dist,y=Math.sin(ang)*dist-60;
+    el.animate([{transform:'translate(0,0) rotate(0) scale(.4)',opacity:1},{transform:`translate(${x}px,${y}px) rotate(${Math.random()*540-270}deg) scale(1)`,opacity:1,offset:.6},
+      {transform:`translate(${x*1.1}px,${y+120}px) rotate(${Math.random()*720-360}deg) scale(.9)`,opacity:0}],{duration:1100+Math.random()*700,easing:'cubic-bezier(.15,.8,.3,1)',fill:'forwards'}).onfinish=()=>el.remove()}}
+function result(r){clearTimers();table.classList.remove('waiting');seats[LATE].classList.remove('slow');clearChips();
+  $('#winner').innerHTML=img(r.w);light(r.w);$('#resText').textContent=`${r.final[r.w]} of 5 said play.`+(mine[r.w]?' You included.':' You passed, and got outvoted. It happens.');
+  table.classList.remove('done');void table.offsetWidth;table.classList.add('done');       // restart the entrance animations
+  confetti();buzz([18,40,30]);
+  const votes=[FRIENDS[r.w][0],FRIENDS[r.w][1],mine[r.w]?1:0,FRIENDS[r.w][2],1];
+  votes.forEach((v,i)=>later(()=>chip(i,v?'y':'n'),650+i*140))}
+
+function bindDrag(card){let sx=0,dx=0,on=false;
+  card.addEventListener('pointerdown',e=>{if(+card.parentElement.dataset.i!==idx)return;on=true;sx=e.clientX;dx=0;card.classList.remove('snap');card.setPointerCapture(e.pointerId)});
+  card.addEventListener('pointermove',e=>{if(!on)return;dx=e.clientX-sx;card.style.transform=`translate(${dx}px,${-Math.abs(dx)*.06}px) rotate(${dx*.06}deg)`;
+    card.querySelector('.play').style.opacity=Math.max(0,Math.min(1,dx/80));card.querySelector('.pass').style.opacity=Math.max(0,Math.min(1,-dx/80))});
+  const end=()=>{if(!on)return;on=false;if(Math.abs(dx)>80)return vote(Math.sign(dx));
+    card.classList.add('snap');card.style.transform='';card.querySelectorAll('.stamp').forEach(s=>s.style.opacity=0)};
+  card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end)}
+$('#btnYes').onclick=()=>vote(1);$('#btnNo').onclick=()=>vote(-1);$('#again').onclick=()=>{delete table.dataset.hold;deal();window.heroPress&&window.heroPress('deck')};
+deal();
+
+window.heroDemo={deal,waiting,result,pickWinner,clearTimers,set:(m)=>{idx=5;mine=m},table};
+
+}
+{ /* ═════ story ═════ */
+
+
+const G=[{"bggId": "295947", "title": "Cascadia", "image": "https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg"}, {"bggId": "178900", "title": "Codenames", "image": "https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg"}, {"bggId": "148228", "title": "Splendor", "image": "https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg"}, {"bggId": "30549", "title": "Pandemic", "image": "https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg"}, {"bggId": "254640", "title": "Just One", "image": "https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg"}, {"bggId": "342942", "title": "Ark Nova", "image": "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg"}, {"bggId": "163412", "title": "Patchwork", "image": "https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg"}, {"bggId": "237182", "title": "Root", "image": "https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg"}, {"bggId": "262543", "title": "Wavelength", "image": "https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png"}, {"bggId": "225694", "title": "Decrypto", "image": "https://cf.geekdo-images.com/X6HDeg8AhGXGhB8je65MTw__original/img/A2cgVhqNzUMUGg7_GJ5omWcdkt8=/0x0/filters:format(jpeg)/pic7303572.jpg"}];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const im=i=>`<img src="${G[i%G.length].image}" alt="" loading="lazy" referrerpolicy="no-referrer">`;
+const STEPS=[
+ {k:'Shelf',time:'7:02 pm',h:'Your collection becomes a page',p:'Enter your BoardGameGeek username and your games arrive with covers, player counts and play times. The shelf gets its own link, so anyone can browse it from a phone.',q:'"What have you even got?" Send the link.'},
+ {k:'Pick',time:'7:05 pm',h:'Shortlist the contenders',p:'Start a game night and tap the games worth arguing about. Filter by vibe, players and time first, or let Tonight\'s surprise deal a shortlist for you.',q:'Three go in. The 3-hour one stays on the shelf.'},
+ {k:'Vote',time:'7:08 pm',h:'Everyone votes from their own phone',p:'Friends join with a link, a QR code or a short code. No account, just a name. Each person swipes right to play, left to pass, and nobody sees anyone else\'s vote.',q:'Five phones out. For once that\'s the point.'},
+ {k:'Play',time:'7:10 pm',h:'The votes are counted, one game wins',p:'The table watches the count together and one game takes it. If two tie, a rematch votes on just those two. Then get the box down.',q:'Tonight we play.'}];
+const SCREEN=[
+ `<div class="scr"><div class="eb">nok's</div><div class="wm">BoardgameShelf</div><div class="url">boardgameshelf.vercel.app/u/you</div><div class="g3">${[0,1,2,3,4,5,6,7,8].map(i=>`<div class="tile">${im(i)}</div>`).join('')}</div></div>`,
+ `<div class="scr"><div class="eb">Start game night</div><div class="ttl">Pick the contenders</div><div class="g3 picking">${[0,1,2,3,4,5,6,7,8].map(i=>`<div class="tile ${[1,4,8].includes(i)?'sel':''}">${im(i)}</div>`).join('')}</div><div class="dock"><span class="s-chip">3 selected</span><div class="pillrow"><span class="ground">✕</span><span class="gpill">Continue · 3</span></div></div></div>`,
+ `<div class="scr"><div class="wash" style="background-image:url('${G[4].image}')"></div><div class="eb">Game Night · K7QP</div><div class="roster"><i class="g">N</i><i>T</i><i>P</i><i>S</i><i>M</i></div><div class="vcard">${im(4)}</div><div class="vrow"><span class="x">✕</span><span class="v">✓</span><span class="i">i</span></div></div>`,
+ `<div class="scr"><div class="wash" style="background-image:url('${G[1].image}')"></div><div class="eb">Game Night · K7QP</div><div class="ttl">Tonight we play</div><div class="crown">${im(1)}</div><div class="ttl" style="font-size:14px;margin-top:10px">${G[1].title}</div><div class="cpill">4 of 5 would play ›</div><div class="roster"><i class="g">N</i><i class="g">T</i><i class="g">P</i><i class="g">S</i><i>M</i></div></div>`];
+
+
+const story=$('#story');
+$('#aPhone').innerHTML=SCREEN.join('');
+$('#aSteps').innerHTML=STEPS.map((s,i)=>`<li class="step" data-i="${i}"><span class="step-n">${i+1} ${s.k}</span><h3 style="margin-top:8px">${s.h}</h3><p>${s.p}</p></li>`).join('');
+
+
+/* A2: fragments. [step, css position, offset they fly in from, rotation, html] */
+const MEEPLE='<svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg>';
+const conf=()=>'<span class="f-conf">'+[['#E4B54D',8,6,20],['#5FB07F',30,0,-30],['#D9645A',52,14,45],['#F2E9DA',18,34,70],['#E4B54D',44,40,-15],['#5FB07F',60,44,30]].map(([c,x,y,r])=>`<b style="background:${c};left:${x}px;top:${y}px;transform:rotate(${r}deg)"></b>`).join('')+'</span>';
+const FR=[
+ [0,'left:-34%;top:8%','40px','30px',-9,`<span class="f-tile">${im(5)}</span>`],
+ [0,'right:-36%;top:30%','-40px','10px',8,`<span class="f-tile">${im(7)}</span>`],
+ [0,'left:-30%;bottom:10%','40px','-20px',6,`<span class="f-chip">/u/you</span>`],
+ [1,'right:-38%;top:10%','-40px','30px',7,`<span class="f-tile ring">${im(4)}</span>`],
+ [1,'left:-40%;top:40%','40px','0px',-4,`<span class="f-chip">3 selected</span>`],
+ [1,'right:-44%;bottom:12%','-50px','-20px',-3,`<span class="f-gold">Continue · 3</span>`],
+ [2,'left:-42%;top:10%','40px','20px',0,`<span class="f-seats"><i>N</i><i>T</i><i>P</i><i>S</i><i>M</i></span>`],
+ [2,'right:-30%;top:38%','-40px','0px',0,`<span class="f-round v">✓</span>`],
+ [2,'left:-30%;bottom:20%','40px','-10px',0,`<span class="f-round x">✕</span>`],
+ [2,'right:-34%;top:6%','-30px','30px',5,`<span class="f-chip">K7QP</span>`],
+ [3,'right:-48%;top:34%','-50px','0px',-4,`<span class="f-gold">4 of 5 would play</span>`],
+ [3,'left:-36%;top:6%','40px','30px',0,conf()],
+ [3,'left:-34%;bottom:14%','40px','-20px',-8,`<span class="f-tile ring">${im(1)}</span>`]];
+$('#frags').innerHTML=FR.map(([s,pos,fx,fy,rot,h])=>`<div class="frag" data-s="${s}" style="${pos};--fx:${fx};--fy:${fy};--rot:${rot}deg">${h}</div>`).join('');
+
+
+function aOn(i){
+  story.dataset.step=i;
+  $$('#aPhone .scr').forEach((e,k)=>{e.classList.toggle('on',k===i);e.classList.toggle('gone',k<i)});
+  $$('#aTabs span').forEach((e,k)=>e.classList.toggle('on',k===i));
+  $$('#aSteps .step').forEach((e,k)=>e.classList.toggle('on',k===i));
+  $$('#frags .frag').forEach(e=>e.classList.toggle('on',+e.dataset.s===i));
+}
+aOn(0);
+const mq=matchMedia('(min-width:900px)');let aIO;
+function aWatch(){if(aIO)aIO.disconnect();
+  // Mobile: the phone is pinned on top and the sticky CTA sits at the bottom, so the readable window is the band between them.
+  // A step becomes active when its HEADING enters that band. Desktop: phone and steps sit side by side, so mid-screen decides.
+  aIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)aOn(+e.target.closest('.step').dataset.i)}),{rootMargin:mq.matches?'-40% 0px -50% 0px':'-58% 0px -12% 0px'});
+  $$('#aSteps .step h3').forEach(h=>aIO.observe(h))}
+aWatch();mq.addEventListener('change',aWatch);
+
+
+}
+
+{ /* ═════ closing (F8) ═════ */
+
+const WALL=["https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg", "https://cf.geekdo-images.com/aSwGrv9uvfRyBymlHJ-B8w__original/img/cHP3bhVFkJepWSfjWKBR-talnDc=/0x0/filters:format(jpeg)/pic6731109.jpg", "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg", "https://cf.geekdo-images.com/bOs_Um4cUUOpKnypCMykJA__original/img/RE_9_-ioTp31Fq_r5GZ_XKVGwzw=/0x0/filters:format(png)/pic8844519.png", "https://cf.geekdo-images.com/7SrPNGBKg9IIsP4UQpOi8g__original/img/GKueTbkCk2Ramf6ai8mDj-BP6cI=/0x0/filters:format(jpeg)/pic4325841.jpg", "https://cf.geekdo-images.com/DCLgJlrvB-EqL6A3WgQLMQ__original/img/vGpYcxjDBCOVcI0BcWOevspTQMQ=/0x0/filters:format(jpeg)/pic5715770.jpg", "https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg", "https://cf.geekdo-images.com/kjCm4ZvPjIZxS-mYgSPy1g__itemrep@2x/img/-avAay86cuC29LAZVlTE84r5SSA=/fit-in/492x600/filters:strip_icc()/pic7013651.jpg", "https://cf.geekdo-images.com/i7n6LkRIskDq1438AgO0VA__original/img/TN6iOwF4cCaGnNyK61R9E_uXXrU=/0x0/filters:format(jpeg)/pic7437242.jpg", "https://cf.geekdo-images.com/t4fIRE_dryAV9eFFH1pfPw__original/img/HWiGfzBUGW9tbdtSvmhwsivn2y0=/0x0/filters:format(png)/pic8472819.png", "https://cf.geekdo-images.com/M0e9l-SHH2H4RMSAcnsDgg__original/img/nT1NtVviWxSBgVv5lvM4RmemITs=/0x0/filters:format(jpeg)/pic8658546.jpg", "https://cf.geekdo-images.com/Zz_iJ2cr4kS4jgT_pFw27g__original/img/Qybhex8ea62HVk6RAaqiDHH5BN8=/0x0/filters:format(png)/pic8652703.png", "https://cf.geekdo-images.com/oSM_AuKYfGIwOtKbVEsoVg__original/img/7DlaMCmuoJzm9AzelmStYIDgutI=/0x0/filters:format(png)/pic4503733.png", "https://cf.geekdo-images.com/e6QPQ_JaSSy-R1c2bJkYXA__original/img/wNhou5aff1JGRJF_ppcTVD66ZQc=/0x0/filters:format(jpeg)/pic7889099.jpg", "https://cf.geekdo-images.com/7CFgBadtCNf5Mzi1nsrL2Q__original/img/Iv0VzhyEa74-sGfbtt9nwrRKZlw=/0x0/filters:format(jpeg)/pic5822480.jpg", "https://cf.geekdo-images.com/reK4-IeMo2T6HMnACMkmGw__original/img/MlkgXfMGT1IdIzwy3Sj2Ul45b4o=/0x0/filters:format(png)/pic7710928.png", "https://cf.geekdo-images.com/MaeErIfx2AbLjmpmLwD-qQ__large/img/jw3MDqU9CNfvvWxXlENl7Ob-APM=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic8975321.jpg", "https://cf.geekdo-images.com/KWzepkM_pNKLOCdDDJLg0g__original/img/gTkkZV8qMZ2p4IxzFBVqnOeCb0w=/0x0/filters:format(jpeg)/pic6535570.jpg", "https://cf.geekdo-images.com/pDiHT-n1xpW71Ck_wiR8_g__original/img/pho_viNg1Jk28LoXbMkTTvVHOIw=/0x0/filters:format(png)/pic7375477.png", "https://cf.geekdo-images.com/GeswS76PRQQV0TUvNdUGew__original/img/U2DZO2y6vsJPabsjpGID0HeEpAE=/0x0/filters:format(jpeg)/pic4788657.jpg", "https://cf.geekdo-images.com/h1dXXGGcCjaGdCip6Q_oGQ__itemrep@2x/img/Z_ktul2p0wcyZ_6MiDknQJ-gviw=/fit-in/492x600/filters:strip_icc()/pic6786604.jpg", "https://cf.geekdo-images.com/1XA2-niwTBa0HEB7hOz3Dw__original/img/MIJgG_K2IS1QT2mE0dyRFiWLSpg=/0x0/filters:format(jpeg)/pic4530974.jpg", "https://cf.geekdo-images.com/gBPzZsgm9nrUYVfdK216NA__itemrep@2x/img/I7lESA5b_RNSWN27orgv02GlepY=/fit-in/492x600/filters:strip_icc()/pic4557340.png", "https://cf.geekdo-images.com/DvvSoTrB3-UMEgz2rBraHg__original/img/a70U9DGHGxiyo8WWMOb9Zd4hrxc=/0x0/filters:format(jpeg)/pic7533289.jpg", "https://cf.geekdo-images.com/y7Rqd3S6J7vyVhicR1bqTQ__original/img/tQFXv1w2R-J-1cjyaKG9LAS2UOs=/0x0/filters:format(jpeg)/pic6091101.jpg", "https://cf.geekdo-images.com/co36SqyPYlM1QwVW6XSwyQ__original/img/ErbrDNguZzKtnCCAUiQCh1xwldc=/0x0/filters:format(jpeg)/pic8933083.jpg", "https://cf.geekdo-images.com/cf0xxkevbwTGF3VUZymKjg__original/img/vkElrRCPJxy7Q3TH9olpq20egA4=/0x0/filters:format(png)/pic6398727.png", "https://cf.geekdo-images.com/tyv6lPMlyU7YIUztlILQYQ__itemrep@2x/img/lQMHypGthw9PcbLsx2hiBK2n4V4=/fit-in/492x600/filters:strip_icc()/pic8587890.png", "https://cf.geekdo-images.com/v_BidaaTXux6j_UJQol6Jw__original/img/RDmxiiYALGFFD3ElKLTlR5C5xa8=/0x0/filters:format(jpeg)/pic8918996.jpg", "https://cf.geekdo-images.com/F-J1_JTJMhg_71RFfDAe4w__original/img/v8kYC6F9MEOzXRraUKQCywAbhdk=/0x0/filters:format(png)/pic8766964.png"],DECK=["https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg", "https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg", "https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg", "https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg", "https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg", "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg", "https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg", "https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg", "https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png", "https://cf.geekdo-images.com/X6HDeg8AhGXGhB8je65MTw__original/img/A2cgVhqNzUMUGg7_GJ5omWcdkt8=/0x0/filters:format(jpeg)/pic7303572.jpg"],TITLE="Codenames";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const rm=()=>document.documentElement.classList.contains('rm')||matchMedia('(prefers-reduced-motion: reduce)').matches;
+const im=u=>`<img src="${u}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`;
+/* background (from F7): a floor of covers in perspective, 16 rows with a 4-row period so the 25% drift loops with no seam, plus the drifting light */
+const mqF=matchMedia('(min-width:900px)');
+function floor(){const cols=mqF.matches?14:10;let h='';for(let r=0;r<16;r++)for(let c=0;c<cols;c++)h+=im(WALL[((r%4)*11+c*7)%WALL.length]);
+  $('#drift').style.setProperty('--cols',cols);$('#drift').innerHTML=h}
+floor();mqF.addEventListener('change',floor);
+const L=$$('#f8light img');let li=0,lk=0,lt=null;
+function light(){const n=L[li^=1];n.referrerPolicy='no-referrer';n.onerror=()=>n.classList.remove('on');n.src=WALL[(lk++*5)%WALL.length];n.classList.add('on');L[li^1].classList.remove('on')}
+function run(on){clearInterval(lt);if(on){light();if(!rm())lt=setInterval(light,3600)}}
+/* accent: the vote, in pieces. Desktop spreads them left and right of the text; phones keep them in a band above and a band below. */
+const pips=n=>'<b>'+[0,1,2,3,4].map(k=>`<u class="${k<n?'on':''}"></u>`).join('')+'</b>';
+const conf='<span class="v-conf">'+[['#E4B54D',6,8,20],['#5FB07F',26,0,-30],['#D9645A',48,12,45],['#F2E9DA',14,32,70],['#E4B54D',40,36,-15],['#5FB07F',58,40,30]].map(([c,x,y,r])=>`<b style="background:${c};left:${x}px;top:${y}px;transform:rotate(${r}deg)"></b>`).join('')+'</span>';
+const P=[  // [mobile pos, desktop pos, fly-in x, y, start rot, rest rot, delay, html]
+ ['left:7%;top:26px','left:max(12px,calc(50% - 596px));top:19%','-140px','-60px',-40,-9,0,`<span class="v-card">${im(DECK[4])}<em>Play</em></span>`],
+ ['right:7%;top:20px','left:min(calc(100% - 150px),calc(50% + 464px));top:15%','140px','-60px',40,7,.1,`<span class="v-win"><span class="c">${im(DECK[1])}</span><span>Tonight we play</span></span>`],
+ ['left:33%;top:18px','left:calc(50% - 440px);top:7%','0px','-150px',0,0,.2,`<span class="v-round v">✓</span>`],
+ ['left:50%;top:84px;margin-left:-72px','left:max(12px,calc(50% - 660px));top:64%','-40px','-120px',0,-2,.28,`<span class="v-seats"><i class="me ok">N</i><i class="ok">T</i><i class="ok">P</i><i class="ok">S</i><i class="wait">M</i></span>`],
+ ['left:7%;bottom:64px','left:max(12px,calc(50% - 640px));bottom:7%','-150px','60px',0,-3,.16,`<span class="v-count"><div>${im(DECK[0])}${pips(2)}</div><div class="w">${im(DECK[1])}${pips(4)}</div><div>${im(DECK[2])}${pips(3)}</div><div>${im(DECK[3])}${pips(1)}</div></span>`],
+ ['right:9%;bottom:78px','left:calc(50% + 476px);top:62%','150px','40px',0,0,.24,`<span class="v-round x">✕</span>`],
+ ['left:50%;bottom:26px;margin-left:-62px','left:min(calc(100% - 190px),calc(50% + 440px));bottom:9%','0px','160px',0,-3,.34,`<span class="v-gold">4 of 5 would play</span>`],
+ ['right:7%;bottom:28px','left:calc(50% - 400px);bottom:8%','120px','120px',0,4,.4,`<span class="v-chip">K7QP</span>`],
+ ['left:46%;bottom:88px','left:calc(50% + 380px);top:6%','80px','100px',0,0,.3,conf]];
+const mqW=matchMedia('(min-width:1200px)');   // side layout needs gutters; narrower screens keep the top and bottom bands
+function pieces(){$('#pieces').innerHTML=P.map(([m,d,fx,fy,fr,rot,dl,h],i)=>`<div class="pz" style="${mqW.matches?d:m};--fx:${fx};--fy:${fy};--fr:${fr}deg;--rot:${rot}deg;--d:${dl}s;--bd:-${i*.7}s">${h}</div>`).join('')}
+pieces();mqW.addEventListener('change',pieces);
+new IntersectionObserver(es=>es.forEach(e=>{run(e.isIntersecting);$('#signin').classList.toggle('live',e.isIntersecting);if(e.isIntersecting)$('#signin').classList.add('in')}),{threshold:.15}).observe($('#signin'));   // light, floor drift and floating only run while the section is on screen
+}
+/* ── page glue (mockup): demo bar + hide the sticky CTA once the real sign-in is on screen ── */
+{const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],H=window.heroDemo;
+ const press=window.heroPress=v=>$$('.demobar [data-state]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.state===v));
+ $$('.demobar [data-state]').forEach(b=>b.onclick=()=>{const st=b.dataset.state;press(st);delete H.table.dataset.hold;H.deal();scrollTo(0,0);
+   if(st==='deck')return;H.clearTimers();H.set(st==='outvoted'?[0,0,0,0,0]:[0,0,1,1,0]);
+   if(st==='waiting'){H.table.dataset.hold='wait';return H.waiting()}H.result(H.pickWinner())});
+ $('#rm').onclick=e=>{const on=document.documentElement.classList.toggle('rm');e.currentTarget.setAttribute('aria-pressed',on)};
+ new IntersectionObserver(es=>es.forEach(e=>$('.sticky').classList.toggle('away',e.isIntersecting)),{threshold:.2}).observe($('#signin'));
+ $$('a[href="#signin"]').forEach(a=>a.addEventListener('click',()=>{}));}
+
+</script>
+</body>
+</html>
