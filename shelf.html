@@ -498,6 +498,22 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .empty-state button{background:none;border:0;color:var(--bgs-gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font:inherit;margin-top:10px;display:block;margin-inline:auto;}
   .empty-state a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;margin-top:10px;display:block;}
   .empty-state code{font-family:'IBM Plex Mono',monospace;font-size:0.95em;}
+  .empty-state--own p{margin:0;line-height:1.5;}
+  .empty-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;margin:24px auto 0;}
+  /* Two classes so these beat `.empty-state a` and `.empty-state button` (0,1,1). */
+  .empty-state .empty-btn{
+    display:flex;align-items:center;justify-content:center;
+    min-height:52px;padding:0 18px;margin:0;border-radius:12px;
+    border:1.5px solid transparent;
+    font:600 16px/1 'Inter',sans-serif;text-decoration:none;cursor:pointer;
+    transition:background .15s ease;
+  }
+  .empty-state .empty-btn--gold{background:var(--bgs-gold);border-color:var(--bgs-gold);color:var(--bgs-on-gold);}
+  .empty-state .empty-btn--gold:hover{background:var(--bgs-gold-hover);border-color:var(--bgs-gold-hover);}
+  .empty-state .empty-btn--quiet{background:transparent;border-color:rgba(var(--bgs-ivory-rgb),.18);color:var(--bgs-ivory-70);}
+  .empty-state .empty-btn--quiet:hover{background:rgba(var(--bgs-ivory-rgb),.06);}
+  .empty-state .empty-btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  @media (prefers-reduced-motion:reduce){ .empty-state .empty-btn{transition:none;} }
   .owner-link{color:var(--bgs-gold);text-decoration:none;}
   .owner-link:hover{text-decoration:underline;text-underline-offset:3px;}
   /* Settings as a gear at the right end of the owner line. A 44px target
@@ -2044,12 +2060,16 @@ function showShelfState(kind){
     document.title = 'Your shelf · BoardgameShelf';
     const eyebrow = document.getElementById('shelfOwner');
     eyebrow.textContent = userDisplayName(viewer) || 'Your shelf';
-    const a = document.createElement('a');
-    a.href = '/welcome'; a.className = 'owner-link'; a.textContent = 'Connect your collection';
-    eyebrow.append(' · ', a);
-    shelf.innerHTML = `<p class="empty-state">Your shelf is empty.<br>Connect your BoardGameGeek account and your owned games will appear here.<a href="/welcome">Connect your collection</a><a href="#" id="emptySignOut">Sign out</a></p>`;
-    document.getElementById('emptySignOut').addEventListener('click', async (e)=>{
-      e.preventDefault();
+    // Eyebrow is the name alone; the gear joins it in commit 3.
+    shelf.innerHTML = `
+      <div class="empty-state empty-state--own">
+        <p>Your shelf is empty.<br>Connect your BoardGameGeek account and your owned games will appear here.</p>
+        <div class="empty-actions">
+          <a class="empty-btn empty-btn--gold" href="/welcome">Connect your collection</a>
+          <button type="button" class="empty-btn empty-btn--quiet" id="emptySignOut">Sign out</button>
+        </div>
+      </div>`;
+    document.getElementById('emptySignOut').addEventListener('click', async ()=>{
       try { await signOut(); } catch {}
       location.href = '/';
     });
