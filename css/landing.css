@@ -20,6 +20,8 @@
    padding, the footer and the floating CTA agree on one height. */
 :root{
   --sticky:86px;        /* floating CTA: 56px tall + its 14px inset + air */
+  --wall-o:.26;         /* cover wall prominence, locked at "Soft" */
+  --light-s:5;          /* cover light: a small source, blurred, scaled up */
 }
 
 /* ─────────────────────────── page chrome ─────────────────────────── */
@@ -46,12 +48,30 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 .sec{padding:56px 20px 72px;max-width:1120px;margin:0 auto}
 .sec .intro p{color:var(--bgs-ivory-70);margin-top:12px;max-width:30em}
 
-/* ═════ HERO ═════
-   Commit 2 adds .wall, .light and the vote's moving parts. */
+/* ═════ HERO ═════ */
 
 .hero{position:relative;overflow:hidden;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;padding:0 20px calc(var(--sticky) + 12px)}
 .bg{position:absolute;inset:0;z-index:-1;pointer-events:none}
-/* Veil: back to the theme colour at the top bar and the bottom edge, and a
+
+/* 1. Cover wall, desaturated and faint. Only the columns' transform animates,
+   and a .col carries no transition, so the two never meet on one property. */
+.wall{position:absolute;inset:-18% -30%;display:flex;justify-content:center;gap:10px;transform:rotate(-9deg);opacity:var(--wall-o);filter:grayscale(.75) contrast(1.05)}
+.col{flex:0 0 clamp(84px,24vw,170px);display:flex;flex-direction:column;gap:10px}
+.col:nth-child(n+7){display:none}   /* six columns are enough on a phone */
+.col img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:9px;background:var(--bgs-plate)}
+@keyframes up{to{transform:translateY(-16%)}}
+@keyframes down{from{transform:translateY(-16%)}to{transform:translateY(0)}}
+.col:nth-child(odd){animation:up 60s linear infinite alternate}
+.col:nth-child(even){animation:down 60s linear infinite alternate}
+
+/* 2. Cover light over the wall: the whole wall takes the top card's colour.
+   An opacity-only cross-fade between two stacked images. This element must
+   never get an animation — the transition is the effect. */
+.light{position:absolute;inset:0}
+.light img{position:absolute;left:50%;top:50%;width:160px;height:200px;max-width:none;object-fit:cover;opacity:0;transition:opacity .7s;filter:blur(22px) saturate(1.6);transform:translate(-50%,-50%) scale(var(--light-s))}
+.light img.on{opacity:.5}
+
+/* 3. Veil: back to the theme colour at the top bar and the bottom edge, and a
    little behind the copy, so the wall behind it can never fight the text. */
 .veil{position:absolute;inset:0;background:linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.62) 16%,rgba(var(--bgs-bg-rgb),.34) 58%,rgba(var(--bgs-bg-rgb),.7) 86%,var(--bgs-bg) 100%)}
 
@@ -68,9 +88,17 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
    width, so headline, deck and the ✕ / ✓ row fit one phone screen. */
 .table{position:relative;align-self:center;margin:auto 0;width:min(64vw,29svh,300px)}
 .deck{position:relative;aspect-ratio:4/5;width:100%}
-.slot{position:absolute;inset:0}
-.card{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 26px 50px -16px rgba(0,0,0,.9),inset 0 0 0 1px var(--line)}
+/* The slot holds the card's place in the stack and transitions between
+   places; the card inside it carries the drag and the fling. Two elements,
+   two transitions, no animation on either — one element doing both is what
+   WebKit drops. */
+.slot{position:absolute;inset:0;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
+.card{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 26px 50px -16px rgba(0,0,0,.9),inset 0 0 0 1px var(--line);touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.card.snap{transition:transform .32s cubic-bezier(.2,.8,.2,1)}
 .card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+.stamp{position:absolute;top:14px;padding:6px 12px;border-radius:99px;font:600 14px/1 'Inter',sans-serif;opacity:0}
+.stamp.play{left:14px;background:var(--bgs-vote-play);color:#10210f}
+.stamp.pass{right:14px;background:var(--bgs-vote-pass);color:#fff}
 
 .actions{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:26px}
 .round{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--bgs-ivory-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),inset 0 1px 0 rgba(255,255,255,.16);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4)}
@@ -89,8 +117,84 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 .seat.you{box-shadow:inset 0 0 0 1.5px var(--bgs-gold)}
 .seat.you::after{content:"You";position:absolute;top:-15px;left:50%;transform:translateX(-50%);font:500 10px/1 'IBM Plex Mono',monospace;color:var(--bgs-gold)}
 .chip{position:absolute;right:-6px;bottom:-5px;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font:700 11px/1 'Inter',sans-serif;opacity:0;transform:scale(.5);transition:opacity .22s,transform .22s}
+.chip.show{opacity:1;transform:none}
+.chip.y{background:var(--bgs-vote-play);color:#10210f}
+.chip.n{background:var(--bgs-vote-pass);color:#fff}
+.chip.ok{background:var(--bgs-ivory);color:var(--bgs-bg)}   /* "has voted", not how */
 .dots{position:absolute;right:-8px;bottom:-5px;display:none;gap:2px;padding:5px;border-radius:99px;background:rgba(var(--bgs-bg-rgb),.85);box-shadow:inset 0 0 0 1px var(--line)}
+.seat.slow .dots{display:flex}
 .dots i{width:3px;height:3px;border-radius:50%;background:var(--bgs-ivory)}
+/* The late voter's dots are the one blinking thing here. They are their own
+   elements precisely so the seat and the chip can keep their transitions. */
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+.dots i{animation:blink 1s infinite}
+.dots i:nth-child(2){animation-delay:.18s}
+.dots i:nth-child(3){animation-delay:.36s}
+
+/* ── The count. Everyone has voted but one: five mini covers, five pips each,
+   and the ballots tick in round-robin. .mini transitions and is never
+   animated. */
+.counting{display:none;text-align:center}
+.counting h3,.result h3{font:500 26px/1.1 'Fraunces',serif;margin:0}
+.minis{display:flex;justify-content:center;gap:10px;margin-top:18px}
+.mini{width:48px;flex:none;overflow:visible;transition:width .45s cubic-bezier(.2,.8,.2,1),margin .45s cubic-bezier(.2,.8,.2,1),transform .45s cubic-bezier(.2,.8,.2,1),opacity .4s,filter .4s}
+.mini .c{aspect-ratio:4/5;border-radius:8px;overflow:hidden;background:var(--bgs-plate);box-shadow:inset 0 0 0 1px var(--line)}
+.mini .c img{width:100%;height:100%;object-fit:cover}
+.pips{display:flex;justify-content:center;gap:3px;margin-top:7px}
+.pips i{width:5px;height:5px;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.2);transition:background-color .3s}
+.pips i.on{background:var(--bgs-vote-play);transform:scale(1.25)}
+.mini.win{transform:translateY(-10px) scale(1.14)}
+.mini.win .c{box-shadow:0 0 0 2px var(--bgs-gold)}
+.mini.win .pips i.on{background:var(--bgs-gold)}
+.minis.decided .mini:not(.win){opacity:.4}
+.counting p{margin-top:16px}
+
+/* ── The winner. Every entrance here is an animation on an element that has
+   no transition: the crown on .winner, the flash on .flash, and the confetti
+   on fresh <i> elements driven by the Web Animations API. */
+.result{display:none;text-align:center}
+.winner{width:min(68%,31svh);margin:14px auto 0;aspect-ratio:4/5;border-radius:16px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 0 0 2px var(--bgs-gold),0 24px 50px -18px #000;transform:rotate(-2deg)}
+.winner img{width:100%;height:100%;object-fit:cover}
+@keyframes crown{0%{transform:scale(.5) rotate(-12deg);opacity:0}55%{transform:scale(1.08) rotate(1.5deg);opacity:1}75%{transform:scale(.98) rotate(-3deg)}100%{transform:scale(1) rotate(-2deg);opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes flash{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}25%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
+.flash{position:absolute;left:50%;top:56%;width:130%;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.75),rgba(var(--bgs-gold-rgb),.15) 55%,transparent 72%);pointer-events:none;opacity:0;z-index:-1}
+.burst{position:absolute;left:50%;top:56%;width:0;height:0;pointer-events:none;z-index:3}
+.burst i{position:absolute;left:-4px;top:-6px;width:8px;height:12px;border-radius:2px;opacity:0}
+.after{display:none;text-align:center}
+.after p{color:var(--bgs-ivory-70);font-size:14.5px;margin-top:12px}
+.after .row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:14px}
+/* The hero's own small buttons. Named apart from .btn so the sign-in block's
+   full-width pills below cannot reach them. "Deal again" wears the real
+   material from css/glass.css. */
+.hbtn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:99px;font-weight:600;font-size:14.5px;text-decoration:none;color:var(--bgs-ivory);
+  /* Stand-in fill for "Deal again" on a device that opted out of glass.
+     css/glass.css loads after this file, so .glass wins wherever it is in. */
+  background:rgba(var(--bgs-ivory-rgb),.09);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18)}
+.hbtn-gold{background:var(--bgs-gold);color:var(--bgs-on-gold);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+
+/* ── Phase switching. The deck and the ✕ / ✓ leave, the count or the result
+   takes their place, and the seats drop to the bottom to turn their votes
+   over. */
+.table.waiting,.table.done{width:min(88vw,340px)}
+.table.waiting .deck,.table.waiting .actions,
+.table.done .deck,.table.done .actions{display:none}
+.table.waiting .counting{display:block}
+.table.done{display:flex;flex-direction:column}
+.table.done .result{display:block;order:1;position:relative}
+.table.done .after{display:block;order:4}
+.table.done .seats{order:3;margin:30px 0 0}
+.table.done .winner{animation:crown .75s cubic-bezier(.2,.9,.25,1) both}
+.table.done .result h3{animation:rise .5s .1s both}
+.table.done .flash{animation:flash 1s ease-out both}
+.table.done .after{animation:rise .5s .95s both}
+
+/* On a phone the lede gives up its space so the large winner cover fits. It
+   comes back on "Deal again". */
+@media (max-width:899px){
+  .inner:has(.table.done) .lede,
+  .inner:has(.table.waiting) .lede{display:none}
+}
 
 /* ═════ Floating CTA ═════
    Primary-on-glass: the .glass recipe from css/glass.css with a gold tint and
@@ -100,7 +204,13 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
    correctly, because it carries its own background and shadow. */
 
 .fab{display:flex;align-items:center;justify-content:center;gap:9px;min-height:56px;border-radius:99px;
-  font-weight:700;font-size:16.5px;color:var(--bgs-gold-hover);text-decoration:none}
+  font-weight:700;font-size:16.5px;color:var(--bgs-gold-hover);text-decoration:none;
+  /* The focus-ring slot, so focus composes with the rim instead of replacing
+     it. Declared here as well as in css/glass.css: that file is only loaded
+     for devices that have not opted out, and an undefined var would throw
+     away the whole box-shadow below, rim and all. */
+  --glass-focus:0 0 0 0 transparent}
+.fab:focus-visible{outline:0;--glass-focus:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
 .fab.glass{
   background:
     linear-gradient(135deg,var(--glass-sheen) 0%,transparent 38%,transparent 70%,rgba(var(--bgs-ivory-rgb),.04) 100%) var(--light-x) 0 / 220% 100% no-repeat,
@@ -241,13 +351,24 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   .actions{margin-top:18px}
   .round{width:52px;height:52px}
   .top{padding:8px 0}
+  .winner{width:min(48%,27svh)!important}
+  .inner:has(.table.done) .lede,
+  .inner:has(.table.waiting) .lede{display:none}
+  .table.done .seats{margin-top:24px}
+  .after p{margin-top:8px}
+  .after .row{margin-top:10px}
 }
 
 /* ─────────────────────────── desktop ─────────────────────────── */
 
 @media (min-width:900px){
+  :root{--light-s:9}
   body{--fab-clearance:0px}
   .hero{padding:0 max(24px,calc((100vw - 1180px)/2 + 24px)) 0;min-height:min(880px,100svh)}
+  .wall{inset:-22% -10%;gap:16px}
+  .col{flex-basis:clamp(130px,12vw,180px);gap:16px}
+  .col:nth-child(n+7){display:flex}
+  .col img{border-radius:12px}
   .veil{background:radial-gradient(ellipse 70% 90% at 25% 55%,rgba(var(--bgs-bg-rgb),.72) 0,rgba(var(--bgs-bg-rgb),.3) 70%,transparent 100%),linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.5) 16%,rgba(var(--bgs-bg-rgb),.3) 70%,var(--bgs-bg) 100%)}
   .top{padding:20px 0}
   .mark{font-size:22px}
@@ -256,6 +377,8 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   .lede{font-size:19px;margin-top:22px}
   .cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:30px}
   .table{width:min(360px,40svh)}
+  .table.waiting,.table.done{width:400px}
+  .winner{width:min(78%,42svh)}
   .seats{gap:14px;margin-bottom:22px}
   .seat{width:42px;height:42px}
   .seat svg{width:22px;height:22px}
@@ -284,6 +407,11 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
    Everything stays present in its resting state; nothing moves. */
 
 @media (prefers-reduced-motion:reduce){
-  .halo{animation:none}
-  .sticky,.chip,.a-tabs span,.btn{transition:none}
+  /* Nothing drifts, nothing flies in, nothing is crowned. The hero still
+     plays — js/landing-hero.js skips the count and goes to the result — so
+     every piece stays present, just still. */
+  .halo,.col,.dots i,
+  .table.done .winner,.table.done .result h3,
+  .table.done .flash,.table.done .after{animation:none}
+  .sticky,.chip,.a-tabs span,.btn,.slot,.card,.card.snap,.mini,.pips i,.light img{transition:none}
 }
