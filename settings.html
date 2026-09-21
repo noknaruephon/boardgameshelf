@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 <script src="/vendor/qrcode.min.js"></script>
 <script type="module">
 import {
-  getUser, getAccessToken, fetchMyProfile, ensureMyProfile, updateMyProfile, updateDisplayName, updateTheme, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
+  getUser, getAccessToken, fetchMyProfile, ensureMyProfile, updateMyProfile, updateDisplayName, updateTheme, changeBggUsername, lookupBggUser, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
@@ -753,12 +753,14 @@ $('copyLink').addEventListener('click', async () => {
 // field, the whole address as the preview, no warning about breaking links
 // there are none of yet, and Connect on the button.
 let bggConnectMode = false;
+let bggUnchecked = '';   // a name whose BGG check failed: pressing again saves it as typed
 
 function showBggForm(on) {
   show('bggEdit', !on);
   show('bggForm', on);
   if (on) {
     bggConnectMode = !connected();
+    bggUnchecked = '';
     $('bggNew').value = bggConnectMode ? '' : (profile.bgg_username || '');
     $('bggNewPreview').textContent = '';
     show('bggHint', !bggConnectMode);
@@ -791,6 +793,42 @@ $('bggNew').addEventListener('input', () => {
   }
   $('bggNewPreview').innerHTML = slug && slug !== profile.slug ? `New address: <b>/u/${slug}</b>` : '';
 });
+// Live BGG check, on the press rather than while typing: /api/bgg/lookup
+// allows about one call a second, which is why /welcome does not check as
+// you type either. Found saves; missing blocks; an unreachable BGG saves the
+// name as typed rather than standing between the user and their own shelf.
+async function checkBgg(name) {
+  const btn = $('bggSave');
+  const label = btn.textContent;
+  btn.innerHTML = '<span class="dn-spin" aria-hidden="true"></span>';
+  btn.setAttribute('aria-label', 'Checking');
+  say($('bggMsg'), 'Checking BGG…');
+  try {
+    let result;
+    try {
+      result = await lookupBggUser(name);
+    } catch (err) {
+      if (!err.retryAfter) throw err;
+      // Pressed faster than the endpoint's one-a-second: wait it out and ask once more.
+      await new Promise((r) => setTimeout(r, err.retryAfter * 1000));
+      result = await lookupBggUser(name);
+    }
+    // BGG's own casing, so "Nok" and "nok" store the same username.
+    if (result.found) return { proceed: true, username: result.username || name, reachable: true };
+    say($('bggMsg'), "No account by that name. It's usually a typo — usernames aren't case-sensitive.", 'err');
+    return { proceed: false };
+  } catch (err) {
+    // BGG itself is down: saving the name still beats blocking the page.
+    if (err.status >= 500) return { proceed: true, username: name, reachable: false };
+    bggUnchecked = name;
+    say($('bggMsg'), `Couldn't check with BGG. Press ${label} again to use the name as typed.`, 'err');
+    return { proceed: false };
+  } finally {
+    btn.textContent = label;
+    btn.removeAttribute('aria-label');
+  }
+}
+
 $('bggForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const next = $('bggNew').value.trim();
@@ -800,7 +838,14 @@ $('bggForm').addEventListener('submit', async (e) => {
   const btn = $('bggSave');
   btn.disabled = true;
   try {
-    const result = await changeBggUsername(next);
+    const checked = bggUnchecked === next
+      ? { proceed: true, username: next, reachable: false }
+      : await checkBgg(next);
+    if (!checked.proceed) return;
+    // Cancelled while the check was out: leave the profile alone.
+    if ($('bggForm').hidden) return;
+    bggUnchecked = '';
+    const result = await changeBggUsername(checked.username);
     if (result.error === 'taken') { say($('bggMsg'), `“${next}” is already claimed on this site.`, 'err'); return; }
     if (result.error === 'invalid') { say($('bggMsg'), 'That username can’t be used as a link.', 'err'); return; }
     const wasConnect = bggConnectMode;
@@ -811,8 +856,11 @@ $('bggForm').addEventListener('submit', async (e) => {
     updateBrowseOffer();
     if (wasConnect) {
       // The shelf exists now and is empty: start filling it. The sync's own
-      // step text takes over the hint from here.
-      startSync();
+      // step text takes over the hint from here. With BGG unreachable there
+      // is nothing to sync against, so say so instead of starting a sync
+      // that can only fail.
+      if (checked.reachable) startSync();
+      else $('syncHint').textContent = "BGG isn't reachable right now. Your username is saved — sync when it's back.";
       return;
     }
     $('syncHint').textContent = `Saved. Your shelf is now /u/${profile.slug} — sync to load its games.`;
