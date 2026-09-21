@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 <script type="module" src="/js/beta-tag.js"></script>
 <script type="module" src="/js/landing-hero.js"></script>
 <script type="module" src="/js/landing-story.js"></script>
+<script type="module" src="/js/landing-close.js"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
@@ -203,9 +204,17 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 </div></section>
 
 <!-- ═════ CLOSING ═════
-     The floor of covers, the cover light and the floating vote pieces arrive
-     with js/landing-close.js. The focal block — the real sign-in — is here. -->
+     js/landing-close.js fills the floor, the light and the vote pieces. Back
+     to front: floor → light → veil → horizon → pieces → the focal block.
+     Every layer before the focal block is decorative, pointer-events:none and
+     at a negative z-index inside this section's own stacking context, so the
+     Google button, the email panel and the guest link stay clickable. -->
 <section class="f8" id="signin">
+  <div class="floor" aria-hidden="true"><div class="plane"><div class="drift" id="drift"></div></div></div>
+  <div class="light" id="f8light" aria-hidden="true"><img alt=""><img alt=""></div>
+  <div class="veil" aria-hidden="true"></div>
+  <div class="horizon" aria-hidden="true"></div>
+  <div class="pieces" id="pieces" aria-hidden="true"></div>
   <div class="focal">
     <h2 class="big">Your shelf, judged by its covers.</h2>
     <p class="subl">A page for your collection and a vote for your table, from any phone.</p>

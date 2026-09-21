@@ -348,12 +348,80 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 .path li:last-child .num{color:var(--bgs-gold)}
 
 /* ═════ CLOSING ═════
-   Commit 4 adds the layers behind this: .floor → .light → .veil → .horizon →
-   .pieces, all pointer-events:none at negative z-index inside the section's
-   own stacking context, so the focal block below stays clickable. */
+   The long shelf, the lights, and a vote around the sign-in. Back to front:
+   .floor → .light → .veil → .horizon → .pieces → the focal block. Every one
+   of those layers is pointer-events:none at a negative z-index inside this
+   section's own stacking context, so the Google button, the email panel and
+   the guest link stay clickable through all of it. */
 
-.f8{position:relative;isolation:isolate;overflow:hidden;text-align:center;padding:72px 20px 88px}
-.focal{max-width:640px;margin:0 auto}
+.f8{position:relative;isolation:isolate;overflow:hidden;text-align:center;min-height:100svh;display:grid;place-items:center;padding:212px 20px 222px;--floor-o:.85}
+.focal{max-width:760px;margin:0 auto}
+
+/* Floor: a grid of covers laid flat in perspective and running to the
+   horizon. The tilt is a static transform on .plane and is never animated;
+   the drift is an animation on the .drift wrapper inside it. 16 rows with a
+   4-row period, so translateY(-25%) lands on an identical row — no seam. */
+.f8 .floor{position:absolute;inset:0;z-index:-5;perspective:900px;perspective-origin:50% 6%;overflow:hidden;opacity:var(--floor-o);pointer-events:none}
+.f8 .plane{position:absolute;left:50%;top:4%;width:190vw;transform:translateX(-50%) rotateX(58deg);transform-origin:50% 0}
+.f8 .drift{display:grid;grid-template-columns:repeat(var(--cols,10),1fr);gap:1.8vw;animation:towards 46s linear infinite}
+@keyframes towards{to{transform:translateY(-25%)}}
+.f8 .drift img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:1.2vw;background:var(--bgs-plate)}
+/* Off screen, nothing moves and the light's timer is cleared in JS. */
+.f8:not(.live) .drift,
+.f8:not(.live) .pz>*,
+.f8:not(.live) .halo{animation-play-state:paused}
+
+.f8 .light{position:absolute;inset:0;z-index:-4;pointer-events:none}
+.f8 .light img{position:absolute;left:50%;top:50%;width:160px;height:200px;max-width:none;object-fit:cover;opacity:0;transition:opacity 1.6s;filter:blur(22px) saturate(1.6);transform:translate(-50%,-50%) scale(6)}
+.f8 .light img.on{opacity:.5}
+
+/* A dark ellipse behind the focal block plus top and bottom fades, so the
+   shelf recedes around the headline and the small pieces stay readable over
+   the bright near tiles. Every stop is the theme's own background. */
+.f8 .veil{position:absolute;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(ellipse 120% 44% at 50% 50%,rgba(var(--bgs-bg-rgb),.92) 0,rgba(var(--bgs-bg-rgb),.6) 62%,transparent 100%),linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.6) 14%,rgba(var(--bgs-bg-rgb),.15) 34%,rgba(var(--bgs-bg-rgb),.15) 64%,rgba(var(--bgs-bg-rgb),.62) 84%,var(--bgs-bg) 100%)}
+.f8 .horizon{position:absolute;left:0;right:0;top:0;height:26%;z-index:-2;pointer-events:none;background:radial-gradient(ellipse 70% 100% at 50% 22%,rgba(var(--bgs-gold-rgb),.34),transparent 70%)}
+.f8 .big{text-shadow:0 2px 30px rgba(var(--bgs-bg-rgb),.9)}
+.f8 .subl,.f8 .alts{text-shadow:0 1px 12px rgba(var(--bgs-bg-rgb),.95)}
+.f8 .subl{color:var(--bgs-ivory)}
+
+/* ── The vote, in pieces. Outer .pz flies in once on a transition, staggered
+   by --d; the child inside bobs on an animation. Never both. */
+.pieces{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.pz{position:absolute;opacity:0;transform:translate(var(--fx),var(--fy)) scale(.5) rotate(var(--fr,0deg));transition:opacity .7s,transform 1s cubic-bezier(.2,.9,.25,1);transition-delay:var(--d,0s)}
+.f8.in .pz{opacity:1;transform:none}
+.pz>*{display:block;animation:bob8 5s ease-in-out infinite;animation-delay:var(--bd,0s)}
+@keyframes bob8{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-5px) rotate(var(--rot,0deg))}}
+/* A visitor who asked for less data gets the pieces in place and a still
+   floor, same as reduced motion. */
+.f8.still .pz{transition:none}
+.f8.still .drift,.f8.still .pz>*,.f8.still .halo{animation:none}
+
+.v-card{position:relative;width:var(--w,70px);aspect-ratio:3/4;border-radius:9px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 22px 40px -14px #000,inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16)}
+.v-card img{width:100%;height:100%;object-fit:cover}
+.v-card em{position:absolute;left:6px;top:6px;font:600 9.5px/1 'Inter',sans-serif;font-style:normal;padding:4px 7px;border-radius:99px;background:var(--bgs-vote-play);color:#10210f}
+.v-win{position:relative;width:var(--w,70px)}
+.v-win .c{display:block;aspect-ratio:3/4;border-radius:9px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 0 0 2px var(--bgs-gold),0 0 24px rgba(var(--bgs-gold-rgb),.4),0 16px 30px -12px #000}
+.v-win img{width:100%;height:100%;object-fit:cover}
+.v-win span:not(.c){display:none;margin-top:7px;font:600 11px/1 'Fraunces',serif;color:var(--bgs-ivory);text-shadow:0 1px 10px #000}
+.v-round{width:42px;height:42px;border-radius:50%;display:grid!important;place-items:center;font-weight:700;font-size:15px;background:rgba(var(--bgs-ivory-rgb),.13);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.26),inset 0 1px 0 rgba(255,255,255,.18),0 14px 26px -8px #000;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.v-round.yes{color:var(--bgs-vote-play)}
+.v-round.no{color:var(--bgs-vote-pass)}
+.v-seats{display:flex!important;gap:5px;padding:6px 8px;border-radius:99px;background:rgba(var(--bgs-plate-rgb),.78);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16),0 12px 24px -10px #000;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.v-seats i{position:relative;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;font:600 9px/1 'Inter',sans-serif;font-style:normal;color:var(--bgs-ivory-70);background:rgba(var(--bgs-ivory-rgb),.08);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18)}
+.v-seats i.me{color:var(--bgs-gold);box-shadow:inset 0 0 0 1.5px rgba(var(--bgs-gold-rgb),.7)}
+.v-seats i.ok::after{content:"✓";position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;border-radius:50%;display:grid;place-items:center;font-size:6.5px;font-weight:700;background:var(--bgs-ivory);color:var(--bgs-bg)}
+.v-seats i.wait::after{content:"…";position:absolute;right:-5px;bottom:-4px;width:12px;height:10px;border-radius:99px;display:grid;place-items:center;font-size:7px;line-height:.4;background:var(--bgs-bg);color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.25)}
+.v-count{display:flex!important;gap:5px;padding:7px;border-radius:11px;background:rgba(var(--bgs-plate-rgb),.78);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16),0 12px 24px -10px #000;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.v-count div{width:21px}
+.v-count img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:4px;background:var(--bgs-bg-radial)}
+.v-count b{display:flex;justify-content:center;gap:1.5px;margin-top:4px}
+.v-count b u{width:3px;height:3px;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.2)}
+.v-count b u.on{background:var(--bgs-gold)}
+.v-count div.w img{box-shadow:0 0 0 1.5px var(--bgs-gold)}
+.v-gold{font:700 11px/1 'Inter',sans-serif;padding:9px 12px;border-radius:99px;white-space:nowrap;background:var(--bgs-gold);color:var(--bgs-on-gold);box-shadow:0 12px 24px -8px rgba(var(--bgs-gold-rgb),.5)}
+.v-chip{font:600 10px/1 'IBM Plex Mono',monospace;padding:7px 10px;border-radius:99px;white-space:nowrap;background:rgba(var(--bgs-plate-rgb),.8);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),0 10px 22px -8px #000;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.v-conf{position:relative;width:50px;height:40px;scale:.72;transform-origin:0 0}
+.v-conf b{position:absolute;width:7px;height:11px;border-radius:2px}
 .big{font-size:clamp(42px,12vw,92px);line-height:.98;text-shadow:0 2px 30px rgba(var(--bgs-bg-rgb),.9)}
 .subl{color:var(--bgs-ivory);font-size:17px;margin:16px auto 0;max-width:24em;text-shadow:0 1px 12px rgba(var(--bgs-bg-rgb),.95)}
 
@@ -472,7 +540,12 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   .card{border-radius:22px}
   .round{width:64px;height:64px}
   .sticky{display:none}
-  .f8{padding:96px 20px 110px}
+  .f8{padding:200px 20px 210px}
+  .f8 .floor{perspective:1400px}
+  .f8 .plane{width:124vw}
+  .f8 .drift{gap:.8vw}
+  .f8 .drift img{border-radius:.5vw}
+  .f8 .light img{transform:translate(-50%,-50%) scale(11)}
   /* Phone and steps side by side; the pin loses its glass band because there
      is no step text passing under it. */
   .a-wrap{display:grid;grid-template-columns:400px 1fr;gap:72px;margin-top:48px}
@@ -487,6 +560,29 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   .extras{grid-template-columns:repeat(6,1fr)}
   .x{grid-column:span 2}
   .x:nth-child(4){grid-column:2/span 2}
+}
+/* From 1200px the pieces move into the side gutters, so they get bigger and
+   the winner earns its label. The headline wraps to two lines at 10em, which
+   is what leaves the gutters for them in the first place. */
+@media (min-width:1200px){
+  .v-card,.v-win{--w:132px}
+  .v-card{border-radius:13px}
+  .v-win .c{border-radius:13px}
+  .v-card em{left:9px;top:9px;font-size:12px;padding:5px 9px}
+  .v-win span:not(.c){display:block;font-size:14px;margin-top:9px}
+  .v-round{width:58px;height:58px;font-size:21px}
+  .v-seats{gap:7px;padding:8px 10px}
+  .v-seats i{width:29px;height:29px;font-size:11.5px}
+  .v-seats i.ok::after{width:13px;height:13px;font-size:8px}
+  .v-seats i.wait::after{width:15px;height:13px;font-size:9px}
+  .v-count{gap:7px;padding:9px;border-radius:14px}
+  .v-count div{width:32px}
+  .v-count b{gap:2px;margin-top:5px}
+  .v-count b u{width:4px;height:4px}
+  .v-gold{font-size:13.5px;padding:12px 17px}
+  .v-chip{font-size:12px;padding:9px 13px}
+  .v-conf{scale:1}
+  .f8 .big{font-size:76px;max-width:10em;margin:0 auto}
 }
 @media (min-width:860px){
   .path{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px}
@@ -503,11 +599,11 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   /* Nothing drifts, nothing flies in, nothing is crowned. The hero still
      plays — js/landing-hero.js skips the count and goes to the result — so
      every piece stays present, just still. */
-  .halo,.col,.dots i,.frag>*,
+  .halo,.col,.dots i,.frag>*,.f8 .drift,.pz>*,
   .table.done .winner,.table.done .result h3,
   .table.done .flash,.table.done .after{animation:none}
-  /* The pieces for the step you are on still appear, they just appear in
-     place rather than flying in. */
+  /* The pieces for the step you are on, and the closing section's, still
+     appear — they just appear in place rather than flying in. */
   .sticky,.chip,.a-tabs span,.btn,.slot,.card,.card.snap,.mini,.pips i,.light img,
-  .frag,.a-phone,.a-phone .scr,.a-steps .step{transition:none}
+  .frag,.a-phone,.a-phone .scr,.a-steps .step,.pz,.f8 .light img{transition:none}
 }
