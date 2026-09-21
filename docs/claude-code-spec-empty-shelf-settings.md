@@ -290,6 +290,19 @@ Commit 3
 
 ---
 
-## Open, not in this spec
+## Since this spec: the live BGG check
 
-- The Settings username form does not check that the BGG user exists (the `/welcome` step does, through `lookupBggUser`). A typo here shows up as a failed sync. Worth adding the live check to the form later, for both connect and change mode.
+The one item this spec left open is done, in a fourth commit (`settings: check the BGG username against BGG before saving it`). It is not one of the three above and the checklist does not cover it.
+
+The form used to save whatever was typed, so a typo only surfaced later as a failed sync. Both modes now run `lookupBggUser()` on the press, never while typing: `/api/bgg/lookup` allows about one call a second, which is why `/welcome` does not check as you type either. `#bggSave` wears the `.dn-spin` spinner while the check is out, with `aria-label="Checking"` for the moment it has no text.
+
+| Outcome | What happens |
+|---|---|
+| Found | Saves under BGG's own casing (`result.username`), then the mode's usual path: the auto-sync on connect, the "Saved. Your shelf is now…" hint on change |
+| Not found | Blocked, with `/welcome`'s message word for word |
+| BGG unreachable (5xx) | Saves the name as typed rather than standing between the user and their own shelf. Connect mode skips the auto-sync and says `BGG isn't reachable right now. Your username is saved — sync when it's back.` |
+| Anything else (network, 4xx, no session) | Blocked once. Pressing again on the same name saves it unchecked; the message names the button, so it reads "Press Connect again" or "Press Save again" |
+
+A 429 is handled the way `/welcome` handles it: wait `retryAfter`, ask once more. Cancelling while a check is out leaves the profile alone. A fetch that never reached our server has no `status`, so it lands on the second-press path rather than saving silently.
+
+Still open: the second press is the only way past a failed check, and nothing in the form says so until a check has already failed. `/welcome` has a visible "Claim the name anyway" link for the same situation; the form would need a new control and new copy to match it.
