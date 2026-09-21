@@ -524,12 +524,13 @@ const confirmBody = document.getElementById('confirmBody');
 registerOverlay(() => confirmDialog.classList.contains('open'));
 
 // ---- cover light flag (docs/claude-code-spec-vote-cover-light.md) ----
-// Off by default and with no entry point yet: ?coverlight=1 turns it on for a
-// single visit. Same shape as the shelf's bag and teach flags — no flag in this
-// project persists itself to storage, so this one doesn't either; the link
-// carries it. Flipping the constant to true ships it to everyone, at which
-// point the query gate can go.
-const COVER_LIGHT_ENABLED = false;
+// Live: the swipe screen takes the colour of the card on top of the deck for
+// everyone. The flag is now a kill switch rather than a curtain, the same shape
+// as the shelf's game night, invite and bag flags — set it back to false to
+// pull the wash without reverting anything, and ?coverlight=1 still reveals it
+// while it is off. No flag in this project persists itself to storage, so this
+// one doesn't either; the link carries it.
+const COVER_LIGHT_ENABLED = true;
 const coverLightOn =
   COVER_LIGHT_ENABLED || new URLSearchParams(location.search).get('coverlight') === '1';
 // #screen itself survives every render — each one replaces its contents, not
