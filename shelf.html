@@ -1792,6 +1792,7 @@ function slugFromPath(){
 // without a profile sees their own shelf empty, with the way to connect.
 const isOwnShelfRoute = location.pathname.replace(/\/$/, '') === '/shelf';
 let viewer = null;
+let ownProfile = null;   // the viewer's own row, for the empty state's name and theme
 
 async function loadGames(){
   if(isOwnShelfRoute){
@@ -1799,8 +1800,9 @@ async function loadGames(){
     if(!viewer){ location.replace('/'); throw new ShelfError('redirect'); }
     const mine = await fetchMyProfile();
     if(mine?.slug){ location.replace(`/u/${mine.slug}`); throw new ShelfError('redirect'); }
-    // A slugless row can already carry a theme, picked in Settings before
-    // connecting: the empty shelf wears it too.
+    // A slugless row can already carry a theme and a display name, both
+    // picked in Settings before connecting: the empty shelf wears them too.
+    ownProfile = mine;
     applyProfileTheme(mine);
     throw new ShelfError('empty-own');
   }
@@ -2066,7 +2068,8 @@ function showShelfState(kind){
   if(kind === 'empty-own'){
     document.title = 'Your shelf · BoardgameShelf';
     const eyebrow = document.getElementById('shelfOwner');
-    eyebrow.textContent = userDisplayName(viewer) || 'Your shelf';
+    // Settings' own precedence: the name the owner chose, then the account's.
+    eyebrow.textContent = ownProfile?.display_name || userDisplayName(viewer) || 'Your shelf';
     appendOwnerGear(eyebrow);
     shelf.innerHTML = `
       <div class="empty-state empty-state--own">
