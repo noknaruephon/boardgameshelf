@@ -1,0 +1,289 @@
+/* Landing page — docs/claude-code-spec-landing.md.
+   Loaded by landing-next.html (served at /next) after css/base.css and
+   css/glass.css, and only there.
+
+   Tokens are base.css's: every veil and fade is built from --bgs-bg /
+   --bgs-bg-rgb so the page holds on Walnut, Navy, Mahogany and Oak. The
+   Liquid Glass material is glass.css's .glass; nothing here re-declares it.
+
+   House rule for everything below, from the spec's WebKit table: no element
+   ever carries an `animation` and a `transition` on the same property.
+   Outer elements transition, inner ones animate. Focus rings are box-shadow,
+   never outline; gold rings on glass are box-shadow, never border.
+
+   This file grows one section per commit. Commit 1 is the static page: the
+   layout of every section in its resting state, and the real sign-in. The
+   cover wall, the cover light, the playable vote, the pinned phone and the
+   closing floor arrive with their scripts in commits 2 to 4. */
+
+/* Layout constants, not design tokens: they only exist so the hero's bottom
+   padding, the footer and the floating CTA agree on one height. */
+:root{
+  --sticky:86px;        /* floating CTA: 56px tall + its 14px inset + air */
+}
+
+/* ─────────────────────────── page chrome ─────────────────────────── */
+
+body{
+  font:400 16px/1.5 'Inter',sans-serif;
+  /* base.css pads .shelf-footer by this, so the footer clears the floating
+     CTA instead of sitting under it. */
+  --fab-clearance:56px;
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a:focus-visible,button:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+[hidden]{display:none!important}
+
+h1{font-family:'Fraunces',serif;font-weight:500;margin:0;letter-spacing:-.02em;font-variation-settings:"opsz" 144;font-size:clamp(36px,10.4vw,48px);line-height:1}
+h2{font:600 clamp(28px,7.6vw,44px)/1.06 'Fraunces',serif;letter-spacing:-.015em;margin:0}
+h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
+.mono{font:400 12px/1.4 'IBM Plex Mono',monospace;color:var(--bgs-ivory-70)}
+
+.band{border-top:1px solid var(--line)}
+.sec{padding:56px 20px 72px;max-width:1120px;margin:0 auto}
+.sec .intro p{color:var(--bgs-ivory-70);margin-top:12px;max-width:30em}
+
+/* ═════ HERO ═════
+   Commit 2 adds .wall, .light and the vote's moving parts. */
+
+.hero{position:relative;overflow:hidden;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;padding:0 20px calc(var(--sticky) + 12px)}
+.bg{position:absolute;inset:0;z-index:-1;pointer-events:none}
+/* Veil: back to the theme colour at the top bar and the bottom edge, and a
+   little behind the copy, so the wall behind it can never fight the text. */
+.veil{position:absolute;inset:0;background:linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.62) 16%,rgba(var(--bgs-bg-rgb),.34) 58%,rgba(var(--bgs-bg-rgb),.7) 86%,var(--bgs-bg) 100%)}
+
+.top{display:flex;align-items:center;gap:8px;padding:14px 0}
+.mark{font:italic 500 20px/1 'Fraunces',serif;color:var(--bgs-gold);margin:0}
+.navsignin{margin-left:auto;font-weight:500;font-size:14px;text-decoration:none;min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border-radius:99px;background:rgba(var(--bgs-bg-rgb),.45);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+
+.inner{flex:1;display:flex;flex-direction:column;justify-content:flex-start;gap:16px;padding-top:4px}
+.lede{font-size:16px;color:var(--bgs-ivory-70);margin-top:12px;max-width:30em}
+.cta{display:none}   /* phones get the floating CTA instead */
+.textlink{font-size:14.5px;color:var(--bgs-ivory-70);text-underline-offset:3px}
+
+/* The vote table. The deck's width is capped by viewport HEIGHT as well as
+   width, so headline, deck and the ✕ / ✓ row fit one phone screen. */
+.table{position:relative;align-self:center;margin:auto 0;width:min(64vw,29svh,300px)}
+.deck{position:relative;aspect-ratio:4/5;width:100%}
+.slot{position:absolute;inset:0}
+.card{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:var(--bgs-plate);box-shadow:0 26px 50px -16px rgba(0,0,0,.9),inset 0 0 0 1px var(--line)}
+.card img{width:100%;height:100%;object-fit:cover;pointer-events:none}
+
+.actions{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:26px}
+.round{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--bgs-ivory-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),inset 0 1px 0 rgba(255,255,255,.16);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4)}
+.round svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.round.no{color:var(--bgs-vote-pass)}
+.round.yes{color:var(--bgs-vote-play)}
+.actions .mono{min-width:44px;text-align:center}
+
+/* Four friends and you. While voting a chip only marks who has already voted
+   on the current card — never how. Votes are revealed on the winner, at the
+   end. The chip transitions; the late voter's dots animate, on their own
+   elements, so no element carries both. */
+.seats{display:flex;justify-content:center;gap:10px;margin:0 -60px 16px}
+.seat{position:relative;flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--tint) 26%,rgba(var(--bgs-bg-rgb),.6));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tint) 55%,transparent)}
+.seat svg{width:19px;height:19px;fill:var(--tint)}
+.seat.you{box-shadow:inset 0 0 0 1.5px var(--bgs-gold)}
+.seat.you::after{content:"You";position:absolute;top:-15px;left:50%;transform:translateX(-50%);font:500 10px/1 'IBM Plex Mono',monospace;color:var(--bgs-gold)}
+.chip{position:absolute;right:-6px;bottom:-5px;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font:700 11px/1 'Inter',sans-serif;opacity:0;transform:scale(.5);transition:opacity .22s,transform .22s}
+.dots{position:absolute;right:-8px;bottom:-5px;display:none;gap:2px;padding:5px;border-radius:99px;background:rgba(var(--bgs-bg-rgb),.85);box-shadow:inset 0 0 0 1px var(--line)}
+.dots i{width:3px;height:3px;border-radius:50%;background:var(--bgs-ivory)}
+
+/* ═════ Floating CTA ═════
+   Primary-on-glass: the .glass recipe from css/glass.css with a gold tint and
+   a stronger gold rim. Transform is the only thing that transitions, so the
+   blurred surface is never re-painted mid-move. With ?glass=0 (or
+   localStorage.bgsGlass) glass.css is inert and this modifier still reads
+   correctly, because it carries its own background and shadow. */
+
+.fab{display:flex;align-items:center;justify-content:center;gap:9px;min-height:56px;border-radius:99px;
+  font-weight:700;font-size:16.5px;color:var(--bgs-gold-hover);text-decoration:none}
+.fab.glass{
+  background:
+    linear-gradient(135deg,var(--glass-sheen) 0%,transparent 38%,transparent 70%,rgba(var(--bgs-ivory-rgb),.04) 100%) var(--light-x) 0 / 220% 100% no-repeat,
+    linear-gradient(rgba(var(--bgs-gold-rgb),.20),rgba(var(--bgs-gold-rgb),.12)),
+    rgba(var(--bgs-plate-rgb),var(--glass-fill-a));
+  box-shadow:var(--glass-focus),inset 1px 1px 0 var(--glass-rim-light),inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55),0 0 28px rgba(var(--bgs-gold-rgb),.22),var(--glass-shadow)}
+.fab:active{transform:scale(.97)}
+.fab svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cta .fab{padding:0 30px}
+.sticky{position:fixed;left:16px;right:16px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;justify-content:center;pointer-events:none;transition:transform .35s var(--ease-liquid)}
+.sticky .fab{pointer-events:auto;width:min(100%,420px)}
+.sticky.away{transform:translateY(160%)}
+
+/* ═════ STORY ═════
+   Commit 3 replaces this with the pinned phone: the steps become the column
+   the phone is pinned beside, and the screens and floating pieces arrive with
+   js/landing-story.js. Until then the four steps are plain prose. */
+
+.a-steps{list-style:none;padding:0;margin:34px 0 0}
+.step{padding:0 0 34px;max-width:34em}
+.step-n{display:block;font:600 11px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--bgs-gold)}
+.step h3{margin-top:8px}
+.step p{color:var(--bgs-ivory-70);margin-top:8px}
+.a-tabs{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.a-tabs span{font:600 11px/1 'IBM Plex Mono',monospace;padding:6px 9px;border-radius:99px;color:var(--bgs-ivory-45);transition:color .3s,background-color .3s}
+.a-tabs span.on{color:var(--bgs-on-gold);background:var(--bgs-gold)}
+
+/* ═════ Also on the shelf ═════ */
+
+.extras{display:grid;gap:10px;margin-top:28px}
+.x{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;padding:18px;border-radius:20px;background:rgba(var(--bgs-plate-rgb),.7);box-shadow:inset 0 0 0 1px var(--line)}
+.x .ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--bgs-gold-rgb),.12);box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.3)}
+.x svg{width:22px;height:22px;fill:none;stroke:var(--bgs-gold);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.x b{display:block;font-weight:600;font-size:16.5px}
+.x span{display:block;color:var(--bgs-ivory-70);font-size:15px;margin-top:3px}
+
+/* ═════ Three steps to your own shelf ═════
+   No cards: giant outlined numerals on a dashed gold path. The numerals sit
+   on the page background so the dashes appear to run behind them. */
+
+.path{list-style:none;padding:0;margin:34px 0 0;position:relative}
+.path::before{content:"";position:absolute;left:38px;top:40px;bottom:60px;border-left:2px dashed rgba(var(--bgs-gold-rgb),.35)}
+.path li{position:relative;display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center;padding:6px 0 30px}
+.num{font:600 92px/1 'Fraunces',serif;text-align:center;color:var(--bgs-bg);-webkit-text-stroke:1.5px var(--bgs-gold);background:var(--bgs-bg);padding:4px 0;position:relative}
+.path b{display:block;font:600 21px/1.2 'Fraunces',serif}
+.path span{display:block;color:var(--bgs-ivory-70);font-size:15.5px;margin-top:5px;max-width:24em}
+.path li:last-child .num{color:var(--bgs-gold)}
+
+/* ═════ CLOSING ═════
+   Commit 4 adds the layers behind this: .floor → .light → .veil → .horizon →
+   .pieces, all pointer-events:none at negative z-index inside the section's
+   own stacking context, so the focal block below stays clickable. */
+
+.f8{position:relative;isolation:isolate;overflow:hidden;text-align:center;padding:72px 20px 88px}
+.focal{max-width:640px;margin:0 auto}
+.big{font-size:clamp(42px,12vw,92px);line-height:.98;text-shadow:0 2px 30px rgba(var(--bgs-bg-rgb),.9)}
+.subl{color:var(--bgs-ivory);font-size:17px;margin:16px auto 0;max-width:24em;text-shadow:0 1px 12px rgba(var(--bgs-bg-rgb),.95)}
+
+/* ── The real sign-in.
+   The gold button keeps landing.html's .btn.gold behaviour — the same
+   element, the same id, the same script; only its shape changes. Google
+   Identity Services renders its own control transparently on top, so
+   .google-wrap must be exactly the button's box: same width, same pill, and
+   overflow hidden so Google's control cannot spill past the corners. */
+
+.ctawrap{position:relative;margin-top:32px}
+/* Glow behind the button. Animation only, on its own element — nothing here
+   transitions. Commit 4 pauses it while the section is off screen. */
+.halo{position:absolute;left:50%;top:50%;width:min(120%,440px);height:150px;transform:translate(-50%,-50%);z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.55),transparent);filter:blur(14px);animation:breathe 3.2s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(.92)}50%{opacity:.9;transform:translate(-50%,-50%) scale(1.06)}}
+
+.google-wrap{position:relative;width:min(100%,360px);margin:0 auto;border-radius:99px;overflow:hidden}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:52px;padding:0 18px;border-radius:99px;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:16px;font-weight:600;
+  border:1.5px solid rgba(var(--bgs-gold-rgb),.55);
+  background:rgba(var(--bgs-gold-rgb),.1);color:var(--bgs-ivory);
+  text-decoration:none;
+  transition:background .15s ease,transform .1s ease;
+}
+.btn:hover{background:rgba(var(--bgs-gold-rgb),.18)}
+.btn:active{transform:scale(.985)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.btn[disabled]{opacity:.6;cursor:default}
+.btn.gold{background:var(--bgs-gold);color:var(--bgs-on-gold);border-color:var(--bgs-gold);box-shadow:0 14px 40px -10px rgba(var(--bgs-gold-rgb),.7),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn.gold:hover{background:var(--bgs-gold-hover)}
+/* The closing button: one pill, 60px, the width of its wrap. */
+.btn.cbtn{min-height:60px;gap:11px;font-size:17px;font-weight:700}
+.btn svg{width:18px;height:18px;flex:none}
+/* Google G on a white disc — decorative; the button text is the name. */
+.g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
+.g svg{width:14px;height:14px}
+/* Google's rendered control, transparent over the gold button. Its iframe is
+   a fixed 40–44px tall, so it is scaled up to cover the 60px pill. */
+.gsi{position:absolute;inset:0;overflow:hidden;opacity:0;display:flex;align-items:center;justify-content:center}
+.gsi > div{transform:scale(1.08,1.5);transform-origin:center}
+.gsi > div,.gsi iframe{width:100%!important}
+
+/* "Prefer email?" and "Just looking?", centred under the button. #guestLine
+   stays hidden until fetchPublicShelves() finds a shelf to point at. */
+.alts{display:grid;gap:8px;margin-top:18px;font-size:14.5px;color:var(--bgs-ivory-70)}
+.alts a,.alts button{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;font:inherit}
+.alts a:hover,.alts button:hover{color:var(--bgs-ivory)}
+.alts a:focus-visible,.alts button:focus-visible{outline:none;border-radius:4px;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+
+.email{margin:16px auto 0;max-width:360px;text-align:left}
+.field{
+  width:100%;min-height:52px;padding:0 16px;border-radius:99px;
+  background:rgba(var(--bgs-bg-rgb),.6);border:1.5px solid rgba(var(--bgs-ivory-rgb),.14);
+  color:var(--bgs-ivory);font:inherit;font-size:16px;
+}
+.field::placeholder{color:var(--bgs-ivory-45)}
+.field:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.row{display:grid;gap:10px}
+.msg{margin:12px auto 0;max-width:360px;font-size:14px;line-height:1.45;color:var(--bgs-ivory-70);min-height:1.2em}
+.msg.ok{color:var(--bgs-vote-play)}
+.msg.err{color:var(--bgs-vote-pass)}
+
+/* Signed in: this replaces the sign-in block in the same focal position. */
+.signed-in{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:32px}
+.signed-in h2{font:600 20px/1.2 'Fraunces',serif;letter-spacing:0;margin:0 0 4px}
+.signed-in .btn{width:min(100%,360px)}
+
+/* ─────────────────────────── short phones ───────────────────────────
+   Shrink the deck first, then the type, so the ✕ / ✓ stay clear of the
+   floating CTA at 360×640. */
+
+@media (max-height:720px) and (max-width:899px){
+  h1{font-size:32px}
+  .lede{font-size:15px;margin-top:8px}
+  .inner{gap:10px}
+  .table{width:min(56vw,21svh)}
+  .seats{margin-bottom:10px}
+  .seat{width:30px;height:30px}
+  .seat svg{width:16px;height:16px}
+  .actions{margin-top:18px}
+  .round{width:52px;height:52px}
+  .top{padding:8px 0}
+}
+
+/* ─────────────────────────── desktop ─────────────────────────── */
+
+@media (min-width:900px){
+  body{--fab-clearance:0px}
+  .hero{padding:0 max(24px,calc((100vw - 1180px)/2 + 24px)) 0;min-height:min(880px,100svh)}
+  .veil{background:radial-gradient(ellipse 70% 90% at 25% 55%,rgba(var(--bgs-bg-rgb),.72) 0,rgba(var(--bgs-bg-rgb),.3) 70%,transparent 100%),linear-gradient(to bottom,var(--bgs-bg) 0,rgba(var(--bgs-bg-rgb),.5) 16%,rgba(var(--bgs-bg-rgb),.3) 70%,var(--bgs-bg) 100%)}
+  .top{padding:20px 0}
+  .mark{font-size:22px}
+  .inner{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:40px 0 90px}
+  h1{font-size:clamp(56px,6.2vw,84px);line-height:.98}
+  .lede{font-size:19px;margin-top:22px}
+  .cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:30px}
+  .table{width:min(360px,40svh)}
+  .seats{gap:14px;margin-bottom:22px}
+  .seat{width:42px;height:42px}
+  .seat svg{width:22px;height:22px}
+  .card{border-radius:22px}
+  .round{width:64px;height:64px}
+  .sticky{display:none}
+  .f8{padding:96px 20px 110px}
+}
+@media (min-width:700px){
+  .extras{grid-template-columns:1fr 1fr}
+}
+@media (min-width:1000px){
+  .extras{grid-template-columns:repeat(6,1fr)}
+  .x{grid-column:span 2}
+  .x:nth-child(4){grid-column:2/span 2}
+}
+@media (min-width:860px){
+  .path{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px}
+  .path::before{left:8%;right:8%;top:74px;bottom:auto;border-left:0;border-top:2px dashed rgba(var(--bgs-gold-rgb),.35)}
+  .path li{display:block;padding:0;text-align:center}
+  .num{font-size:150px;width:max-content;margin:0 auto 14px;padding:0 22px}
+  .path span{margin:8px auto 0}
+}
+
+/* ─────────────────────────── reduced motion ───────────────────────────
+   Everything stays present in its resting state; nothing moves. */
+
+@media (prefers-reduced-motion:reduce){
+  .halo{animation:none}
+  .sticky,.chip,.a-tabs span,.btn{transition:none}
+}

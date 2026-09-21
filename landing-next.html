@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#171110">
+<!-- Served at /next while the new landing page is built (four commits,
+     docs/claude-code-spec-landing.md). landing.html stays live at / until
+     this page has been tested on a phone; nothing links here. -->
+<meta name="robots" content="noindex">
+<title>BoardgameShelf</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BoardgameShelf">
+<meta property="og:title" content="BoardgameShelf">
+<meta property="og:description" content="Track your games. Pick tonight's, together.">
+<meta property="og:url" content="https://boardgameshelf.vercel.app">
+<meta property="og:image" content="https://boardgameshelf.vercel.app/api/og?v=20260917">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pick tonight's game, together. Three fanned cards with a Play pill and a Pass dot.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BoardgameShelf">
+<meta name="twitter:description" content="Track your games. Pick tonight's, together.">
+<meta name="twitter:image" content="https://boardgameshelf.vercel.app/api/og?v=20260917">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/assets/icon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* Theme resolver (docs/claude-code-spec-themes.md), before the stylesheet so
+   the first frame is already the right theme: ?theme= (preview only) →
+   localStorage['bgs:theme'] → walnut. Ids are shape-checked here only; an
+   unknown id matches no [data-theme] block and renders walnut, and
+   js/themes.js normalises it later. The meta theme-color follows the
+   applied theme's --bgs-bg once the stylesheet has resolved. */
+(function(){var d=document.documentElement,ok=/^[a-z][a-z0-9-]{0,23}$/,q=null,s=null;
+try{q=new URLSearchParams(location.search).get('theme');}catch(e){}
+try{s=localStorage.getItem('bgs:theme');}catch(e){}
+d.dataset.theme=ok.test(q||'')?q:ok.test(s||'')?s:'walnut';
+document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('meta[name="theme-color"]'),bg=getComputedStyle(d).getPropertyValue('--bgs-bg').trim();if(m&&bg)m.content=bg;});})();
+</script>
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/glass.css">
+<link rel="stylesheet" href="/css/landing.css">
+<script type="module" src="/js/beta-tag.js"></script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<!-- ═════ HERO ═════
+     The wall of covers, the cover light and the playable vote arrive with
+     js/landing-hero.js; this is the resting state: copy, the deck showing the
+     first card, and the ✕ / counter / ✓ row, all inert. -->
+<section class="hero" id="hero">
+  <div class="bg" aria-hidden="true">
+    <div class="veil"></div>
+  </div>
+
+  <header class="top">
+    <p class="mark bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></p>
+    <a class="navsignin" href="#signin">Sign in</a>
+  </header>
+
+  <div class="inner">
+    <div class="copy">
+      <h1>Pick tonight's game, together.</h1>
+      <p class="lede">Turn your BoardGameGeek collection into a page your friends vote on. Four friends are at this table. Swipe right to play, left to pass.</p>
+      <div class="cta">
+        <a class="glass fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+        <a class="textlink" href="#story">See how it works</a>
+      </div>
+    </div>
+
+    <div class="table" id="table" aria-label="Try a vote">
+      <div class="seats" id="seats" aria-hidden="true">
+        <div class="seat" style="--tint:#d98a6f"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="seat" style="--tint:#9cc096"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="seat you" style="--tint:#f3eadb"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="seat" style="--tint:#8db4dc"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="seat late" style="--tint:#c3a0d2"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div>
+      </div>
+
+      <!-- js/landing-hero.js re-deals this from LANDING_GAMES. Until then the
+           first card is drawn here so the page needs no script to look right;
+           the URL is what sizedCover(LANDING_GAMES[0].image, 384) returns. -->
+      <div class="deck" id="deck">
+        <div class="slot" data-i="0"><div class="card"><img src="/_vercel/image?url=https%3A%2F%2Fcf.geekdo-images.com%2FMjeJZfulbsM1DSV3DrGJYA__original%2Fimg%2FB374C04Eip7fmQBGJzgiOTp-jyQ%3D%2F0x0%2Ffilters%3Aformat(jpeg)%2Fpic5100691.jpg&amp;w=384&amp;q=75" alt="Cascadia" width="384" height="480" loading="eager" decoding="async" onerror="this.style.visibility='hidden'"></div></div>
+      </div>
+
+      <div class="actions">
+        <button class="round no" id="btnNo" type="button" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <span class="mono" id="count">1 of 5</span>
+        <button class="round yes" id="btnYes" type="button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Floating Liquid Glass CTA, phones only. .glass is the material from
+     css/glass.css; .fab is the gold-tinted modifier in css/landing.css. -->
+<div class="sticky" id="sticky">
+  <a class="glass fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+</div>
+
+<!-- ═════ STORY ═════
+     The pinned phone, its four screens and the floating pieces arrive with
+     js/landing-story.js. The four steps are the section's text either way, so
+     they are written here; the story script re-renders the same markup. -->
+<section class="story band" id="story" data-step="0">
+  <div class="sec">
+    <div class="intro">
+      <h2>From the shelf to the table in four steps</h2>
+      <p>The same loop every game night, minus the twenty minutes of "I don't mind, you choose."</p>
+    </div>
+    <div class="a-wrap">
+      <div class="a-pin">
+        <div class="stage"><div class="a-phone" id="aPhone"></div><div class="frags" id="frags"></div></div>
+        <div class="a-tabs" id="aTabs"><span>Shelf</span><span>Pick</span><span>Vote</span><span>Play</span></div>
+      </div>
+      <ol class="a-steps" id="aSteps">
+        <li class="step" data-i="0"><span class="step-n">1 Shelf</span><h3>Your collection becomes a page</h3><p>Enter your BoardGameGeek username and your games arrive with covers, player counts and play times. The shelf gets its own link, so anyone can browse it from a phone.</p></li>
+        <li class="step" data-i="1"><span class="step-n">2 Pick</span><h3>Shortlist the contenders</h3><p>Start a game night and tap the games worth arguing about. Filter by vibe, players and time first, or let Tonight's surprise deal a shortlist for you.</p></li>
+        <li class="step" data-i="2"><span class="step-n">3 Vote</span><h3>Everyone votes from their own phone</h3><p>Friends join with a link, a QR code or a short code. No account, just a name. Each person swipes right to play, left to pass, and nobody sees anyone else's vote.</p></li>
+        <li class="step" data-i="3"><span class="step-n">4 Play</span><h3>The votes are counted, one game wins</h3><p>The table watches the count together and one game takes it. If two tie, a rematch votes on just those two. Then get the box down.</p></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="band"><div class="sec">
+  <div class="intro"><h2>Also on the shelf</h2><p>The parts you find on the second visit.</p></div>
+  <div class="extras">
+    <div class="x"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg></span><div><b>Filter by vibe</b><span>Party, Co-op, Duel, Chill and five more, next to player count, time and weight.</span></div></div>
+    <div class="x"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M12 12h.01M9 15h.01M15 15h.01"/></svg></span><div><b>Tonight's surprise</b><span>Can't even agree on a shortlist? Let the shelf deal one, and re-roll the cards you don't fancy.</span></div></div>
+    <div class="x"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1.5 12h-15zM9 8V6a3 3 0 016 0v2"/></svg></span><div><b>Bags for trips</b><span>Pack part of the shelf and see what it covers: player counts, play times, and where the gaps are.</span></div></div>
+    <div class="x"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></span><div><b>Invite posters</b><span>Schedule a night, collect RSVPs, and send a poster your group chat will actually open.</span></div></div>
+    <div class="x"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 000 18c2 0 2-2 1-3s0-3 2-3h3a3 3 0 003-3"/></svg></span><div><b>Themes</b><span>Walnut, Navy, Mahogany or Oak. Visitors see your shelf in the colours you chose.</span></div></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="sec">
+  <div class="intro"><h2>Three steps to your own shelf</h2><p>Your owned games come straight from BGG. Nothing to upload.</p></div>
+  <ol class="path">
+    <li><div class="num">1</div><div><b>Sign in</b><span>With Google, or an emailed sign-in link.</span></div></li>
+    <li><div class="num">2</div><div><b>Enter your BGG username</b><span>Same as your BGG login. It becomes your shelf's address too.</span></div></li>
+    <li><div class="num">3</div><div><b>Get your shelf</b><span>Your games arrive with their covers, on a page of your own with a link to share. Free while we're in beta.</span></div></li>
+  </ol>
+</div></section>
+
+<!-- ═════ CLOSING ═════
+     The floor of covers, the cover light and the floating vote pieces arrive
+     with js/landing-close.js. The focal block — the real sign-in — is here. -->
+<section class="f8" id="signin">
+  <div class="focal">
+    <h2 class="big">Your shelf, judged by its covers.</h2>
+    <p class="subl">A page for your collection and a vote for your table, from any phone.</p>
+
+    <div class="authbox" id="signIn" aria-label="Sign in">
+      <!-- One primary. Google's own sign-in control (Google Identity Services)
+           must render its own button, so it sits transparently over this gold
+           one: the gold button is what people see, Google's is what receives
+           the tap, which is what makes Google's screen name this site. If
+           Google's script cannot load, the gold button runs the redirect flow.
+           .google-wrap is the button's exact box — same width, same pill — and
+           clips Google's transparent control to it. -->
+      <div class="ctawrap">
+        <div class="halo" aria-hidden="true"></div>
+        <div class="google-wrap">
+          <button class="btn gold cbtn" id="googleBtn" type="button">
+            <span class="g" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M21.6 12.23c0-.68-.06-1.33-.17-1.96H12v3.7h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.24c1.9-1.75 2.98-4.32 2.98-7.26z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.62-2.42l-3.24-2.5c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.75-5.6-4.1H3.06v2.58A10 10 0 0 0 12 22z"/><path fill="#FBBC05" d="M6.4 13.92A6 6 0 0 1 6.08 12c0-.67.12-1.31.32-1.92V7.5H3.06A10 10 0 0 0 2 12c0 1.61.39 3.14 1.06 4.5l3.34-2.58z"/><path fill="#EA4335" d="M12 5.98c1.47 0 2.78.5 3.82 1.5l2.86-2.86C16.96 3.02 14.7 2 12 2a10 10 0 0 0-8.94 5.5l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98z"/></svg></span>
+            Continue with Google
+          </button>
+          <div id="gsiBtn" class="gsi" hidden aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="alts">
+        <p class="more">Prefer email?
+          <button class="link" id="emailToggle" type="button" aria-expanded="false" aria-controls="emailPanel">Send me a sign-in link</button>
+        </p>
+        <p class="guestline" id="guestLine" hidden>Just looking?
+          <a id="guestLink" href="/u/noknaruephon">Browse as a guest</a>
+        </p>
+      </div>
+
+      <div class="email" id="emailPanel" hidden>
+        <form class="row" id="emailForm" novalidate>
+          <input class="field" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required>
+          <button class="btn" id="emailBtn" type="submit">Send link</button>
+        </form>
+      </div>
+
+      <p class="msg" id="msg" aria-live="polite"></p>
+    </div>
+
+    <div class="authbox signed-in" id="signedIn" hidden>
+      <h2 id="hello">Welcome back</h2>
+      <a class="btn gold cbtn" id="shelfLink" href="/settings">Open your shelf</a>
+      <a class="btn" href="/settings">Settings &amp; sync</a>
+    </div>
+  </div>
+</section>
+
+<footer class="shelf-footer">
+  <div class="shelf-footer__row">
+    <a class="bgg-badge bgg-badge--small" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
+      <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33" loading="lazy">
+    </a>
+  </div>
+  <nav class="shelf-footer__links" aria-label="Legal">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </nav>
+  <p class="shelf-footer__legal">© 2026 BoardgameShelf.</p>
+  <p class="shelf-footer__legal">Game data and images courtesy of BoardGameGeek.</p>
+</footer>
+
+<script type="module">
+import { getUser, signInWithGoogle, signInWithGoogleCredential, makeNonce, GOOGLE_CLIENT_ID, signInWithEmail, fetchMyProfile, userDisplayName } from '/js/auth.js';
+import { fetchPublicShelves } from '/js/shelf-picker.js';
+
+const msg = document.getElementById('msg');
+const say = (text, kind = '') => { msg.textContent = text; msg.className = `msg ${kind}`; };
+
+// The gold button runs the redirect flow itself when Google's own control
+// could not be laid over it (script blocked, no client ID).
+const googleBtn = document.getElementById('googleBtn');
+googleBtn.addEventListener('click', async () => {
+  googleBtn.disabled = true;
+  say('Opening Google…');
+  try { await signInWithGoogle(); }
+  catch (err) { say(err.message || "Couldn't start Google sign-in.", 'err'); googleBtn.disabled = false; }
+});
+
+// ---- Google's button on this site (Google Identity Services) ----
+// Google names the site that receives the token, so the consent screen reads
+// "to continue to boardgameshelf.vercel.app" (or the verified app name)
+// instead of the Supabase project address. Rendered in Google's black theme
+// to sit with the page; if the script fails to load or no client ID is
+// configured, the plain button takes over with the redirect flow.
+async function mountGoogleButton() {
+  if (!GOOGLE_CLIENT_ID) throw new Error('no client id');
+  const host = document.getElementById('gsiBtn');
+  const { raw, hashed } = await makeNonce();
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('gsi failed to load'));
+    document.head.appendChild(s);
+  });
+  if (!window.google?.accounts?.id) throw new Error('gsi unavailable');
+  window.google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    nonce: hashed,
+    ux_mode: 'popup',
+    callback: async ({ credential }) => {
+      say('Signing you in…');
+      try {
+        await signInWithGoogleCredential(credential, raw);
+        location.replace('/welcome');
+      } catch (err) {
+        say(err.message || "Couldn't finish Google sign-in.", 'err');
+      }
+    },
+  });
+  const width = Math.min(400, Math.max(200, Math.floor(host.getBoundingClientRect().width || 360)));
+  window.google.accounts.id.renderButton(host, {
+    type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill',
+    text: 'continue_with', logo_alignment: 'left', locale: 'en', width,
+  });
+  host.hidden = false;
+  // Taps now land on Google's control; keep the gold button visible but out
+  // of the tab order so keyboard users reach Google's control instead.
+  googleBtn.tabIndex = -1;
+  googleBtn.setAttribute('aria-hidden', 'true');
+  host.removeAttribute('aria-hidden');
+}
+mountGoogleButton().catch((err) => { console.warn('Google control not mounted, gold button uses the redirect flow:', err.message); });
+
+// ---- Email as progressive disclosure ----
+const emailToggle = document.getElementById('emailToggle');
+const emailPanel = document.getElementById('emailPanel');
+emailToggle.addEventListener('click', () => {
+  const open = emailPanel.hidden;
+  emailPanel.hidden = !open;
+  emailToggle.setAttribute('aria-expanded', String(open));
+  if (open) document.getElementById('email').focus();
+});
+
+// ---- Guest line: links to the first public shelf, fetched after first paint ----
+// Never blocks the sign-in buttons; stays hidden if the list is empty or fails.
+setTimeout(async () => {
+  try {
+    const [shelf] = await fetchPublicShelves();
+    if (!shelf?.slug) return;
+    document.getElementById('guestLink').href = `/u/${encodeURIComponent(shelf.slug)}`;
+    document.getElementById('guestLine').hidden = false;
+  } catch (err) {
+    console.error('public_shelves failed', err);
+  }
+}, 0);
+
+document.getElementById('emailForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('email');
+  const email = input.value.trim();
+  if (!input.checkValidity() || !email) { say('Enter a valid email address.', 'err'); input.focus(); return; }
+  const btn = document.getElementById('emailBtn');
+  btn.disabled = true;
+  say('Sending…');
+  try {
+    await signInWithEmail(email);
+    say(`Check ${email} for a sign-in link. It brings you straight back here, signed in.`, 'ok');
+  } catch (err) {
+    say(err.message || "Couldn't send the link. Try again in a minute.", 'err');
+    btn.disabled = false;
+  }
+});
+
+// Already signed in: skip the pitch and point at the shelf.
+try {
+  const user = await getUser();
+  if (user) {
+    const profile = await fetchMyProfile().catch(() => null);
+    document.getElementById('hello').textContent = `Welcome back, ${profile?.display_name || userDisplayName(user) || 'friend'}`;
+    // Signed in but never claimed a BGG name: onboarding, not the pitch.
+    if (!profile?.slug) {
+      location.replace('/welcome');
+    } else {
+      document.getElementById('shelfLink').href = `/u/${profile.slug}`;
+      document.getElementById('signIn').hidden = true;
+      document.getElementById('signedIn').hidden = false;
+      // This page also has two "Get your shelf" buttons above the fold (the
+      // hero's and the floating one). For a visitor who already has a shelf
+      // they are the way in, not a pitch. Setting the text drops the down
+      // arrow with it, which is what we want — it no longer scrolls anywhere.
+      for (const fab of document.querySelectorAll('.fab')) {
+        fab.href = `/u/${profile.slug}`;
+        fab.textContent = 'Open your shelf';
+      }
+    }
+  }
+} catch { /* stay on the sign-in card */ }
+</script>
+
+<script type="module">
+// The floating CTA steps aside while the closing section is on screen: it must
+// never sit over the real Google button. Transform only, per css/glass.css.
+const sticky = document.getElementById('sticky');
+const signin = document.getElementById('signin');
+if (sticky && signin && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([entry]) => {
+    sticky.classList.toggle('away', entry.isIntersecting);
+  }, { threshold: .2 }).observe(signin);
+}
+</script>
+</body>
+</html>
