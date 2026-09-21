@@ -42,7 +42,9 @@ a:focus-visible,button:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-bg
 h1{font-family:'Fraunces',serif;font-weight:500;margin:0;letter-spacing:-.02em;font-variation-settings:"opsz" 144;font-size:clamp(36px,10.4vw,48px);line-height:1}
 h2{font:600 clamp(28px,7.6vw,44px)/1.06 'Fraunces',serif;letter-spacing:-.015em;margin:0}
 h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
-.mono{font:400 12px/1.4 'IBM Plex Mono',monospace;color:var(--bgs-ivory-70)}
+/* ivory-45, which is where the mockup lands: its STORY banner redefines .mono
+   after the hero's, so this is the shade the approved page actually renders. */
+.mono{font:400 12px/1.4 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45)}
 
 .band{border-top:1px solid var(--line)}
 .sec{padding:56px 20px 72px;max-width:1120px;margin:0 auto}
@@ -226,18 +228,103 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 .sticky.away{transform:translateY(160%)}
 
 /* ═════ STORY ═════
-   Commit 3 replaces this with the pinned phone: the steps become the column
-   the phone is pinned beside, and the screens and floating pieces arrive with
-   js/landing-story.js. Until then the four steps are plain prose. */
+   One phone stays pinned while four steps scroll past. js/landing-story.js
+   builds the screens and the floating pieces; the step prose is in the page.
 
-.a-steps{list-style:none;padding:0;margin:34px 0 0}
-.step{padding:0 0 34px;max-width:34em}
-.step-n{display:block;font:600 11px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--bgs-gold)}
-.step h3{margin-top:8px}
-.step p{color:var(--bgs-ivory-70);margin-top:8px}
+   The phone, the screens and the outer .frag transition and are never
+   animated. The only animation here is the pieces' idle bob, and it is on the
+   .frag's inner child, which has no transition. */
+
+.story{position:relative;isolation:isolate}
+.a-wrap{margin-top:24px}
+/* On a phone the pin is a full-bleed glass band, so step text blurs as it
+   passes under it. overflow:hidden is on the sticky element itself — that
+   clips the floating pieces at the screen edge without breaking sticky, which
+   an overflow on any ancestor would. */
+.a-pin{position:sticky;top:0;z-index:2;margin:0 -20px;padding:12px 20px;
+  background:rgba(var(--bgs-bg-rgb),.72);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 var(--line);overflow:hidden}
+.stage{position:relative;width:min(50vw,24svh,240px);margin:0 auto;aspect-ratio:9/16.5}
+/* A soft gold pool behind the phone, so the pieces have something to sit on. */
+.story .stage::before{content:"";position:absolute;inset:-18% -55%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--bgs-gold-rgb),.16),transparent)}
+.a-phone{position:absolute;inset:0;transition:transform .6s cubic-bezier(.32,.72,0,1)}
+.a-phone .scr{position:absolute;inset:0;opacity:0;transition:opacity .45s,transform .6s cubic-bezier(.32,.72,0,1)}
+.a-phone .scr.on{opacity:1}
+/* The phone leans a little on each step. */
+.story[data-step="0"] .a-phone{transform:rotate(-2.5deg)}
+.story[data-step="1"] .a-phone{transform:rotate(2deg)}
+.story[data-step="2"] .a-phone{transform:rotate(-1.5deg)}
+.story[data-step="3"] .a-phone{transform:rotate(1.5deg) scale(1.03)}
+
 .a-tabs{display:flex;justify-content:center;gap:6px;margin-top:12px}
 .a-tabs span{font:600 11px/1 'IBM Plex Mono',monospace;padding:6px 9px;border-radius:99px;color:var(--bgs-ivory-45);transition:color .3s,background-color .3s}
 .a-tabs span.on{color:var(--bgs-on-gold);background:var(--bgs-gold)}
+
+.a-steps{list-style:none;margin:0;padding:0}
+.a-steps .step{min-height:52svh;padding:22px 0;opacity:.3;transition:opacity .3s}
+.a-steps .step.on{opacity:1}
+.step-n{font:600 12px/1 'IBM Plex Mono',monospace;color:var(--bgs-gold)}
+.step h3{margin-top:8px}
+.step p{color:var(--bgs-ivory-70);margin-top:8px;max-width:30em;font-size:15.5px}
+
+/* ── The four mini screens. Schematic, but drawn from the real UI: gold
+   selection rings, the "{n} selected" chip and "Continue · N" pill, the vote
+   rounds, the cover wash and the results crown. Every class below is scoped
+   to .scr — several of these names (.tile, .crown, .roster) are generic
+   enough to collide with the rest of the page otherwise. */
+.scr{position:relative;width:100%;aspect-ratio:9/16.5;border-radius:26px;overflow:hidden;background:var(--bgs-bg);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.12),0 30px 60px -28px #000;padding:16px 13px;isolation:isolate}
+.scr .eb{font:400 9.5px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--bgs-gold-dim);text-align:center}
+.scr .wm{font:italic 500 19px/1.1 'Fraunces',serif;text-align:center;margin-top:5px}
+.scr .ttl{font:600 17px/1.15 'Fraunces',serif;text-align:center;margin-top:6px}
+.scr .cname{font-size:14px;margin-top:10px}
+.scr .url{margin:12px auto 0;width:max-content;max-width:100%;padding:7px 11px;border-radius:99px;background:rgba(var(--bgs-ivory-rgb),.06);font:400 9.5px/1 'IBM Plex Mono',monospace;color:var(--bgs-ivory-70)}
+.scr .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}
+.scr .tile{position:relative;aspect-ratio:3/4;border-radius:7px;overflow:hidden;background:var(--bgs-plate)}
+.scr .tile img{width:100%;height:100%;object-fit:cover}
+.scr .tile.sel::after{content:"";position:absolute;inset:0;border-radius:7px;box-shadow:inset 0 0 0 2.5px var(--bgs-gold)}
+.scr .g3.picking .tile:not(.sel){opacity:.5}
+.scr .dock{position:absolute;left:12px;right:12px;bottom:14px;display:flex;flex-direction:column;align-items:center;gap:7px}
+.scr .s-chip{font:600 10px/1 'IBM Plex Mono',monospace;padding:7px 10px;border-radius:99px;background:rgba(var(--bgs-plate-rgb),.7);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.scr .pillrow{display:flex;gap:7px;width:100%}
+.scr .gpill{flex:1;text-align:center;white-space:nowrap;padding:12px 6px;border-radius:99px;background:var(--bgs-gold);color:var(--bgs-on-gold);font-weight:700;font-size:12.5px}
+.scr .ground{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;background:rgba(var(--bgs-ivory-rgb),.09);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.18);font-size:14px}
+.scr .wash{position:absolute;inset:-20%;z-index:-1;background-size:cover;background-position:center;filter:blur(28px) saturate(1.6);opacity:.6}
+.scr .wash::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,var(--bgs-bg) 12%,rgba(var(--bgs-bg-rgb),.3) 40%,rgba(var(--bgs-bg-rgb),.3) 75%,rgba(var(--bgs-bg-rgb),.9))}
+.scr .vcard{width:70%;margin:14px auto 0;aspect-ratio:3/4;border-radius:13px;overflow:hidden;transform:rotate(2.5deg);box-shadow:0 18px 32px -14px #000}
+.scr .vcard img{width:100%;height:100%;object-fit:cover}
+.scr .vrow{position:relative;width:88%;margin:16px auto 0;height:40px;display:flex;justify-content:center;align-items:center;gap:12px}
+.scr .vrow span{width:40px;height:40px;padding:0;border-radius:50%;display:grid;place-items:center;font-weight:700;background:rgba(var(--bgs-ivory-rgb),.1);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2)}
+.scr .vrow .no{color:var(--bgs-vote-pass)}
+.scr .vrow .yes{color:var(--bgs-vote-play)}
+.scr .vrow .info{position:absolute;right:0;width:28px;height:28px;font:italic 600 13px 'Fraunces',serif}
+.scr .roster{display:flex;justify-content:center;gap:5px;margin-top:9px}
+.scr .roster i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:600 9px/1 'Inter',sans-serif;font-style:normal;color:var(--bgs-ivory-70);background:rgba(var(--bgs-ivory-rgb),.08);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16)}
+.scr .roster i.me{color:var(--bgs-on-gold);background:var(--bgs-gold);box-shadow:none}
+.scr .crown{width:62%;margin:14px auto 0;aspect-ratio:3/4;border-radius:12px;overflow:hidden;border:1px solid rgba(var(--bgs-gold-rgb),.3);box-shadow:0 0 36px rgba(var(--bgs-gold-rgb),.3),0 16px 30px -12px #000}
+.scr .crown img{width:100%;height:100%;object-fit:cover}
+.scr .cpill{margin:9px auto 0;width:max-content;padding:6px 11px;border-radius:99px;font-size:10.5px;font-weight:700;color:var(--bgs-gold);background:rgba(var(--bgs-gold-rgb),.12);border:1px solid rgba(var(--bgs-gold-rgb),.42)}
+
+/* ── The pieces. Outer .frag flies in on a transition; the child inside bobs
+   on an animation. Never both on one element. */
+.frags{position:absolute;inset:0;pointer-events:none}
+.frag{position:absolute;opacity:0;transform:translate(var(--fx,0),var(--fy,0)) scale(.6);transition:opacity .45s,transform .6s cubic-bezier(.32,.72,0,1)}
+.frag.on{opacity:1;transform:none}
+.frag>*{display:block;animation:bob 4.5s ease-in-out infinite}
+.frag:nth-child(2n)>*{animation-delay:-1.6s}
+.frag:nth-child(3n)>*{animation-delay:-3s}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-7px) rotate(var(--rot,0deg))}}
+.f-tile{width:58px;aspect-ratio:3/4;border-radius:8px;overflow:hidden;box-shadow:0 14px 26px -10px #000,inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14)}
+.f-tile img{width:100%;height:100%;object-fit:cover}
+.f-tile.ring{box-shadow:0 14px 26px -10px #000,0 0 0 2.5px var(--bgs-gold)}
+.f-chip{font:600 11px/1 'IBM Plex Mono',monospace;padding:8px 11px;border-radius:99px;white-space:nowrap;background:rgba(var(--bgs-plate-rgb),.75);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.2),0 10px 22px -8px #000;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.f-gold{font:700 12.5px/1 'Inter',sans-serif;padding:11px 15px;border-radius:99px;white-space:nowrap;background:var(--bgs-gold);color:var(--bgs-on-gold);box-shadow:0 12px 24px -8px rgba(var(--bgs-gold-rgb),.5)}
+.f-round{width:48px;height:48px;border-radius:50%;display:grid!important;place-items:center;font-weight:700;font-size:17px;background:rgba(var(--bgs-ivory-rgb),.12);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.24),0 12px 22px -8px #000;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.f-round.yes{color:var(--bgs-vote-play)}
+.f-round.no{color:var(--bgs-vote-pass)}
+.f-seats{display:flex!important;gap:0}
+.f-seats i{width:26px;height:26px;margin-left:-7px;border-radius:50%;display:grid;place-items:center;font:600 10.5px/1 'Inter',sans-serif;font-style:normal;color:var(--bgs-ivory);background:var(--bgs-plate);box-shadow:0 0 0 2px var(--bgs-bg),inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.25)}
+.f-seats i:first-child{margin-left:0;color:var(--bgs-on-gold);background:var(--bgs-gold)}
+.f-conf{width:70px;height:60px;position:relative}
+.f-conf b{position:absolute;width:7px;height:11px;border-radius:2px}
 
 /* ═════ Also on the shelf ═════ */
 
@@ -386,6 +473,12 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   .round{width:64px;height:64px}
   .sticky{display:none}
   .f8{padding:96px 20px 110px}
+  /* Phone and steps side by side; the pin loses its glass band because there
+     is no step text passing under it. */
+  .a-wrap{display:grid;grid-template-columns:400px 1fr;gap:72px;margin-top:48px}
+  .a-pin{top:32px;align-self:start;margin:0;padding:24px 0;overflow:visible;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+  .stage{width:270px}
+  .a-steps .step{min-height:66vh;display:flex;flex-direction:column;justify-content:center}
 }
 @media (min-width:700px){
   .extras{grid-template-columns:1fr 1fr}
@@ -410,8 +503,11 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   /* Nothing drifts, nothing flies in, nothing is crowned. The hero still
      plays — js/landing-hero.js skips the count and goes to the result — so
      every piece stays present, just still. */
-  .halo,.col,.dots i,
+  .halo,.col,.dots i,.frag>*,
   .table.done .winner,.table.done .result h3,
   .table.done .flash,.table.done .after{animation:none}
-  .sticky,.chip,.a-tabs span,.btn,.slot,.card,.card.snap,.mini,.pips i,.light img{transition:none}
+  /* The pieces for the step you are on still appear, they just appear in
+     place rather than flying in. */
+  .sticky,.chip,.a-tabs span,.btn,.slot,.card,.card.snap,.mini,.pips i,.light img,
+  .frag,.a-phone,.a-phone .scr,.a-steps .step{transition:none}
 }

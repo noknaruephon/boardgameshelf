@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 </script>
 <script type="module" src="/js/beta-tag.js"></script>
 <script type="module" src="/js/landing-hero.js"></script>
+<script type="module" src="/js/landing-story.js"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
@@ -156,9 +157,10 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 </div>
 
 <!-- ═════ STORY ═════
-     The pinned phone, its four screens and the floating pieces arrive with
-     js/landing-story.js. The four steps are the section's text either way, so
-     they are written here; the story script re-renders the same markup. -->
+     js/landing-story.js builds the phone's four screens and the pieces that
+     float around it, and decides which step you are reading. The step prose
+     is the section's text either way, so it lives here and the script only
+     observes it. -->
 <section class="story band" id="story" data-step="0">
   <div class="sec">
     <div class="intro">
