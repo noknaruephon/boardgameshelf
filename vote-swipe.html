@@ -316,69 +316,10 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   }
   .vote-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin-top:16px;}
 
-  /* ---- cover light (docs/claude-code-spec-vote-cover-light.md) ----
-     Behind ?coverlight=1. The screen takes the colour of the card on top of
-     the deck: one heavily blurred, enlarged copy of that card's cover sits
-     behind everything, and a veil fades it back to the theme background so the
-     heading, the caption and the rounds stay legible over a bright cover.
-
-     The two copies cross-fade on OPACITY ONLY, and neither carries an
-     animation: an animation and a transition on the same property of the same
-     element is the WebKit bug that drops the transition altogether. Their
-     transform is static.
-
-     The source box is 160x200 and scaled up from there, so the blur is
-     computed at that size and stays cheap on a phone.
-
-     The layer is fixed to the viewport, not parented to #screen. #screen is a
-     400px column inside the page's 16px gutters, so a light scoped to it
-     stopped in dark bands down both sides and cut off in a hard line under the
-     hint — the whole screen is meant to take the colour, and on a phone the
-     column is not the screen. Fixed also means the wash holds still while the
-     page scrolls, and clipping it here keeps the enlarged image from widening
-     the page.
-
-     It sits at z-index:0 rather than behind everything at -1, because a
-     negative layer inside <body> paints *under* body's own background and
-     would never be seen. Everything the page draws is lifted over it instead,
-     below. The confirm dialog and the game modal are both z-index:30 and so
-     stay clear of this without help. */
-  .cover-light{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
-  /* #screen is already positioned; the footer is not, and a static block
-     paints under a positioned layer however early it comes in the markup. */
-  body.coverlight #screen,
-  body.coverlight .shelf-footer{position:relative;z-index:1;}
-  .cover-light img{
-    position:absolute;left:50%;top:50%;
-    width:160px;height:200px;object-fit:cover;
-    opacity:0;transition:opacity .6s;
-    filter:blur(22px) saturate(1.6);
-    /* Scaled, never resized: the blur is computed on the small box and the
-       result is scaled by the compositor, which is what keeps it cheap on a
-       phone. 4.6 is the locked value and covers a phone at 736x920; a desktop
-       window is wider than that, so it steps up rather than leaving the wash
-       as a blob with dark edges either side. */
-    transform:translate(-50%,-50%) scale(var(--cl-scale,4.6));
-  }
-  @media (min-width:560px){ .cover-light img{--cl-scale:9;} }
-  .cover-light img.on{opacity:.62;}
-  /* Tokens only: the veil fades to whichever theme is on, so Walnut, Navy,
-     Mahogany and Oak each fade to their own background with no per-theme rule. */
-  .cover-light::after{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(to bottom,
-      var(--bgs-bg) 0,
-      rgba(var(--bgs-bg-rgb),.35) 22%,
-      rgba(var(--bgs-bg-rgb),.25) 70%,
-      rgba(var(--bgs-bg-rgb),.85) 100%);
-  }
   /* The wash replaces the ambient gold behind the rounds; both together read
      muddy. Outranks the bare .vote-glow rule in css/glass.css, which is
      appended to <head> after these styles. */
   body.coverlight .vote-glow{display:none;}
-  @media (prefers-reduced-motion:reduce){
-    .cover-light img{transition:none;}
-  }
 
   /* The initial loading animation is the dealing deck in css/base.css, shared
      with every other game-night screen's shell. */
@@ -530,6 +471,7 @@ import { deckFromSession, openGameModal, shuffleHTML } from '/js/waiting-room.js
 import { attachSwipe, markCommitted, exitCard } from '/js/swipe.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
+import { initCoverLight, setCoverLight } from '/js/cover-light.js';
 
 const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.
@@ -549,51 +491,11 @@ registerOverlay(() => confirmDialog.classList.contains('open'));
 const COVER_LIGHT_ENABLED = true;
 const coverLightOn =
   COVER_LIGHT_ENABLED || new URLSearchParams(location.search).get('coverlight') === '1';
-// The layer belongs to the page, not to #screen: it has to reach past the
-// column into the gutters, and #screen's contents are replaced wholesale on
-// every render, which would throw it away. Built once here — this script runs
-// at the end of <body>, so the element already exists — and left in place for
-// the life of the page. setCoverLight(null) is what turns it off, so the fade
-// out at the end of a deck now plays in full instead of being cut short by the
-// waiting panel rendering over it.
-if (coverLightOn) {
-  document.body.classList.add('coverlight');
-  document.body.insertAdjacentHTML(
-    'afterbegin',
-    '<div class="cover-light" aria-hidden="true"><img alt=""><img alt=""></div>',
-  );
-}
-
-let lightIdx = 0;
-
-/**
- * Cross-fades the screen light to a cover. Call with null to fade it out.
- *
- * The two images take turns: the incoming one takes the src and `.on`, the
- * outgoing one only loses `.on`. So the swap is a plain opacity transition
- * between two static elements — nothing here touches transform, and nothing
- * here may ever grow an animation.
- *
- * A no-op when the flag is off, since the layer is only in the markup then.
- *
- * @param {string} [url] the *exact* string the card's own <img src> uses, so
- *   the browser serves it from cache rather than fetching the cover twice.
- *   That card image carries neither referrerpolicy nor crossorigin, so these
- *   carry neither either: adding one would make it a different request.
- */
-function setCoverLight(url) {
-  const imgs = document.querySelectorAll('.cover-light img');
-  if (imgs.length !== 2) return;
-  if (!url) { imgs.forEach((i) => i.classList.remove('on')); return; }
-  const next = imgs[lightIdx ^= 1];
-  const prev = imgs[lightIdx ^ 1];
-  // No stand-in in production, unlike the mockup: a cover that will not load
-  // means no light, rather than a broken image sitting behind the deck.
-  next.onerror = () => next.classList.remove('on');
-  next.src = url;
-  next.classList.add('on');
-  prev.classList.remove('on');
-}
+// Built once here — this script runs at the end of <body>, so the element
+// already exists — and left in place for the life of the page. The layer, the
+// cross-fade and the reasons for both live in js/cover-light.js, shared with
+// the results screen.
+if (coverLightOn) initCoverLight();
 
 function codeFromPath() {
   // /vote/{code}/swipe
