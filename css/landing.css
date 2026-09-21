@@ -89,14 +89,14 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 /* The vote table. The deck is sized from the height that is actually free,
    not from a share of the viewport. Everything else in the hero — header,
    headline, lede, seats, ✕ / ✓ and the floating CTA's clearance — is a fixed
-   ~445px (~380px under the short-phone rules), so a percentage of svh left
+   ~420px (~355px under the short-phone rules), so a percentage of svh left
    most phones with a small card and a hundred spare pixels around it: an
    iPhone with Safari's toolbars showing fell into the short-phone rules and
    drew a 147px card with 136px unused. Whatever is left now goes to the card,
    less ~46px of air split above and below it — room for the "You" label over
    the seats, and for the lede wrapping one line further. The max() floor is
    for landscape, where nothing fits anyway. */
-.table{position:relative;align-self:center;margin:auto 0;width:min(76vw,300px,max(140px,calc((100svh - 491px) * .8)))}
+.table{position:relative;align-self:center;margin:auto 0;width:min(76vw,300px,max(140px,calc((100svh - 467px) * .8)))}
 .deck{position:relative;aspect-ratio:4/5;width:100%}
 /* The slot holds the card's place in the stack and transitions between
    places; the card inside it carries the drag and the fling. Two elements,
@@ -519,7 +519,7 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   h1{font-size:32px}
   .lede{font-size:15px;margin-top:8px}
   .inner{gap:10px}
-  .table{width:min(76vw,max(120px,calc((100svh - 426px) * .8)))}
+  .table{width:min(76vw,max(120px,calc((100svh - 404px) * .8)))}
   .seats{margin-bottom:10px}
   .seat{width:30px;height:30px}
   .seat svg{width:16px;height:16px}
