@@ -27,6 +27,14 @@ const HIDE = `onerror="this.style.visibility='hidden'"`;
    through the same covers the floor draws, at the same width, so each one it
    lights is already in cache. */
 const im = (url) => `<img src="${sizedCover(url, 160)}" alt="" loading="lazy" decoding="async" ${HIDE}>`;
+/* Floor tiles are NOT loading="lazy". They sit in a plane tilted in 3D and
+   clipped by .floor, and a browser's lazy-load check reasons about the
+   untransformed layout box: on iOS Safari the rows whose layout position falls
+   outside the clip — the near rows, which the tilt brings into view at the
+   bottom of the section — never loaded, and the floor stopped a third of the
+   way down. The deferral is done by hand instead: the floor is built when the
+   section comes within a viewport of the screen (below). */
+const tile = (url) => `<img src="${sizedCover(url, 160)}" alt="" decoding="async" ${HIDE}>`;
 
 const motionless = window.matchMedia('(prefers-reduced-motion:reduce)');
 /* Reduced motion, or a visitor who asked for less data: the floor holds
@@ -40,13 +48,20 @@ const wide = window.matchMedia('(min-width:900px)');
 function floor() {
   const cols = wide.matches ? 14 : 10;
   let h = '';
-  for (let r = 0; r < 16; r++) for (let c = 0; c < cols; c++) h += im(LANDING_WALL[((r % 4) * 11 + c * 7) % LANDING_WALL.length]);
+  for (let r = 0; r < 16; r++) for (let c = 0; c < cols; c++) h += tile(LANDING_WALL[((r % 4) * 11 + c * 7) % LANDING_WALL.length]);
   const drift = $('#drift');
   drift.style.setProperty('--cols', cols);
   drift.innerHTML = h;
 }
-floor();
-wide.addEventListener('change', floor);
+/* 160 covers is not a download the hero should share bandwidth with, so the
+   floor is built once the section is within a viewport of the screen — early
+   enough to be there when you arrive, and never on a visit that stops short. */
+new IntersectionObserver((es, io) => {
+  if (!es.some((e) => e.isIntersecting)) return;
+  io.disconnect();
+  floor();
+  wide.addEventListener('change', floor);
+}, { rootMargin: '100% 0px' }).observe(sec);
 
 /* ── The light, stepping through the shelf every 3.6s. Two stacked images
    cross-faded by opacity; a cover that fails to load simply gives no light. */
