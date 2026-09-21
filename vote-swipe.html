@@ -316,6 +316,54 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   }
   .vote-hint{text-align:center;font-size:11.5px;color:var(--bgs-ivory-45);margin-top:16px;}
 
+  /* ---- cover light (docs/claude-code-spec-vote-cover-light.md) ----
+     Behind ?coverlight=1. The screen takes the colour of the card on top of
+     the deck: one heavily blurred, enlarged copy of that card's cover sits
+     behind everything, and a veil fades it back to the theme background so the
+     heading, the caption and the rounds stay legible over a bright cover.
+
+     The two copies cross-fade on OPACITY ONLY, and neither carries an
+     animation: an animation and a transition on the same property of the same
+     element is the WebKit bug that drops the transition altogether. Their
+     transform is static.
+
+     The source box is 160x200 and scaled up from there, so the blur is
+     computed at that size and stays cheap on a phone.
+
+     Clipping sits on .cover-light rather than on .screen. At scale 4.6 the
+     image is 736x920 and would otherwise spill past the column and scroll the
+     page — but .screen itself has to stay unclipped, because the card leaving
+     the stack travels 620px and must be able to go with it (see the note on
+     .stack .card). .cover-light is inset:0, so it clips the light to exactly
+     the same box .screen would have. */
+  .screen.coverlight{isolation:isolate;}
+  .cover-light{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;}
+  .cover-light img{
+    position:absolute;left:50%;top:50%;
+    width:160px;height:200px;object-fit:cover;
+    opacity:0;transition:opacity .6s;
+    filter:blur(22px) saturate(1.6);
+    transform:translate(-50%,-50%) scale(4.6);
+  }
+  .cover-light img.on{opacity:.62;}
+  /* Tokens only: the veil fades to whichever theme is on, so Walnut, Navy,
+     Mahogany and Oak each fade to their own background with no per-theme rule. */
+  .cover-light::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(to bottom,
+      var(--bgs-bg) 0,
+      rgba(var(--bgs-bg-rgb),.35) 22%,
+      rgba(var(--bgs-bg-rgb),.25) 70%,
+      rgba(var(--bgs-bg-rgb),.85) 100%);
+  }
+  /* The wash replaces the ambient gold behind the rounds; both together read
+     muddy. Two classes, so this still outranks the bare .vote-glow rule in
+     css/glass.css, which is appended to <head> after these styles. */
+  .screen.coverlight .vote-glow{display:none;}
+  @media (prefers-reduced-motion:reduce){
+    .cover-light img{transition:none;}
+  }
+
   /* The initial loading animation is the dealing deck in css/base.css, shared
      with every other game-night screen's shell. */
 
@@ -474,6 +522,51 @@ let backLabel = 'Back to the shelf';
 const confirmDialog = document.getElementById('confirm');
 const confirmBody = document.getElementById('confirmBody');
 registerOverlay(() => confirmDialog.classList.contains('open'));
+
+// ---- cover light flag (docs/claude-code-spec-vote-cover-light.md) ----
+// Live: the swipe screen takes the colour of the card on top of the deck for
+// everyone. The flag is now a kill switch rather than a curtain, the same shape
+// as the shelf's game night, invite and bag flags — set it back to false to
+// pull the wash without reverting anything, and ?coverlight=1 still reveals it
+// while it is off. No flag in this project persists itself to storage, so this
+// one doesn't either; the link carries it.
+const COVER_LIGHT_ENABLED = true;
+const coverLightOn =
+  COVER_LIGHT_ENABLED || new URLSearchParams(location.search).get('coverlight') === '1';
+// #screen itself survives every render — each one replaces its contents, not
+// the element — so the class is set once here rather than inside renderVoting.
+if (coverLightOn) screen.classList.add('coverlight');
+
+let lightIdx = 0;
+
+/**
+ * Cross-fades the screen light to a cover. Call with null to fade it out.
+ *
+ * The two images take turns: the incoming one takes the src and `.on`, the
+ * outgoing one only loses `.on`. So the swap is a plain opacity transition
+ * between two static elements — nothing here touches transform, and nothing
+ * here may ever grow an animation.
+ *
+ * A no-op when the flag is off, since the layer is only in the markup then.
+ *
+ * @param {string} [url] the *exact* string the card's own <img src> uses, so
+ *   the browser serves it from cache rather than fetching the cover twice.
+ *   That card image carries neither referrerpolicy nor crossorigin, so these
+ *   carry neither either: adding one would make it a different request.
+ */
+function setCoverLight(url) {
+  const imgs = document.querySelectorAll('.cover-light img');
+  if (imgs.length !== 2) return;
+  if (!url) { imgs.forEach((i) => i.classList.remove('on')); return; }
+  const next = imgs[lightIdx ^= 1];
+  const prev = imgs[lightIdx ^ 1];
+  // No stand-in in production, unlike the mockup: a cover that will not load
+  // means no light, rather than a broken image sitting behind the deck.
+  next.onerror = () => next.classList.remove('on');
+  next.src = url;
+  next.classList.add('on');
+  prev.classList.remove('on');
+}
 
 function codeFromPath() {
   // /vote/{code}/swipe
@@ -817,6 +910,7 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
   function renderVoting() {
     const total = deck.length;
     screen.innerHTML = `
+      ${coverLightOn ? '<div class="cover-light" aria-hidden="true"><img alt=""><img alt=""></div>' : ''}
       <div class="eyebrow">Game Night · ${code}</div>
       <h1>Swipe to vote</h1>
       <div class="tally-row">
@@ -860,6 +954,11 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     document.getElementById('btnInfo').addEventListener('click', () => {
       if (index < deck.length) openGameModal(deck[index]);
     });
+
+    // The card actually in front, not deck[0]: a refresh part-way through the
+    // deck and a rematch round both resume at an index of their own, and the
+    // light has to match the cover you can see.
+    setCoverLight(deck[index]?.image);
   }
 
   // Keyboard equivalent of the swipe, for anyone not using a touchscreen.
@@ -913,6 +1012,20 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     index += 1;
     const deckDone = index >= deck.length;
     rewardTally(deckDone ? 'Done' : index + 1, deckDone);
+    // The light moves now, on the same tick the card starts to fly, not in
+    // onfinish: the 0.6s cross-fade then runs underneath the 340ms exit and
+    // the screen has already taken the next cover's colour by the time that
+    // card lands. Waiting for the exit would make the background change look
+    // like a second, later event.
+    //
+    // A drag that snaps back never reaches here — js/swipe.js only calls
+    // onCommit for a committed vote — so an undecided card cannot relight the
+    // screen and then have to take it back.
+    //
+    // The last vote has no next cover, so the light goes out and the screen
+    // returns to the plain theme background for the waiting panel. Results is
+    // a separate page and never had one.
+    setCoverLight(deckDone ? null : deck[index].image);
     // Fades out with the card it describes, on the same beat as the exit;
     // bindFront fades the next one back in.
     document.getElementById('caption')?.classList.add('swap');
