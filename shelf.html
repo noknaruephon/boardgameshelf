@@ -1851,15 +1851,7 @@ function renderOwner(){
   // or to the connect screen if they have none yet). Signed out: Sign in.
   getUser().then(user => {
     if(user && user.id === profile.id){
-      // The owner's Settings: a gear at the right end of the line, going
-      // where the Settings word used to.
-      const gear = document.createElement('button');
-      gear.type = 'button';
-      gear.className = 'owner-gear';
-      gear.setAttribute('aria-label', 'Settings');
-      gear.innerHTML = GEAR_ICON;
-      gear.addEventListener('click', ()=>{ location.href = '/settings'; });
-      eyebrow.appendChild(gear);
+      appendOwnerGear(eyebrow);
       return;
     }
     const a = document.createElement('a');
@@ -1868,6 +1860,18 @@ function renderOwner(){
     else { a.href = '/welcome'; a.textContent = 'Your shelf'; }
     eyebrow.append(' · ', a);
   }).catch(()=>{});
+}
+
+// The owner's Settings: a gear at the right end of the line, going where the
+// Settings word used to. The same control on a synced shelf and an empty one.
+function appendOwnerGear(eyebrow){
+  const gear = document.createElement('button');
+  gear.type = 'button';
+  gear.className = 'owner-gear';
+  gear.setAttribute('aria-label', 'Settings');
+  gear.innerHTML = GEAR_ICON;
+  gear.addEventListener('click', ()=>{ location.href = '/settings'; });
+  eyebrow.appendChild(gear);
 }
 
 // The share sheet is fetched the first time something is shared, so a shelf
@@ -2063,7 +2067,7 @@ function showShelfState(kind){
     document.title = 'Your shelf · BoardgameShelf';
     const eyebrow = document.getElementById('shelfOwner');
     eyebrow.textContent = userDisplayName(viewer) || 'Your shelf';
-    // Eyebrow is the name alone; the gear joins it in commit 3.
+    appendOwnerGear(eyebrow);
     shelf.innerHTML = `
       <div class="empty-state empty-state--own">
         <p>Your shelf is empty.<br>Connect your BoardGameGeek account and your owned games will appear here.</p>

@@ -172,6 +172,13 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   }
   .linkplate .copy:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
 
+  /* Before BGG is connected the plate stands in for the shelf link: same
+     .linkplate padding, radius, fill and gold hairline, two lines of text
+     instead of an address. */
+  .connectplate .cp-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+  .connectplate .cp-title{font-size:16px;font-weight:500;color:var(--bgs-ivory);}
+  .connectplate .cp-desc{font-size:13px;line-height:1.4;color:var(--bgs-ivory-70);}
+
   /* ---- QR ticket: ivory with walnut modules, never inverted — light-on-dark
      codes fail on a lot of camera apps. 14px inside the ticket is the quiet
      zone scanners need. ---- */
@@ -180,8 +187,9 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     background:var(--bgs-plate);box-shadow:inset 0 0 0 1px var(--line-gold);
     display:flex;flex-direction:column;align-items:center;
   }
-  /* both panels set display:flex, which would override the hidden attribute */
-  .linkplate[hidden],.qrplate[hidden]{display:none;}
+  /* the tabs and both panels set display:flex, which would override the
+     hidden attribute */
+  .mode[hidden],.linkplate[hidden],.qrplate[hidden]{display:none;}
   .ticket{width:220px;height:220px;padding:14px;border-radius:14px;background:var(--bgs-ivory);}
   /* The page's icon rule strokes every svg in currentColor; a 1.75-unit
      ivory stroke on 1-unit modules would paint the code out. Fill only. */
@@ -420,6 +428,14 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
         <button type="button" class="copy" id="copyLink" data-copy="">Copy</button>
       </div>
 
+      <div class="linkplate connectplate" id="connectPlate" hidden>
+        <span class="cp-text">
+          <span class="cp-title">Connect your BGG username</span>
+          <span class="cp-desc">to import your collection and generate a shareable link.</span>
+        </span>
+        <button type="button" class="copy" id="connectBtn">Connect</button>
+      </div>
+
       <div class="qrplate" id="share-qr" role="tabpanel" aria-labelledby="tab-qr" hidden>
         <div class="ticket" id="share-qr-code" role="img" aria-label="QR code for your shelf"></div>
         <div class="qrhint" id="qrHint">Point a camera at it</div>
@@ -464,7 +480,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
       <form class="edit" id="bggForm" hidden novalidate>
         <input class="field" id="bggNew" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Your BGG username" aria-label="New BGG username">
         <p class="slug-preview" id="bggNewPreview" aria-live="polite"></p>
-        <p class="hint">Your shelf address changes with it, so links you've already shared will stop working. Sync again afterwards to load the right collection.</p>
+        <p class="hint" id="bggHint">Your shelf address changes with it, so links you've already shared will stop working. Sync again afterwards to load the right collection.</p>
         <p class="msg" id="bggMsg" aria-live="polite"></p>
         <div class="acts">
           <button class="btn btn-quiet" id="bggCancel" type="button">Cancel</button>
@@ -500,7 +516,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 
     <footer class="set-danger">
       <button type="button" class="rust" id="deleteBtn" data-action="delete">Delete account…</button>
-      <p class="hint">Removes your shelf, synced collection and sign-in. You'll be asked to confirm.</p>
+      <p class="hint" id="deleteHint">Removes your shelf, synced collection and sign-in. You'll be asked to confirm.</p>
       <p class="msg" id="deleteMsg" aria-live="polite"></p>
     </footer>
   </div>
@@ -509,7 +525,8 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   <div class="scrim" id="delete-scrim" hidden>
     <div class="sheet" id="deleteSheet" role="dialog" aria-modal="true" aria-labelledby="delete-title">
       <h2 id="delete-title">Delete your account?</h2>
-      <p>This removes your shelf at <span class="mono" id="delSlug"></span>, <span id="delCount">your synced games</span> and your sign-in. It can't be undone.</p>
+      <p id="delBody">This removes your shelf at <span class="mono" id="delSlug"></span>, <span id="delCount">your synced games</span> and your sign-in. It can't be undone.</p>
+      <p id="delBodyNew" hidden>This removes your sign-in and anything you've set here. It can't be undone.</p>
       <div class="acts">
         <button type="button" class="btn btn-quiet" id="confirmKeep" data-action="delete-cancel">Keep my account</button>
         <button type="button" class="btn btn-rust" id="confirmDelete" data-action="delete-confirm">Delete account</button>
@@ -523,7 +540,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 <script src="/vendor/qrcode.min.js"></script>
 <script type="module">
 import {
-  getUser, getAccessToken, fetchMyProfile, updateMyProfile, updateDisplayName, updateTheme, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
+  getUser, getAccessToken, fetchMyProfile, ensureMyProfile, updateMyProfile, updateDisplayName, updateTheme, changeBggUsername, signOut, slugify, isValidSlug, userDisplayName,
 } from '/js/auth.js';
 import { runSync } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
@@ -541,10 +558,16 @@ const PRIVATE_HINT = 'Only you can see it while signed in';
 const EXPANSIONS_ON_HINT = 'Expansions you own appear on the shelf and count toward it';
 const EXPANSIONS_OFF_HINT = 'Only base games show. Expansions stay synced, just out of sight';
 const SYNC_HINT = 'Pulls owned games. Takes a minute or two for big shelves.';
-const NO_USERNAME_HINT = 'Add your BGG username first';
+const NO_USERNAME_HINT = 'Available once your username is added';
+const DELETE_HINT = "Removes your shelf, synced collection and sign-in. You'll be asked to confirm.";
+const DELETE_HINT_NEW = "Removes your sign-in and anything you've set here. You'll be asked to confirm.";
 
 let user = null;
 let profile = null;
+
+/** Connected means the profile carries a shelf address, never just that a
+    row exists: Settings creates the row before BGG is claimed. */
+const connected = () => Boolean(profile?.slug);
 
 /** `D MMM`, with the year only when it isn't this year. Fixed English
     month names: locale short months vary ("Sept", "Sep.") and the pill
@@ -578,30 +601,47 @@ function signedWith() {
     renderPill()'s: a failed sync must keep saying so after the count refreshes. */
 function renderCollection() {
   const hint = $('collectionHint');
-  if (!profile.last_synced_at) hint.textContent = 'Sync to pull your games';
+  if (!connected()) hint.textContent = 'Add your BGG username to sync';
+  else if (!profile.last_synced_at) hint.textContent = 'Sync to pull your games';
   else hint.textContent = ownGameCount === null ? '' : `${ownGameCount} owned game${ownGameCount === 1 ? '' : 's'}`;
   $('delCount').textContent = ownGameCount ? `your ${ownGameCount} synced games` : 'your synced games';
 }
 
 function renderPill() {
-  if (!profile.last_synced_at) setPill('stale', 'Not synced');
+  if (!connected()) setPill('stale', 'Not connected');
+  else if (!profile.last_synced_at) setPill('stale', 'Not synced');
   else setPill('', `Synced ${syncDate(profile.last_synced_at)}`);
 }
 
 function renderSettings() {
   applyProfileTheme(profile);
   renderTheme();
-  const url = `${location.origin}/u/${profile.slug}`;
-  $('who').textContent = profile.display_name || userDisplayName(user) || `/u/${profile.slug}`;
+  const on = connected();
+  $('who').textContent = profile.display_name || userDisplayName(user) || (on ? `/u/${profile.slug}` : '');
   $('who').className = 'set-who';
   $('displayNameVal').textContent = profile.display_name || userDisplayName(user) || '';
-  $('backLink').href = `/u/${profile.slug}`;
+  $('backLink').href = on ? `/u/${profile.slug}` : '/shelf';
   show('backLink', true);
-  $('shelfHost').textContent = `${location.host}/u/`;
-  $('shelfSlug').textContent = profile.slug;
-  $('copyLink').dataset.copy = url;
-  renderQr(url);
-  $('delSlug').textContent = `/u/${profile.slug}`;
+
+  // Nothing to share yet: the tabs and both panels go, and the plate in the
+  // link's place asks for the username instead. Which panel shows is
+  // setShareMode()'s business; this only takes them away and puts the
+  // selected one back.
+  show('shareMode', on);
+  show('connectPlate', !on);
+  for (const tab of modeTabs) $(tab.getAttribute('aria-controls')).hidden = !on || tab.getAttribute('aria-selected') !== 'true';
+  if (on) {
+    const url = `${location.origin}/u/${profile.slug}`;
+    $('shelfHost').textContent = `${location.host}/u/`;
+    $('shelfSlug').textContent = profile.slug;
+    $('copyLink').dataset.copy = url;
+    renderQr(url);
+    $('delSlug').textContent = `/u/${profile.slug}`;
+  }
+  // Without a shelf there is no address and no game count to name.
+  $('deleteHint').textContent = on ? DELETE_HINT : DELETE_HINT_NEW;
+  show('delBody', on);
+  show('delBodyNew', !on);
 
   const hasUsername = Boolean(profile.bgg_username);
   const val = $('bggRo');
@@ -681,6 +721,7 @@ $('shareMode').addEventListener('keydown', (e) => {
   setShareMode(modeTabs[next].dataset.mode, { focus: true });
 });
 function restoreShareMode() {
+  if (!connected()) return;
   let saved = null;
   try { saved = localStorage.getItem(SHARE_MODE_KEY); } catch { /* no storage */ }
   if (saved === 'qr') setShareMode('qr');
@@ -707,13 +748,21 @@ $('copyLink').addEventListener('click', async () => {
   }
 });
 
-// ---- change BGG username ----
+// ---- connect BGG / change BGG username ----
+// The same form does both. Connect mode is decided when it opens: an empty
+// field, the whole address as the preview, no warning about breaking links
+// there are none of yet, and Connect on the button.
+let bggConnectMode = false;
+
 function showBggForm(on) {
   show('bggEdit', !on);
   show('bggForm', on);
   if (on) {
-    $('bggNew').value = profile.bgg_username || '';
+    bggConnectMode = !connected();
+    $('bggNew').value = bggConnectMode ? '' : (profile.bgg_username || '');
     $('bggNewPreview').textContent = '';
+    show('bggHint', !bggConnectMode);
+    $('bggSave').textContent = bggConnectMode ? 'Connect' : 'Save';
     say($('bggMsg'), '');
     $('bggNew').focus();
     $('bggNew').select();
@@ -723,8 +772,23 @@ function showBggForm(on) {
 }
 $('bggEdit').addEventListener('click', () => showBggForm(true));
 $('bggCancel').addEventListener('click', () => showBggForm(false));
+$('connectBtn').addEventListener('click', () => {
+  showBggForm(true);
+  // focus() has already scrolled the field into view somewhere; centre the
+  // whole form so the button that opened it is not what the eye lands on.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('bggForm').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
+});
 $('bggNew').addEventListener('input', () => {
   const slug = slugify($('bggNew').value);
+  if (bggConnectMode) {
+    // The address as it will read, host and all: there is no old one to
+    // call it "new" against.
+    const b = document.createElement('b');
+    b.textContent = slug;
+    $('bggNewPreview').replaceChildren(...(slug ? [`${location.host}/u/`, b] : []));
+    return;
+  }
   $('bggNewPreview').innerHTML = slug && slug !== profile.slug ? `New address: <b>/u/${slug}</b>` : '';
 });
 $('bggForm').addEventListener('submit', async (e) => {
@@ -739,12 +803,19 @@ $('bggForm').addEventListener('submit', async (e) => {
     const result = await changeBggUsername(next);
     if (result.error === 'taken') { say($('bggMsg'), `“${next}” is already claimed on this site.`, 'err'); return; }
     if (result.error === 'invalid') { say($('bggMsg'), 'That username can’t be used as a link.', 'err'); return; }
+    const wasConnect = bggConnectMode;
     profile = result.profile;
     ownGameCount = null;
     renderSettings();
     showBggForm(false);
-    $('syncHint').textContent = `Saved. Your shelf is now /u/${profile.slug} — sync to load its games.`;
     updateBrowseOffer();
+    if (wasConnect) {
+      // The shelf exists now and is empty: start filling it. The sync's own
+      // step text takes over the hint from here.
+      startSync();
+      return;
+    }
+    $('syncHint').textContent = `Saved. Your shelf is now /u/${profile.slug} — sync to load its games.`;
   } catch (err) {
     say($('bggMsg'), err.message || "Couldn't save that. Try again.", 'err');
   } finally {
@@ -812,14 +883,19 @@ const syncHandlers = {
   },
 };
 
-$('syncBtn').addEventListener('click', async () => {
-  const btn = $('syncBtn');
-  if (btn.getAttribute('aria-disabled') === 'true') return;
+// Also how a just-connected username starts filling its shelf, without the
+// user having to find Sync now.
+async function startSync() {
   setSyncEnabled(false);
   $('syncHint').classList.remove('err');
   setPill('syncing', 'Syncing…');
   await runSync(syncHandlers);
   setSyncEnabled(Boolean(profile?.bgg_username));
+}
+
+$('syncBtn').addEventListener('click', () => {
+  if ($('syncBtn').getAttribute('aria-disabled') === 'true') return;
+  startSync();
 });
 
 // ---- fallback: browse a stocked shelf ----
@@ -1157,15 +1233,12 @@ try {
     $('who').textContent = '';
     show('signedOut', true);
   } else {
-    profile = await fetchMyProfile();
-    if (profile) {
-      renderSettings();
-      restoreShareMode();
-      updateBrowseOffer();
-    } else {
-      // No BGG account connected yet: onboarding lives at /welcome.
-      location.replace('/welcome');
-    }
+    // Opening Settings creates the row if there is none: every handler below
+    // then has a real profile to write to, connected or not.
+    profile = await ensureMyProfile();
+    renderSettings();
+    restoreShareMode();
+    updateBrowseOffer();
   }
 } catch (err) {
   show('loading', false);
