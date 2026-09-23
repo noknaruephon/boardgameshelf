@@ -466,7 +466,11 @@ export function setupBag({ getGames, rerender, headerEl, gridEl, countEl: shelfC
       return true;
     },
 
-    /** Turns one freshly rendered grid tile into a packing toggle. */
+    /**
+     * Turns one freshly rendered tile into a packing toggle: a card in the
+     * grid or a box in the shelf view. A box has no `.info`, so it gets the
+     * ring, checkbox and labels but not the players/time line.
+     */
     decorateCard(cardEl, game) {
       if (mode !== 'packing') {
         cardEl.classList.remove('selected');

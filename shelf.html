@@ -2273,7 +2273,7 @@ function coverImg(g, wrap){
 function buildCard(g){
   const el = document.createElement('button');
   const isSelected = gameNightVisible && state.selectedIds.has(g.bggId);
-  el.className = 'game-card' + (isSelected ? ' selected' : '');
+  el.className = 'game-card tile' + (isSelected ? ' selected' : '');
   el.dataset.id = g.bggId;
   el.innerHTML = `
     ${selectionOverlays ? '<span class="sel-ring"></span>' : ''}
@@ -2300,7 +2300,7 @@ function buildBox(g, i){
   const el = document.createElement('button');
   const isSelected = gameNightVisible && state.selectedIds.has(g.bggId);
   el.type = 'button';
-  el.className = 'gbox' + (isSelected ? ' selected' : '');
+  el.className = 'gbox tile' + (isSelected ? ' selected' : '');
   el.dataset.id = g.bggId;
   el.style.setProperty('--lean', SHELF_LEANS[i % SHELF_LEANS.length] + 'deg');
   el.setAttribute('aria-label', g.title);
@@ -2747,12 +2747,12 @@ function gnFilteredIdSet(){
 // Null when the game is filtered out of the current view — selections persist
 // across filter changes, so every caller has to tolerate that.
 function cardNodeFor(id){
-  return document.getElementById('shelf').querySelector(`.game-card[data-id="${id}"]`);
+  return document.getElementById('shelf').querySelector(`.tile[data-id="${id}"]`);
 }
 
 function clearSelectedCards(){
   document.getElementById('shelf')
-    .querySelectorAll('.game-card.selected')
+    .querySelectorAll('.tile.selected')
     .forEach(el => el.classList.remove('selected'));
 }
 
@@ -2849,7 +2849,7 @@ function primeGnWave(origin){
   const r = origin.getBoundingClientRect();
   const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
 
-  document.querySelectorAll('.game-card').forEach(card => {
+  document.querySelectorAll('.tile').forEach(card => {
     const b = card.getBoundingClientRect();
     // Offscreen cards snap in so scrolling never reveals a half-finished animation.
     if(b.bottom < 0 || b.top > window.innerHeight){ card.style.setProperty('--gn-d', '0s'); return; }
