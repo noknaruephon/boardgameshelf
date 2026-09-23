@@ -1,0 +1,2830 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="walnut"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Shelf page — shelf view + toggle (locked: covers only, default Shelf, toggle for everyone)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>/* css/base.css verbatim *//* Shared foundation for every page: design tokens and page chrome.
+   Link this before any other stylesheet and before the page's own <style>,
+   so a page can still override what it needs to.
+
+   This exists because the shelf and the waiting-room pages each carried their
+   own copy of the palette and the body background, and the copies drifted —
+   the waiting room's background lost its solid colour layer and overscrolling
+   showed the browser's white canvas. Change a token or the page chrome here
+   and every page follows. */
+
+/* Themes (docs/claude-code-spec-themes.md). The surface tokens — page bg,
+   plate, ivory, their RGB variants and the ivory hairline — live in one
+   block per theme below, walnut doubling as the :root default. Everything
+   else, gold above all, is shared and stays in :root. <html data-theme="…"> is set by the inline resolver in
+   each page's <head> and by js/themes.js; a theme is one block here plus
+   one entry in the registry. */
+
+:root{
+  --bgs-gold:#E4B54D;
+  --bgs-gold-rgb:228,181,77;
+  /* ink on a gold fill — warm, not the page bg; full-contrast black on brass glares */
+  --bgs-on-gold:#2A1F0C;
+  /* the brighter brass for :hover on a gold fill */
+  --bgs-gold-hover:#F0C455;
+  /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim.
+     Mixed from the brighter brass (#F0C455) at .80, not from --bgs-gold: the eyebrow and mono meta went muddy at .62 of the fill colour. */
+  --bgs-gold-dim:rgba(240,196,85,0.80);
+  --bgs-icon-gold:#E4B54D;
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line-gold:rgba(228,181,77,0.22);
+  /* warning — a gap in what a bag covers (docs/bag-pack-bar-spec.md) */
+  --bgs-amber:#E0A83A;
+  /* destructive actions — cancelling a game night */
+  --bgs-danger:#B84A40;
+  --bgs-danger-hover:#D2665B;
+  /* swipe-vote colours — warm sage + warm clay, deliberately distinct from
+     --bgs-danger above: passing on a game isn't destructive and must not
+     borrow the cancel-a-game-night colour. */
+  --bgs-vote-play:#5FB07F;
+  --bgs-vote-play-rgb:95,176,127;
+  --bgs-vote-pass:#D9645A;
+  --bgs-vote-pass-rgb:217,100,90;
+  /* live-voting / presence surfaces — reserved, nothing consumes it yet */
+  --bgs-info:#5B9CDB;
+  --bgs-info-rgb:91,156,219;
+
+  /* Liquid Glass (docs/claude-code-spec-liquid-glass.md). The material itself
+     lives in css/glass.css, which shelf.html loads; the tokens sit here so
+     every page can use the easing and the card layout without it. */
+  --glass-fill-a:.52;                 /* plate tint alpha; pressed .74 */
+  --glass-blur:22px;
+  --glass-sat:1.6;
+  --glass-rim-w:1.5px;                /* refraction ring width */
+  --glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);
+  --glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
+  --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);
+  --glass-sheen:rgba(var(--bgs-ivory-rgb),.10);
+  --light-x:20%;                      /* specular position; JS moves it on scroll */
+  --ease-liquid:cubic-bezier(.32,.72,0,1);
+  --dur:.55s;
+}
+
+/* Brown themes. The hairline and muted roles the spec names --bgs-line and
+   --bgs-muted are the existing --line and --bgs-ivory-45: the spec's opaque
+   line colour is what each theme's ivory at .10 lands on over its plate, and
+   its muted colour is ivory at .45 over the plate, so the alpha tokens keep
+   compositing correctly over covers and glass. --bgs-bg-radial sits between
+   bg and plate, the same step navy takes.
+
+   Walnut is the default: :root carries it so a page with no data-theme, or
+   an unknown one, renders walnut. It comes first because :root and an
+   attribute selector tie on specificity, so the later block wins and every
+   named theme has to follow it. */
+:root, [data-theme="walnut"]{
+  --bgs-bg:#171110;
+  --bgs-bg-rgb:23,17,16;
+  --bgs-bg-radial:#1F1816;
+  --bgs-plate:#211915;
+  --bgs-plate-rgb:33,25,21;
+  --bgs-ivory:#F2E9DA;
+  --bgs-ivory-rgb:242,233,218;
+  --bgs-ivory-70:rgba(242,233,218,0.72);
+  --bgs-ivory-45:rgba(242,233,218,0.45);
+  --line:rgba(242,233,218,0.10);
+}
+/* Navy — the values :root carried before themes existed, moved here
+   unchanged. */
+[data-theme="navy"]{
+  --bgs-bg:#0B0E13;
+  --bgs-bg-rgb:11,14,19;
+  --bgs-bg-radial:#131821;
+  --bgs-plate:#161A21;
+  --bgs-plate-rgb:22,26,33;
+  --bgs-ivory:#EEF1F5;
+  --bgs-ivory-rgb:238,241,245;
+  --bgs-ivory-70:rgba(238,241,245,0.72);
+  --bgs-ivory-45:rgba(238,241,245,0.45);
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line:rgba(238,241,245,0.10);
+}
+
+[data-theme="mahogany"]{
+  --bgs-bg:#1A100D;
+  --bgs-bg-rgb:26,16,13;
+  --bgs-bg-radial:#241611;
+  --bgs-plate:#2A1812;
+  --bgs-plate-rgb:42,24,18;
+  --bgs-ivory:#F4E8D8;
+  --bgs-ivory-rgb:244,232,216;
+  --bgs-ivory-70:rgba(244,232,216,0.72);
+  --bgs-ivory-45:rgba(244,232,216,0.45);
+  --line:rgba(244,232,216,0.10);
+}
+[data-theme="oak"]{
+  --bgs-bg:#1E1812;
+  --bgs-bg-rgb:30,24,18;
+  --bgs-bg-radial:#28201A;
+  --bgs-plate:#2B231A;
+  --bgs-plate-rgb:43,35,26;
+  --bgs-ivory:#F3EBDA;
+  --bgs-ivory-rgb:243,235,218;
+  --bgs-ivory-70:rgba(243,235,218,0.72);
+  --bgs-ivory-45:rgba(243,235,218,0.45);
+  --line:rgba(243,235,218,0.10);
+}
+
+/* Theme cross-fade. js/themes.js puts .theme-switching on <html> for the
+   250ms around a switch, so these surfaces fade instead of snapping. Inert
+   surfaces only: WebKit silently drops a transition whose property an
+   animation on the same element already owns, so nothing that animates
+   background-color, border-color or color (the Game Night pill, toasts,
+   pulse rings, .sel-ring) is listed here; those snap, which is fine. */
+html.theme-switching, html.theme-switching body,
+html.theme-switching .game-card{
+  transition:background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+@media (prefers-reduced-motion:reduce){
+  html.theme-switching *{transition:none !important;}
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+/* The theme's ground behind everything, so overscroll and the first frame
+   are already the theme's colour, never a literal. */
+html{background:var(--bgs-bg);color:var(--bgs-ivory);}
+
+body{
+  /* The solid colour under the gradient is load-bearing: a gradient alone
+     leaves background-color transparent, and overscrolling then shows the
+     browser's white canvas. */
+  background:
+    radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%),
+    var(--bgs-bg);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  /* svh, not vh: on a phone 100vh is the *large* viewport — the height with the
+     toolbars retracted — so it makes the body taller than what's actually visible
+     and the page scrolls even when nothing overflows. 100svh is the smallest
+     visible viewport, so a page whose content fits cannot scroll. dvh would track
+     the toolbars sliding in and out and reflow mid-scroll. The vh line stays as a
+     fallback for Safari <15.4 / Chrome <108. */
+  min-height:100vh;
+  min-height:100svh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Set by js/scroll-lock.js while any overlay is open, so the page behind it
+   cannot scroll. `overflow:hidden` alone is ignored by iOS Safari, so the body
+   is taken out of flow and offset by the scroll position it was locked at —
+   the offset cancels the scroll, leaving the view unchanged with nothing left
+   to scroll. The offset and the scrollbar-gutter padding are set inline. */
+body.scroll-locked{
+  position:fixed;
+  left:0;
+  right:0;
+  overflow:hidden;
+}
+
+/* Each page sets its own body padding — the shelf is a wide grid, the
+   game-night pages are a narrow phone column with a safe-area inset. */
+
+/* The face-down/face-up deck-preview card, shared by night-host.html,
+   vote.html and vote-swipe.html (the waiting room's deck preview and the
+   swipe screen's tallying shuffle both draw the same card back — one
+   component, not a third copy). */
+.deck-card{
+  width:44px;aspect-ratio:3/4;border-radius:6px;flex-shrink:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  background:var(--bgs-plate);
+  border:1px solid rgba(var(--bgs-gold-rgb),.22);
+}
+.deck-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.deck-card.back{
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(var(--bgs-gold-rgb),.07) 0 4px,
+      transparent 4px 8px),
+    var(--bgs-plate);
+  color:var(--bgs-gold-dim);font-size:15px;
+}
+.deck-card.clickable{cursor:pointer;transition:transform .12s ease;}
+.deck-card.clickable:active{transform:scale(.92);}
+
+/* Three face-down cards being shuffled — the waiting animation for every
+   game-night screen that has to hold the table for a moment: waiting for the
+   host to start, waiting for the others to finish, and tallying.
+   Built from .deck-card.back above rather than drawn again, and face-down
+   deliberately, so a screen that must not leak a result cannot.
+   Markup comes from shuffleHTML() in js/waiting-room.js. */
+.shuffle-wrap{height:66px;display:flex;align-items:center;justify-content:center;}
+.shuffle{position:relative;width:104px;height:64px;}
+.shuffle .deck-card{
+  position:absolute;top:0;left:30px;width:46px;height:62px;
+  box-shadow:0 7px 15px rgba(0,0,0,.5);
+  animation:bgs-deal 1.9s cubic-bezier(.45,0,.3,1) infinite;
+}
+@keyframes bgs-deal{
+  0%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+  28%{transform:translateX(-36px) rotate(-13deg) scale(.97);opacity:1;}
+  62%{transform:translateX(36px) rotate(10deg) scale(.94);opacity:.7;}
+  100%{transform:translateX(0) rotate(0) scale(1);opacity:1;}
+}
+.shuffle .deck-card:nth-child(1){z-index:3;}
+.shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
+.shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
+
+/* Four face-down cards dealt into a neat deck, then a gold ring pulse — the
+   loading animation for every game-night screen's static shell, the stretch
+   between page load and the first render. Built from .deck-card.back above,
+   like the shuffle, and distinct from it on purpose: the shuffle holds the
+   table, this one gathers the games.
+   Pure CSS, so it runs before a page's module script resolves — an import
+   that 404s leaves the shell on screen, and it should still look alive.
+   Cards animate transform+opacity only; the ring animates box-shadow only, on
+   its own element. One animation per element and no transition on an animated
+   property: WebKit silently drops a transition that fights an animation, which
+   is also why these cards never take .clickable. */
+.deal-wrap{height:120px;display:flex;align-items:center;justify-content:center;margin:26px 0 0;}
+.deal{position:relative;width:64px;height:85px;}
+.deal .deck-card{
+  position:absolute;inset:0;width:64px;height:85px;
+  border-radius:8px;font-size:18px;
+  box-shadow:0 8px 18px rgba(0,0,0,.45);
+  opacity:0;
+  animation:bgs-deal-in 3.4s cubic-bezier(.3,.7,.3,1) infinite;
+}
+.deal .deck-card:nth-child(1){--rest:rotate(-5deg);}
+.deal .deck-card:nth-child(2){--rest:rotate(4deg);animation-delay:.22s;}
+.deal .deck-card:nth-child(3){--rest:rotate(-2deg);animation-delay:.44s;}
+.deal .deck-card:nth-child(4){--rest:rotate(0deg);animation-delay:.66s;}
+@keyframes bgs-deal-in{
+  0%   {opacity:0;transform:translate(110px,-90px) rotate(28deg);}
+  12%  {opacity:1;transform:translate(0,0) var(--rest);}   /* lands, tilted */
+  16%  {transform:translate(0,0) var(--rest);}
+  30%  {transform:translate(0,0) rotate(0deg);}            /* squares up */
+  84%  {opacity:1;transform:translate(0,0) rotate(0deg);}
+  94%,100%{opacity:0;transform:translate(0,0) rotate(0deg);}
+}
+/* Gold ring: inset box-shadow, never outline. */
+.deal-ring{
+  position:absolute;inset:-7px;border-radius:13px;pointer-events:none;
+  box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);
+  animation:bgs-ring-pulse 3.4s infinite;
+}
+@keyframes bgs-ring-pulse{
+  0%,30%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+  40%   {box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.7);}
+  58%,100%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+}
+
+/* Reduced motion: a static assembled deck under a steady half-strength ring
+   says the same thing the motion did. Nothing here needs an animation to
+   become visible, so dropping it can never leave the shell blank. */
+@media (prefers-reduced-motion:reduce){
+  .shuffle .deck-card{animation:none;}
+  .deal .deck-card{animation:none;opacity:1;transform:translate(0,0) rotate(0deg);}
+  .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
+}
+
+/* ---- cover light (docs/claude-code-spec-vote-cover-light.md) ----
+   Behind ?coverlight=1. The screen takes the colour of the card on top of
+   the deck: one heavily blurred, enlarged copy of that card's cover sits
+   behind everything, and a veil fades it back to the theme background so the
+   heading, the caption and the rounds stay legible over a bright cover.
+
+   The two copies cross-fade on OPACITY ONLY, and neither carries an
+   animation: an animation and a transition on the same property of the same
+   element is the WebKit bug that drops the transition altogether. Their
+   transform is static.
+
+   The source box is 160x200 and scaled up from there, so the blur is
+   computed at that size and stays cheap on a phone.
+
+   The layer is fixed to the viewport, not parented to #screen. #screen is a
+   400px column inside the page's 16px gutters, so a light scoped to it
+   stopped in dark bands down both sides and cut off in a hard line under the
+   hint — the whole screen is meant to take the colour, and on a phone the
+   column is not the screen. Fixed also means the wash holds still while the
+   page scrolls, and clipping it here keeps the enlarged image from widening
+   the page.
+
+   It sits at z-index:0 rather than behind everything at -1, because a
+   negative layer inside <body> paints *under* body's own background and
+   would never be seen. Everything the page draws is lifted over it instead,
+   below. The confirm dialog and the game modal are both z-index:30 and so
+   stay clear of this without help. */
+.cover-light{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+/* #screen is already positioned; the footer is not, and a static block
+   paints under a positioned layer however early it comes in the markup. */
+body.coverlight #screen,
+body.coverlight .shelf-footer{position:relative;z-index:1;}
+.cover-light img{
+  position:absolute;left:50%;top:50%;
+  width:160px;height:200px;object-fit:cover;
+  opacity:0;transition:opacity .6s;
+  filter:blur(22px) saturate(1.6);
+  /* Scaled, never resized: the blur is computed on the small box and the
+     result is scaled by the compositor, which is what keeps it cheap on a
+     phone. 4.6 is the locked value and covers a phone at 736x920; a desktop
+     window is wider than that, so it steps up rather than leaving the wash
+     as a blob with dark edges either side. */
+  transform:translate(-50%,-50%) scale(var(--cl-scale,4.6));
+}
+@media (min-width:560px){ .cover-light img{--cl-scale:9;} }
+.cover-light img.on{opacity:.62;}
+/* Tokens only: the veil fades to whichever theme is on, so Walnut, Navy,
+   Mahogany and Oak each fade to their own background with no per-theme rule. */
+.cover-light::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    var(--bgs-bg) 0,
+    rgba(var(--bgs-bg-rgb),.35) 22%,
+    rgba(var(--bgs-bg-rgb),.25) 70%,
+    rgba(var(--bgs-bg-rgb),.85) 100%);
+}
+@media (prefers-reduced-motion:reduce){
+  .cover-light img{transition:none;}
+}
+
+/* Site footer colophon, shared by every page (docs/footer-redesign-spec.md,
+   Option A, centred to match the centred pages). A stack: BGG badge,
+   links, then the legal lines. Pages override max-width to
+   match their own column, and the shelf sets --fab-clearance so the Game
+   Night FAB never covers the legal lines. The badge is never tinted, dimmed
+   or hidden: BGG's API terms want the logo legible wherever their data is
+   shown. */
+.shelf-footer{
+  max-width:960px;
+  margin:40px auto 0;
+  border-top:1px solid rgba(var(--bgs-ivory-rgb),.10);
+  padding:22px 0 calc(22px + var(--fab-clearance,0px));
+  text-align:center;
+}
+.shelf-footer__row{display:flex;justify-content:center;}
+.shelf-footer .bgg-badge{display:inline-block;line-height:0;border-radius:4px;flex:none;}
+.shelf-footer .bgg-badge--small{height:28px;}
+.shelf-footer .bgg-badge--small img{display:block;height:28px;width:auto;}
+.shelf-footer .bgg-badge:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+.shelf-footer__links{display:flex;justify-content:center;gap:18px;margin:18px 0 20px;font:500 13px/1 'Inter',sans-serif;}
+/* Same text-link treatment as body links on the privacy and terms pages. */
+.shelf-footer__links a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;border-radius:3px;}
+.shelf-footer__links a:hover{color:var(--bgs-ivory);}
+.shelf-footer__links a:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+.shelf-footer__legal{
+  margin:0;font:400 11px/1.55 'IBM Plex Mono',monospace;
+  color:rgba(var(--bgs-ivory-rgb),.36);
+}
+.shelf-footer__legal + .shelf-footer__legal{margin-top:2px;}
+
+/* Beta pill beside the wordmark (spec: docs/beta-tag-spec.md). Each page
+   carries its own wordmark markup, so the pill is placed per page; the styles
+   live here once. A <button>, not a <span>, so the tooltip is keyboard
+   reachable. Upright and mono on purpose: the wordmark's italic serif must
+   not leak into it. Negative vertical margins cancel the pill's own height
+   against the wordmark line so the header does not grow. */
+.bgs-wordmark{position:relative;}
+.bgs-beta{
+  display:inline-block;
+  margin:-4px 0 -4px 10px;
+  padding:3px 8px;
+  border:1px solid rgba(var(--bgs-gold-rgb),0.6);
+  border-radius:999px;
+  background:transparent;
+  color:var(--bgs-gold);
+  font-family:'IBM Plex Mono',monospace;
+  font-style:normal;
+  font-weight:500;
+  font-size:11px;
+  letter-spacing:0.14em;
+  line-height:1;
+  text-transform:uppercase;
+  vertical-align:middle;
+  position:relative;
+  top:-1px;
+  cursor:default;
+  -webkit-appearance:none;
+  appearance:none;
+}
+/* Gold ring via box-shadow, same as every other focus ring on the site. */
+.bgs-beta:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+
+/* Beta tooltip, built by js/beta-tag.js as the pill's next sibling inside
+   .bgs-wordmark, so it positions against the wordmark. Transition only —
+   never an animation on this element too; WebKit drops a transition that
+   fights an animation. The pill's uppercase mono styling is reset here since
+   the wordmark's italic serif would otherwise cascade in. */
+.bgs-beta-tip{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:0;
+  z-index:30;
+  width:max-content;
+  max-width:260px;
+  padding:10px 12px 11px;
+  /* A callout, not a field: the search box is plate + faint gold hairline +
+     12px radius, so this sits on the darker page ground with a firmer gold
+     edge, a tight radius, a lifted shadow and a caret at the pill. */
+  border:1px solid rgba(var(--bgs-gold-rgb),0.45);
+  border-radius:5px;
+  background:var(--bgs-bg);
+  box-shadow:0 14px 28px -12px rgba(0,0,0,.85),0 2px 6px rgba(0,0,0,.35);
+  color:var(--bgs-ivory);
+  font-family:'Inter',sans-serif;
+  font-style:normal;
+  font-weight:400;
+  font-size:13px;
+  line-height:1.45;
+  letter-spacing:0;
+  text-transform:none;
+  text-align:left;
+  opacity:0;
+  transform:translateY(-4px);
+  transition:opacity 120ms ease-out,transform 120ms ease-out;
+  pointer-events:none;
+}
+.bgs-beta-tip.is-open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+/* Caret under the pill. js/beta-tag.js sets --bgs-tip-caret to the pill's
+   centre measured from the tooltip's left edge, so it stays under the pill
+   when the tooltip flips or is pinned to the viewport gutter. A rotated
+   square that shares the border, clipped to its top-left half by the tip. */
+.bgs-beta-tip::before{
+  content:"";
+  position:absolute;
+  top:-6px;
+  left:calc(var(--bgs-tip-caret,18px) - 5px);
+  width:10px;height:10px;
+  background:inherit;
+  border:inherit;
+  border-right:0;border-bottom:0;
+  border-radius:1px 0 0 0;
+  transform:rotate(45deg);
+}
+/* Would overflow the right edge of the viewport: hang from the wordmark's
+   right edge instead. */
+.bgs-beta-tip.is-flipped{left:auto;right:0;}
+/* Two classes: the legal pages' own `.mark a{color:inherit;text-decoration:none}`
+   would otherwise win over the link styling. */
+.bgs-beta-tip .bgs-beta-tip__link{
+  display:block;
+  margin-top:6px;
+  color:var(--bgs-gold);
+  text-decoration:underline;
+  text-underline-offset:3px;
+  border-radius:3px;
+}
+.bgs-beta-tip .bgs-beta-tip__link:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+}
+@media (prefers-reduced-motion:reduce){
+  .bgs-beta-tip{transition:none;transform:none;}
+}
+</style>
+<style>/* css/glass.css verbatim *//* Liquid Glass material — docs/claude-code-spec-liquid-glass.md.
+
+   Loaded by shelf.html for everyone unless the device opted out with
+   ?glass=0 (localStorage.bgsGlass). Nothing in here is prefixed by a flag
+   selector: the .glass class sits in the markup regardless, and is inert
+   until this file loads.
+
+   Rules (engineering-principles):
+   - transitions only, never @keyframes — WebKit drops a transition that
+     shares a property with an animation;
+   - the rim and every ring are box-shadow, never border, never outline;
+   - tokens are the --glass-* set in css/base.css;
+   - transitions move only transform and opacity (and, for the sheets and
+     the Game Night box, their size). Never background or box-shadow: a
+     paint change on a blurred surface re-blurs it every frame, which is
+     what made the buttons stutter on the phone. Press and state changes
+     in fill or shadow snap.
+   Game cards never get .glass: 197 backdrop-filters would not scroll. */
+
+.glass{
+  position:relative;
+  isolation:isolate;
+  border:0;
+  background:
+    linear-gradient(135deg, var(--glass-sheen) 0%, transparent 38%, transparent 70%, rgba(var(--bgs-ivory-rgb),.04) 100%)
+      var(--light-x) 0 / 220% 100% no-repeat,
+    rgba(var(--bgs-plate-rgb),var(--glass-fill-a));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  /* --glass-focus is the focus ring slot: empty by default, a gold ring on
+     :focus-visible, so focus composes with the rim instead of replacing it. */
+  --glass-focus:0 0 0 0 transparent;
+  box-shadow:
+    var(--glass-focus),
+    inset 1px 1px 0 var(--glass-rim-light),
+    inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px var(--glass-rim-gold),
+    var(--glass-shadow);
+  transition:transform .28s var(--ease-liquid);
+}
+/* Refraction ring: a masked band along the edge lit by a conic gradient.
+   It used to carry its own backdrop-filter as well; a masked layer with a
+   backdrop-filter is a combination WebKit allocates full-size buffers for
+   and has crashed on, and the shelf page kept reloading on iOS until every
+   such layer was gone. The gradient alone reads as the same rim. */
+.glass::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  z-index:-1;
+  pointer-events:none;
+  padding:var(--glass-rim-w);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  background:conic-gradient(from 210deg at 50% 50%,
+    rgba(var(--bgs-ivory-rgb),.30), rgba(var(--bgs-ivory-rgb),.18) 25%,
+    transparent 45%, rgba(var(--bgs-ivory-rgb),.10) 60%, transparent 80%,
+    rgba(var(--bgs-ivory-rgb),.30));
+}
+/* Inner glow that reads as thickness. */
+.glass::after{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  z-index:-1;
+  pointer-events:none;
+  box-shadow:inset 0 0 18px rgba(var(--bgs-ivory-rgb),.05), inset 0 -10px 20px rgba(0,0,0,.18);
+}
+/* Press: fill thickens, control shrinks. Only on things you press — a sheet
+   is :active while any row inside it is, and must not scale. */
+button.glass:active,
+a.glass:active,
+[role="button"].glass:active{
+  --glass-fill-a:.74;
+  transform:scale(.97);
+}
+.glass:focus-visible{
+  outline:none; /* the ring is the box-shadow slot below */
+  --glass-focus:0 0 0 2px var(--bgs-bg), 0 0 0 4px var(--bgs-gold);
+}
+
+/* No blur available, or the OS asks for less transparency: a near-solid
+   plate keeps the text readable, the rim stays. */
+@supports not (backdrop-filter:blur(1px)){
+  .glass{--glass-fill-a:.92;}
+  .glass::before{background:none;}
+}
+@media (prefers-reduced-transparency:reduce){
+  .glass{--glass-fill-a:.92; -webkit-backdrop-filter:none; backdrop-filter:none;}
+  .glass::before{background:none;}
+}
+
+/* ---- Header controls: search field, filter + sort (44px, radius 14) ----
+   44px is the standard thumb target; 52 read as oversized on the phone. */
+
+/* The full header scrolls away; the compact topbar below takes over past
+   150px. So the bar is no longer sticky, and its is-stuck chrome is off.
+   The controls in it carry no backdrop-filter of their own: at the top of
+   the page only the background gradient sits behind them, so the blur was
+   invisible, and a blurred layer inside a sticky container vanished on iOS
+   when the keyboard resized the viewport. */
+.filter-sort-bar{position:static;}
+.filter-sort-bar.is-stuck{
+  background:transparent;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+.filter-sort-bar .glass,
+.filter-sort-bar .glass::before{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+.filter-sort-bar .glass{--glass-fill-a:.72;}
+
+/* ---- Compact topbar: fixed glass bar, slides in once the header is gone ----
+   Search field + filter button only, no wordmark. The field and button inside
+   are plain (no glass of their own): the bar is the one blurred layer. */
+
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  position:fixed;
+  top:calc(10px + env(safe-area-inset-top));
+  left:12px;
+  right:12px;
+  /* Above the header bar (15) and the bag dock (16), under every scrim,
+     sheet and modal (20 and up): a sheet always covers the topbar. */
+  z-index:17;
+  height:56px;
+  max-width:456px;
+  margin:0 auto;
+  padding:0 6px 0 8px;
+  border-radius:22px;
+  --glass-fill-a:.62;
+  transform:translateY(-140%) scale(.96);
+  opacity:0;
+  /* visibility flips at the end of the slide out and at once on the way in:
+     an invisible blurred surface still holds its layers, a hidden one does not. */
+  visibility:hidden;
+  transition:transform var(--dur) var(--ease-liquid), opacity .3s ease, visibility 0s linear var(--dur);
+}
+.topbar.is-in{
+  transform:none;
+  opacity:1;
+  visibility:visible;
+  transition:transform var(--dur) var(--ease-liquid), opacity .3s ease, visibility 0s;
+}
+/* While its search has focus (the keyboard is up) the bar drops its blur
+   for a near-solid fill: a blurred fixed element vanished under the iOS
+   keypad, as the old sticky field did. It also stops transitioning, since
+   JS pins it to the visual viewport as the keyboard moves. */
+.topbar.is-typing{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  --glass-fill-a:.94;
+  transition:none;
+}
+.topbar.is-typing::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
+/* Every overlay on the site locks the body while it is open; the topbar
+   leaves for as long as one is, and returns when the lock lifts. */
+body.scroll-locked .topbar.is-in{
+  transform:translateY(-140%) scale(.96);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:transform var(--dur) var(--ease-liquid), opacity .3s ease, visibility 0s linear var(--dur);
+}
+.topbar .search{
+  height:40px;
+  border:0;
+  border-radius:14px;
+  padding:0 12px;
+  background:rgba(var(--bgs-bg-rgb),.35);
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06);
+  color:var(--bgs-ivory);
+}
+.topbar .search:focus{box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.7);}
+.topbar .search::placeholder{color:var(--bgs-ivory-45);}
+.topbar .icon-btn{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:14px;
+  background:none;
+  color:var(--bgs-gold);
+}
+.topbar .icon-btn:hover{color:var(--bgs-ivory);}
+.topbar .icon-btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+.topbar .filter-badge{box-shadow:0 0 0 2px var(--bgs-plate);}
+.search.glass{
+  height:44px;
+  border-radius:14px;
+  padding:0 36px 0 16px;
+  color:var(--bgs-ivory);
+}
+.search.glass::placeholder{color:var(--bgs-ivory-45);}
+.search-wrap .search-clear{right:8px;}
+.icon-btn.glass{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  color:var(--bgs-gold);
+}
+.icon-btn.glass:hover{color:var(--bgs-ivory);}
+.icon-btn.glass.active{--glass-fill-a:.7; color:var(--bgs-gold);}
+
+/* ---- Beta pill ---- */
+
+.bgs-beta.glass{
+  padding:5px 12px;
+  border-radius:999px;
+  --glass-blur:10px;
+  --glass-shadow:0 2px 8px rgba(0,0,0,.35);
+}
+.bgs-beta.glass:focus-visible{
+  box-shadow:
+    var(--glass-focus),
+    inset 1px 1px 0 var(--glass-rim-light),
+    inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px var(--glass-rim-gold),
+    var(--glass-shadow);
+}
+
+/* ---- Bags button (on the count line) ---- */
+
+.shelf-bags-btn.glass{
+  margin:-8px 0;
+  padding:6px 12px;
+  border-radius:12px;
+  --glass-blur:12px;
+  --glass-shadow:0 4px 12px rgba(0,0,0,.35);
+}
+/* bag.css loads lazily, after this file, so its outline ring needs a more
+   specific override here: the ring is the box-shadow slot. */
+.shelf-bags-btn.glass:focus-visible{outline:none;border-radius:12px;}
+.shelf-bags-btn.glass .shelf-bags-btn__label{color:var(--bgs-gold);}
+
+/* ---- Sheets: the filter sheet and every bottom sheet (bags, share) ----
+   Same box as the open Game Night sheet: 12px in from the edges, radius 30,
+   entering from translateY(112%). The sheet's own transform transition
+   replaces .glass's press transition — a sheet is never pressed. */
+
+.filter-sheet.glass,
+.bsheet.glass{
+  position:fixed; /* .glass says relative; a sheet floats */
+  left:12px;
+  right:12px;
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  max-width:456px;
+  border-radius:30px;
+  --glass-fill-a:.66;
+  transform:translateY(112%);
+  transition:transform var(--dur) var(--ease-liquid);
+}
+.filter-sheet.glass{max-height:calc(100vh - 24px - env(safe-area-inset-bottom));}
+.filter-sheet.glass.open{transform:none;}
+.bsheet.glass{
+  padding-bottom:20px;
+  transition:transform var(--dur) var(--ease-liquid), visibility 0s linear var(--dur);
+}
+.bsheet.glass.is-open{
+  transform:none;
+  transition:transform var(--dur) var(--ease-liquid), visibility 0s;
+}
+.sheet-scrim,
+.bsheet-scrim{
+  background:rgba(var(--bgs-bg-rgb),.45);
+  transition:opacity .35s;
+}
+/* Sheet rows: lighter glass, no drop shadow, so they sit in the plate. */
+.bags-sheet.glass .bags-sheet__row{
+  background:rgba(var(--bgs-plate-rgb),.3);
+  box-shadow:inset 1px 1px 0 var(--glass-rim-light), inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06);
+}
+.bags-sheet.glass .bags-sheet__row:hover{background:rgba(var(--bgs-plate-rgb),.5);}
+.bags-sheet.glass .bags-sheet__row--new{background:transparent;}
+
+/* ---- Game Night: the pill that morphs into a sheet ----
+   The box's width/height/bottom/radius transitions live in shelf.html; the
+   material adds fill and shadow to that list. The press scale is on the pill
+   button inside, so the box itself never scales. */
+
+.gn-fab.glass{
+  position:fixed; /* .glass says relative; the pill floats */
+  /* No backdrop blur on this element or its rim. It resizes over half a
+     second, and WebKit re-allocates a blurred, masked backdrop for the new
+     size on every frame of that — the one thing that reliably made iOS
+     Safari reload the page. A near-solid plate (fill .94, .97 open) under
+     the scrim reads the same; the sheen, rim and morph are untouched. */
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  --glass-fill-a:.94;
+  color:var(--bgs-gold);
+  transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid), bottom var(--dur) var(--ease-liquid), border-radius var(--dur) var(--ease-liquid), transform .28s var(--ease-liquid), opacity .18s ease;
+}
+.gn-fab.glass::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
+.gn-fab.glass.is-open{--glass-fill-a:.97;}
+body.is-selecting .gn-fab.glass{
+  transform:translateX(-50%) translateY(14px) scale(.9);
+  visibility:hidden;
+  transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid), bottom var(--dur) var(--ease-liquid), border-radius var(--dur) var(--ease-liquid), transform .28s var(--ease-liquid), opacity .18s ease, visibility 0s linear .28s;
+}
+/* The selection-mode entrance animates every card on the shelf at once.
+   A blurred surface re-samples what is behind it on every frame of that,
+   and with several of them (pill, Beta, bags, topbar, each with its rim)
+   iOS Safari ran out of memory and reloaded. So for the wave's duration
+   (body.gn-waving, 800ms) no surface blurs; the tint and rim stay, and the
+   blur returns as the wave ends. */
+body.gn-waving .glass,
+body.gn-waving .glass::before{
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+/* Sheet options: lighter fill, no drop shadow, and no backdrop-filter of
+   their own. The box around them is already blurred and is resizing while
+   they show; nesting more blur layers inside a resizing one is what tipped
+   iOS Safari into reloading the page. The rim gradient stays — it is a
+   plain gradient, not a filter. */
+.gn-opt.glass{
+  --glass-fill-a:.3;
+  --glass-shadow:none;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+.gn-opt.glass::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
+.gn-opt.glass:hover{--glass-fill-a:.45;}
+
+/* ---- Filter sheet tabs: a sliding glass puck under the active tab ---- */
+
+.filter-sheet.glass .mode-tabs{
+  padding:4px;
+  border-bottom:0;
+  border-radius:16px;
+  background:rgba(var(--bgs-bg-rgb),.4);
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.06);
+}
+.filter-sheet.glass .mode-tab{
+  position:relative;
+  z-index:1;
+  padding:9px 6px 10px;
+  border-radius:12px;
+  text-align:center;
+}
+.filter-sheet.glass .mode-tab:nth-child(2){text-align:center;}
+.filter-sheet.glass .mode-ink{display:none;}
+.filter-sheet.glass .mode-puck{
+  display:block;
+  position:absolute;
+  top:4px;bottom:4px;left:4px;
+  width:calc((100% - 8px) / 2);
+  border-radius:12px;
+  --glass-fill-a:.5;
+  --glass-shadow:0 2px 8px rgba(0,0,0,.35);
+  /* Same rule as the sheet options: no blur nested inside the sheet's. */
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  transition:transform .45s var(--ease-liquid);
+}
+.filter-sheet.glass .mode-puck::before{-webkit-backdrop-filter:none; backdrop-filter:none;}
+.filter-sheet.glass .mode-tabs[data-mode=numbers] .mode-puck{transform:translateX(100%);}
+
+/* ---- Reduced motion: no transitions; the refraction ring is static and
+   stays. Sheets still open and close, they just don't slide. ---- */
+
+@media (prefers-reduced-motion:reduce){
+  .glass,
+  .glass::before,
+  .glass::after,
+  .glass.open,
+  .glass.is-open,
+  .filter-sheet.glass,
+  .bsheet.glass,
+  .bsheet.glass.is-open,
+  .topbar,
+  .topbar.is-in,
+  body.scroll-locked .topbar.is-in,
+  .gn-fab.glass,
+  body.is-selecting .gn-fab.glass,
+  .filter-sheet.glass .mode-puck,
+  .sheet-scrim,
+  .bsheet-scrim{transition:none;}
+}
+
+/* ---- Game Night selection bar: status chip + action pill ----
+   docs/claude-code-spec-selection-bar.md. Replaces .gn-bar and the tray
+   while the glass path is on; the markup for both is always there and
+   updateGnBar renders both, so this is a pure view swap. The list opens on
+   the tray's own state (body.gn-tray-open) and its scrim (#gnScrim). */
+
+body.gn-selecting .gn-bar{display:none;}
+.gn-tray{display:none;}
+.gn-scrim{background:rgba(var(--bgs-bg-rgb),.4);transition:opacity .3s ease;}
+
+body.gn-selecting .selbar{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:calc(16px + env(safe-area-inset-bottom));
+  max-width:406px;
+  margin:0 auto;
+  z-index:15; /* the old bar's layer: over the shelf and the scrim (13), under every sheet */
+}
+.selbar__row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  width:100%;
+}
+
+/* chip */
+.selbar__chip{
+  height:34px;
+  padding:0 6px 0 14px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12.5px;
+  color:var(--bgs-ivory-70);
+  cursor:pointer;
+  --glass-fill-a:.45;
+  --glass-blur:14px;
+  --glass-shadow:0 4px 12px rgba(0,0,0,.35);
+  transition:color .25s ease, transform .28s var(--ease-liquid);
+}
+.selbar__chip.ok{color:var(--bgs-ivory);}
+.selbar__chip:disabled{pointer-events:none;}
+.selbar__chev{
+  width:22px;
+  height:22px;
+  display:grid;
+  place-items:center;
+  color:var(--bgs-gold);
+  transition:transform .35s var(--ease-liquid), opacity .2s ease;
+}
+.selbar__chev svg{width:14px;height:14px;transform:rotate(180deg);} /* GN_CHEV_SVG points down; this one points up */
+.selbar__chip:disabled .selbar__chev{opacity:0;width:0;}
+body.gn-tray-open .selbar__chev{transform:rotate(180deg);}
+
+/* round buttons: cancel, share */
+.selbar__round{
+  width:52px;
+  height:52px;
+  flex:none;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  color:var(--bgs-ivory);
+  cursor:pointer;
+  --glass-fill-a:.5;
+  transition:transform .28s var(--ease-liquid), opacity .3s ease;
+}
+.selbar__round svg{width:18px;height:18px;}
+/* Hidden = faded and shrunk in place, never a width change: the slot stays
+   52px so the pill's width is fixed and nothing relays out mid-transition. */
+.selbar__round.hide{
+  opacity:0;
+  transform:scale(.6);
+  pointer-events:none;
+}
+
+/* action pill */
+.selbar__pill{
+  height:56px;
+  flex:1;
+  max-width:260px;
+  padding:0 26px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:17px;
+  color:var(--bgs-ivory-70);
+  white-space:nowrap;
+  cursor:pointer;
+  --glass-fill-a:.58;
+  transition:color .25s ease, transform .28s var(--ease-liquid);
+}
+.selbar__pill:disabled{cursor:default;}
+.selbar__pill:disabled:active{transform:none;--glass-fill-a:.58;}
+.selbar__pill svg{width:22px;height:22px;flex:none;display:none;}
+.selbar__pill.gold{
+  background:var(--bgs-gold);
+  color:var(--bgs-on-gold);
+  box-shadow:var(--glass-focus), 0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.selbar__pill.gold svg{display:block;}
+.selbar__pill.gold::before,
+.selbar__pill.gold::after{display:none;}
+
+/* selected list: rises from the chip */
+.selbar__list{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:calc(100% + 10px);
+  border-radius:24px;
+  padding:8px;
+  --glass-fill-a:.66;
+  transform-origin:50% 100%;
+  transform:translateY(12px) scale(.94);
+  opacity:0;
+  pointer-events:none;
+  transition:transform .45s var(--ease-liquid), opacity .25s ease;
+}
+body.gn-tray-open .selbar__list{transform:none;opacity:1;pointer-events:auto;}
+/* The scroller is a child, not the glass box itself: on iOS WebKit the
+   children of an element with both backdrop-filter and overflow scrolling
+   do not paint. */
+.selbar__scroll{
+  max-height:min(50vh, 420px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  border-radius:16px;
+}
+.selbar__list h4{
+  margin:0;
+  padding:8px 10px 6px;
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:500;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--bgs-gold);
+}
+.selbar__item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px;
+  border-radius:16px;
+}
+.selbar__item:hover{background:rgba(var(--bgs-ivory-rgb),.05);}
+.selbar__item img{
+  width:36px;
+  height:45px;
+  flex:none;
+  border-radius:8px;
+  object-fit:cover;
+  object-position:center top;
+  background:var(--bgs-plate);
+}
+.selbar__txt{flex:1;min-width:0;}
+.selbar__txt b{
+  display:block;
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:15px;
+  line-height:1.2;
+  color:var(--bgs-ivory);
+}
+.selbar__txt span{
+  display:block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--bgs-ivory-70);
+}
+.selbar__rm{
+  width:32px;
+  height:32px;
+  flex:none;
+  padding:0;
+  border:0;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:rgba(var(--bgs-ivory-rgb),.06);
+  color:var(--bgs-ivory-70);
+  cursor:pointer;
+}
+.selbar__rm svg{width:14px;height:14px;}
+.selbar__rm:hover{color:var(--bgs-ivory);}
+.selbar__rm:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+.selbar__empty{padding:14px 12px 16px;font-size:14px;color:var(--bgs-ivory-70);}
+
+@media (prefers-reduced-motion:reduce){
+  .selbar__chip,
+  .selbar__chev,
+  .selbar__round,
+  .selbar__pill,
+  .selbar__list,
+  .gn-scrim{transition:none;}
+}
+
+/* ---- "Tonight's surprise": pinned glass footer, cancel as × ----
+   docs/claude-code-spec-surprise-footer.md. The sheet, its heading and the
+   cards are untouched; the action row becomes a footer pinned inside the
+   sheet, the Cancel link gives way to a × in the header. Same handlers. */
+
+.gn-sheet{position:relative;}
+.gn-sheet h3{padding-right:48px;}
+.gn-sheet .gn-sheet__x{
+  display:grid;
+  place-items:center;
+  position:absolute;
+  top:26px; /* centred on the 24px heading: 12px sheet padding + grab + 16px */
+  right:14px;
+  width:40px;
+  height:40px;
+  padding:0;
+  border-radius:999px;
+  color:var(--bgs-ivory);
+  cursor:pointer;
+  z-index:6;
+  --glass-fill-a:.4;
+  --glass-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.gn-sheet .gn-sheet__x svg{width:16px;height:16px;stroke-width:2.5;}
+.gn-sheet .gn-cancel-link{display:none;}
+
+/* The last card row clears the footer; the footer never scrolls. */
+.gn-sheet .gn-surprise-grid{margin-bottom:0;padding-bottom:110px;}
+.gn-sheet .gn-row{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:calc(14px + env(safe-area-inset-bottom));
+  display:flex;
+  gap:10px;
+  z-index:5;
+}
+.gn-sheet .gn-row .gn-secondary-btn,
+.gn-sheet .gn-row .gn-primary-btn{
+  height:54px;
+  padding:0 18px;
+  border:0;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:16px;
+  white-space:nowrap;
+}
+.gn-sheet .gn-row .gn-secondary-btn{
+  flex:1;
+  color:var(--bgs-ivory);
+  --glass-fill-a:.55;
+}
+.gn-sheet .gn-row .gn-secondary-btn:hover{color:var(--bgs-ivory);}
+.gn-sheet .gn-row .gn-secondary-btn svg{width:20px;height:20px;}
+.gn-sheet .gn-row .gn-secondary-btn:disabled{opacity:.4;pointer-events:none;}
+.gn-sheet .gn-row #gnRerollN{
+  min-width:0;
+  padding:2px 8px;
+  border-radius:999px;
+  font-family:'IBM Plex Mono',monospace;
+  font-weight:500;
+  font-size:14px;
+  color:var(--bgs-gold);
+  background:rgba(var(--bgs-gold-rgb),.14);
+}
+.gn-sheet .gn-row .gn-primary-btn{
+  flex:1.35;
+  background:var(--bgs-gold);
+  color:var(--bgs-on-gold);
+  box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .28s var(--ease-liquid);
+}
+.gn-sheet .gn-row .gn-primary-btn:hover{filter:none;}
+.gn-sheet .gn-row .gn-primary-btn:active{transform:scale(.97);}
+.gn-sheet .gn-row .gn-primary-btn:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold), 0 6px 18px rgba(0,0,0,.35);}
+
+@media (prefers-reduced-motion:reduce){
+  .gn-sheet .gn-row .gn-primary-btn{transition:none;}
+}
+
+/* ---- Game Night vote screen: the action row as glass rounds ----
+   docs/claude-code-spec-vote-actions.md. The row's grid, sizes and the
+   game-info round live in vote-swipe.html and apply flag or not; this only
+   swaps the solid rings for the material. Blur, rim and shadow are .glass's
+   own. .glass already drops the page's border, fill and 10px blur. */
+
+.vote-btn.glass{
+  /* The spec's press: .94 over 180ms. One transform transition, no animation. */
+  transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.vote-btn.glass:active{transform:scale(.94);}
+/* Focus composes with the rim through the slot: 3px gap, then 2px gold. The
+   page's own :focus-visible rule is more specific than .glass, so the full
+   stack is restated here (as the Beta pill does) or the rim would vanish. */
+.vote-btn.glass:focus-visible{
+  --glass-focus:0 0 0 3px var(--bgs-bg), 0 0 0 5px var(--bgs-gold);
+  box-shadow:
+    var(--glass-focus),
+    inset 1px 1px 0 var(--glass-rim-light),
+    inset -1px -1px 0 rgba(0,0,0,.45),
+    inset 0 0 0 1px var(--glass-rim-gold),
+    var(--glass-shadow);
+}
+/* Game info: one step quieter than × / ✓ — thinner tint, softer rim. */
+.vote-btn.info.glass{
+  --glass-fill-a:.28;
+  --glass-rim-light:rgba(var(--bgs-ivory-rgb),.12);
+  --glass-rim-gold:rgba(var(--bgs-ivory-rgb),.12);
+  --glass-shadow:0 6px 16px rgba(0,0,0,.35);
+}
+.vote-btn.info.glass:active{--glass-fill-a:.45;}
+/* Ambient glow behind the row: coral under ×, sage under ✓, gold under info.
+   The element is positioned and pointer-inert by the page; this only paints
+   it. It is a plain gradient with a filter, not a backdrop-filter, so it
+   costs nothing on top of the three rounds sampling it. */
+.vote-glow{
+  background:
+    radial-gradient(40% 70% at 30% 50%, rgba(var(--bgs-vote-pass-rgb),.22), transparent 70%),
+    radial-gradient(40% 70% at 60% 50%, rgba(var(--bgs-vote-play-rgb),.20), transparent 70%),
+    radial-gradient(30% 60% at 92% 50%, rgba(var(--bgs-ivory-rgb),.12), transparent 70%);
+  filter:blur(18px);
+}
+@media (prefers-reduced-motion:reduce){
+  .vote-btn.glass{transition:none;}
+}
+</style>
+<style>/* shelf.html <style> verbatim */
+  /* Tokens and page chrome come from css/base.css. */
+  body{
+    padding:32px 20px 80px;
+  }
+  .wrap{max-width:960px;margin:0 auto;}
+
+  header{margin-bottom:0;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--bgs-gold);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(30px,5vw,44px);
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  .sub{
+    color:var(--bgs-gold);
+    font-size:15px;
+    margin:0;
+    max-width:50ch;
+    line-height:1.5;
+  }
+
+  .filter-sort-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:28px 0 10px;
+    padding:10px 0;
+    position:sticky;
+    top:0;
+    z-index:15;
+    transition:background-color 0.2s ease;
+  }
+  .filter-sort-bar.is-stuck{
+    background:rgba(var(--bgs-bg-rgb),0.82);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+  }
+  .sticky-sentinel{
+    height:1px;
+  }
+  /* Compact topbar and the tab puck belong to the glass motion set
+     (css/glass.css shows them); without it they do not exist on screen. */
+  .topbar{display:none;}
+  .mode-puck{display:none;}
+  .selbar{display:none;}
+  .gn-sheet__x{display:none;}
+  .search-wrap{
+    position:relative;
+    flex:1;
+    min-width:0;
+  }
+  .search{
+    width:100%;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.18);
+    border-radius:12px;
+    color:var(--bgs-ivory);
+    font-family:'Inter',sans-serif;
+    font-size:16px;
+    padding:10px 34px 10px 14px;
+    outline:none;
+  }
+  .search:focus{border-color:var(--bgs-gold);}
+  .search::placeholder{color:var(--bgs-ivory-70);}
+  .search-clear{
+    position:absolute;
+    top:50%;
+    right:4px;
+    transform:translateY(-50%);
+    width:28px;
+    height:28px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:none;
+    border:none;
+    border-radius:50%;
+    color:var(--bgs-ivory-70);
+    font-size:13px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .search-clear:hover{color:var(--bgs-ivory);}
+  .search-clear[hidden]{display:none;}
+
+  .icon-btn{
+    position:relative;
+    flex:none;
+    width:40px;
+    height:40px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.18);
+    border-radius:12px;
+    color:var(--bgs-ivory-70);
+    cursor:pointer;
+    transition:border-color 0.15s ease, color 0.15s ease;
+  }
+  .icon-btn::before{
+    content:"";
+    position:absolute;
+    inset:-4px;
+  }
+  .icon-btn:hover{border-color:var(--bgs-gold);color:var(--bgs-ivory);}
+  .icon-btn.active{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+  .filter-badge{
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--bgs-gold);
+    color:var(--bgs-on-gold);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 0 2px var(--bgs-bg);
+  }
+  .filter-badge[hidden]{display:none;}
+
+  .chips-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:0 0 16px;
+  }
+  .chips-row[hidden]{display:none;}
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(var(--bgs-gold-rgb),0.16);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.4);
+    color:var(--bgs-gold);
+    font-family:'Inter',sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    padding:5px 8px 5px 12px;
+    border-radius:999px;
+  }
+  .chip button{
+    background:none;
+    border:none;
+    color:inherit;
+    font-size:13px;
+    line-height:1;
+    padding:2px;
+    cursor:pointer;
+    opacity:0.75;
+  }
+  .chip button:hover{opacity:1;}
+
+  .filter-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--bgs-gold-dim);
+    margin-right:2px;
+  }
+  .pill{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--bgs-ivory-70);
+    background:transparent;
+    border:1px solid rgba(var(--bgs-ivory-rgb),0.22);
+    border-radius:999px;
+    padding:6px 13px;
+    cursor:pointer;
+    transition:all 0.15s ease;
+  }
+  .pill:hover{border-color:var(--bgs-gold);color:var(--bgs-ivory);}
+  .pill.active{
+    background:var(--bgs-gold);
+    border-color:var(--bgs-gold);
+    color:var(--bgs-on-gold);
+    font-weight:600;
+  }
+
+  .sheet-scrim{
+    position:fixed;
+    inset:0;
+    background:rgba(var(--bgs-bg-rgb),0.6);
+    z-index:20;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.28s ease;
+  }
+  .sheet-scrim.open{opacity:1;pointer-events:auto;}
+  .filter-sheet{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:21;
+    max-width:600px;
+    margin:0 auto;
+    max-height:78vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.18);
+    border-bottom:none;
+    border-radius:22px 22px 0 0;
+    box-shadow:0 -12px 32px -8px rgba(0,0,0,0.6);
+    transform:translateY(100%);
+    transition:transform 0.32s cubic-bezier(.32,.72,0,1);
+  }
+  .filter-sheet.open{transform:translateY(0);}
+  .sheet-handle{
+    width:36px;
+    height:4px;
+    border-radius:2px;
+    background:rgba(var(--bgs-ivory-rgb),0.22);
+    margin:12px auto 4px;
+    flex:none;
+  }
+  .sheet-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 20px 14px;
+    border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+    flex:none;
+  }
+  .sheet-header h2{
+    font-family:'Fraunces',serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0;
+  }
+  .reset-link{
+    background:none;
+    border:none;
+    color:var(--bgs-gold);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+    padding:6px;
+  }
+  .reset-link:hover{color:var(--bgs-ivory);}
+  .sheet-body{
+    overflow-y:auto;
+    padding:18px 20px 8px;
+  }
+  .sheet-group{margin-bottom:26px;}
+  .sheet-group .filter-label{display:block;margin-bottom:10px;}
+  .sheet-group .segmented{display:flex;flex-wrap:wrap;gap:8px;}
+
+  .range-wrap{
+    position:relative;
+    height:28px;
+    margin:6px 2px 2px;
+  }
+  .range-track{
+    position:absolute;
+    top:50%;
+    left:0;
+    right:0;
+    height:4px;
+    border-radius:2px;
+    background:rgba(var(--bgs-ivory-rgb),0.16);
+    transform:translateY(-50%);
+  }
+  .range-fill{
+    position:absolute;
+    top:50%;
+    height:4px;
+    border-radius:2px;
+    background:var(--bgs-gold);
+    transform:translateY(-50%);
+  }
+  .range-input{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:28px;
+    margin:0;
+    background:transparent;
+    -webkit-appearance:none;
+    appearance:none;
+    pointer-events:none;
+  }
+  .range-input::-webkit-slider-runnable-track{background:transparent;height:28px;}
+  .range-input::-moz-range-track{background:transparent;height:28px;}
+  .range-input::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    pointer-events:auto;
+    width:20px;
+    height:20px;
+    margin-top:4px;
+    border-radius:50%;
+    background:var(--bgs-gold);
+    border:2px solid var(--bgs-plate);
+    box-shadow:0 1px 4px rgba(0,0,0,0.5);
+    cursor:pointer;
+  }
+  .range-input::-moz-range-thumb{
+    pointer-events:auto;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--bgs-gold);
+    border:2px solid var(--bgs-plate);
+    box-shadow:0 1px 4px rgba(0,0,0,0.5);
+    cursor:pointer;
+  }
+  /* The numbers under the slider are buttons, not labels: tapping one picks
+     exactly that player count, which beats dragging both thumbs onto the same
+     notch. Tapping the picked one again clears back to Any. */
+  .number-cue-row{
+    position:relative;
+    height:24px;
+    margin:2px 2px 0;
+  }
+  .number-cue{
+    position:absolute;
+    top:0;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:24px;
+    height:22px;
+    padding:0 4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    line-height:1;
+    color:var(--bgs-ivory-70);
+    opacity:0.55;
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:999px;
+    white-space:nowrap;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:color 0.15s ease,background 0.15s ease,border-color 0.15s ease,opacity 0.15s ease;
+  }
+  .number-cue:hover{color:var(--bgs-ivory);opacity:1;}
+  .number-cue.active{color:var(--bgs-gold);font-weight:600;opacity:1;}
+  .number-cue[aria-pressed="true"]{
+    background:var(--bgs-gold);
+    border-color:var(--bgs-gold);
+    color:var(--bgs-on-gold);
+    font-weight:600;
+    opacity:1;
+  }
+  .number-cue:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:16px;
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+  }
+  .toggle-switch{
+    position:relative;
+    flex:none;
+    width:34px;
+    height:20px;
+    border-radius:999px;
+    background:rgba(var(--bgs-ivory-rgb),0.16);
+    border:1px solid rgba(var(--bgs-ivory-rgb),0.22);
+    transition:background 0.15s ease,border-color 0.15s ease;
+  }
+  .toggle-switch::after{
+    content:"";
+    position:absolute;
+    top:1px;
+    left:1px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--bgs-ivory-70);
+    transition:transform 0.15s ease,background 0.15s ease;
+  }
+  .toggle-row[aria-checked="true"] .toggle-switch{
+    background:var(--bgs-gold);
+    border-color:var(--bgs-gold);
+  }
+  .toggle-row[aria-checked="true"] .toggle-switch::after{
+    transform:translateX(14px);
+    background:var(--bgs-bg);
+  }
+  .toggle-label{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--bgs-ivory);
+    transition:color 0.15s ease;
+  }
+  /* Active state: the label goes gold with the switch, so a toggle reads as on
+     from the text as well as the track. Labels stay a fixed phrase — swapping
+     the wording to describe the state made the label do the switch's job and
+     read as a button. */
+  .toggle-row[aria-checked="true"] .toggle-label{
+    color:var(--bgs-gold);
+  }
+
+  .sheet-footer{
+    flex:none;
+    padding:14px 20px calc(14px + env(safe-area-inset-bottom));
+    border-top:1px solid rgba(var(--bgs-ivory-rgb),0.10);
+  }
+  .apply-btn{
+    width:100%;
+    background:var(--bgs-gold);
+    color:var(--bgs-on-gold);
+    border:none;
+    border-radius:12px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    padding:13px;
+    cursor:pointer;
+  }
+  .apply-btn:hover{filter:brightness(1.06);}
+
+  /* vibe filter */
+  .mode-tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;margin:0 0 18px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.10);}
+  .mode-tab{background:none;border:0;padding:6px 0 12px;cursor:pointer;text-align:left;color:var(--bgs-ivory-45);font:inherit;transition:color .15s ease;}
+  .mode-tab:nth-child(2){text-align:right;}
+  .mode-tab strong{display:block;font:600 16px/1.1 'Fraunces',serif;color:inherit;}
+  .mode-tab em{display:block;font-style:normal;font-family:'Inter',sans-serif;font-size:12px;margin-top:3px;opacity:.85;}
+  .mode-tab[aria-selected=true]{color:var(--bgs-ivory);}
+  .mode-tab:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-gold) inset;border-radius:6px;}
+  .mode-ink{position:absolute;bottom:-1px;left:0;width:50%;height:2px;background:var(--bgs-gold);transition:transform .18s cubic-bezier(.2,.7,.2,1);}
+  .mode-tabs[data-mode=numbers] .mode-ink{transform:translateX(100%);}
+  .mode-panel{display:none;}
+  .mode-panel[data-show]{display:block;}
+  .pill .n{font:400 11px 'IBM Plex Mono',monospace;opacity:.6;margin-left:6px;}
+  .pill.active .n{opacity:.7;}
+  .pill:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-gold) inset;}
+  .pill:disabled{opacity:.35;cursor:default;}
+  .pill:disabled:hover{border-color:rgba(var(--bgs-ivory-rgb),0.22);color:var(--bgs-ivory-70);}
+  .vibe-hint{margin:12px 0 0;min-height:1.4em;font-family:'Inter',sans-serif;font-size:13px;color:var(--bgs-ivory-70);}
+  .vibe-hint b{color:var(--bgs-ivory);font-weight:500;}
+  .empty-state button{background:none;border:0;color:var(--bgs-gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font:inherit;margin-top:10px;display:block;margin-inline:auto;}
+  .empty-state a{color:var(--bgs-gold);text-decoration:underline;text-underline-offset:3px;margin-top:10px;display:block;}
+  .empty-state code{font-family:'IBM Plex Mono',monospace;font-size:0.95em;}
+  .owner-link{color:var(--bgs-gold);text-decoration:none;}
+  .owner-link:hover{text-decoration:underline;text-underline-offset:3px;}
+  /* Settings as a gear at the right end of the owner line. A 44px target
+     around an 18px icon; pulled up so the icon centres on the text without
+     making the row taller, and out past the gutter so the icon's edge, not
+     the target's, sits flush with it. */
+  .owner-gear{
+    float:right;
+    width:44px;height:44px;
+    margin:-14px -12px 0 0;
+    padding:0;
+    border:0;
+    border-radius:12px;
+    background:transparent;
+    color:var(--bgs-gold);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+  .owner-gear svg{width:18px;height:18px;}
+  .owner-gear:hover,
+  .owner-gear:focus-visible{background:var(--bgs-plate);outline:none;}
+  .owner-gear:focus-visible{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  @media (max-width:400px){ .mode-tab em{display:none;} }
+
+  @media (prefers-reduced-motion:reduce){
+    .sheet-scrim, .filter-sheet, .mode-ink, .mode-tab, .mode-puck,
+    .topbar, .gn-fab, .gn-fab__pill, .gn-fab__sheet, .gn-fab-scrim{transition:none;}
+  }
+
+  .shelf-count{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--bgs-gold-dim);
+    margin:0 0 14px;
+  }
+
+  .shelf{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    min-height:260px;
+  }
+  @media (min-width:560px){ .shelf{ grid-template-columns:repeat(4, 1fr); gap:14px; } }
+  @media (min-width:800px){ .shelf{ grid-template-columns:repeat(6, 1fr); gap:16px; } }
+  .empty-state{
+    font-family:'Inter',sans-serif;
+    color:var(--bgs-ivory-70);
+    font-size:14px;
+    padding:60px 10px;
+    width:100%;
+    text-align:center;
+    grid-column:1 / -1;
+  }
+
+  /* Card = artwork box (top, locked 4:5) + solid plate info (bottom). The
+     artwork never runs under the info and there is no gradient: hard edge.
+     Cards stay solid with the glass flag on too — no backdrop-filter here. */
+  .game-card{
+    /* Cards off screen are not laid out, painted or decoded until they come
+       near the viewport: 197 fully rendered cards were most of what the
+       page held on a phone. `auto` keeps the last rendered size once seen;
+       230px is a 3-column card until then. */
+    content-visibility:auto;
+    contain-intrinsic-size:auto 230px;
+    border-radius:18px;
+    overflow:hidden;
+    background:var(--bgs-plate);
+    box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),.06) inset, 0 6px 18px rgba(0,0,0,.35);
+    display:flex;
+    flex-direction:column;
+    transition:transform .28s var(--ease-liquid);
+    cursor:pointer;
+    border:none;
+    padding:0;
+    text-align:left;
+    font:inherit;
+    color:inherit;
+    position:relative;
+  }
+  .game-card:hover{ transform:translateY(-2px); }
+  .game-card:active{ transform:scale(.97); }
+
+  .game-card .art{
+    aspect-ratio:4/5;
+    width:100%;
+    flex:none;
+    overflow:hidden;
+    background:var(--bgs-plate);
+    position:relative;
+  }
+  /* center top: a cover's title sits along its top edge, so that is the edge
+     the 4:5 crop keeps. */
+  .game-card .art img{ width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+
+  .game-card .info{
+    padding:9px 10px 11px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .game-card .title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:13.5px;
+    line-height:1.2;
+    letter-spacing:-.005em;
+    color:var(--bgs-ivory);
+    margin:0;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    min-height:2.4em; /* two lines, so the meta rows line up across the grid */
+  }
+  .game-card .meta-row{ display:flex; align-items:center; justify-content:space-between; gap:4px; }
+  /* Gold ring only, no fill — an inset box-shadow, never a border. */
+  .game-card .rating-pill{
+    display:inline-flex; align-items:center; gap:4px;
+    background:none;
+    border:0;
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45);
+    border-radius:999px;
+    padding:3px 8px;
+    font-size:12.5px; font-weight:600;
+    color:var(--bgs-gold);
+    white-space:nowrap;
+  }
+  .game-card .players{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--bgs-ivory-45); font-weight:400; white-space:nowrap; }
+
+  @keyframes shimmer{
+    0%{background-position:150% 0;}
+    100%{background-position:-50% 0;}
+  }
+  .game-card-skeleton{
+    cursor:default;
+    pointer-events:none;
+  }
+  .game-card-skeleton .art{
+    background:linear-gradient(100deg, var(--bgs-plate) 30%, rgba(var(--bgs-ivory-rgb),0.08) 50%, var(--bgs-plate) 70%);
+    background-size:250% 100%;
+    animation:shimmer 1.7s ease-in-out infinite;
+  }
+  .game-card-skeleton:nth-child(6n+2) .art{animation-delay:0.15s;}
+  .game-card-skeleton:nth-child(6n+3) .art{animation-delay:0.3s;}
+  .game-card-skeleton:nth-child(6n+4) .art{animation-delay:0.45s;}
+  .game-card-skeleton:nth-child(6n+5) .art{animation-delay:0.6s;}
+  .game-card-skeleton:nth-child(6n) .art{animation-delay:0.75s;}
+  .game-card-skeleton .skeleton-line{
+    height:8px;
+    border-radius:4px;
+    background:rgba(var(--bgs-ivory-rgb),0.08);
+  }
+  .game-card-skeleton .skeleton-line.short{ width:60%; }
+
+
+  /* Footer lives in css/base.css. The shelf adds FAB clearance so the pill
+     never covers the legal lines: --fab-clearance = .gn-fab height (48px)
+     + its bottom offset (16px + safe-area) + 16px breathing room. */
+  .shelf-footer{--fab-clearance:calc(80px + env(safe-area-inset-bottom));}
+
+  /* ==== Game Night (Stage 1: session creation) ==== */
+
+  /* Floating entry point, bottom-centre. z-index 12 keeps it under the selection
+     bar (15), tray (14), and scrim (13), and well under the filter sheet (21)
+     and detail modal (30) — it can never sit on top of a sheet or modal.
+
+     One element, two states: closed it is the pill; .is-open morphs the same
+     box into a sheet (width, height, bottom, radius transition) while the
+     pill's content fades out and the sheet's content rises in. Nothing is
+     swapped, so there is no flash. The sheet holds the single entry action
+     the pill used to fire directly, plus close (docs/claude-code-spec-liquid-glass.md). */
+  .gn-fab{
+    position:fixed;
+    left:50%;
+    bottom:calc(16px + env(safe-area-inset-bottom));
+    /* Centered. translateX lives here as the base transform; every other
+       transform on this element must include it or the pill jumps left. It
+       also keeps the box centred while its width transitions. */
+    transform:translateX(-50%);
+    z-index:12;
+    width:152px;
+    height:48px;
+    /* Tinted glass. Tint stays >= .82: gold text is lower-contrast than ivory,
+       and .82 is where it clears 4.5:1 over a white cover (4.87:1). */
+    background:rgba(var(--bgs-plate-rgb),0.82);
+    -webkit-backdrop-filter:blur(16px) saturate(1.2);
+    backdrop-filter:blur(16px) saturate(1.2);
+    border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
+    border-radius:999px;
+    color:var(--bgs-gold);
+    overflow:hidden;
+    text-align:left;
+    box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.08) inset,
+               0 8px 24px -10px rgba(0,0,0,0.7);
+    transition:width var(--dur) var(--ease-liquid), height var(--dur) var(--ease-liquid),
+               bottom var(--dur) var(--ease-liquid), border-radius var(--dur) var(--ease-liquid),
+               transform 0.18s cubic-bezier(.2,.8,.3,1), opacity 0.18s ease, border-color 0.18s ease;
+  }
+  .gn-fab:hover{border-color:var(--bgs-gold);}
+  .gn-fab.is-open{
+    width:calc(100vw - 24px);
+    max-width:456px;
+    height:312px; /* title, line, two options */
+    bottom:calc(12px + env(safe-area-inset-bottom));
+    border-radius:30px;
+    z-index:60; /* above the compact topbar (17) and every bottom sheet; its scrim is 50 */
+  }
+  .gn-fab__pill{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:0;border:0;background:none;
+    color:inherit;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:0.01em;
+    white-space:nowrap;
+    cursor:pointer;
+    transition:opacity 0.2s ease, transform 0.35s var(--ease-liquid);
+  }
+  .gn-fab__pill svg{width:18px;height:18px;flex:none;}
+  .gn-fab__pill:active{transform:scale(0.97);}
+  .gn-fab__pill:focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--bgs-gold);border-radius:inherit;}
+  .gn-fab.is-open .gn-fab__pill{opacity:0;transform:scale(0.9);pointer-events:none;}
+  .gn-fab__sheet{
+    position:absolute;inset:0;
+    padding:22px 20px;
+    color:var(--bgs-ivory);
+    opacity:0;
+    transform:translateY(14px);
+    pointer-events:none;
+    transition:opacity 0.35s ease 0.18s, transform 0.5s var(--ease-liquid) 0.12s;
+  }
+  .gn-fab.is-open .gn-fab__sheet{opacity:1;transform:none;pointer-events:auto;}
+  .gn-fab__sheet h2{
+    margin:0;
+    display:flex;align-items:center;gap:12px;
+    font-family:'Fraunces',serif;font-weight:700;font-size:26px;line-height:1.1;letter-spacing:-0.01em;
+    color:var(--bgs-ivory);
+  }
+  .gn-fab__sheet h2 svg{width:26px;height:26px;flex:none;color:var(--bgs-gold);}
+  .gn-fab__sheet p{margin:6px 0 0;font-size:15px;color:var(--bgs-ivory-70);}
+  .gn-fab__close{
+    position:absolute;top:16px;right:16px;
+    width:36px;height:36px;
+    display:grid;place-items:center;
+    border:0;border-radius:12px;
+    background:rgba(var(--bgs-ivory-rgb),0.06);
+    color:var(--bgs-ivory-70);
+    font-size:18px;line-height:1;
+    cursor:pointer;
+  }
+  .gn-fab__close:hover{color:var(--bgs-ivory);}
+  .gn-fab__close:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  .gn-opt{
+    display:flex;align-items:center;gap:14px;
+    width:100%;
+    margin-top:12px;
+    padding:16px;
+    border:1px solid rgba(var(--bgs-gold-rgb),0.3);
+    border-radius:20px;
+    background:rgba(var(--bgs-ivory-rgb),0.05);
+    color:var(--bgs-ivory);
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+  }
+  .gn-opt:first-of-type{margin-top:22px;}
+  .gn-opt:hover{border-color:var(--bgs-gold);}
+  .gn-opt:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+  .gn-opt__ic{
+    width:44px;height:44px;flex:none;
+    display:grid;place-items:center;
+    border-radius:14px;
+    color:var(--bgs-gold);
+    background:rgba(var(--bgs-gold-rgb),0.12);
+  }
+  .gn-opt__ic svg{width:22px;height:22px;}
+  .gn-opt__txt{flex:1;min-width:0;}
+  .gn-opt__txt b{display:block;font-weight:600;font-size:16px;}
+  .gn-opt__txt span{display:block;margin-top:2px;font-size:13.5px;color:var(--bgs-ivory-70);}
+  .gn-opt__chev{flex:none;color:var(--bgs-ivory-45);font-size:18px;line-height:1;}
+  .gn-fab-scrim{
+    position:fixed;inset:0;
+    z-index:50;
+    background:rgba(var(--bgs-bg-rgb),0.45);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.35s ease;
+  }
+  .gn-fab-scrim.open{opacity:1;pointer-events:auto;}
+  /* Solid plate when blur isn't available or the OS asks for less transparency. */
+  @supports not (backdrop-filter:blur(1px)){
+    .gn-fab{background:var(--bgs-plate);}
+  }
+  @media (prefers-reduced-transparency:reduce){
+    .gn-fab{
+      background:var(--bgs-plate);
+      -webkit-backdrop-filter:none;backdrop-filter:none;
+    }
+  }
+  /* Selection mode hands off to the bottom bar — the pill animates down and
+     out. Packing a bag takes the same handoff. */
+  body.is-selecting .gn-fab{
+    opacity:0;
+    transform:translateX(-50%) translateY(14px) scale(0.9);
+    pointer-events:none;
+  }
+
+
+  .gn-toast{
+    position:fixed;
+    left:50%;
+    /* Clears the floating pill (46px tall at a 16px offset) so the toast
+       never lands on top of the control that raises it. */
+    bottom:calc(78px + env(safe-area-inset-bottom));
+    transform:translateX(-50%) translateY(8px);
+    z-index:50;
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.35);
+    color:var(--bgs-ivory);
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:12px 18px;
+    border-radius:12px;
+    box-shadow:0 8px 24px -6px rgba(0,0,0,0.6);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s ease, transform 0.2s ease;
+  }
+  .gn-toast.open{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* generic modal shell reused by the chooser, surprise, and confirm steps */
+  .gn-backdrop{
+    position:fixed;inset:0;
+    background:rgba(var(--bgs-bg-rgb),0.66);
+    backdrop-filter:blur(3px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    z-index:40;
+  }
+  .gn-backdrop.open{display:flex;}
+  .gn-panel{
+    background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.3);
+    border-radius:16px;
+    max-width:420px;
+    width:100%;
+    max-height:85vh;
+    overflow-y:auto;
+    padding:26px 26px 22px;
+    animation:pop 0.18s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
+  .gn-panel h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:19px;
+    margin:0 0 6px;
+  }
+  .gn-panel .gn-sub{
+    font-size:13px;
+    color:var(--bgs-ivory-70);
+    margin:0 0 18px;
+    line-height:1.5;
+  }
+  .gn-cancel-link{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    /* 44px is the smallest comfortable thumb target; the old 10px-top-padding
+       box was barely taller than the text itself. */
+    min-height:44px;
+    background:none;
+    border:none;
+    color:var(--bgs-ivory-45);
+    font:inherit;
+    font-size:13px;
+    font-weight:600;
+    text-align:center;
+    padding:12px 0;
+    cursor:pointer;
+  }
+  .gn-cancel-link:hover{color:var(--bgs-ivory);}
+
+  .gn-surprise-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    margin:0 0 18px;
+  }
+  /* Shell matched to .game-card on the shelf — same plate, same radius, same
+     shadow — so a game reads identically in the sheet and in the grid behind it. */
+  .gn-surprise-card{
+    border-radius:10px;
+    overflow:hidden;
+    background:var(--bgs-plate);
+    box-shadow:0 3px 10px rgba(0,0,0,.35);
+  }
+  .gn-surprise-card .art{aspect-ratio:3/4;width:100%;overflow:hidden;background:var(--bgs-plate);}
+  .gn-surprise-card .art img{width:100%;height:100%;object-fit:cover;display:block;}
+  .gn-surprise-card .t{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:10.5px;
+    line-height:1.25;
+    padding:5px 5px 6px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .gn-row{display:flex;gap:10px;}
+  .gn-row .gn-secondary-btn{flex:1;}
+  .gn-row .gn-primary-btn{flex:1;}
+
+  .gn-secondary-btn{
+    background:transparent;
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.22);
+    color:var(--bgs-ivory-70);
+    font:inherit;
+    font-size:13px;
+    font-weight:600;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .gn-secondary-btn:hover{border-color:var(--bgs-gold);color:var(--bgs-ivory);}
+  .gn-primary-btn{
+    background:var(--bgs-gold);
+    color:var(--bgs-on-gold);
+    border:none;
+    font:inherit;
+    font-size:13px;
+    font-weight:700;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .gn-primary-btn:hover{filter:brightness(1.06);}
+  .gn-primary-btn:disabled{opacity:0.4;cursor:not-allowed;filter:none;}
+
+  /* ---- Tonight's surprise: bottom sheet, lock & re-roll ---- */
+  /* Sheet variant of the shared shell. .gn-panel itself is deliberately
+     untouched — the confirm dialog still uses it centered. */
+  .gn-backdrop--sheet{align-items:flex-end;padding:0;}
+  .gn-sheet{
+    max-width:none;
+    max-height:88vh;
+    border-radius:24px 24px 0 0;
+    border-width:1px 0 0;
+    padding:12px 20px calc(16px + env(safe-area-inset-bottom));
+    box-shadow:0 -20px 60px rgba(0,0,0,0.5);
+    /* Overrides .gn-panel's `pop`. Animation and nothing else on this node:
+       WebKit drops one of the two when a transition shares an element with an
+       animation, so every transition in this feature lives on a child. */
+    animation:gn-rise 0.34s cubic-bezier(0.2,0.8,0.2,1);
+  }
+  @keyframes gn-rise{from{transform:translateY(24px);opacity:0;}to{transform:none;opacity:1;}}
+  /* The shelf pairs --bgs-plate cards with a --bgs-bg page. Matching the card
+     to the shelf means the sheet has to take the darker ground too — a plate
+     card on a plate sheet has no visible edge at all. .gn-panel keeps its plate
+     background for the confirm dialog. */
+  .gn-sheet{background:var(--bgs-bg);}
+  .gn-sheet__grab{
+    width:40px;height:4px;border-radius:2px;
+    background:rgba(var(--bgs-ivory-rgb),0.22);
+    margin:0 auto 16px;
+  }
+  .gn-sheet h3{font-size:24px;}
+  /* All six cards stay on screen at any window height — nothing here scrolls.
+     Six 3:4 cards outgrow the sheet's 88vh cap on a short, wide window (a
+     1024x768 laptop pushed Cancel clean off the bottom), so the sheet is a flex
+     column: the chrome keeps its natural size and the grid takes what's left.
+     Inside it the rows share that height and each card's cover shrinks out of
+     its 3:4 base rather than overflowing. object-fit:cover already crops the
+     art, so a shorter cover stays undistorted; the title and meta never shrink. */
+  .gn-sheet{display:flex;flex-direction:column;overflow:hidden;}
+  .gn-sheet > *{flex:none;}
+  .gn-sheet .gn-surprise-grid{
+    flex:0 1 auto;
+    min-height:0;
+    /* Never grows past the cards' natural size, so a tall window still gets a
+       3:4 cover; shrinks when the sheet is squeezed, and the 1fr rows hand that
+       reduction to the cards. auto (not hidden) is the safety net: below any
+       realistic window height the grid scrolls rather than clipping a card. */
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    /* 140px floor = the title/meta block plus a readable sliver of cover. Below
+       that the rows stop shrinking and the grid scrolls, rather than collapsing
+       the art to nothing and clipping the title (a landscape phone did exactly
+       that). No realistic window height reaches the floor. */
+    grid-auto-rows:minmax(140px,1fr);
+  }
+  /* height:100% is what forces the card into its row: a grid item is stretched
+     up to its track but never compressed below its own content, so without this
+     the card keeps its full height and overflows the row instead of shrinking. */
+  .gn-surprise-card{display:flex;flex-direction:column;height:100%;min-height:0;}
+  .gn-surprise-card .art{flex:0 1 auto;min-height:0;}
+  .gn-surprise-card .meta{flex:none;}
+
+  .gn-surprise-grid{gap:10px;margin-bottom:20px;perspective:900px;}
+  .gn-surprise-card{
+    position:relative;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .gn-surprise-card:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+  .gn-surprise-card .meta{padding:8px 8px 10px;}
+  /* Clamp fix: the padding that used to sit inside the clamped box moved to
+     .meta, so the 2-line box is exactly 2 lines and no third line bleeds. */
+  .gn-surprise-card .t{font-size:13px;line-height:1.2;padding:0;min-height:2.4em;}
+  .gn-surprise-card .s{
+    margin-top:4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--bgs-ivory-45);
+  }
+  /* The kept badge sits exactly where the swap die was, so the corner changes
+     state rather than gaining a second control. No ring, no border change. */
+  .gn-surprise-card .lock{
+    position:absolute;top:8px;right:8px;
+    width:32px;height:32px;border-radius:999px;
+    background:var(--bgs-gold);
+    color:var(--bgs-on-gold);
+    display:grid;place-items:center;
+    transform:scale(0);
+    transition:transform 0.18s cubic-bezier(0.2,0.9,0.3,1.3);
+  }
+  .gn-surprise-card .lock svg{width:15px;height:15px;}
+  .gn-surprise-card[aria-pressed="true"] .lock{transform:scale(1);}
+  /* Sits over arbitrary cover art, so it carries its own scrim + hairline. */
+  .gn-surprise-card .swap{
+    position:absolute;top:8px;right:8px;
+    width:32px;height:32px;border-radius:999px;
+    border:1px solid rgba(255,255,255,0.25);
+    background:rgba(var(--bgs-bg-rgb),0.55);
+    backdrop-filter:blur(6px);
+    color:var(--bgs-ivory);
+    display:grid;place-items:center;
+    cursor:pointer;
+  }
+  .gn-surprise-card .swap svg{width:16px;height:16px;}
+  .gn-surprise-card .swap[hidden]{display:none;}
+
+  /* Re-roll flip. The animation lives on this wrapper and only here; the card's
+     .lock keeps its transition one level down. Never both on one node. */
+  .gn-surprise-flip{transform-style:preserve-3d;backface-visibility:hidden;border-radius:10px;}
+  .gn-surprise-flip.out{animation:gn-flip-out 0.18s ease-in forwards;}
+  .gn-surprise-flip.in{animation:gn-flip-in 0.28s cubic-bezier(0.2,0.8,0.2,1);}
+  @keyframes gn-flip-out{to{transform:rotateY(90deg);}}
+  @keyframes gn-flip-in{from{transform:rotateY(-90deg);}}
+
+  /* Re-roll sizes to its label rather than taking a fixed share of the row —
+     "Re-roll 6" in a half-width slab read as mostly empty. Continue absorbs the
+     rest. Scoped to the sheet so the confirm dialog's own row is untouched. */
+  .gn-sheet .gn-row .gn-secondary-btn{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    flex:0 0 auto;
+    padding:12px 18px;
+  }
+  .gn-sheet .gn-row .gn-secondary-btn svg{width:16px;height:16px;}
+  .gn-sheet .gn-row .gn-secondary-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  /* Holds the button's width steady as the count ticks down. */
+  #gnRerollN{display:inline-block;min-width:1ch;text-align:center;}
+
+  .sr-only{
+    position:absolute;width:1px;height:1px;
+    padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .gn-sheet{animation:none;}
+    .gn-surprise-flip.out,.gn-surprise-flip.in{animation:none;}
+    .gn-surprise-card .lock{transition:none;}
+  }
+  @media (prefers-reduced-transparency:reduce){
+    .gn-surprise-card .swap{background:rgba(var(--bgs-bg-rgb),0.92);backdrop-filter:none;}
+  }
+  @supports not (backdrop-filter:blur(1px)){
+    .gn-surprise-card .swap{background:rgba(var(--bgs-bg-rgb),0.92);}
+  }
+  @media (min-width:640px){
+    .gn-sheet{max-width:520px;margin:0 auto;}
+  }
+
+  .gn-field{margin-bottom:16px;}
+  .gn-field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--bgs-gold-dim);
+    margin-bottom:8px;
+  }
+  .gn-text-input{
+    width:100%;
+    background:var(--bgs-bg);
+    border:1px solid rgba(var(--bgs-gold-rgb),0.22);
+    border-radius:10px;
+    color:var(--bgs-ivory);
+    font-family:'Inter',sans-serif;
+    /* 16px, not smaller: iOS Safari zooms the page in when you focus an input
+       whose text is under 16px, and never zooms back out. Matches .search. */
+    font-size:16px;
+    padding:11px 13px;
+    outline:none;
+  }
+  .gn-text-input:focus{border-color:var(--bgs-gold);}
+  .gn-toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:none;
+    border:none;
+    padding:0;
+    width:100%;
+    cursor:pointer;
+    text-align:left;
+  }
+  .gn-toggle-row .toggle-label{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--bgs-ivory);
+  }
+  .gn-summary{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--bgs-gold-dim);
+    margin:2px 0 18px;
+  }
+  .gn-error{
+    font-size:12.5px;
+    color:var(--bgs-danger-hover);
+    margin:0 0 14px;
+    display:none;
+  }
+  .gn-error.show{display:block;}
+
+  /* ---- selection overlays on the shelf card ----
+     Shared: body.is-selecting is set by game night's selection mode and by the
+     bag's packing mode alike, so picking games looks and moves the same either
+     way. Only the bar at the bottom differs. */
+  .sel-ring,.checkbox,.info-btn{display:none;}
+  body.is-selecting .sel-ring{
+    display:block;
+    position:absolute;inset:0;z-index:3;
+    border:2px solid transparent;border-radius:18px;
+    pointer-events:none;transition:border-color 0.15s ease;
+  }
+  body.is-selecting .game-card.selected .sel-ring{border-color:var(--bgs-gold);}
+  body.is-selecting .checkbox{
+    display:flex;align-items:center;justify-content:center;
+    position:absolute;top:6px;left:6px;z-index:4;
+    width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,0.6);
+    /* No backdrop-filter here: one per card is ~200 blur layers that all
+       re-render whenever a cover dims, and toggling a pick stuttered. */
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);
+    transition:background 0.15s ease, border-color 0.15s ease;
+  }
+  body.is-selecting .checkbox svg{width:13px;height:13px;opacity:0;transition:opacity 0.12s ease;}
+  body.is-selecting .game-card.selected .checkbox{background:var(--bgs-gold);border-color:var(--bgs-gold);}
+  body.is-selecting .game-card.selected .checkbox svg{opacity:1;}
+  body.is-selecting .info-btn{
+    display:flex;align-items:center;justify-content:center;
+    position:absolute;top:0;right:0;z-index:4;width:40px;height:40px;
+    border:none;background:transparent;cursor:pointer;padding:0;
+  }
+  body.is-selecting .info-btn i{
+    display:flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.6);
+    border:1.5px solid rgba(var(--bgs-ivory-rgb),0.5);
+    font-style:normal;font-size:12px;font-weight:700;color:var(--bgs-ivory-70);font-family:'Fraunces',serif;
+  }
+  body.is-selecting .info-btn:hover i{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+  body.is-selecting .game-card:not(.selected) .art img{opacity:0.62;transition:opacity 0.15s ease;}
+
+  /* ---- bottom bar ---- */
+  .gn-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:15;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:rgba(var(--bgs-bg-rgb),0.94);backdrop-filter:blur(10px);
+    border-top:1px solid rgba(var(--bgs-gold-rgb),0.25);
+    display:none;align-items:center;transform:translateY(100%);
+    transition:transform 0.22s cubic-bezier(.2,.8,.3,1);
+  }
+  body.gn-selecting .gn-bar{display:flex;transform:translateY(0);}
+  .gn-bar__cancel{
+    background:transparent;border:none;color:var(--bgs-ivory-45);
+    font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:10px 4px;margin-right:auto;
+  }
+  .gn-bar__count{
+    position:absolute;left:50%;transform:translateX(-50%);
+    text-align:center;font-size:13px;font-weight:600;
+    white-space:nowrap;background:transparent;border:none;
+    color:var(--bgs-ivory);font-family:inherit;
+    padding:6px 10px;border-radius:8px;cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .gn-bar__count:disabled{cursor:default;color:var(--bgs-ivory);}
+  .gn-bar__count:not(:disabled):hover{background:rgba(var(--bgs-ivory-rgb),0.06);}
+  .gn-bar__count small{display:block;font-weight:400;font-size:11px;color:var(--bgs-ivory-45);margin-top:2px;}
+  .gn-bar__count .count-line{display:flex;align-items:center;justify-content:center;gap:5px;}
+  .gn-bar__count .chev{width:13px;height:13px;transition:transform 0.22s ease;flex-shrink:0;color:var(--bgs-ivory);}
+  .gn-bar__count:disabled .chev{display:none;}
+  body.gn-tray-open .gn-bar__count .chev{transform:rotate(180deg);}
+  .gn-bar__continue{
+    background:var(--bgs-gold);color:var(--bgs-on-gold);border:none;font:inherit;
+    font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;cursor:pointer;margin-left:auto;
+  }
+  .gn-bar__continue:disabled{opacity:0.35;cursor:not-allowed;}
+
+  /* ---- gold wave: selection-mode entrance. Origin = pill centre (46px tall at 16px → 39px). ---- */
+  .gn-wave{
+    position:fixed;left:50%;bottom:calc(39px + env(safe-area-inset-bottom));
+    width:12px;height:12px;margin:0 0 -6px -6px;border-radius:50%;
+    z-index:11;pointer-events:none;opacity:0;
+    border:2px solid rgba(var(--bgs-gold-rgb),0.7);
+    box-shadow:0 0 24px 6px rgba(var(--bgs-gold-rgb),0.18);
+  }
+  /* The ring itself is animated from JS (startGnWave). How far it has to travel
+     depends on the viewport, and a CSS keyframe can't read that: driving scale and
+     duration through custom properties re-resolves the keyframes and restarts the
+     animation every time, so it never advances past its first frame. */
+
+  /* Each card gets --gn-d (seconds) from JS = distance from the pill. */
+  body.is-selecting.gn-waving .checkbox,
+  body.is-selecting.gn-waving .info-btn{
+    animation:gn-pop 0.36s cubic-bezier(.2,.8,.2,1.25) both;animation-delay:var(--gn-d,0s);
+  }
+  body.is-selecting.gn-waving .game-card:not(.selected) .sel-ring{
+    animation:gn-ring-pass 0.5s ease-out both;animation-delay:var(--gn-d,0s);
+  }
+  body.is-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:var(--gn-d,0s);}
+  @keyframes gn-pop{0%{opacity:0;transform:scale(0.4);}100%{opacity:1;transform:scale(1);}}
+  @keyframes gn-ring-pass{0%{border-color:transparent;}35%{border-color:rgba(var(--bgs-gold-rgb),0.9);}100%{border-color:transparent;}}
+
+  /* ==== Game night invite: Share in the selection bar ==== */
+  /* Added by js/invite.js only when the flag is on. The count leaves its
+     absolute centring for a flex slot so four things fit a phone-width bar:
+     Cancel · count · Share · Continue. */
+  .gn-bar.has-share .gn-bar__count{position:static;transform:none;flex:1;min-width:0;}
+  .gn-bar.has-share .gn-bar__cancel{margin-right:0;}
+  .gn-bar.has-share .gn-bar__continue{margin-left:0;}
+  .gn-bar__share{
+    flex:none;width:42px;height:42px;margin:0 8px 0 4px;padding:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:transparent;border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);border-radius:10px;
+    color:var(--bgs-gold);cursor:pointer;
+  }
+  .gn-bar__share svg{width:18px;height:18px;}
+  .gn-bar__share:hover{border-color:var(--bgs-gold);}
+  .gn-bar__share:disabled{opacity:0.35;cursor:not-allowed;}
+  .gn-bar__share:focus-visible{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+
+  /* Invite sheet (docs/mockups/invite-sheet-mobile.html): the filter sheet's
+     scrim and panel (.sheet-scrim/.filter-sheet above, reduced-motion rule
+     included) with the poster first and whole, a segmented format control,
+     settings as rows, and one gold action. Sentence case throughout; no
+     eyebrow labels. */
+  .invite-sheet{max-height:96vh;max-height:96svh;}
+  .invite-head{display:flex;align-items:center;justify-content:space-between;padding:0 20px 12px;flex:none;}
+  .invite-head h2{font:400 22px/1.2 'Fraunces',serif;margin:0;}
+  .invite-icon{
+    width:40px;height:40px;margin-right:-8px;border:0;border-radius:50%;
+    background:transparent;color:var(--bgs-ivory);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .invite-ti{width:22px;height:22px;flex:none;}
+  .invite-body{padding:0 20px 16px;scrollbar-width:none;}
+  .invite-body::-webkit-scrollbar{display:none;}
+
+  /* The poster, scaled to a size that keeps all of it on a phone screen. */
+  .invite-previewwrap{display:flex;justify-content:center;padding:4px 0 14px;}
+  .invite-preview{position:relative;flex:none;}
+  .invite-canvas{
+    display:block;height:auto;width:232px;
+    border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);background:var(--bgs-bg);
+  }
+  .invite-canvas.square{width:300px;}
+  /* Poster-shaped placeholder while fonts and covers arrive. Same shimmer as
+     the shelf's card skeleton; the hero block animates, nothing transitions. */
+  .invite-skeleton{
+    position:relative;display:block;margin:0 auto;overflow:hidden;
+    width:232px;height:412px;border-radius:10px;
+    background:var(--bgs-bg);box-shadow:0 12px 32px rgba(0,0,0,.5);
+  }
+  .invite-skeleton.square{width:300px;height:300px;}
+  .invite-skeleton[hidden]{display:none;}
+  .invite-skeleton__hero{
+    position:absolute;left:0;right:0;top:0;height:64%;
+    background:linear-gradient(100deg, var(--bgs-plate) 30%, rgba(var(--bgs-ivory-rgb),0.08) 50%, var(--bgs-plate) 70%);
+    background-size:250% 100%;
+    animation:shimmer 1.7s ease-in-out infinite;
+  }
+  .invite-skeleton.square .invite-skeleton__hero{height:58%;}
+  .invite-skeleton__text{
+    position:absolute;left:17px;right:17px;bottom:19px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .invite-skeleton.square .invite-skeleton__text{left:22px;right:22px;bottom:17px;}
+  .invite-skeleton__line{display:block;height:8px;border-radius:4px;background:rgba(var(--bgs-ivory-rgb),0.08);}
+  .invite-skeleton__line.eyebrow{width:42%;}
+  .invite-skeleton__line.title{height:22px;width:70%;border-radius:6px;}
+  .invite-skeleton__strip{display:flex;gap:5px;margin-top:4px;}
+  .invite-skeleton__strip i{display:block;width:32px;height:32px;border-radius:3px;background:rgba(var(--bgs-ivory-rgb),0.08);}
+  .invite-skeleton.square .invite-skeleton__strip i{width:29px;height:29px;}
+  @media (prefers-reduced-motion:reduce){ .invite-skeleton__hero{animation:none;} }
+
+  .invite-seg{
+    display:flex;justify-content:center;gap:4px;padding:4px;border-radius:999px;
+    background:var(--bgs-bg);width:max-content;margin:0 auto 18px;
+  }
+  .invite-seg button{
+    border:0;background:transparent;color:rgba(var(--bgs-ivory-rgb),.7);
+    font:500 13px 'Inter',sans-serif;padding:8px 16px;border-radius:999px;cursor:pointer;
+  }
+  .invite-seg button[aria-pressed="true"]{background:var(--bgs-gold);color:var(--bgs-on-gold);}
+
+  .invite-rows{border-top:1px solid rgba(var(--bgs-ivory-rgb),.1);}
+  .invite-row{
+    display:flex;align-items:center;gap:14px;width:100%;padding:14px 0;
+    border:0;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);
+    background:transparent;color:var(--bgs-ivory);text-align:left;cursor:pointer;font:inherit;
+  }
+  .invite-row > .invite-ti{color:rgba(var(--bgs-ivory-rgb),.55);}
+  .invite-row__lab{flex:1;min-width:0;}
+  /* Label is the primary line: ivory, medium. The value is secondary:
+     lighter weight, ivory at 70%; unset ("Add a …") drops to 45%. */
+  .invite-row__lab b{display:block;font:500 15px/1.3 'Inter',sans-serif;color:var(--bgs-ivory);}
+  .invite-row__val{
+    font:400 14px 'Inter',sans-serif;color:var(--bgs-ivory-70);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%;
+  }
+  .invite-row__val.muted{color:var(--bgs-ivory-45);}
+  .invite-row__chev{width:20px;height:20px;color:rgba(var(--bgs-ivory-rgb),.4);margin-left:-4px;}
+  .invite-thumbs{display:flex;gap:4px;}
+  .invite-thumbs i{
+    display:block;width:22px;height:22px;border-radius:4px;
+    background:var(--c,var(--bgs-bg)) center/cover no-repeat;
+  }
+  .invite-thumbs i.h{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  /* The native picker's input covers its row, invisible: the row is what you
+     see, the input is what you tap. Keyboard focus shows on the row. */
+  .invite-row-wrap{position:relative;}
+  .invite-native{
+    position:absolute;inset:0;width:100%;height:100%;
+    margin:0;padding:0;border:0;opacity:0;cursor:pointer;
+    -webkit-appearance:none;appearance:none;font-size:16px;
+  }
+  .invite-row-wrap:has(.invite-native:focus-visible) .invite-row{outline:2px solid var(--bgs-gold);outline-offset:2px;}
+
+  .invite-edit{display:flex;gap:8px;padding:0 0 14px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);}
+  .invite-edit[hidden]{display:none;}
+  .invite-edit__input{
+    flex:1;min-width:0;background:var(--bgs-bg);border:1px solid rgba(var(--bgs-gold-rgb),0.22);
+    border-radius:10px;color:var(--bgs-ivory);font-family:'Inter',sans-serif;
+    /* 16px, not smaller: iOS Safari zooms in on a smaller input and never zooms back. */
+    font-size:16px;padding:9px 11px;outline:none;
+  }
+  .invite-edit__input:focus-visible{border-color:var(--bgs-gold);}
+  .invite-edit__done{
+    border:0;border-radius:10px;background:var(--bgs-gold);color:var(--bgs-on-gold);
+    font:500 14px 'Inter',sans-serif;padding:0 14px;cursor:pointer;
+  }
+
+  /* The headline picker: the picks as tiles with the shelf's star treatment. */
+  .invite-picker{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+    padding:0 0 14px;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),.1);
+  }
+  .invite-picker[hidden]{display:none;}
+  .invite-picker__empty{grid-column:1/-1;margin:0;font:400 13px 'Inter',sans-serif;color:rgba(var(--bgs-ivory-rgb),.55);}
+  .invite-pick{
+    position:relative;aspect-ratio:3/4;border:0;padding:0;border-radius:8px;overflow:hidden;
+    background:var(--c,var(--bgs-bg));color:var(--bgs-ivory);cursor:pointer;
+  }
+  .invite-pick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .invite-pick.head{box-shadow:inset 0 0 0 3px var(--bgs-gold);}
+  .invite-pick.head img{opacity:.85;}
+  .invite-pick__star{
+    position:absolute;left:6px;top:6px;width:22px;height:22px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(var(--bgs-bg-rgb),.75);color:var(--bgs-ivory);
+  }
+  .invite-pick__star svg{width:13px;height:13px;}
+  .invite-pick.head .invite-pick__star{background:var(--bgs-gold);color:var(--bgs-on-gold);}
+  .invite-pick__tag{
+    display:none;position:absolute;left:6px;bottom:6px;
+    font:500 10px 'IBM Plex Mono',monospace;background:var(--bgs-gold);color:var(--bgs-on-gold);
+    padding:2px 6px;border-radius:4px;
+  }
+  .invite-pick.head .invite-pick__tag{display:block;}
+  .invite-pick__title{
+    position:absolute;left:0;right:0;bottom:0;padding:22px 6px 6px;
+    font:400 11px/1.15 'Fraunces',serif;text-align:left;
+    background:linear-gradient(to bottom,rgba(var(--bgs-bg-rgb),0),rgba(var(--bgs-bg-rgb),.85));
+  }
+  .invite-pick.head .invite-pick__title{color:transparent;}
+
+  .invite-actions{
+    flex:none;display:flex;flex-direction:column;gap:8px;
+    padding:14px 20px calc(16px + env(safe-area-inset-bottom));
+    border-top:1px solid rgba(var(--bgs-ivory-rgb),.1);background:var(--bgs-plate);
+  }
+  .invite-primary{
+    width:100%;height:52px;border:0;border-radius:14px;background:var(--bgs-gold);color:var(--bgs-on-gold);
+    font:500 16px 'Inter',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .invite-primary .invite-ti{width:20px;height:20px;}
+  .invite-secondary{
+    width:100%;height:44px;border:0;border-radius:14px;background:transparent;
+    color:rgba(var(--bgs-ivory-rgb),.75);font:500 15px 'Inter',sans-serif;cursor:pointer;
+  }
+  .invite-secondary:hover{color:var(--bgs-ivory);}
+  /* Save to Photos on iOS: the image alone, full screen, above the sheet. */
+  .invite-viewer{
+    position:fixed;inset:0;z-index:23;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));
+    background:rgba(var(--bgs-bg-rgb),0.96);
+  }
+  .invite-viewer[hidden]{display:none;}
+  .invite-viewer__img{
+    display:block;max-width:100%;max-height:70vh;max-height:70svh;width:auto;height:auto;
+    border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);
+    -webkit-touch-callout:default; /* the press-and-hold menu is the point */
+  }
+  .invite-viewer__hint{margin:0;font:400 14px/1.4 'Inter',sans-serif;color:var(--bgs-ivory-70);text-align:center;}
+  .invite-viewer__hint b{color:var(--bgs-ivory);font-weight:500;}
+  .invite-viewer__done{
+    height:44px;padding:0 22px;border:0;border-radius:14px;
+    background:var(--bgs-gold);color:var(--bgs-on-gold);font:500 15px 'Inter',sans-serif;cursor:pointer;
+  }
+  .invite-viewer__done:focus-visible,
+  .invite-icon:focus-visible,.invite-row:focus-visible,.invite-seg button:focus-visible,
+  .invite-primary:focus-visible,.invite-secondary:focus-visible,.invite-pick:focus-visible,.invite-edit__done:focus-visible{
+    outline:2px solid var(--bgs-gold);outline-offset:2px;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    body.is-selecting.gn-waving .checkbox,
+    body.is-selecting.gn-waving .info-btn,
+    body.is-selecting.gn-waving .sel-ring{animation:none;}
+    body.is-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:0s;}
+  }
+
+  /* ---- selected-games tray ---- */
+  .gn-scrim{
+    position:fixed;inset:0;z-index:13;background:rgba(0,0,0,0.45);
+    opacity:0;pointer-events:none;transition:opacity 0.22s ease;
+  }
+  body.gn-tray-open .gn-scrim{opacity:1;pointer-events:auto;}
+  .gn-tray{
+    position:fixed;left:0;right:0;bottom:0;z-index:14;
+    max-width:600px;margin:0 auto;
+    background:rgba(var(--bgs-bg-rgb),0.97);
+    backdrop-filter:blur(14px);
+    border-top:1px solid rgba(var(--bgs-gold-rgb),0.25);
+    border-radius:16px 16px 0 0;
+    transform:translateY(100%);
+    transition:transform 0.24s cubic-bezier(.2,.8,.3,1);
+    display:flex;flex-direction:column;
+    max-height:52vh;
+    padding-bottom:76px;
+  }
+  body.gn-tray-open .gn-tray{transform:translateY(0);}
+  .gn-tray__head{
+    padding:14px 16px 8px;flex:none;
+    display:flex;align-items:baseline;justify-content:space-between;
+  }
+  .gn-tray__head h4{margin:0;font-family:'Fraunces',serif;font-weight:600;font-size:14px;}
+  .gn-tray__clear{
+    background:transparent;border:none;color:var(--bgs-ivory-45);
+    font:inherit;font-size:11.5px;font-weight:600;cursor:pointer;padding:4px;
+  }
+  .gn-tray__clear:hover{color:var(--bgs-gold);}
+  .gn-tray__list{overflow-y:auto;padding:0 16px 12px;-webkit-overflow-scrolling:touch;}
+  .gn-tray__row{
+    display:flex;align-items:center;gap:10px;padding:8px 0;
+    border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.07);
+  }
+  .gn-tray__row:last-child{border-bottom:none;}
+  .gn-tray__thumb{
+    width:34px;height:45px;border-radius:5px;background:var(--bgs-plate);
+    overflow:hidden;flex-shrink:0;
+  }
+  .gn-tray__thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .gn-tray__meta{flex:1;min-width:0;}
+  .gn-tray__meta b{
+    display:block;font-family:'Fraunces',serif;font-weight:600;font-size:12.5px;
+    line-height:1.25;margin-bottom:3px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .gn-tray__meta span{font-size:10.5px;color:var(--bgs-ivory-45);}
+  .gn-tray__offscreen{
+    font-size:10px;color:var(--bgs-gold-dim);font-weight:600;margin-left:6px;
+  }
+  .gn-tray__remove{
+    width:34px;height:34px;flex-shrink:0;border-radius:50%;
+    background:transparent;border:1.5px solid rgba(var(--bgs-ivory-rgb),0.2);
+    color:var(--bgs-ivory-45);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .gn-tray__remove svg{width:13px;height:13px;}
+  .gn-tray__remove:hover{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+
+
+</style>
+<style>
+/* ═════ NEW: view toggle in the filter/sort bar. A two-stop glass segment (a third stop, List, comes later). ═════ */
+.view-toggle{position:relative;flex:none;display:grid;grid-template-columns:repeat(2,38px);padding:0;border-radius:12px;isolation:isolate}
+.view-toggle{background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),0.18);box-sizing:border-box;height:40px}
+.view-opt{position:relative;z-index:1;width:38px;height:38px;display:grid;place-items:center;background:none;border:0;padding:0;color:var(--bgs-ivory-45);cursor:pointer;transition:color .15s ease}
+.view-opt svg{width:15px;height:15px}
+.view-opt[aria-checked="true"]{color:var(--bgs-gold)}
+.view-opt:focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--bgs-gold);border-radius:12px}
+.view-ink{position:absolute;top:3px;bottom:3px;left:3px;width:32px;border-radius:9px;background:rgba(var(--bgs-gold-rgb),.14);box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45);transition:transform .22s var(--ease-liquid)}
+.view-toggle[data-view="cards"] .view-ink{transform:translateX(38px)}
+
+/* ═════ NEW: the shelf view. The card grid (.shelf) is untouched; this is a sibling layout for the same games. ═════
+   Rows of planks, N boxes each; N follows the card grid's columns (3 / 4 / 6) so filters and counts feel the same in both views. */
+.planks{display:flex;flex-direction:column;gap:0;padding:0 0 40px;--bw:calc((100% - (var(--n) - 1) * var(--g)) / var(--n));--n:3;--g:14px}
+@media (min-width:560px){.planks{--n:4;--g:16px}}
+@media (min-width:800px){.planks{--n:6;--g:22px}}
+.plankrow{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:var(--g);padding:22px var(--pad,10px) 48px;isolation:isolate;content-visibility:auto;contain-intrinsic-size:auto 240px}
+.plankrow .plank{position:absolute;left:4px;right:4px;bottom:34px;height:14px;border-radius:2px 2px 3px 3px;z-index:3;
+  background:linear-gradient(to bottom,#5a4231 0 22%,#3a2a20 22% 48%,#2a1d16 48%,#1a110d 100%);
+  box-shadow:inset 0 1px 0 rgba(var(--bgs-gold-rgb),.6),inset 0 -1px 0 rgba(0,0,0,.75),0 1px 0 rgba(0,0,0,.6)}
+/* the plank's shadow on the wall: wide, soft, darkest just under the board and gone by ~50px */
+.plankrow .plank::before{content:"";position:absolute;left:0;right:0;top:100%;height:34px;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(0,0,0,.7) 0,rgba(0,0,0,.4) 30%,rgba(0,0,0,.12) 68%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent)}
+/* the boxes' own shadow, cast back onto the wall and down onto the plank */
+.plankrow .plank::after{content:"";position:absolute;left:2%;right:2%;bottom:100%;height:16px;pointer-events:none;
+  background:linear-gradient(to top,rgba(0,0,0,.45),transparent)}
+.plankrow .lamp{position:absolute;left:0;right:0;top:0;height:100%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 50% 50% at 50% 45%,rgba(var(--bgs-ivory-rgb),.05),transparent 100%)}
+.gbox{position:relative;flex:none;width:var(--bw);aspect-ratio:3/4;z-index:2;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer;transform:translateY(0);transition:transform .35s var(--ease-liquid)}
+.gbox .face{position:absolute;inset:0;z-index:2;border-radius:5px;overflow:hidden;background:var(--bgs-plate);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14),-5px 10px 18px -9px rgba(0,0,0,.9);transform:perspective(600px) rotateY(var(--lean,0deg));transform-origin:50% 100%}
+.gbox .face img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.gbox .face::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,.14) 0,transparent 30%,transparent 72%,rgba(0,0,0,.22) 100%)}
+/* one shared warm light per box. No blur filter and no breathing here: 196 boxes must stay cheap. */
+.gbox .glow{position:absolute;left:-20%;right:-20%;top:-14%;bottom:-3%;z-index:1;pointer-events:none;background:radial-gradient(ellipse 46% 46% at 50% 56%,rgba(var(--bgs-gold-rgb),.42) 0,rgba(var(--bgs-gold-rgb),.16) 45%,transparent 100%);opacity:.9}
+.gbox .foot{position:absolute;left:4%;right:4%;bottom:-3px;height:10px;border-radius:50%;background:rgba(0,0,0,.8);filter:blur(3px);z-index:1}
+.gbox:hover,.gbox:focus-visible,.gbox.up{transform:translateY(-8px) scale(1.04);z-index:5}
+.gbox:hover .face,.gbox.up .face{transform:perspective(600px) rotateY(0)}
+.gbox:focus-visible{outline:0}.gbox:focus-visible .face{box-shadow:0 0 0 2px var(--bgs-gold),inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14)}
+.gbox .cap{position:absolute;left:-6px;right:-6px;top:calc(100% + 20px);font:600 11px/1.25 'Fraunces',serif;color:var(--bgs-ivory-70);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;z-index:4}
+/* label mode (demo bar): none | hover | always */
+.planks[data-labels="none"] .cap{display:none}
+.planks[data-labels="hover"] .cap{top:auto;bottom:8px;left:6px;right:6px;padding:6px 7px;border-radius:8px;background:rgba(var(--bgs-bg-rgb),.72);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--bgs-ivory);opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s}
+.planks[data-labels="hover"] .gbox:hover .cap,.planks[data-labels="hover"] .gbox.up .cap{opacity:1;transform:none}
+
+/* selection mode + packing: same ring and checkbox language as the cards */
+.gbox .sel{position:absolute;inset:-4px;border-radius:8px;box-shadow:inset 0 0 0 2px rgba(var(--bgs-ivory-rgb),.35);display:none;z-index:3;pointer-events:none}
+.gbox .chk{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:rgba(var(--bgs-bg-rgb),.7);box-shadow:inset 0 0 0 1.5px rgba(var(--bgs-ivory-rgb),.6);display:none;place-items:center;z-index:4;color:var(--bgs-on-gold);font:700 12px/1 'Inter',sans-serif}
+body.is-selecting .gbox .sel,body.is-selecting .gbox .chk{display:grid}
+body.is-selecting .gbox:not(.selected) .face img{opacity:.62}
+body.is-selecting .gbox.selected .sel{box-shadow:inset 0 0 0 2px var(--bgs-gold)}
+body.is-selecting .gbox.selected .chk{background:var(--bgs-gold);box-shadow:none}
+body.is-selecting .gbox.selected .glow{background:radial-gradient(ellipse 46% 46% at 50% 56%,rgba(var(--bgs-gold-rgb),.8) 0,rgba(var(--bgs-gold-rgb),.3) 45%,transparent 100%)}
+.shelf-empty-shelf{padding:40px 0}
+
+.demobar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:6px;align-items:center;padding:9px 10px calc(9px + env(safe-area-inset-bottom,0px));overflow-x:auto;white-space:nowrap;background:#0b0908;border-top:1px solid rgba(255,255,255,.1);font:400 11.5px/1 'IBM Plex Mono',monospace;color:#eee}
+.demobar b{font-weight:400;opacity:.55;margin:0 2px 0 8px}.demobar button{padding:7px 10px;border-radius:99px;border:1px solid rgba(255,255,255,.16);background:none;color:inherit;font:inherit;flex:none;cursor:pointer}
+.demobar button[aria-pressed="true"]{background:#f3eadb;color:#111}
+body{padding-bottom:70px}
+</style>
+</head><body class="glass-on">
+<div class="wrap">
+  <header>
+    <p class="eyebrow" style="color:var(--bgs-ivory-70)" id="shelfOwner">nok's shelf · <a class="owner-link" href="#">Settings</a></p>
+    <h1 class="bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta glass" aria-label="Beta — about this label">Beta</button></h1>
+    <p class="sub">Browse the game, judge by its cover.</p>
+  </header>
+
+  <div class="sticky-sentinel" id="stickySentinel" aria-hidden="true"></div>
+  <div class="filter-sort-bar" id="filterSortBar">
+    <div class="search-wrap">
+      <input class="search glass" id="search" type="text" placeholder="Search titles…">
+      <button class="search-clear" id="searchClear" type="button" aria-label="Clear search" hidden>✕</button>
+    </div>
+    <button class="icon-btn glass" id="filterBtn" aria-label="Open filters" aria-haspopup="dialog" aria-expanded="false" aria-controls="filterSheet">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="2.5" x2="15" y2="2.5" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="9.5" cy="2.5" r="2.2" fill="var(--bgs-plate)" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="0" y1="7.5" x2="15" y2="7.5" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="4.5" cy="7.5" r="2.2" fill="var(--bgs-plate)" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="0" y1="12.5" x2="15" y2="12.5" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="11" cy="12.5" r="2.2" fill="var(--bgs-plate)" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span class="filter-badge" id="filterBadge" hidden>0</span>
+    </button>
+    <div class="view-toggle" id="viewToggle" role="radiogroup" aria-label="Shelf view">
+      <button type="button" class="view-opt" data-view="shelf" role="radio" aria-checked="true" aria-label="Shelf view">
+        <svg viewBox="0 0 15 15" fill="none"><rect x="2" y="3" width="3" height="5.5" rx=".8" stroke="currentColor" stroke-width="1.3"/><rect x="6.2" y="2" width="3" height="6.5" rx=".8" stroke="currentColor" stroke-width="1.3"/><rect x="10.4" y="3.5" width="3" height="5" rx=".8" stroke="currentColor" stroke-width="1.3"/><path d="M1 10.5h13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" class="view-opt" data-view="cards" role="radio" aria-checked="false" aria-label="Card view">
+        <svg viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="8.5" y="1.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="8.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="8.5" y="8.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+      <span class="view-ink"></span>
+    </div>
+  </div>
+
+  
+  <div class="chips-row" id="chipsRow" hidden></div>
+  <p class="shelf-count" id="shelf-count"><span id="shelf-count-text" aria-live="polite">Loading the shelf…</span></p>
+  <div class="planks" id="shelf"></div>
+</div>
+<div class="demobar" role="group" aria-label="Mockup controls">
+  <b>Games</b><button data-count="196" aria-pressed="true">All 196</button><button data-count="17" aria-pressed="false">Filtered · 17</button><button data-count="1" aria-pressed="false">1</button>
+  <b>Mode</b><button id="selMode" aria-pressed="false">Selecting</button>
+  <b>Theme</b><button data-theme="walnut" aria-pressed="true">Walnut</button><button data-theme="navy" aria-pressed="false">Navy</button><button data-theme="oak" aria-pressed="false">Oak</button>
+</div>
+<script>
+const G=[{"id": "363622", "t": "The Castles of Burgundy: Special Edition", "i": "https://cf.geekdo-images.com/JUrmY8GgFPQlENiPT7BGZw__original/img/whCMdZhta-uXHgNJfVnetnjZueU=/0x0/filters:format(jpeg)/pic6884563.jpg", "r": 9.14, "p": [1, 4], "w": "medium"}, {"id": "397598", "t": "Dune: Imperium – Uprising", "i": "https://cf.geekdo-images.com/UVUkjMV_Q2paVUIUP30Vvw__original/img/BoUtCkd1NRO0bR1R5EwL51xIuXA=/0x0/filters:format(jpeg)/pic7664424.jpg", "r": 8.7, "p": [1, 6], "w": "medium"}, {"id": "356238", "t": "Terra Mystica: Big Box", "i": "https://cf.geekdo-images.com/aSwGrv9uvfRyBymlHJ-B8w__original/img/cHP3bhVFkJepWSfjWKBR-talnDc=/0x0/filters:format(jpeg)/pic6731109.jpg", "r": 8.7, "p": [1, 5], "w": "heavy"}, {"id": "224517", "t": "Brass: Birmingham", "i": "https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__itemrep@2x/img/2FLfeGWkuKb1KEkjl1fO9MFsdHQ=/fit-in/492x600/filters:strip_icc()/pic3490053.jpg", "r": 8.56, "p": [2, 4], "w": "heavy"}, {"id": "342942", "t": "Ark Nova", "i": "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg", "r": 8.54, "p": [1, 4], "w": "heavy"}, {"id": "468508", "t": "Lairs (Kickstarter Edition)", "i": "https://cf.geekdo-images.com/W8EPJfC44jq1ODa02UyMwg__original/img/5SyO-7_YlLy5XjQ34r3EhiYkCDU=/0x0/filters:format(jpeg)/pic9522732.jpg", "r": 8.51, "p": [2, 2], "w": "medium"}, {"id": "434367", "t": "Nippon: Zaibatsu", "i": "https://cf.geekdo-images.com/bOs_Um4cUUOpKnypCMykJA__original/img/RE_9_-ioTp31Fq_r5GZ_XKVGwzw=/0x0/filters:format(png)/pic8844519.png", "r": 8.51, "p": [1, 4], "w": "heavy"}, {"id": "367150", "t": "Dune: War for Arrakis", "i": "https://cf.geekdo-images.com/b_Uo-x3szhupSWeQdw5bdg__original/img/FGqkNWPyWBiERARxf5eLuLt831o=/0x0/filters:format(jpeg)/pic7088918.jpg", "r": 8.48, "p": [1, 4], "w": "heavy"}, {"id": "187645", "t": "Star Wars: Rebellion", "i": "https://cf.geekdo-images.com/7SrPNGBKg9IIsP4UQpOi8g__original/img/GKueTbkCk2Ramf6ai8mDj-BP6cI=/0x0/filters:format(jpeg)/pic4325841.jpg", "r": 8.42, "p": [2, 4], "w": "heavy"}, {"id": "316554", "t": "Dune: Imperium", "i": "https://cf.geekdo-images.com/PhjygpWSo-0labGrPBMyyg__original/img/mZzaBAEEJpMlHWWmC0R6Su0OibQ=/0x0/filters:format(jpeg)/pic5666597.jpg", "r": 8.41, "p": [1, 4], "w": "medium"}, {"id": "321608", "t": "Hegemony: Lead Your Class to Victory", "i": "https://cf.geekdo-images.com/DCLgJlrvB-EqL6A3WgQLMQ__original/img/vGpYcxjDBCOVcI0BcWOevspTQMQ=/0x0/filters:format(jpeg)/pic5715770.jpg", "r": 8.36, "p": [2, 4], "w": "heavy"}, {"id": "421006", "t": "The Lord of the Rings: Duel for Middle-earth", "i": "https://cf.geekdo-images.com/EybxJlUc9rz7F7HVFLqsdw__original/img/Ts4M5eOW38r2oTvJmkx0uwNodv4=/0x0/filters:format(jpeg)/pic8378939.jpg", "r": 8.35, "p": [2, 2], "w": "medium"}, {"id": "240980", "t": "Blood on the Clocktower", "i": "https://cf.geekdo-images.com/HINb2nkFn5IiZxAlzQIs4g__itemrep@2x/img/f8s-g70BViz6Thkzu5_jYoGf8BA=/fit-in/492x600/filters:strip_icc()/pic7009391.jpg", "r": 8.34, "p": [6, 21], "w": "medium"}, {"id": "326007", "t": "The Million Dollar Doodle", "i": "https://cf.geekdo-images.com/V9Z4NvJgZYmRO0bL_Gudgw__itemrep@2x/img/kXidi7ctopdPv2D60_yBK4X7yHE=/fit-in/492x600/filters:strip_icc()/pic5837036.jpg", "r": 8.34, "p": [4, 7], "w": "light"}, {"id": "162886", "t": "Spirit Island", "i": "https://cf.geekdo-images.com/kjCm4ZvPjIZxS-mYgSPy1g__itemrep@2x/img/-avAay86cuC29LAZVlTE84r5SSA=/fit-in/492x600/filters:strip_icc()/pic7013651.jpg", "r": 8.34, "p": [1, 4], "w": "heavy"}, {"id": "167791", "t": "Terraforming Mars", "i": "https://cf.geekdo-images.com/URkI3cTZ9NHdlPNRPSd2_g__original/img/97yvW76xxAirQc7Jebosu-6FM9I=/0x0/filters:format(jpeg)/pic2891964.jpg", "r": 8.33, "p": [1, 5], "w": "medium"}, {"id": "383469", "t": "Unmatched: Sun's Origin", "i": "https://cf.geekdo-images.com/i7n6LkRIskDq1438AgO0VA__original/img/TN6iOwF4cCaGnNyK61R9E_uXXrU=/0x0/filters:format(jpeg)/pic7437242.jpg", "r": 8.25, "p": [2, 2], "w": "medium"}, {"id": "160069", "t": "Ticket to Ride: 10th Anniversary", "i": "https://cf.geekdo-images.com/oXUOPeRynJB1sLEYQiKzTg__itemrep@2x/img/VAmkdlgj4gc9CcxqPMsztlyc4Rc=/fit-in/492x600/filters:strip_icc()/pic1927856.jpg", "r": 8.24, "p": [2, 5], "w": "light"}, {"id": "310100", "t": "Nemesis: Lockdown", "i": "https://cf.geekdo-images.com/t4fIRE_dryAV9eFFH1pfPw__original/img/HWiGfzBUGW9tbdtSvmhwsivn2y0=/0x0/filters:format(png)/pic8472819.png", "r": 8.24, "p": [1, 5], "w": "heavy"}, {"id": "446893", "t": "Realm of Reckoning", "i": "https://cf.geekdo-images.com/xElMYLyj1pqtCIOhRNzA9w__original/img/uQSPJKFbAsnhXf_gVKPnRyYMXK8=/0x0/filters:format(png)/pic8899476.png", "r": 8.21, "p": [2, 5], "w": "heavy"}, {"id": "420033", "t": "Vantage", "i": "https://cf.geekdo-images.com/M0e9l-SHH2H4RMSAcnsDgg__original/img/nT1NtVviWxSBgVv5lvM4RmemITs=/0x0/filters:format(jpeg)/pic8658546.jpg", "r": 8.18, "p": [1, 6], "w": "heavy"}, {"id": "365357", "t": "Railways of the Lost Atlas", "i": "https://cf.geekdo-images.com/tQOk8bqG9CBvsNDD11F9yA__imagepage/img/2r7z29qhbr_POk-hkXa484-2zrE=/fit-in/900x600/filters:no_upscale():strip_icc()/pic9715149.jpg", "r": 8.17, "p": [1, 5], "w": "heavy"}, {"id": "437356", "t": "Scales of Fate", "i": "https://cf.geekdo-images.com/Zz_iJ2cr4kS4jgT_pFw27g__original/img/Qybhex8ea62HVk6RAaqiDHH5BN8=/0x0/filters:format(png)/pic8652703.png", "r": 8.15, "p": [2, 2], "w": "medium"}, {"id": "313010", "t": "Cosmic Encounter: 42nd Anniversary Edition", "i": "https://cf.geekdo-images.com/-pnk2c0HTQQrhqRjjG835Q__original/img/BMYXX1Q0euiqYuz0WlxkAAcaxD0=/0x0/filters:format(jpeg)/pic4243113.jpg", "r": 8.13, "p": [3, 5], "w": "medium"}, {"id": "256960", "t": "Pax Pamir: Second Edition", "i": "https://cf.geekdo-images.com/oSM_AuKYfGIwOtKbVEsoVg__original/img/7DlaMCmuoJzm9AzelmStYIDgutI=/0x0/filters:format(png)/pic4503733.png", "r": 8.12, "p": [1, 5], "w": "heavy"}, {"id": "367498", "t": "Horizons of Spirit Island", "i": "https://cf.geekdo-images.com/jQ9g8pqZZuchIX_Pv3bHRQ__original/img/3bufrC3AVthPgq80bD32sLS-TDs=/0x0/filters:format(jpeg)/pic6972881.jpg", "r": 8.11, "p": [1, 3], "w": "medium"}, {"id": "407570", "t": "Wir sind das Volk!: Combined Edition", "i": "https://cf.geekdo-images.com/e6QPQ_JaSSy-R1c2bJkYXA__original/img/wNhou5aff1JGRJF_ppcTVD66ZQc=/0x0/filters:format(jpeg)/pic7889099.jpg", "r": 8.08, "p": [2, 4], "w": "heavy"}, {"id": "237182", "t": "Root", "i": "https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg", "r": 8.07, "p": [2, 4], "w": "heavy"}, {"id": "325635", "t": "Unmatched: Little Red Riding Hood vs. Beowulf", "i": "https://cf.geekdo-images.com/7CFgBadtCNf5Mzi1nsrL2Q__original/img/Iv0VzhyEa74-sGfbtt9nwrRKZlw=/0x0/filters:format(jpeg)/pic5822480.jpg", "r": 8.05, "p": [2, 2], "w": "medium"}, {"id": "175914", "t": "Food Chain Magnate", "i": "https://cf.geekdo-images.com/Wtxml94LAXsIWQCxGPS63Q__original/img/9c-MJB6x54vN5eB-1hT4XQaHtP8=/0x0/filters:format(png)/pic2649434.png", "r": 8.04, "p": [2, 5], "w": "heavy"}, {"id": "400366", "t": "Wondrous Creatures", "i": "https://cf.geekdo-images.com/reK4-IeMo2T6HMnACMkmGw__original/img/MlkgXfMGT1IdIzwy3Sj2Ul45b4o=/0x0/filters:format(png)/pic7710928.png", "r": 8.03, "p": [1, 4], "w": "medium"}, {"id": "367396", "t": "Avalon: Big Box", "i": "https://cf.geekdo-images.com/uI6LtXOb-Yed0-cUpQ9lew__original/img/6CP6P-JXvZR9dnVRwPWzctoBIY8=/0x0/filters:format(png)/pic7037062.png", "r": 8.01, "p": [5, 10], "w": "light"}, {"id": "449718", "t": "盤上ダンジョン (Banjo-Dungeon)", "i": "https://cf.geekdo-images.com/MaeErIfx2AbLjmpmLwD-qQ__large/img/jw3MDqU9CNfvvWxXlENl7Ob-APM=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic8975321.jpg", "r": 8, "p": [2, 2], "w": "medium"}, {"id": "338697", "t": "Catan: 3D Edition", "i": "https://cf.geekdo-images.com/4Kr0RereFqdS29qe-mNYkQ__itemrep@2x/img/tLVpEitsYKWuXA5zydJh8SQrwI4=/fit-in/492x600/filters:strip_icc()/pic6192204.png", "r": 7.99, "p": [3, 4], "w": "light"}, {"id": "23540", "t": "Shikoku 1889", "i": "https://cf.geekdo-images.com/KWzepkM_pNKLOCdDDJLg0g__original/img/gTkkZV8qMZ2p4IxzFBVqnOeCb0w=/0x0/filters:format(jpeg)/pic6535570.jpg", "r": 7.99, "p": [2, 6], "w": "heavy"}, {"id": "183394", "t": "Viticulture Essential Edition", "i": "covers/viticulture-essential-edition-front.jpg", "r": 7.96, "p": [1, 6], "w": "medium"}, {"id": "381297", "t": "Unmatched Adventures: Tales to Amaze", "i": "https://cf.geekdo-images.com/pDiHT-n1xpW71Ck_wiR8_g__original/img/pho_viNg1Jk28LoXbMkTTvVHOIw=/0x0/filters:format(png)/pic7375477.png", "r": 7.93, "p": [1, 4], "w": "medium"}, {"id": "351817", "t": "Marvel Zombies: A Zombicide Game", "i": "https://cf.geekdo-images.com/1nxn5PtVk-cbS3tHDg4Xlg__original/img/o3-QpsK2whgEm0teQ3IqwoC9zyk=/0x0/filters:format(jpeg)/pic6619019.jpg", "r": 7.92, "p": [1, 6], "w": "medium"}, {"id": "282391", "t": "Stockpile: Epic Edition", "i": "https://cf.geekdo-images.com/GeswS76PRQQV0TUvNdUGew__original/img/U2DZO2y6vsJPabsjpGID0HeEpAE=/0x0/filters:format(jpeg)/pic4788657.jpg", "r": 7.92, "p": [2, 5], "w": "medium"}, {"id": "205059", "t": "Mansions of Madness: Second Edition", "i": "https://cf.geekdo-images.com/LIooA9bTdjnE9qmhjL-UFw__original/img/Go6c8-ZiXomS8E7X4MBCdDd-aZc=/0x0/filters:format(jpeg)/pic3118622.jpg", "r": 7.91, "p": [1, 5], "w": "medium"}, {"id": "359999", "t": "Agricola 15", "i": "https://cf.geekdo-images.com/h1dXXGGcCjaGdCip6Q_oGQ__itemrep@2x/img/Z_ktul2p0wcyZ_6MiDknQJ-gviw=/fit-in/492x600/filters:strip_icc()/pic6786604.jpg", "r": 7.9, "p": [1, 4], "w": "medium"}, {"id": "274638", "t": "Unmatched: Robin Hood vs. Bigfoot", "i": "https://cf.geekdo-images.com/5Fr8QPIazZRgEMnN2bwJ0g__original/img/si2jJWDVMO-EGy-r0RR7aVjLtO8=/0x0/filters:format(jpeg)/pic4621589.jpg", "r": 7.9, "p": [2, 2], "w": "medium"}, {"id": "269385", "t": "The Lord of the Rings: Journeys in Middle-Earth", "i": "https://cf.geekdo-images.com/1XA2-niwTBa0HEB7hOz3Dw__original/img/MIJgG_K2IS1QT2mE0dyRFiWLSpg=/0x0/filters:format(jpeg)/pic4530974.jpg", "r": 7.89, "p": [1, 5], "w": "medium"}, {"id": "295947", "t": "Cascadia", "i": "https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg", "r": 7.88, "p": [1, 4], "w": "light"}, {"id": "4098", "t": "Age of Steam", "i": "https://cf.geekdo-images.com/gBPzZsgm9nrUYVfdK216NA__itemrep@2x/img/I7lESA5b_RNSWN27orgv02GlepY=/fit-in/492x600/filters:strip_icc()/pic4557340.png", "r": 7.87, "p": [1, 6], "w": "heavy"}, {"id": "418556", "t": "Rebel Princess: Deluxe Edition", "i": "https://cf.geekdo-images.com/-DehugU8es22rqjlVIb1IA__itemrep@2x/img/jTiD33bBqO3BHsiIk7bkpn_XoKY=/fit-in/492x600/filters:strip_icc()/pic8139863.png", "r": 7.85, "p": [3, 6], "w": "light"}, {"id": "351913", "t": "Tiletum", "i": "https://cf.geekdo-images.com/DvvSoTrB3-UMEgz2rBraHg__original/img/a70U9DGHGxiyo8WWMOb9Zd4hrxc=/0x0/filters:format(jpeg)/pic7533289.jpg", "r": 7.85, "p": [1, 4], "w": "heavy"}, {"id": "372571", "t": "Tycoon: India 1981", "i": "https://cf.geekdo-images.com/9xuEX32soPb7mAcPVG2M3w__original/img/z61C5qFPNFJUElVW50vX_R8ve6A=/0x0/filters:format(png)/pic7125824.png", "r": 7.84, "p": [1, 4], "w": "medium"}, {"id": "35677", "t": "Le Havre", "i": "https://cf.geekdo-images.com/y7Rqd3S6J7vyVhicR1bqTQ__original/img/tQFXv1w2R-J-1cjyaKG9LAS2UOs=/0x0/filters:format(jpeg)/pic6091101.jpg", "r": 7.83, "p": [1, 5], "w": "heavy"}, {"id": "316377", "t": "7 Wonders (Second Edition)", "i": "https://cf.geekdo-images.com/Naw8y8J_s-8cvq1GoTON6w__original/img/8wVEVzdf5BoPvSiscnGvCAPNe2Q=/0x0/filters:format(jpeg)/pic7416519.jpg", "r": 7.82, "p": [3, 7], "w": "medium"}, {"id": "446497", "t": "Hot Streak", "i": "https://cf.geekdo-images.com/co36SqyPYlM1QwVW6XSwyQ__original/img/ErbrDNguZzKtnCCAUiQCh1xwldc=/0x0/filters:format(jpeg)/pic8933083.jpg", "r": 7.8, "p": [2, 8], "w": "light"}, {"id": "407343", "t": "Ironwood", "i": "https://cf.geekdo-images.com/bHjyk23An87Hl0ZuA91sTg__original/img/E5S_FHGVPqwihXfws4S0VpVJjr0=/0x0/filters:format(jpeg)/pic7885912.jpg", "r": 7.8, "p": [1, 2], "w": "medium"}, {"id": "291453", "t": "SCOUT", "i": "https://cf.geekdo-images.com/cf0xxkevbwTGF3VUZymKjg__original/img/vkElrRCPJxy7Q3TH9olpq20egA4=/0x0/filters:format(png)/pic6398727.png", "r": 7.78, "p": [2, 5], "w": "light"}, {"id": "271601", "t": "Feed the Kraken", "i": "https://cf.geekdo-images.com/1I9spdDMuRzgM4EVV6BRiQ__itemrep@2x/img/pCOyT8JrYa7csYKVeR0ucGO1eCg=/fit-in/492x600/filters:strip_icc()/pic8775698.jpg", "r": 7.77, "p": [5, 11], "w": "medium"}, {"id": "417197", "t": "Rebirth", "i": "https://cf.geekdo-images.com/tyv6lPMlyU7YIUztlILQYQ__itemrep@2x/img/lQMHypGthw9PcbLsx2hiBK2n4V4=/fit-in/492x600/filters:strip_icc()/pic8587890.png", "r": 7.76, "p": [2, 4], "w": "light"}, {"id": "225694", "t": "Decrypto", "i": "https://cf.geekdo-images.com/X6HDeg8AhGXGhB8je65MTw__original/img/A2cgVhqNzUMUGg7_GJ5omWcdkt8=/0x0/filters:format(jpeg)/pic7303572.jpg", "r": 7.76, "p": [3, 8], "w": "medium"}, {"id": "153016", "t": "Telestrations: 12 Player Party Pack", "i": "https://cf.geekdo-images.com/v_BidaaTXux6j_UJQol6Jw__original/img/RDmxiiYALGFFD3ElKLTlR5C5xa8=/0x0/filters:format(jpeg)/pic8918996.jpg", "r": 7.73, "p": [4, 12], "w": "light"}, {"id": "217372", "t": "The Quest for El Dorado", "i": "https://cf.geekdo-images.com/b5VyYjNfAxJ4Z-Dx2UWlqg__itemrep@2x/img/WRMjcTjRqs1icMySG0dxNIkLJvc=/fit-in/492x600/filters:strip_icc()/pic7945692.jpg", "r": 7.72, "p": [2, 4], "w": "light"}, {"id": "440941", "t": "Pillars of Fate", "i": "https://cf.geekdo-images.com/F-J1_JTJMhg_71RFfDAe4w__original/img/v8kYC6F9MEOzXRraUKQCywAbhdk=/0x0/filters:format(png)/pic8766964.png", "r": 7.72, "p": [2, 2], "w": "medium"}, {"id": "12", "t": "Ra", "i": "https://cf.geekdo-images.com/k7lG683LBZdvFyS-FH-MpA__original/img/hEqkeRnhyNLxeryIIdOnAHdItfo=/0x0/filters:format(png)/pic6746812.png", "r": 7.72, "p": [2, 5], "w": "medium"}, {"id": "552", "t": "Bus", "i": "https://cf.geekdo-images.com/EI6jGtH3CLqLiI9pfW0pTA__original/img/skAAQF86A9wjMElJOXA0EcnJmLE=/0x0/filters:format(jpeg)/pic8179997.jpg", "r": 7.71, "p": [3, 5], "w": "heavy"}, {"id": "350205", "t": "Horseless Carriage", "i": "https://cf.geekdo-images.com/8oCeW5kLCh_uaN2ER7ProA__original/img/59pjsC_IY0pInc4Trj1l_lwJuok=/0x0/filters:format(jpeg)/pic6491535.jpg", "r": 7.7, "p": [3, 5], "w": "heavy"}, {"id": "416851", "t": "Castle Combo", "i": "https://cf.geekdo-images.com/rGomBfj0FGrZM-w3h5HFWQ__original/img/XtVFdYXLAxdGOjQOGCkrms-hLUU=/0x0/filters:format(png)/pic8250341.png", "r": 7.68, "p": [2, 5], "w": "light"}, {"id": "406322", "t": "Saboteur: 20th Anniversary Edition", "i": "https://cf.geekdo-images.com/b9CYiq4Vfhcu4iCzFql7CQ__original/img/tbPF-kJMOx7VEP4IUs-soNC1f6k=/0x0/filters:format(jpeg)/pic7947660.jpg", "r": 7.68, "p": [2, 12], "w": "light"}, {"id": "298231", "t": "Skyrise", "i": "https://cf.geekdo-images.com/wQNNMPNOm43VMYPAPpJdEA__itemrep@2x/img/feiwuznoPc4zSMoDhXidaLWGSuo=/fit-in/492x600/filters:strip_icc()/pic8160197.jpg", "r": 7.67, "p": [2, 4], "w": "medium"}, {"id": "436126", "t": "Finspan", "i": "https://cf.geekdo-images.com/BBefMnVYBDS3EbJ9fPaC8A__original/img/E2VsUBa6HUU0QKlp4eQOsbP1wUo=/0x0/filters:format(jpeg)/pic8634453.jpg", "r": 7.67, "p": [1, 5], "w": "medium"}, {"id": "263895", "t": "City of the Great Machine", "i": "https://cf.geekdo-images.com/V4p72l84k8FyS1-6FK7OeQ__original/img/WwV2iC3gmy9dLSkw9uZCp1B5Bjg=/0x0/filters:format(jpeg)/pic5257338.jpg", "r": 7.66, "p": [1, 4], "w": "medium"}, {"id": "420914", "t": "Iliad", "i": "https://cf.geekdo-images.com/V879Jjcv8gKWKWFn4tChKg__original/img/5_0PQDpb8vSN5u9jm5XkFp3MRwc=/0x0/filters:format(png)/pic8195970.png", "r": 7.65, "p": [2, 2], "w": "light"}, {"id": "165722", "t": "KLASK", "i": "https://cf.geekdo-images.com/e9uHlgERIh8l7S5TVvOK8w__original/img/4ppGD7UdgpNXDKDkWSWNeS0Mzj0=/0x0/filters:format(jpeg)/pic8752466.jpg", "r": 7.62, "p": [2, 2], "w": "light"}, {"id": "351605", "t": "Bohnanza: 25th Anniversary Edition", "i": "https://cf.geekdo-images.com/TCWH1FOU7PWnv66_gzrR2A__original/img/3Yvdfj9S1Wi6Wy_IpoP6mHxcJ3w=/0x0/filters:format(jpeg)/pic8621122.jpg", "r": 7.59, "p": [2, 7], "w": "light"}, {"id": "254640", "t": "Just One", "i": "https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg", "r": 7.59, "p": [3, 7], "w": "light"}, {"id": "163412", "t": "Patchwork", "i": "https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg", "r": 7.58, "p": [2, 2], "w": "light"}, {"id": "415078", "t": "Brink", "i": "https://cf.geekdo-images.com/dmFiFjc12CeVWujK5PbVNw__original/img/JslJJWJ8owc18C5p75kJf1DvdLA=/0x0/filters:format(png)/pic8250385.png", "r": 7.55, "p": [2, 5], "w": "heavy"}, {"id": "263918", "t": "Cartographers", "i": "https://cf.geekdo-images.com/y6wR0wJS_WBZYHi26_sf4A__original/img/9fZeyZuJO3BA1a0PmI2CdJfwBN4=/0x0/filters:format(png)/pic5849879.png", "r": 7.55, "p": [1, 100], "w": "light"}, {"id": "246684", "t": "Smartphone Inc.", "i": "https://cf.geekdo-images.com/Ndctxvd7kBXYubeYRKRqzw__original/img/gGL8Fh-pFgTqB3lF-47ClLYLu8s=/0x0/filters:format(jpeg)/pic4258616.jpg", "r": 7.55, "p": [1, 5], "w": "heavy"}, {"id": "407445", "t": "Counter Spy", "i": "https://cf.geekdo-images.com/jPVt_L1j9kUyXyVYm46cLQ__original/img/aTAdnlfGarxqbrZ8Y4uqVhPt0v4=/0x0/filters:format(png)/pic7891402.png", "r": 7.54, "p": [2, 2], "w": "light"}, {"id": "409572", "t": "Intent to Kill", "i": "https://cf.geekdo-images.com/rLYd41kjq4ku8Yjqc7k-Ng__itemrep@2x/img/OKApLk3meJ-lZk2E23sfOBWsjBk=/fit-in/492x600/filters:strip_icc()/pic8630018.png", "r": 7.53, "p": [2, 4], "w": "medium"}, {"id": "103343", "t": "A Game of Thrones: The Board Game (Second Edition)", "i": "https://cf.geekdo-images.com/M_7UvwZvuxBVjxdadsa5AA__original/img/3tv6H7jX5T9rqwuI84YZKZDBGcw=/0x0/filters:format(jpeg)/pic1077906.jpg", "r": 7.53, "p": [3, 6], "w": "heavy"}, {"id": "118", "t": "Modern Art", "i": "https://cf.geekdo-images.com/wLto-xaabHwKQe_Bc4iD1Q__itemrep@2x/img/KFX9ww-ZAIKG1PacQFp8M266esg=/fit-in/492x600/filters:strip_icc()/pic3458036.png", "r": 7.52, "p": [3, 5], "w": "medium"}, {"id": "188866", "t": "Awkward Guests: The Walton Case", "i": "https://cf.geekdo-images.com/Awopfw5_5Qyh-7YcSbtudA__original/img/GxYtTK43oCTDn2J3pyukUw07bKo=/0x0/filters:format(jpeg)/pic4870482.jpg", "r": 7.52, "p": [1, 8], "w": "heavy"}, {"id": "178900", "t": "Codenames", "i": "https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg", "r": 7.52, "p": [2, 8], "w": "light"}, {"id": "303057", "t": "Pan Am", "i": "https://cf.geekdo-images.com/Dkd1DKelqroYz21llrqJ_A__original/img/ODz-pc-p39DCJ2wl5rzSBC0gON8=/0x0/filters:format(jpeg)/pic5252922.jpg", "r": 7.52, "p": [2, 4], "w": "medium"}, {"id": "14996", "t": "Ticket to Ride: Europe", "i": "https://cf.geekdo-images.com/NnOxmSrIyc1bMsOdPoWZWA__original/img/KgoVCM0zl70hQK8MKLJs-Ef9CFY=/0x0/filters:format(jpeg)/pic6195589.jpg", "r": 7.52, "p": [2, 5], "w": "light"}, {"id": "315695", "t": "Veiled Fate", "i": "https://cf.geekdo-images.com/_eLkcsjTeSbl4G-nREQWsw__original/img/2VGLIOKIN0UJThE2mRDXKgQjUY0=/0x0/filters:format(png)/pic5706121.png", "r": 7.52, "p": [2, 8], "w": "medium"}, {"id": "295374", "t": "Long Shot: The Dice Game", "i": "https://cf.geekdo-images.com/j9RO81ihYw0_oPj6iqV_bA__original/img/-jPNsFg5d9uA7D4WGDIP3TNLHX4=/0x0/filters:format(jpeg)/pic6682376.jpg", "r": 7.51, "p": [1, 8], "w": "light"}, {"id": "30549", "t": "Pandemic", "i": "https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg", "r": 7.51, "p": [2, 4], "w": "medium"}, {"id": "171131", "t": "Captain Sonar", "i": "https://cf.geekdo-images.com/Dpu5nFJu4UUJ4Y50WyKueg__original/img/feQTYcCwgIg4LneCYIoaWz12Z24=/0x0/filters:format(jpeg)/pic7069368.jpg", "r": 7.5, "p": [2, 8], "w": "medium"}, {"id": "455337", "t": "Word War", "i": "https://cf.geekdo-images.com/d0mFjZvwj76KOn90Zs6DKQ__original/img/HH2K65IP6cCcZ_Ip7wNjJO9KIWE=/0x0/filters:format(png)/pic9137539.png", "r": 7.5, "p": [3, 10], "w": "light"}, {"id": "449719", "t": "マンション・オブ・ザ・ヴァンパイア (Mansion of the Vampire)", "i": "covers/mansion-of-the-vampire-front.svg", "r": 7.5, "p": [4, 8], "w": "light"}, {"id": "128882", "t": "The Resistance: Avalon", "i": "https://cf.geekdo-images.com/LPa6rsGcv8S0-OeNjCOAEQ__itemrep@2x/img/LWho2GMg9S2-oZaC51J90YjPLxM=/fit-in/492x600/filters:strip_icc()/pic1398895.jpg", "r": 7.49, "p": [5, 10], "w": "light"}, {"id": "347889", "t": "Catch Sketch", "i": "https://cf.geekdo-images.com/V1sIetALz-79do1MBvgQMQ__itemrep@2x/img/IiiZenbMLOznrpS4sbwltvz34HI=/fit-in/492x600/filters:strip_icc()/pic6434013.jpg", "r": 7.49, "p": [3, 6], "w": "light"}, {"id": "338957", "t": "Caesar!: Seize Rome in 20 Minutes!", "i": "https://cf.geekdo-images.com/Mw_WmNeSTRgEgiQG87YPgQ__original/img/fgw5B0oFNDZlNj6Yig97m4625lI=/0x0/filters:format(png)/pic6228356.png", "r": 7.49, "p": [1, 2], "w": "light"}, {"id": "351040", "t": "Ready Set Bet", "i": "https://cf.geekdo-images.com/4ZCV2o_OiGha0bknXDTfdA__itemrep@2x/img/ap6o1G3EAAx3y-6xLpCvyVmmRaU=/fit-in/492x600/filters:strip_icc()/pic6678381.jpg", "r": 7.48, "p": [2, 9], "w": "light"}, {"id": "188834", "t": "Secret Hitler", "i": "https://cf.geekdo-images.com/rAQ3hIXoH6xDcj41v9iqCg__original/img/7oKwNUYakx3-vHUBLHWVuFNKfl4=/0x0/filters:format(jpeg)/pic5164305.jpg", "r": 7.48, "p": [5, 10], "w": "light"}, {"id": "402111", "t": "Kronologic: Paris 1920", "i": "https://cf.geekdo-images.com/BTLIJvNhaROMzo6cqP0aNw__original/img/BagaofOFwLoN8hOqY3AKd6ij7Lk=/0x0/filters:format(png)/pic7963849.png", "r": 7.47, "p": [1, 4], "w": "medium"}, {"id": "236191", "t": "London (Second Edition)", "i": "https://cf.geekdo-images.com/TMbEUs1GZpO96P5ubsqQew__original/img/SqRqsqHdyI0R04-efEQpIyzjbIA=/0x0/filters:format(jpeg)/pic3693999.jpg", "r": 7.47, "p": [2, 4], "w": "medium"}, {"id": "123260", "t": "Suburbia", "i": "https://cf.geekdo-images.com/1YcHesB7LRvCF8i9vgH7qw__original/img/BVcGhHh0nedwcBBzu_ku-yh8LWY=/0x0/filters:format(png)/pic6009608.png", "r": 7.45, "p": [1, 4], "w": "medium"}, {"id": "340466", "t": "Unfathomable", "i": "https://cf.geekdo-images.com/oqanBg2ZMXFEcZGXs5Xhjg__original/img/p15aOl1QDotb3QA-T7ZsWnQo2P4=/0x0/filters:format(png)/pic6222156.png", "r": 7.45, "p": [3, 6], "w": "heavy"}, {"id": "47", "t": "Chinatown", "i": "https://cf.geekdo-images.com/o23NBqu_LBRAtRaVoOBBhQ__original/img/csj-VB0pfmq8KNUxwTYdDC2gxB4=/0x0/filters:format(jpeg)/pic403442.jpg", "r": 7.44, "p": [3, 5], "w": "medium"}, {"id": "368061", "t": "Zoo Vadis", "i": "https://cf.geekdo-images.com/Kl3NjtNKpuJNPjdBQtdsow__itemrep@2x/img/MMleplvZYMrYPO8oxgz4SRGH_VU=/fit-in/492x600/filters:strip_icc()/pic6988937.jpg", "r": 7.44, "p": [3, 7], "w": "medium"}, {"id": "260180", "t": "Project L", "i": "https://cf.geekdo-images.com/Zwx2ZXS6r6PaxhkaVEe75Q__original/img/nBfsV9V5a-xc3uJkYhE0DN-QVjI=/0x0/filters:format(jpeg)/pic4309147.jpg", "r": 7.44, "p": [1, 4], "w": "medium"}, {"id": "381278", "t": "Dracula vs Van Helsing", "i": "https://cf.geekdo-images.com/RbNAitZatR7g82u_9OBV8A__original/img/z2leJtn83aYVYDepcIb9srAjM3I=/0x0/filters:format(jpeg)/pic7453834.jpg", "r": 7.42, "p": [2, 2], "w": "medium"}, {"id": "148228", "t": "Splendor", "i": "https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg", "r": 7.42, "p": [2, 4], "w": "light"}, {"id": "391752", "t": "Steam Power", "i": "https://cf.geekdo-images.com/d5JR5FekM_PsanGOHBdSMA__original/img/n6y6kwfqOwqChZ6X5ajMq0N-X7Q=/0x0/filters:format(jpeg)/pic7720019.jpg", "r": 7.42, "p": [1, 5], "w": "medium"}, {"id": "156129", "t": "Deception: Murder in Hong Kong", "i": "https://cf.geekdo-images.com/Ekj8MUqrqXDhOzIA7Xvu1Q__original/img/cw9gyQQuOL6DGVE2bJYuyoJ_WNo=/0x0/filters:format(jpeg)/pic7772702.jpg", "r": 7.42, "p": [4, 12], "w": "medium"}, {"id": "352515", "t": "Trio", "i": "https://cf.geekdo-images.com/d9F0ZDqcN3J7J92WckyraQ__original/img/3OAIArHm3Z_j5bAJeJlU5LKQie0=/0x0/filters:format(jpeg)/pic7605785.jpg", "r": 7.39, "p": [3, 6], "w": "light"}, {"id": "470218", "t": "DETROIT", "i": "https://cf.geekdo-images.com/ysPyCEGW3ZqHr_acw-d8pA__original/img/rePl8MgjoY8dqE8TUN9wqtVM5XA=/0x0/filters:format(jpeg)/pic9566323.jpg", "r": 7.38, "p": [2, 2], "w": "medium"}, {"id": "92828", "t": "Dixit: Odyssey", "i": "https://cf.geekdo-images.com/6P0_yuSoDVr567Dkr52CZA__original/img/tz_uHWJVc1Q0BOA6wnSBa5XxKRo=/0x0/filters:format(jpeg)/pic5272244.jpg", "r": 7.38, "p": [3, 12], "w": "light"}, {"id": "256788", "t": "Detective Club", "i": "https://cf.geekdo-images.com/Fy-jrkPaNbPEOV8414pKqw__itemrep@2x/img/xnJe_NeUxSZTSQsW2Lq3xS8NZug=/fit-in/492x600/filters:strip_icc()/pic4783811.jpg", "r": 7.35, "p": [4, 8], "w": "light"}, {"id": "422668", "t": "Ghost Fightin' Treasure Hunters: Anniversary Edition", "i": "https://cf.geekdo-images.com/DHA-mcH3zzw_OjfDxOPj1A__original/img/2-Lb6nLePhn0I0Hh2j1pOtbO4rg=/0x0/filters:format(jpeg)/pic8266874.jpg", "r": 7.33, "p": [2, 5], "w": "light"}, {"id": "257305", "t": "SHASN", "i": "https://cf.geekdo-images.com/km_1BAYH0i_U3dJ8enQsbg__original/img/B-vOsRQDmkWVk4xZdP_AluG1pmY=/0x0/filters:format(jpeg)/pic7297552.jpg", "r": 7.33, "p": [3, 5], "w": "medium"}, {"id": "266830", "t": "QE", "i": "https://cf.geekdo-images.com/47o_swlkRbfpMH3hnFZgtA__itemrep@2x/img/eZ4dHFV9gf2olr8sweduthKS_Ho=/fit-in/492x600/filters:strip_icc()/pic4383594.png", "r": 7.32, "p": [3, 5], "w": "light"}, {"id": "327778", "t": "ito", "i": "https://cf.geekdo-images.com/Jz0dykYa1D0ptyCt5wP-fA__original/img/NbeQBCw--Xc2S3YeLfMqwQsuZBY=/0x0/filters:format(jpeg)/pic6012984.jpg", "r": 7.32, "p": [2, 10], "w": "light"}, {"id": "434172", "t": "Excalibur", "i": "https://cf.geekdo-images.com/_a4_mDMXdTK8U5Ngul9Gcw__original/img/1xVw_4NVb_PKN-uoloqdoFK5bwA=/0x0/filters:format(png)/pic9556500.png", "r": 7.31, "p": [2, 8], "w": "light"}, {"id": "400566", "t": "Blades & Rose", "i": "https://cf.geekdo-images.com/9JUWC-JjpKkaaH5Hz6XiaA__original/img/dmdd9hn635tGce7sGyprbUjOQr8=/0x0/filters:format(jpeg)/pic7751485.jpg", "r": 7.29, "p": [5, 10], "w": "light"}, {"id": "420915", "t": "Ichor", "i": "https://cf.geekdo-images.com/hRqHGC9qABpo_ZnolfpkDQ__itemrep@2x/img/Bc9mOJCSQ16ST-3vqg2Fya3TsIo=/fit-in/492x600/filters:strip_icc()/pic8195971.png", "r": 7.28, "p": [2, 2], "w": "light"}, {"id": "329845", "t": "Stella: Dixit Universe", "i": "https://cf.geekdo-images.com/j3vn68o2ovUim3zh-JiWIA__original/img/hQyaMSdfLsbyghE-mZ6T5HI3M_s=/0x0/filters:format(jpeg)/pic6738101.jpg", "r": 7.27, "p": [3, 6], "w": "light"}, {"id": "15390", "t": "Harvest", "i": "https://cf.geekdo-images.com/pImGcBuPfLEov1mm-e7iMA__original/img/zcGXpAdlvLoxmONV_Xcr2CaZtH8=/0x0/filters:format(png)/pic7490756.png", "r": 7.27, "p": [1, 6], "w": "light"}, {"id": "439561", "t": "Gruntz", "i": "https://cf.geekdo-images.com/5UHlN7xHbtLyBflLo22l_A__original/img/FAHSuf-h8Y599jdyVZg2KEWA0RU=/0x0/filters:format(jpeg)/pic9085224.jpg", "r": 7.25, "p": [2, 2], "w": "light"}, {"id": "420087", "t": "Flip 7", "i": "https://cf.geekdo-images.com/YrQxEB9Ef0kQorRApzG5vQ__original/img/hK6k-x_GYfooemrkkRuF0bTvKxE=/0x0/filters:format(jpeg)/pic8780246.jpg", "r": 7.21, "p": [3, 18], "w": "light"}, {"id": "298638", "t": "Sheriff of Nottingham: 2nd Edition", "i": "https://cf.geekdo-images.com/PN6L_uwSeg16LGXjxU1a8g__original/img/H3h8tmkJ-jI5qQmk4klE-pgySUM=/0x0/filters:format(jpeg)/pic6875754.jpg", "r": 7.21, "p": [3, 6], "w": "medium"}, {"id": "307997", "t": "Insider Black", "i": "https://cf.geekdo-images.com/goqvyYR_gRC44BRoZIaNhQ__original/img/69lxD_BtbhK3pu93Mgng8QvkWr0=/0x0/filters:format(png)/pic5797031.png", "r": 7.2, "p": [4, 8], "w": "light"}, {"id": "181304", "t": "Mysterium", "i": "https://cf.geekdo-images.com/1nQ3ZKudtDeAP7IiKE-kNg__original/img/6igmXolQesapNU9yEnexip6m9B8=/0x0/filters:format(jpeg)/pic8625343.jpg", "r": 7.19, "p": [2, 7], "w": "light"}, {"id": "262543", "t": "Wavelength", "i": "https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png", "r": 7.19, "p": [2, 12], "w": "light"}, {"id": "223770", "t": "Startups", "i": "https://cf.geekdo-images.com/Y23LsS9HxPgO0XT5RvtwTA__original/img/IJW2fhjS4x88hu8Aap8XHrMfcyg=/0x0/filters:format(png)/pic3678411.png", "r": 7.18, "p": [3, 7], "w": "light"}, {"id": "313", "t": "Big Boss", "i": "https://cf.geekdo-images.com/88O6qyRRVOvWL9f7dh2_Pw__original/img/Q8Zw7o-B8JqikHEdYe1yUuHZOPI=/0x0/filters:format(png)/pic7468155.png", "r": 7.17, "p": [2, 6], "w": "medium"}, {"id": "198773", "t": "Codenames: Pictures", "i": "https://cf.geekdo-images.com/IIPPjgD5vPklgY52nH-Pyw__original/img/tCCIBzgNdIN-tx4GXP5zsn-SJZk=/0x0/filters:format(jpeg)/pic4255261.jpg", "r": 7.17, "p": [2, 8], "w": "light"}, {"id": "436843", "t": "Wolf Street", "i": "https://cf.geekdo-images.com/HnHNIgASCYlO1TTAHHrm6w__itemrep@2x/img/Who1cZiGUDxbhzlz9vAZuCA3lhA=/fit-in/492x600/filters:strip_icc()/pic8643070.png", "r": 7.15, "p": [3, 11], "w": "light"}, {"id": "445423", "t": "Graft", "i": "https://cf.geekdo-images.com/J1lkPdUencJ2R7udAaiy9g__original/img/bF0L-yG_kZhg09it2qyrae88rNs=/0x0/filters:format(png)/pic8893505.png", "r": 7.15, "p": [3, 5], "w": "medium"}, {"id": "306321", "t": "Night of the Ninja", "i": "https://cf.geekdo-images.com/pa0kO7-PZkfuqEAvX384oQ__original/img/ylHi_WPL5I4FAHbQaaOm5QZW7uc=/0x0/filters:format(jpeg)/pic5426946.jpg", "r": 7.15, "p": [4, 11], "w": "light"}, {"id": "445424", "t": "Time to Panic", "i": "https://cf.geekdo-images.com/O7T79I7GjPmpwnbIlsGNQA__original/img/UoLvKxFw3A2ProUFETs3xEGLF00=/0x0/filters:format(png)/pic8893506.png", "r": 7.12, "p": [1, 4], "w": "medium"}, {"id": "464675", "t": "Catan: On the Road", "i": "https://cf.geekdo-images.com/fGTBFBkgrz4BOXV1I6Kskg__original/img/2nzf7CTyQ1FEkfui1UTH9R9zxRU=/0x0/filters:format(png)/pic9437186.png", "r": 7.11, "p": [3, 4], "w": "light"}, {"id": "344768", "t": "Mobile Markets: A Smartphone Inc. Game", "i": "https://cf.geekdo-images.com/LxvaXz86IMDgt6TBgOQU_Q__original/img/n3-RTnH4ntvzimX6i6IKHFAHn78=/0x0/filters:format(jpeg)/pic7586350.jpg", "r": 7.11, "p": [1, 4], "w": "medium"}, {"id": "393456", "t": "1902 Méliès", "i": "https://cf.geekdo-images.com/Pfa6h_VLnpqaB4ANGPoOcw__original/img/2alTOUpclf1y-FgWZP2GIePOhTo=/0x0/filters:format(jpeg)/pic7595598.jpg", "r": 7.1, "p": [2, 4], "w": "medium"}, {"id": "135779", "t": "A Fake Artist Goes to New York", "i": "https://cf.geekdo-images.com/5Q5YHxJeVp6PAhfv5Ct0-g__original/img/yRNioltDOtjrTRXa0HHoTTCWNf8=/0x0/filters:format(png)/pic3678404.png", "r": 7.1, "p": [5, 10], "w": "light"}, {"id": "12942", "t": "No Thanks!", "i": "https://cf.geekdo-images.com/2DyxMVASynw87LRULZuyqA__original/img/IHLuH9f5dB6jJn74cdVdMixAUKg=/0x0/filters:format(jpeg)/pic4657706.jpg", "r": 7.08, "p": [3, 7], "w": "light"}, {"id": "408547", "t": "Things in Rings", "i": "https://cf.geekdo-images.com/oNmUB9qyfDYwUlzwrl9hZQ__original/img/7ELk1Jd51l9UMPuv_QC8huhZ_8Q=/0x0/filters:format(jpeg)/pic8037086.jpg", "r": 7.07, "p": [2, 6], "w": "light"}, {"id": "229414", "t": "Tulip Bubble", "i": "https://cf.geekdo-images.com/CR8TzOHBj8vX49XxPwImLg__original/img/jQYxrbKvw6gDmGVXj04yMnlylyw=/0x0/filters:format(jpeg)/pic3728636.jpg", "r": 7.07, "p": [3, 5], "w": "medium"}, {"id": "256804", "t": "Exploding Kittens: Party Pack", "i": "https://cf.geekdo-images.com/TTsbFSWQjf6ALCmct9Q02g__original/img/X5tRRwzB7DK-hkna5VocAS6Kx0w=/0x0/filters:format(png)/pic5940391.png", "r": 7.04, "p": [2, 10], "w": "light"}, {"id": "396618", "t": "Waterfall Park", "i": "https://cf.geekdo-images.com/0G5vWPEOSVl8ZmXh-Ledcw__original/img/2wG0R_Xj32dik1AD8m6PjbwFTuI=/0x0/filters:format(jpeg)/pic7687140.jpg", "r": 7.03, "p": [3, 5], "w": "light"}, {"id": "206051", "t": "Insider", "i": "https://cf.geekdo-images.com/t1aM0G-Rqb7uCLzwyFz1yQ__original/img/uyN9xvO70NGE6Lvw7Nk_eKnDpzw=/0x0/filters:format(png)/pic5476466.png", "r": 7.02, "p": [4, 8], "w": "light"}, {"id": "277670", "t": "Among Cultists: A Social Deduction Thriller", "i": "https://cf.geekdo-images.com/ZljGAZbiYM3Ak3Mg4RE1Qw__original/img/8pwHFGkMCacx03ANgln1jZ9QzjA=/0x0/filters:format(jpeg)/pic7181914.jpg", "r": 6.99, "p": [4, 8], "w": "light"}, {"id": "412230", "t": "Lifeboats: Plank of Carneades", "i": "https://cf.geekdo-images.com/tba3l0K1zisn8k-y0WP32Q__original/img/U_AVODfChX1STSle-GyDiniCPy8=/0x0/filters:format(png)/pic8881493.png", "r": 6.99, "p": [3, 7], "w": "medium"}, {"id": "152242", "t": "Ultimate Werewolf: Deluxe Edition", "i": "https://cf.geekdo-images.com/TCPmgay8x1ALgTxwd4ks6g__original/img/vAXjnVDHLPmtNpPw7UQD8du7MC8=/0x0/filters:format(jpeg)/pic4272103.jpg", "r": 6.99, "p": [5, 75], "w": "light"}, {"id": "134352", "t": "Two Rooms and a Boom", "i": "https://cf.geekdo-images.com/jmf0M01DsReKLByori6OGg__itemrep@2x/img/0Lydurneh5hRNAlhBUy59QTev8E=/fit-in/492x600/filters:strip_icc()/pic2335221.png", "r": 6.98, "p": [6, 30], "w": "light"}, {"id": "278751", "t": "In Front of the Elevators", "i": "https://cf.geekdo-images.com/VrY3Gy9bI9Df1rrzdRPmEw__itemrep@2x/img/IiiHYa4I_FxElpVGEVtkg5DWQMs=/fit-in/492x600/filters:strip_icc()/pic4708322.png", "r": 6.98, "p": [2, 4], "w": "light"}, {"id": "131357", "t": "Coup", "i": "https://cf.geekdo-images.com/PfT8GdZBYImw6I_O7dgCkA__original/img/lO3o9_2xcUINJeY0JDTnJraIhhg=/0x0/filters:format(jpeg)/pic2830023.jpg", "r": 6.98, "p": [2, 6], "w": "light"}, {"id": "377983", "t": "Builders of Babel", "i": "https://cf.geekdo-images.com/hRAiuzG7v-YWTkfs88MJWA__original/img/Y2ldwz1H3nXXt3e5kzBorKh4Iuo=/0x0/filters:format(png)/pic7278326.png", "r": 6.97, "p": [2, 5], "w": "medium"}, {"id": "45", "t": "Perudo", "i": "https://cf.geekdo-images.com/asA8kd9kLpkA4Q_TF8TjUA__original/img/6nC83nGPPCP0xC9hZ_GWjTG6MHo=/0x0/filters:format(png)/pic8249159.png", "r": 6.93, "p": [2, 10], "w": "light"}, {"id": "238935", "t": "Stool Pigeon", "i": "https://cf.geekdo-images.com/JwXKEz_lc32uFKJX47wbmQ__original/img/M60m47J_KOcEBTs21vTxUHAeJpY=/0x0/filters:format(jpeg)/pic7674334.jpg", "r": 6.93, "p": [2, 6], "w": "light"}, {"id": "20100", "t": "Wits & Wagers", "i": "https://cf.geekdo-images.com/NhDgNswxHpwKSmuJZk26sw__original/img/xOl2dG2WOghH59R7dSv3l8zwevM=/0x0/filters:format(jpeg)/pic9174727.jpg", "r": 6.93, "p": [3, 7], "w": "light"}, {"id": "410382", "t": "That Escalated Quickly", "i": "https://cf.geekdo-images.com/VK7rPG7ftimNBbsa-XPKpQ__original/img/x0bFSZ6reARfgp3USrQHxBawzjE=/0x0/filters:format(png)/pic7957332.png", "r": 6.91, "p": [2, 8], "w": "light"}, {"id": "254681", "t": "Gorilla Marketing", "i": "https://cf.geekdo-images.com/s0HfVQ2rDlGGDJhpcWxsZQ__original/img/Yi91ZFyIdYn3qlfYK3aPXD42-t8=/0x0/filters:format(jpeg)/pic4973022.jpg", "r": 6.9, "p": [3, 8], "w": "light"}, {"id": "417224", "t": "Onstage", "i": "https://cf.geekdo-images.com/gWCKep7ZE408LuhHpevJ7Q__original/img/GthF8hu8UKxFYqS1dhteUK6hwqU=/0x0/filters:format(png)/pic8237135.png", "r": 6.89, "p": [3, 5], "w": "light"}, {"id": "2453", "t": "Blokus", "i": "https://cf.geekdo-images.com/96YA5wUJDxtPkmPxemr5Qg__original/img/sdX6o0TZpXjsDMw071k2P80wpYw=/0x0/filters:format(jpeg)/pic2197702.jpg", "r": 6.86, "p": [2, 4], "w": "light"}, {"id": "215371", "t": "CrossTalk", "i": "https://cf.geekdo-images.com/OWTqmf6vMiRJAWo99IV5vg__original/img/vV_2JIY28q4vVR_rsx4yqhYfEMw=/0x0/filters:format(png)/pic3326341.png", "r": 6.86, "p": [4, 8], "w": "light"}, {"id": "169654", "t": "Deep Sea Adventure", "i": "https://cf.geekdo-images.com/owyKXaa5SPB2HG9F_MueNQ__original/img/gOmpUB3hM7Ap9o-kDsV8ZVBVYXA=/0x0/filters:format(png)/pic3169827.png", "r": 6.86, "p": [2, 6], "w": "light"}, {"id": "415780", "t": "Lure", "i": "https://cf.geekdo-images.com/PTyoIJVnTwvSzsNyxuizkA__original/img/MZPWkHIqIrbxthd1UdNp7xnxFGA=/0x0/filters:format(jpeg)/pic8379513.jpg", "r": 6.83, "p": [2, 5], "w": "light"}, {"id": "11971", "t": "Cockroach Poker", "i": "https://cf.geekdo-images.com/1CxDV83C00o4EXRlaPuIkw__original/img/yf2fgFD-P7zxOBhTbQu0jFIj5Xc=/0x0/filters:format(png)/pic8873465.png", "r": 6.8, "p": [2, 6], "w": "light"}, {"id": "193308", "t": "Spyfall 2", "i": "https://cf.geekdo-images.com/4nE3EGcIVJnItZOdZ2NrxA__original/img/_6mflaWrgVpkFbJJICGTB8WAiiI=/0x0/filters:format(jpeg)/pic4141398.jpg", "r": 6.8, "p": [3, 12], "w": "light"}, {"id": "115", "t": "I'm the Boss!", "i": "https://cf.geekdo-images.com/AACbIbsoGRaCyuDfrG6hTg__original/img/QSp8vwu__YSdq49rG_17X-xWqmU=/0x0/filters:format(jpeg)/pic8774964.jpg", "r": 6.77, "p": [3, 6], "w": "light"}, {"id": "257067", "t": "Magnastorm", "i": "https://cf.geekdo-images.com/tWIrpGrKEj9O7Pa8brQ1kg__original/img/6XccpCK-UFAopk8Y9KcrN_3HYXo=/0x0/filters:format(jpeg)/pic4252589.jpg", "r": 6.76, "p": [2, 4], "w": "medium"}, {"id": "359893", "t": "Sounds Fishy", "i": "https://cf.geekdo-images.com/rE37bpTHbMlei9RJYCJPoQ__original/img/XIpnIu6CqsVQNJ6yqD8iQVP9IVg=/0x0/filters:format(png)/pic6938099.png", "r": 6.74, "p": [4, 10], "w": "light"}, {"id": "244992", "t": "The Mind", "i": "https://cf.geekdo-images.com/q_JGK291hrhnhiRB0667oA__original/img/8VjZEG278faO9JZwzce3v3EKssI=/0x0/filters:format(png)/pic3979766.png", "r": 6.71, "p": [2, 4], "w": "light"}, {"id": "356907", "t": "Mascarade (Second Edition)", "i": "https://cf.geekdo-images.com/WRRQtWATtDSAoVUW1pN_8A__original/img/_SiQ3rw1Cw37LB2MUrMpTSQ-XB0=/0x0/filters:format(png)/pic6484232.png", "r": 6.7, "p": [4, 12], "w": "light"}, {"id": "230765", "t": "Side Effects", "i": "https://cf.geekdo-images.com/F8pACwitKdp_ozWXDkpycw__original/img/tfJxylyCT_BB17Y-gxxVfMHwy0U=/0x0/filters:format(jpeg)/pic4104712.jpg", "r": 6.68, "p": [2, 8], "w": "light"}, {"id": "302595", "t": "Detective Conan: Suspect Criminal", "i": "https://cf.geekdo-images.com/UOG3vXQ9X27yEpND6kSeuA__original/img/uBqhdbHaQJorOYdyGhPe_qjDKas=/0x0/filters:format(jpeg)/pic6819118.jpg", "r": 6.67, "p": [5, 30], "w": "light"}, {"id": "194626", "t": "Happy Salmon", "i": "https://cf.geekdo-images.com/22gbMRtHEEVDBL7E2L1Qfw__original/img/HMi4BlxHod1F93jhQWAeS5XtCaw=/0x0/filters:format(jpeg)/pic6613101.jpg", "r": 6.64, "p": [3, 8], "w": "light"}, {"id": "624", "t": "Quoridor", "i": "https://cf.geekdo-images.com/I1YNAhee09mryaqfEo8MwA__original/img/LUcYakoNVnYxjmpYRFA6HUpHWo4=/0x0/filters:format(jpeg)/pic3488232.jpg", "r": 6.64, "p": [2, 4], "w": "light"}, {"id": "263360", "t": "Shy Monsters", "i": "https://cf.geekdo-images.com/U9jYBjSg0xIRirdSUzEISA__original/img/t2la-q7BJDQLSA7y2Zo2fHJejpM=/0x0/filters:format(jpeg)/pic4399167.jpg", "r": 6.64, "p": [2, 2], "w": "light"}, {"id": "453430", "t": "The Last Wizard", "i": "https://cf.geekdo-images.com/cQhZ22SucknOeqNKg0IfEg__original/img/ttCl-jwaAQkTgCqUllUCUc8Lnvw=/0x0/filters:format(png)/pic9079341.png", "r": 6.61, "p": [3, 6], "w": "light"}, {"id": "302917", "t": "King of 12", "i": "https://cf.geekdo-images.com/e4Fkzn03fI4crl_i1mtEng__original/img/jrpLd4c_BJPl-l-AT0tjEqPUK9k=/0x0/filters:format(png)/pic6050372.png", "r": 6.56, "p": [2, 4], "w": "medium"}, {"id": "277458", "t": "Kluster", "i": "https://cf.geekdo-images.com/0uu0QJ2OFRIEGVMUgzfYJQ__original/img/kLE0YlCEq_tSQGQXF9CMrTUtK8o=/0x0/filters:format(jpeg)/pic5251671.jpg", "r": 6.55, "p": [1, 4], "w": "light"}, {"id": "279477", "t": "Madrino", "i": "https://cf.geekdo-images.com/iYTN8JZEqoY7HPhFZDJyeQ__original/img/pbYtQeAtGDQVEmZWgZXuECSUDTY=/0x0/filters:format(jpeg)/pic4765917.jpg", "r": 6.54, "p": [2, 4], "w": "light"}, {"id": "423792", "t": "Dumb Questions to Ask Your Friends", "i": "https://cf.geekdo-images.com/06qCPGgRpeBxnur6VpChDw__original/img/65xDuBZ8HGgmjCZWIWmqNXB9he4=/0x0/filters:format(png)/pic8279574.png", "r": 6.52, "p": [3, 20], "w": "light"}, {"id": "388413", "t": "Whale to Look", "i": "https://cf.geekdo-images.com/xxU1HKdkf1HIotFGyYO2bQ__original/img/cnGPfeD1TqnhWPlcAN0P0gzKzdc=/0x0/filters:format(jpeg)/pic7837610.jpg", "r": 6.52, "p": [2, 5], "w": "light"}, {"id": "227072", "t": "The Chameleon", "i": "https://cf.geekdo-images.com/t4z9o26DuJd1Hteg--95wg__original/img/CzS9UppGiuQbjDSkmyP8OalCQhM=/0x0/filters:format(jpeg)/pic8218889.jpg", "r": 6.5, "p": [3, 8], "w": "light"}, {"id": "191895", "t": "Toddles-Bobbles", "i": "https://cf.geekdo-images.com/_GACn_3jAT16uoKsFSbEhw__original/img/gTqH9aRWhlT6fVtg-YcGnUDeQEE=/0x0/filters:format(png)/pic8894297.png", "r": 6.5, "p": [2, 6], "w": "light"}, {"id": "3955", "t": "BANG!", "i": "https://cf.geekdo-images.com/_04xA-d-rfygm0c49HE4vA__original/img/el-4Ilu9DeYunRT3r4TVP8Vy3uk=/0x0/filters:format(jpeg)/pic1170986.jpg", "r": 6.49, "p": [4, 7], "w": "light"}, {"id": "3093", "t": "Croak!", "i": "https://cf.geekdo-images.com/BOR53WaU0vKwYtDmWSsuQw__original/img/GREQP_OEzLuakwDz71lUlgxtM84=/0x0/filters:format(jpeg)/pic1319089.jpg", "r": 6.49, "p": [2, 4], "w": "light"}, {"id": "261262", "t": "Blöde Kuh", "i": "https://cf.geekdo-images.com/xXUwxVJoAWem0HHUq-pWmw__original/img/cJyrNVy28Av-7ZDJHMcGx3U8bUs=/0x0/filters:format(jpeg)/pic4321545.jpg", "r": 6.46, "p": [3, 6], "w": "light"}, {"id": "105593", "t": "Cheating Moth", "i": "https://cf.geekdo-images.com/ulu-HipUfC0FM8Z2FPI-XA__original/img/qPT_pHIOYHAOyFAVUvzsm-TcLvU=/0x0/filters:format(jpeg)/pic6369025.jpg", "r": 6.4, "p": [3, 5], "w": "light"}, {"id": "413461", "t": "This Game Is Killer: Alien on Board", "i": "https://cf.geekdo-images.com/RqyXZLS2lZHbfxjZBIblag__original/img/ooqT1FgGMcP5MxWe2snI5GlzTec=/0x0/filters:format(png)/pic8083224.png", "r": 6.4, "p": [3, 10], "w": "light"}, {"id": "383981", "t": "The Queen's New Capital", "i": "https://cf.geekdo-images.com/tYVBDcYzJF6GKSsJR4gIyQ__original/img/LyK0JH61NSC5DqPs5OWmwH9aaR8=/0x0/filters:format(jpeg)/pic7826835.jpg", "r": 6.39, "p": [1, 4], "w": "medium"}, {"id": "433075", "t": "TRND", "i": "https://cf.geekdo-images.com/2ONbq-WFgz0SLHFX_gkvEA__original/img/Z-IWUb4E2F7UIckT1T42wazZqmY=/0x0/filters:format(jpeg)/pic8817706.jpg", "r": 6.35, "p": [3, 5], "w": "light"}, {"id": "367601", "t": "That Sound Game", "i": "https://cf.geekdo-images.com/Ti4Av8a7JxNnoWDUr9BSig__original/img/nt98EC5u3WRL7XxlutideyNfly0=/0x0/filters:format(jpeg)/pic8621075.jpg", "r": 6.34, "p": [2, 30], "w": "light"}, {"id": "386826", "t": "Kiss the Goblin", "i": "https://cf.geekdo-images.com/DtcDeW8oHH0vXZNk8py-Ug__original/img/aNrF6fNMzdxY6ImQvsEY1-bPBEE=/0x0/filters:format(jpeg)/pic7489920.jpg", "r": 6.31, "p": [2, 8], "w": "light"}, {"id": "370772", "t": "Cluellage", "i": "https://cf.geekdo-images.com/OeVEYoTQ5LxHMixhTUU_zg__original/img/tf8zvlQovHkVpAA1xnZZlOViK1I=/0x0/filters:format(png)/pic7072414.png", "r": 6.25, "p": [3, 6], "w": "light"}, {"id": "184522", "t": "Dead Last", "i": "https://cf.geekdo-images.com/o-Z0bj1YVYgsnaVVR5yXOQ__original/img/JgQHRpfhx6JXMfa0lynP_1XaTdc=/0x0/filters:format(jpeg)/pic3021686.jpg", "r": 6.22, "p": [6, 12], "w": "light"}, {"id": "328536", "t": "Fish & Katz", "i": "https://cf.geekdo-images.com/yA-FNLyrwoGYSCRajldkEQ__original/img/JaH-R6qUAdMfDqD39XMuQSR7-K0=/0x0/filters:format(jpeg)/pic6214391.jpg", "r": 6.19, "p": [2, 6], "w": "light"}, {"id": "17027", "t": "Sitting Ducks Gallery", "i": "https://cf.geekdo-images.com/zMy1iQvHerTCKdg8LD42GA__original/img/KZ9XRxwoclHxhWVECJWoUscgUyg=/0x0/filters:format(jpeg)/pic4523294.jpg", "r": 6.18, "p": [3, 6], "w": "light"}, {"id": "295646", "t": "Spyfest", "i": "https://cf.geekdo-images.com/OukTwg4iz1L8pwiSxa9ERA__original/img/Kv15T5PuLT8GU1IAV0zxxClm6Cs=/0x0/filters:format(jpeg)/pic5091111.jpg", "r": 6.06, "p": [4, 10], "w": "light"}, {"id": "406538", "t": "Dinner Time", "i": "https://cf.geekdo-images.com/jZjPfc14gzL0uYdhfzB0IQ__original/img/lQXyO_8lJyG6mCy5WSuwnfa_fTg=/0x0/filters:format(jpeg)/pic8158230.jpg", "r": 5.68, "p": [4, 10], "w": "light"}, {"id": "386102", "t": "Parkade", "i": "https://cf.geekdo-images.com/RNUvlP4cotz7mivLcCPO7g__original/img/xiEg-yq8keQzlVaL8QOLrlxuv_c=/0x0/filters:format(jpeg)/pic7921921.jpg", "r": 5.32, "p": [3, 13], "w": "light"}, {"id": "410185", "t": "マドリイズム＋ (Madori-ism Plus)", "i": "https://cf.geekdo-images.com/YxV7oGKzj42twflZg3r-SA__original/img/lX-3ekEw3N3G1wGyvnL4JzVrE2U=/0x0/filters:format(jpeg)/pic7934628.jpg", "r": 5.14, "p": [1, 5], "w": "light"}, {"id": "198961", "t": "Yeti in My Spaghetti", "i": "https://cf.geekdo-images.com/ooxfKcX1kaoE1DrS2MS8Gg__original/img/Y7nYPNdVF7puAn9DFnJtk9nOAg8=/0x0/filters:format(jpeg)/pic8616133.jpg", "r": 4.91, "p": [2, 99], "w": "light"}];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const LEAN=[-6,4,-3,5,-5,3,-4,6,-2,4,-6,2];
+const im=g=>`<img src="${g.i}" alt="${g.t} cover" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`;
+const shelf=$('#shelf');
+function cards(list){shelf.className='shelf';shelf.innerHTML=list.map(g=>`<button class="game-card" data-id="${g.id}"><span class="sel-ring"></span><div class="art">${im(g)}</div><div class="info"><h3 class="title">${g.t}</h3><div class="meta-row"><span class="rating-pill">★ ${g.r.toFixed(1)}</span><span class="players">${g.p[0]===g.p[1]?g.p[0]:g.p[0]+'–'+g.p[1]}</span></div></div></button>`).join('')}
+function planks(list){const n=innerWidth>=800?6:innerWidth>=560?4:3;shelf.className='planks';shelf.dataset.labels=state.labels;let h='';
+  for(let i=0;i<list.length;i+=n){h+=`<div class="plankrow">`+list.slice(i,i+n).map((g,k)=>`<button class="gbox" data-id="${g.id}" style="--lean:${LEAN[(i+k)%LEAN.length]}deg" aria-label="${g.t}"><span class="glow"></span><span class="sel"></span><span class="chk">✓</span><span class="face">${im(g)}</span><span class="foot"></span><span class="cap">${g.t}</span></button>`).join('')+`<span class="lamp"></span><span class="plank"></span></div>`}
+  shelf.innerHTML=h}
+const state={view:'shelf',labels:'none',count:196,select:false};   // titles: covers only (locked)
+function render(){const list=G.slice(0,state.count);(state.view==='shelf'?planks:cards)(list);
+  $('#shelf-count-text').textContent=`${list.length} of ${G.length} games`;
+  $$('#shelf .gbox,#shelf .game-card').forEach(b=>b.addEventListener('click',()=>{if(state.select){b.classList.toggle('selected');return}
+    if(b.classList.contains('gbox')){$$('.gbox').forEach(x=>x.classList.remove('up'));b.classList.add('up');setTimeout(()=>b.classList.remove('up'),1400)}}))}
+function setView(v){state.view=v;try{localStorage.setItem('bgs:view',v)}catch(e){}const T=$('#viewToggle');T.dataset.view=v;$$('.view-opt').forEach(o=>o.setAttribute('aria-checked',o.dataset.view===v));render()}
+$$('.view-opt').forEach(o=>o.onclick=()=>setView(o.dataset.view));
+let rw;addEventListener('resize',()=>{clearTimeout(rw);rw=setTimeout(render,120)});
+/* demo bar */
+$$('.demobar [data-labels]').forEach(b=>b.onclick=()=>{state.labels=b.dataset.labels;$$('.demobar [data-labels]').forEach(x=>x.setAttribute('aria-pressed',x===b));render()});
+$$('.demobar [data-count]').forEach(b=>b.onclick=()=>{state.count=+b.dataset.count;$$('.demobar [data-count]').forEach(x=>x.setAttribute('aria-pressed',x===b));render()});
+$('#selMode').onclick=e=>{state.select=!state.select;document.body.classList.toggle('is-selecting',state.select);e.currentTarget.setAttribute('aria-pressed',state.select)};
+$$('.demobar [data-theme]').forEach(b=>b.onclick=()=>{document.documentElement.dataset.theme=b.dataset.theme;$$('.demobar [data-theme]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+setView('shelf');
+</script>
+</body></html>
