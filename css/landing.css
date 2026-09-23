@@ -587,11 +587,17 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 /* Google G on a white disc — decorative; the button text is the name. */
 .g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;flex:none}
 .g svg{width:14px;height:14px}
-/* Google's rendered control, transparent over the gold button. Its iframe is
-   a fixed 40–44px tall, so it is scaled up to cover the 60px pill. */
-.gsi{position:absolute;inset:0;overflow:hidden;opacity:0;display:flex;align-items:center;justify-content:center}
-.gsi > div{transform:scale(1.08,1.5);transform-origin:center}
-.gsi > div,.gsi iframe{width:100%!important}
+/* Google's rendered control, VISIBLE, at its own size, centred in the gold
+   button's 60px slot so nothing shifts when it mounts. It used to sit over
+   the gold pill at opacity:0 and stretched to cover it; Google's button
+   drops clicks when it is not genuinely visible (a clickjacking check on
+   IntersectionObserver v2 — Chrome has it, Safari does not, which is why the
+   overlay worked on an iPhone and did nothing on desktop Chrome). So no
+   opacity, no filter, no transform-stretch, and nothing painted over it. */
+.gsi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+/* Once Google's control is in, the gold pill underneath goes; it keeps the
+   slot (and the halo) and comes back only if Google's script cannot load. */
+.google-wrap:has(#gsiBtn:not([hidden])) #googleBtn{visibility:hidden}
 
 /* "Prefer email?" and "Just looking?", centred under the button. #guestLine
    stays hidden until fetchPublicShelves() finds a shelf to point at. */
