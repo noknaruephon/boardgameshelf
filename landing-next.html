@@ -100,9 +100,10 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   <a class="cue" href="#vote"><span class="mono">Try the vote</span><i aria-hidden="true"></i></a>
 </section>
 
-<!-- ═════ HERO ═════
-     js/landing-hero.js fills the wall and the deck and makes the vote
-     playable. Without it the page still reads: the first card is drawn below
+<!-- ═════ VOTE DEMO (section 2) ═════
+     The page header lives in the shelf hero above; "Try the vote" up there
+     lands here. js/landing-hero.js fills the wall and the deck and makes the
+     vote playable. Without it the page still reads: the first card is drawn below
      and the ✕ / counter / ✓ row is simply inert. -->
 <section class="hero" id="vote">
   <div class="bg" aria-hidden="true">
@@ -113,19 +114,11 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     <div class="veil"></div>
   </div>
 
-  <header class="top">
-    <p class="mark bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></p>
-    <a class="navsignin" href="#signin">Sign in</a>
-  </header>
-
   <div class="inner">
     <div class="copy">
-      <h1>Pick tonight's game, together.</h1>
-      <p class="lede">Turn your BoardGameGeek collection into a page your friends vote on.</p>
-      <div class="cta">
-        <a class="glass fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
-        <a class="textlink" href="#story">See how it works</a>
-      </div>
+      <p class="eyebrow-v">Try it</p>
+      <h2 class="v-h">Pick tonight's game, together.</h2>
+      <p class="lede">Four friends are already at this table. Swipe right to play, left to pass, and watch the table decide.</p>
     </div>
 
     <!-- Focusable so the arrow keys can drive the vote without a document
