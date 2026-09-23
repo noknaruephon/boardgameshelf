@@ -1,6 +1,6 @@
 {
   "images": {
-    "sizes": [384, 1080],
+    "sizes": [160, 384, 1080],
     "domains": ["cf.geekdo-images.com"],
     "minimumCacheTTL": 2592000,
     "formats": ["image/avif", "image/webp"]
@@ -14,7 +14,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/",                  "destination": "/landing.html" },
+    { "source": "/",                  "destination": "/landing-next.html" },
     { "source": "/u/:slug",           "destination": "/shelf.html" },
     { "source": "/bag/:id",           "destination": "/shelf.html" },
     { "source": "/settings",          "destination": "/settings.html" },

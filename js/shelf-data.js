@@ -1,5 +1,6 @@
 import { supabase } from './supabase.js';
 import { DEFAULT_SHELF_SLUG } from './config.js';
+import { sizedCover } from './cover-url.js';
 
 // Loads a shelf from Supabase and hands it back in the shape the shelf, the
 // filters, the modal and the game-night pages have consumed since games.json:
@@ -44,13 +45,10 @@ function plateColor() {
   return getComputedStyle(document.documentElement).getPropertyValue('--bgs-plate').trim();
 }
 
-// /_vercel/image resizes and re-encodes a BGG cover on the edge. Widths must
-// be ones listed in vercel.json. Anything that is not a BGG URL (a local
-// /covers/ file, an empty string) is returned as is.
-export function sizedCover(url, width) {
-  if (!/^https:\/\/cf\.geekdo-images\.com\//.test(url)) return url;
-  return `/_vercel/image?url=${encodeURIComponent(url)}&w=${width}&q=75`;
-}
+// Lives in js/cover-url.js so a page that only needs an image URL does not
+// pull this module's Supabase client in with it. Re-exported here because
+// this is where everything has always imported it from.
+export { sizedCover };
 
 // Thresholds read off games.json: every "light" game there is under 2.0 and
 // every "heavy" one 3.3 or above, with "medium" between.
