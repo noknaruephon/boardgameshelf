@@ -688,14 +688,14 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     --bw:calc((100% - 2 * var(--pad) - (var(--n) - 1) * var(--g)) / var(--n));}
   @media (min-width:560px){.planks{--n:4;--g:16px;}}
   @media (min-width:800px){.planks{--n:6;--g:22px;}}
-  .plankrow{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:var(--g);padding:22px var(--pad) 48px;isolation:isolate;
-    content-visibility:auto;contain-intrinsic-size:auto 240px;}   /* 48px bottom: 14px plank + 34px of its shadow */
+  .plankrow{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:var(--g);padding:12px var(--pad) 38px;isolation:isolate;
+    content-visibility:auto;contain-intrinsic-size:auto 220px;}   /* 38px bottom: 14px plank + 24px of its shadow; 12px top: room for the lift */
   /* the board: a lit top face, a darker front, a gold hairline on the top edge. Walnut on every theme: it is furniture. */
-  .plankrow .plank{position:absolute;left:4px;right:4px;bottom:34px;height:14px;border-radius:2px 2px 3px 3px;z-index:3;
+  .plankrow .plank{position:absolute;left:4px;right:4px;bottom:24px;height:14px;border-radius:2px 2px 3px 3px;z-index:3;
     background:linear-gradient(to bottom,#5a4231 0 22%,#3a2a20 22% 48%,#2a1d16 48%,#1a110d 100%);
     box-shadow:inset 0 1px 0 rgba(var(--bgs-gold-rgb),.6),inset 0 -1px 0 rgba(0,0,0,.75),0 1px 0 rgba(0,0,0,.6);}
   /* the plank's shadow on the wall. No filter:blur and no overhang: either would reach past the row's containment box and get cut flat. */
-  .plankrow .plank::before{content:"";position:absolute;left:0;right:0;top:100%;height:34px;pointer-events:none;
+  .plankrow .plank::before{content:"";position:absolute;left:0;right:0;top:100%;height:24px;pointer-events:none;
     background:linear-gradient(to bottom,rgba(0,0,0,.7) 0,rgba(0,0,0,.4) 30%,rgba(0,0,0,.12) 68%,transparent 100%);
     -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);}
   /* the boxes' shadow cast back onto the wall just above the board */
