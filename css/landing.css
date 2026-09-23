@@ -678,9 +678,16 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   /* Phone and steps side by side; the pin loses its glass band because there
      is no step text passing under it. */
   .a-wrap{display:grid;grid-template-columns:400px 1fr;gap:72px;margin-top:48px}
-  .a-pin{top:32px;align-self:start;margin:0;padding:24px 0;overflow:visible;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
+  /* The pin is a full viewport tall with the phone centred inside it, so the
+     phone sits level with the step you are reading (the steps centre
+     themselves in 66vh) instead of hugging the top edge. */
+  .a-pin{top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;align-self:start;margin:0;padding:24px 0;overflow:visible;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
   .stage{width:270px}
   .a-steps .step{min-height:66vh;display:flex;flex-direction:column;justify-content:center}
+  /* The first and last steps are a full viewport tall, so the pin is already
+     stuck when the first step's text is centred and still stuck when the
+     last one's is — otherwise the phone slides in late and leaves early. */
+  .a-steps .step:first-child,.a-steps .step:last-child{min-height:100vh}
 }
 @media (min-width:700px){
   .extras{grid-template-columns:1fr 1fr}
