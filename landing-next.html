@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   })();
 </script>
 <script type="module" src="/js/beta-tag.js"></script>
+<script type="module" src="/js/landing-shelf.js"></script>
 <script type="module" src="/js/landing-hero.js"></script>
 <script type="module" src="/js/landing-story.js"></script>
 <script type="module" src="/js/landing-close.js"></script>
@@ -74,11 +75,36 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 </head>
 <body>
 
+<!-- ═════ SHELF HERO ═════
+     docs/claude-code-spec-landing-hero.md. A real-looking shelf: two planks,
+     nine boxes, each one lit from behind. js/landing-shelf.js builds the
+     boxes from LANDING_GAMES. This section owns the page header. The <br>s
+     in the copy are deliberate: both lines break there at every width. -->
+<section class="shelfhero" id="top">
+  <div class="veil" aria-hidden="true"></div>
+  <header class="top">
+    <p class="mark bgs-wordmark">BoardgameShelf<button type="button" class="bgs-beta" aria-label="Beta — about this label">Beta</button></p>
+    <a class="navsignin" href="#signin">Sign in</a>
+  </header>
+  <div class="lead">
+    <h1>Every game you own,<br>on the shelf.</h1>
+    <div class="side">
+      <p>A shelf for your boardgame collection.<br>Your friends vote for tonight's game.</p>
+      <div class="cta">
+        <a class="glass fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+        <a class="textlink" href="#vote">Try the vote</a>
+      </div>
+    </div>
+  </div>
+  <div class="shelfwall"></div>
+  <a class="cue" href="#vote"><span class="mono">Try the vote</span><i aria-hidden="true"></i></a>
+</section>
+
 <!-- ═════ HERO ═════
      js/landing-hero.js fills the wall and the deck and makes the vote
      playable. Without it the page still reads: the first card is drawn below
      and the ✕ / counter / ✓ row is simply inert. -->
-<section class="hero" id="hero">
+<section class="hero" id="vote">
   <div class="bg" aria-hidden="true">
     <div class="wall" id="wall"></div>
     <!-- Two stacked images cross-faded by opacity, so the wall takes the

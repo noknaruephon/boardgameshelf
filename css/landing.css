@@ -50,6 +50,102 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
 .sec{padding:56px 20px 72px;max-width:1120px;margin:0 auto}
 .sec .intro p{color:var(--bgs-ivory-70);margin-top:12px;max-width:30em}
 
+/* ═════ SHELF HERO ═════
+   docs/claude-code-spec-landing-hero.md. Lifted from the mockup's H11 banner
+   with .h11 renamed .shelfhero, and its .wall renamed .shelfwall because
+   .wall is the vote demo's cover wall below. Two walnut planks on a dark
+   wall, nine real boxes standing on them, each one backlit. Almost nothing
+   moves: the lights breathe, and a box lifts on hover or tap.
+
+   WebKit rule here: .box transitions transform and nothing else; .glow and
+   .cue i animate; no element carries both. Every glow and lamp gradient ends
+   inside its own element, so the blur has nothing to clip against. Both rows
+   of boxes take one size from the wall (--bw) and are flex:none — letting
+   them shrink is what once made the two rows unequal. */
+
+.shelfhero{position:relative;isolation:isolate;overflow:hidden;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-start;padding:0}
+/* A faint light on the upper wall, plus the usual fade to the theme
+   background at the top and the bottom. */
+.shelfhero .veil{position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,rgba(var(--bgs-ivory-rgb),.06),transparent 40%),linear-gradient(to bottom,var(--bgs-bg) 0,transparent 20%,transparent 85%,var(--bgs-bg) 100%)}
+.shelfhero .top{position:relative;z-index:3;padding:18px 20px 10px}
+.shelfhero .mark{font-size:24px}
+.shelfhero .lead{display:flex;flex-direction:column;gap:18px;padding:22px 20px 0}
+.shelfhero .side{display:contents}
+/* The <br>s in the copy are the line breaks; nothing here may reflow them. */
+.shelfhero .lead h1{font:600 clamp(34px,8.6vw,68px)/1.05 'Fraunces',serif;letter-spacing:-.02em;margin:0;font-variation-settings:'opsz' 144;max-width:11em}
+.shelfhero .lead p{font:400 16px/1.55 'Inter',sans-serif;color:var(--bgs-ivory-70);max-width:24em}
+/* On phones the row shows only the text link; the floating pill is the
+   button. From 900px the compact glass button joins it — 46px, not the
+   floating pill's 56. */
+.shelfhero .cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:6px}
+.shelfhero .cta .fab{display:none;min-height:46px;padding:0 22px;font-size:15px;gap:7px}
+.shelfhero .cta .fab svg{width:16px;height:16px}
+
+/* The wall. One box size for both shelves, set here. */
+.shelfhero .shelfwall{--bw:min(25vw,13svh,104px);position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,6svh,56px);padding:44px 8px 50px;perspective:1400px;perspective-origin:50% 20%}
+.shelf{position:relative;flex:none;align-self:center;width:max-content;max-width:100%;display:flex;justify-content:center;align-items:flex-end;gap:var(--g,10px);padding:0 var(--pad,10px) 0;isolation:isolate;--over:-22px}
+/* The plank: a walnut board with a gold-lit front edge. Furniture, not UI —
+   the same wood on every theme. Its shadow is inset 4% at each end so it
+   fades out under the board instead of running across the wall. */
+.plank{position:absolute;left:var(--over);right:var(--over);bottom:-14px;height:14px;border-radius:3px 3px 4px 4px;z-index:3;
+  background:linear-gradient(to bottom,#4a3527 0,#2e2018 40%,#1c130e 100%);box-shadow:inset 0 1px 0 rgba(var(--bgs-gold-rgb),.55),inset 0 -1px 0 rgba(0,0,0,.7),0 22px 30px -8px rgba(0,0,0,.9),0 50px 50px -24px rgba(0,0,0,.7)}
+.plank::before{content:"";position:absolute;left:4%;right:4%;top:100%;height:44px;border-radius:0 0 50% 50%/0 0 100% 100%;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
+/* The soft ceiling light that falls on this shelf. Ends inside its own box. */
+.shelf .lamp{position:absolute;left:-16%;right:-16%;top:-95%;height:200%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 50% 42% at 50% 55%,rgba(var(--bgs-ivory-rgb),.07),transparent 100%)}
+
+/* A box. Transition on transform only. */
+.box{position:relative;flex:none;width:var(--bw);height:calc(var(--bw) * 4 / 3);padding:0;z-index:2;transform-origin:50% 100%;transform:translateY(0);transition:transform .45s cubic-bezier(.32,.72,0,1)}
+.box .face{position:absolute;inset:0;border-radius:5px;overflow:hidden;background:var(--bgs-plate);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14),-6px 12px 22px -10px rgba(0,0,0,.9);z-index:2;transform:perspective(600px) rotateY(var(--lean,0deg));transform-origin:50% 100%}
+.box .face img{width:100%;height:100%;object-fit:cover}
+.box .face::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,.16) 0,transparent 30%,transparent 72%,rgba(0,0,0,.25) 100%)}
+/* The backlight: one shared warm light, shaped into a halo so it reads as
+   light on the wall, not a second rectangle. Animation only — the box it
+   sits in is the thing that transitions. Its own keyframes: the closing
+   section's halo already owns the name "breathe". */
+.box .glow{position:absolute;left:-22%;right:-22%;top:-26%;bottom:-4%;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 46% 46% at 50% 56%,rgba(var(--bgs-gold-rgb),.75) 0,rgba(var(--bgs-gold-rgb),.3) 45%,transparent 100%);filter:blur(8px);opacity:.85;
+  animation:glowbreathe 6s ease-in-out infinite;animation-delay:var(--bd,0s)}
+@keyframes glowbreathe{0%,100%{opacity:.7}50%{opacity:1}}
+.box .foot{position:absolute;left:6%;right:6%;bottom:-5px;height:10px;border-radius:50%;background:rgba(0,0,0,.75);filter:blur(4px);z-index:1}
+.box:hover,.box:focus-visible,.box.up{transform:translateY(-10px) scale(1.04)}
+.box:hover .face,.box.up .face{transform:perspective(600px) rotateY(0deg)}
+.box:hover .glow,.box.up .glow{opacity:1}
+.box .name{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%) translateY(6px);font:600 12px/1 'Fraunces',serif;color:var(--bgs-ivory);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;text-shadow:0 1px 8px #000;z-index:4}
+.box:hover .name,.box.up .name{opacity:1;transform:translateX(-50%)}
+
+/* The scroll cue: a link to the vote, its hairline drifting. Animation on
+   the hairline only. */
+.shelfhero .cue{position:absolute;left:0;right:0;bottom:12px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;text-decoration:none}
+.shelfhero .cue i{width:1px;height:26px;background:linear-gradient(to bottom,transparent,var(--bgs-gold));animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:translateY(-4px);opacity:.4}50%{transform:translateY(4px);opacity:1}}
+
+/* Both shelf sets are in the markup; the query picks one. */
+.mob{display:contents}
+.desk{display:none}
+
+@media (min-width:900px){
+  .shelfhero{min-height:min(880px,100svh)}
+  .shelfhero .top{padding:18px 40px}
+  .shelfhero .mark{font-size:28px}
+  /* Centred: one column down the middle, the shelves' own axis. The copy's
+     <br>s make the two lines; the widths are left open so nothing reflows
+     them. */
+  .shelfhero .lead{max-width:1280px;margin:0 auto;width:100%;padding:16px 40px 0;align-items:center;text-align:center;gap:16px}
+  .shelfhero .lead h1{font-size:clamp(46px,4.9vw,72px);line-height:1.02;max-width:none}
+  .shelfhero .lead p{font-size:18px;line-height:1.5;margin:0;max-width:none}
+  .shelfhero .side{display:flex;flex-direction:column;align-items:center}
+  .shelfhero .cta{justify-content:center;margin-top:22px}
+  .shelfhero .cta .fab{display:flex}
+  .shelfhero .shelfwall{--bw:clamp(96px,min(9.4vw,13.4svh),128px);gap:clamp(34px,5vh,60px);padding:40px 40px 52px;justify-content:flex-start}
+  /* Both planks the same length, sized to the fuller row. */
+  .shelf{--g:34px;--pad:0;--over:-64px;width:calc(5 * var(--bw) + 4 * var(--g))}
+  .plank{height:18px;bottom:-18px}
+  .plank::before{height:70px}
+  .box .name{font-size:14px;bottom:-44px}
+  .mob{display:none}
+  .desk{display:contents}
+}
+
 /* ═════ HERO ═════ */
 
 .hero{position:relative;overflow:hidden;isolation:isolate;min-height:100svh;display:flex;flex-direction:column;padding:0 20px calc(var(--sticky) + 12px)}
@@ -619,9 +715,11 @@ h3{font:600 22px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0}
   /* Nothing drifts, nothing flies in, nothing is crowned. The hero still
      plays — js/landing-hero.js skips the count and goes to the result — so
      every piece stays present, just still. */
-  .halo,.col,.dots i,.frag>*,.f8 .drift,.pz>*,
+  .halo,.col,.dots i,.frag>*,.f8 .drift,.pz>*,.box .glow,.shelfhero .cue i,
   .table.done .winner,.table.done .result h3,
   .table.done .flash,.table.done .after{animation:none}
+  /* The shelf's boxes still lift on hover and tap, just without the ease. */
+  .box,.box .name{transition:none}
   /* The pieces for the step you are on, and the closing section's, still
      appear — they just appear in place rather than flying in. */
   .sticky,.chip,.a-tabs span,.btn,.slot,.card,.card.snap,.mini,.pips i,.light img,
