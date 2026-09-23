@@ -428,14 +428,21 @@ try {
 </script>
 
 <script type="module">
-// The floating CTA steps aside while the closing section is on screen: it must
-// never sit over the real Google button. Transform only, per css/glass.css.
+// The floating CTA steps aside while a section that has its own button is on
+// screen: the shelf hero (its compact "Get your shelf" sits beside "Try the
+// vote") and the closing section (it must never sit over the real Google
+// button). Transform only, per css/glass.css.
 const sticky = document.getElementById('sticky');
-const signin = document.getElementById('signin');
-if (sticky && signin && 'IntersectionObserver' in window) {
-  new IntersectionObserver(([entry]) => {
-    sticky.classList.toggle('away', entry.isIntersecting);
-  }, { threshold: .2 }).observe(signin);
+const covered = new Set();
+if (sticky && 'IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) e.isIntersecting ? covered.add(e.target) : covered.delete(e.target);
+    sticky.classList.toggle('away', covered.size > 0);
+  }, { threshold: .2 });
+  for (const id of ['top', 'signin']) {
+    const el = document.getElementById(id);
+    if (el) io.observe(el);
+  }
 }
 </script>
 </body>
