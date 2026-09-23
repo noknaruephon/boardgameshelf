@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en" data-theme="walnut"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BoardgameShelf — landing: hero option H11, the real shelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>:root{
+  --bgs-bg:#171110;--bgs-bg-rgb:23,17,16;--bgs-plate:#211915;--bgs-plate-rgb:33,25,21;--bgs-bg-radial:#1F1816;
+  --bgs-ivory:#F2E9DA;--bgs-ivory-rgb:242,233,218;--bgs-ivory-70:rgba(242,233,218,0.72);--bgs-ivory-45:rgba(242,233,218,0.45);--line:rgba(242,233,218,0.10);
+  --bgs-gold:#E4B54D;--bgs-gold-rgb:228,181,77;--bgs-on-gold:#2A1F0C;--bgs-gold-dim:rgba(240,196,85,0.80);
+  --bgs-vote-play:#5FB07F;--bgs-vote-pass:#D9645A;
+  /* Liquid Glass tokens, verbatim from css/base.css */
+  --glass-fill-a:.52;--glass-blur:22px;--glass-sat:1.6;--glass-rim-w:1.5px;--glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);--glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
+  --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);--glass-sheen:rgba(var(--bgs-ivory-rgb),.10);--light-x:20%;--ease-liquid:cubic-bezier(.32,.72,0,1);--bgs-gold-hover:#F0C455;
+  --mk-play:var(--bgs-vote-play);--mk-pass:var(--bgs-vote-pass);--mk-ink:#2a1a0c;
+  --mk-hair:rgba(var(--bgs-ivory-rgb),.12);--mk-dim:rgba(var(--bgs-ivory-rgb),.74);
+  --mk-display:"Fraunces",Georgia,serif;--mk-ui:"Inter",system-ui,sans-serif;--mk-mono:"IBM Plex Mono",ui-monospace,monospace;
+  --mk-focus:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);
+  --demo:46px;          /* mockup-only: height of the demo bar pinned to the top */
+  --sticky:86px;        /* mobile sticky CTA height */
+  --wall-o:.26;         /* wall prominence: locked at Soft */
+  --light-s:5;          /* cover light scale: small source scaled up, as in the vote screen spec */
+}
+:root{--demo:46px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bgs-bg);color:var(--bgs-ivory);font:400 16px/1.5 'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;padding-top:var(--demo)}
+img{display:block;max-width:100%}p{margin:0}a{color:inherit}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold)}
+.mono{font:400 12px/1.4 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45)}
+.top{display:flex;align-items:center;gap:8px;padding:14px 0;position:relative;z-index:3}
+.wordmark{font:italic 500 20px/1 'Fraunces',serif;color:var(--bgs-gold)}
+.beta{font:500 10px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;padding:4px 7px;border-radius:99px;box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.5);color:var(--bgs-gold)}
+.signin{margin-left:auto;font-weight:500;font-size:14px;text-decoration:none;min-height:40px;display:inline-flex;align-items:center;padding:0 14px;border-radius:99px;background:rgba(var(--bgs-bg-rgb),.45);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.cta .fab{padding:0 22px;min-height:46px;font-size:15px;gap:7px}
+.cta .fab svg{width:16px;height:16px}
+.fab{pointer-events:auto;position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;gap:9px;min-height:56px;border-radius:99px;
+  font-weight:700;font-size:16.5px;color:var(--bgs-gold-hover);text-decoration:none;
+  background:
+    linear-gradient(135deg,var(--glass-sheen) 0%,transparent 38%,transparent 70%,rgba(var(--bgs-ivory-rgb),.04) 100%) var(--light-x) 0 / 220% 100% no-repeat,
+    linear-gradient(rgba(var(--bgs-gold-rgb),.20),rgba(var(--bgs-gold-rgb),.12)),
+    rgba(var(--bgs-plate-rgb),var(--glass-fill-a));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  --glass-focus:0 0 0 0 transparent;
+  box-shadow:var(--glass-focus),inset 1px 1px 0 var(--glass-rim-light),inset -1px -1px 0 rgba(0,0,0,.45),inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.55),0 0 28px rgba(var(--bgs-gold-rgb),.22),var(--glass-shadow);
+  transition:transform .28s var(--ease-liquid)}
+.fab::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;padding:var(--glass-rim-w);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  background:conic-gradient(from 210deg at 50% 50%,rgba(var(--bgs-ivory-rgb),.30),rgba(var(--bgs-ivory-rgb),.18) 25%,transparent 45%,rgba(var(--bgs-gold-rgb),.35) 60%,transparent 80%,rgba(var(--bgs-ivory-rgb),.30))}
+.fab:active{transform:scale(.97)}
+.fab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.textlink{font-size:14.5px;color:var(--bgs-ivory-70);text-underline-offset:3px}
+.cta{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:calc(100svh - var(--demo));display:flex;flex-direction:column;padding:0 20px}
+.cue{position:absolute;left:0;right:0;bottom:18px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;pointer-events:none}
+.cue i{width:1px;height:26px;background:linear-gradient(to bottom,transparent,var(--bgs-gold));animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:translateY(-4px);opacity:.4}50%{transform:translateY(4px);opacity:1}}
+.opt{display:none}[data-opt="h11"] .opt-h11{display:flex}
+.next{padding:40px 20px;text-align:center;border-top:1px solid var(--line)}
+.next h2{font:600 22px/1.2 'Fraunces',serif;margin:0 0 6px}
+
+/* light (shared recipe) */
+.light{position:absolute;inset:0;z-index:-2;pointer-events:none}
+.light img{position:absolute;left:50%;top:50%;width:160px;height:200px;max-width:none;object-fit:cover;opacity:0;transition:opacity 1.4s;filter:blur(22px) saturate(1.6);transform:translate(-50%,-50%) scale(6)}
+.light img.on{opacity:.55}
+@media (min-width:900px){.light img{transform:translate(-50%,-50%) scale(11)}}
+
+
+
+.big{font:600 clamp(40px,10.5vw,72px)/1 'Fraunces',serif;letter-spacing:-.02em;margin:0;font-variation-settings:'opsz' 144}
+.sub{font-size:17px;color:var(--bgs-ivory-70);max-width:28em;margin-top:12px}
+@media (min-width:900px){.big{font-size:clamp(56px,6.2vw,84px)}}
+
+
+
+/* ═════ H11 — The real shelf (after shopify.com/editions): two planks on a dark wall, the boxes standing on them,
+   each one backlit by its own cover. Almost no copy; the shelf is the statement. ═════ */
+.h11{padding:0;justify-content:flex-start}
+.h11 .top{padding:18px 20px 10px}.h11 .wordmark{font-size:24px}
+.h11 .lead{display:flex;flex-direction:column;gap:18px;padding:22px 20px 0}
+.h11 .side{display:contents}
+.h11 .lead .cta{margin-top:6px}
+.h11 .lead h1{font:600 clamp(34px,8.6vw,68px)/1.05 'Fraunces',serif;letter-spacing:-.02em;margin:0;font-variation-settings:'opsz' 144;max-width:11em}
+.h11 .lead p{font:400 16px/1.55 'Inter',sans-serif;color:var(--bgs-ivory-70);max-width:24em}
+.h11 .wall{--bw:min(25vw,13svh,104px);position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,6svh,56px);padding:44px 8px 50px;perspective:1400px;perspective-origin:50% 20%}
+.h11 .veil{position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,rgba(var(--bgs-ivory-rgb),.06),transparent 40%),linear-gradient(to bottom,var(--bgs-bg) 0,transparent 20%,transparent 85%,var(--bgs-bg) 100%)}
+.shelf{position:relative;flex:none;align-self:center;width:max-content;max-width:100%;display:flex;justify-content:center;align-items:flex-end;gap:var(--g,10px);padding:0 var(--pad,10px) 0;isolation:isolate;--over:-22px}
+/* the plank: a walnut board with a gold-lit front edge, and the soft ceiling light that falls on this shelf */
+.plank{position:absolute;left:var(--over);right:var(--over);bottom:-14px;height:14px;border-radius:3px 3px 4px 4px;z-index:3;
+  background:linear-gradient(to bottom,#4a3527 0,#2e2018 40%,#1c130e 100%);box-shadow:inset 0 1px 0 rgba(var(--bgs-gold-rgb),.55),inset 0 -1px 0 rgba(0,0,0,.7),0 22px 30px -8px rgba(0,0,0,.9),0 50px 50px -24px rgba(0,0,0,.7)}
+.plank::before{content:"";position:absolute;left:4%;right:4%;top:100%;height:44px;border-radius:0 0 50% 50%/0 0 100% 100%;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
+.shelf .lamp{position:absolute;left:-16%;right:-16%;top:-95%;height:200%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 50% 42% at 50% 55%,rgba(var(--bgs-ivory-rgb),.07),transparent 100%)}
+.box{position:relative;flex:none;width:var(--bw);height:calc(var(--bw) * 4 / 3);z-index:2;transform-origin:50% 100%;transform:translateY(0);transition:transform .45s cubic-bezier(.32,.72,0,1)}
+.box .face{position:absolute;inset:0;border-radius:5px;overflow:hidden;background:var(--bgs-plate);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14),-6px 12px 22px -10px rgba(0,0,0,.9);z-index:2;transform:perspective(600px) rotateY(var(--lean,0deg));transform-origin:50% 100%}
+.box .face img{width:100%;height:100%;object-fit:cover}
+.box .face::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,.16) 0,transparent 30%,transparent 72%,rgba(0,0,0,.25) 100%)}
+.box .spine{display:none}
+/* the backlight: the cover itself, blurred, shaped into a soft halo so it reads as light on the wall, not a second rectangle */
+.box .glow{position:absolute;left:-22%;right:-22%;top:-26%;bottom:-4%;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 46% 46% at 50% 56%,rgba(var(--bgs-gold-rgb),.75) 0,rgba(var(--bgs-gold-rgb),.3) 45%,transparent 100%);filter:blur(8px);opacity:.85;
+  animation:breathe 6s ease-in-out infinite;animation-delay:var(--bd,0s)}    /* animation only: the box itself transitions */
+@keyframes breathe{0%,100%{opacity:.7}50%{opacity:1}}
+.box .foot{position:absolute;left:6%;right:6%;bottom:-5px;height:10px;border-radius:50%;background:rgba(0,0,0,.75);filter:blur(4px);z-index:1}
+.box:hover,.box:focus-visible,.box.up{transform:translateY(-10px) scale(1.04)}
+.box:hover .face,.box.up .face{transform:perspective(600px) rotateY(0deg)}
+.box:hover .glow,.box.up .glow{opacity:1}
+.box .name{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%) translateY(6px);font:600 12px/1 'Fraunces',serif;color:var(--bgs-ivory);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;text-shadow:0 1px 8px #000;z-index:4}
+.box:hover .name,.box.up .name{opacity:1;transform:translateX(-50%)}
+.h11 .cue{bottom:12px}
+@media (min-width:900px){
+  .h11 .top{padding:18px 40px}.h11 .wordmark{font-size:28px}
+  .h11 .lead{max-width:1280px;margin:0 auto;width:100%;padding:16px 40px 0}
+  .h11 .lead h1{font-size:clamp(46px,4.9vw,72px);line-height:1.02;max-width:none!important}   /* two lines, broken where the copy says */
+  .h11 .lead p{font-size:18px;line-height:1.5;margin:0;max-width:none!important}   /* two lines, broken where the copy says */
+  .h11 .side{display:block}.h11 .lead .cta{margin-top:22px}
+  /* D1 — Centred: one column down the middle, the shelves' own axis */
+  .h11 .lead{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+  .h11 .lead h1{max-width:9.6em}   /* breaks after the comma: "Every game you own," / "on one page." */
+  .h11 .lead p{max-width:26em}
+  .h11 .side{display:flex;flex-direction:column;align-items:center}
+  .h11 .cta{justify-content:center}
+  .h11 .wall{--bw:clamp(96px,min(9.4vw,13.4svh),128px);gap:clamp(34px,5vh,60px);padding:40px 40px 52px;justify-content:flex-start}
+  .shelf{--g:34px;--pad:0;--over:-64px;width:calc(5 * var(--bw) + 4 * var(--g))}   /* both planks the same length, sized to the fuller row, as in the reference */.plank{height:18px;bottom:-18px}.plank::before{height:70px}
+  .box .name{font-size:14px;bottom:-44px}
+}
+
+.mob{display:contents}.desk{display:none}@media (min-width:900px){.mob{display:none}.desk{display:contents}}
+.demobar{position:fixed;left:0;right:0;top:0;z-index:50;height:var(--demo);display:flex;gap:6px;align-items:center;padding:0 10px;overflow-x:auto;white-space:nowrap;background:#0b0908;border-bottom:1px solid var(--line);font:400 11.5px/1 'IBM Plex Mono',monospace}
+.demobar b{font-weight:400;color:var(--bgs-ivory-45);margin:0 2px 0 8px}
+.demobar button{padding:7px 10px;border-radius:99px;box-shadow:inset 0 0 0 1px var(--line);flex:none}
+.demobar button[aria-pressed="true"]{background:var(--bgs-ivory);color:var(--bgs-bg)}
+html.rm *{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head>
+<body data-opt="h11">
+<div class="demobar" role="group" aria-label="Mockup controls"><b>Hero</b><button aria-pressed="true">H11 The real shelf · centred (locked)</button><b>Motion</b><button id="rm" aria-pressed="false">Reduced</button><span class="lamp"></span><span class="plank"></span></div>
+
+<section class="hero h11 opt opt-h11" id="h11">
+  <div class="veil"></div>
+  <header class="top"><span class="wordmark">BoardgameShelf</span><span class="beta">BETA</span><a class="signin" href="#">Sign in</a></header>
+  <div class="lead"><h1>Every game you own,<br>on the shelf.</h1><div class="side"><p>A shelf for your boardgame collection.<br>Your friends vote for tonight's game.</p><div class="cta"><a class="fab" href="#">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a><a class="textlink" href="#vote">Try the vote</a></div></div></div>
+  <div class="wall"><div class="mob"><div class="shelf"><button class="box" style="--lean:-7deg;--cover:url('https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg');--bd:-0.0s" aria-label="Cascadia"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Cascadia</span></button><button class="box" style="--lean:4deg;--cover:url('https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg');--bd:-1.3s" aria-label="Codenames"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Codenames</span></button><button class="box" style="--lean:-3deg;--cover:url('https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg');--bd:-2.6s" aria-label="Splendor"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Splendor</span></button><span class="lamp"></span><span class="plank"></span></div><div class="shelf"><button class="box" style="--lean:6deg;--cover:url('https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg');--bd:-0.0s" aria-label="Pandemic"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Pandemic</span></button><button class="box" style="--lean:-5deg;--cover:url('https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg');--bd:-1.3s" aria-label="Just One"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Just One</span></button><button class="box" style="--lean:3deg;--cover:url('https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg');--bd:-2.6s" aria-label="Ark Nova"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Ark Nova</span></button><span class="lamp"></span><span class="plank"></span></div></div><div class="desk"><div class="shelf"><button class="box" style="--lean:-7deg;--cover:url('https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg');--bd:-0.0s" aria-label="Cascadia"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Cascadia</span></button><button class="box" style="--lean:4deg;--cover:url('https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg');--bd:-1.3s" aria-label="Codenames"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Codenames</span></button><button class="box" style="--lean:-3deg;--cover:url('https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg');--bd:-2.6s" aria-label="Splendor"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Splendor</span></button><button class="box" style="--lean:6deg;--cover:url('https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg');--bd:-3.9s" aria-label="Pandemic"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Pandemic</span></button><span class="lamp"></span><span class="plank"></span></div><div class="shelf"><button class="box" style="--lean:-5deg;--cover:url('https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg');--bd:-0.0s" aria-label="Just One"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Just One</span></button><button class="box" style="--lean:3deg;--cover:url('https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg');--bd:-1.3s" aria-label="Ark Nova"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Ark Nova</span></button><button class="box" style="--lean:-6deg;--cover:url('https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg');--bd:-2.6s" aria-label="Patchwork"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Patchwork</span></button><button class="box" style="--lean:5deg;--cover:url('https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg');--bd:-3.9s" aria-label="Root"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Root</span></button><button class="box" style="--lean:-2deg;--cover:url('https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png');--bd:-5.2s" aria-label="Wavelength"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Wavelength</span></button><span class="lamp"></span><span class="plank"></span></div></div></div>
+  <div class="cue"><span class="mono">Try the vote</span><i></i></div>
+</section>
+
+<section class="next" id="vote"><h2>↓ The playable vote (now section 2)</h2><p class="mono">Unchanged from landing-full.html: seats, deck, count, one winner.</p></section>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+/* tap on a phone = the hover lift, held for a moment */
+$$('.box').forEach(b=>b.addEventListener('click',()=>{$$('.box').forEach(x=>x.classList.remove('up'));b.classList.add('up');setTimeout(()=>b.classList.remove('up'),1800)}));
+$('#rm').onclick=e=>{const on=document.documentElement.classList.toggle('rm');e.currentTarget.setAttribute('aria-pressed',on)};
+</script></body></html>

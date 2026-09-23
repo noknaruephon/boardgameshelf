@@ -185,6 +185,74 @@ h1{font-family:var(--mk-display);font-weight:500;margin:0;letter-spacing:-.02em;
 }
 
 
+
+/* ═════ HERO (approved: H11 "The real shelf", centred copy) ═════ */
+.hero.h11 .top .signin{margin-left:auto}
+.cue{position:absolute;left:0;right:0;bottom:18px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;pointer-events:none}
+.cue i{width:1px;height:26px;background:linear-gradient(to bottom,transparent,var(--bgs-gold));animation:cue 1.8s ease-in-out infinite}
+@keyframes cue{0%,100%{transform:translateY(-4px);opacity:.4}50%{transform:translateY(4px);opacity:1}}
+/* ═════ H11 — The real shelf (after shopify.com/editions): two planks on a dark wall, the boxes standing on them,
+   each one backlit by its own cover. Almost no copy; the shelf is the statement. ═════ */
+.h11{padding:0;justify-content:flex-start}
+.h11 .top{padding:18px 20px 10px}.h11 .wordmark{font-size:24px}
+.h11 .lead{display:flex;flex-direction:column;gap:18px;padding:22px 20px 0}
+.h11 .side{display:contents}
+.h11 .lead .cta{margin-top:6px}
+.h11 .lead h1{font:600 clamp(34px,8.6vw,68px)/1.05 'Fraunces',serif;letter-spacing:-.02em;margin:0;font-variation-settings:'opsz' 144;max-width:11em}
+.h11 .lead p{font:400 16px/1.55 'Inter',sans-serif;color:var(--bgs-ivory-70);max-width:24em}
+.h11 .shelfwall{--bw:min(25vw,13svh,104px);position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,6svh,56px);padding:44px 8px 50px;perspective:1400px;perspective-origin:50% 20%}
+.h11 .veil{position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom,rgba(var(--bgs-ivory-rgb),.06),transparent 40%),linear-gradient(to bottom,var(--bgs-bg) 0,transparent 20%,transparent 85%,var(--bgs-bg) 100%)}
+.shelf{position:relative;flex:none;align-self:center;width:max-content;max-width:100%;display:flex;justify-content:center;align-items:flex-end;gap:var(--g,10px);padding:0 var(--pad,10px) 0;isolation:isolate;--over:-22px}
+/* the plank: a walnut board with a gold-lit front edge, and the soft ceiling light that falls on this shelf */
+.plank{position:absolute;left:var(--over);right:var(--over);bottom:-14px;height:14px;border-radius:3px 3px 4px 4px;z-index:3;
+  background:linear-gradient(to bottom,#4a3527 0,#2e2018 40%,#1c130e 100%);box-shadow:inset 0 1px 0 rgba(var(--bgs-gold-rgb),.55),inset 0 -1px 0 rgba(0,0,0,.7),0 22px 30px -8px rgba(0,0,0,.9),0 50px 50px -24px rgba(0,0,0,.7)}
+.plank::before{content:"";position:absolute;left:4%;right:4%;top:100%;height:44px;border-radius:0 0 50% 50%/0 0 100% 100%;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
+.shelf .lamp{position:absolute;left:-16%;right:-16%;top:-95%;height:200%;z-index:0;pointer-events:none;background:radial-gradient(ellipse 50% 42% at 50% 55%,rgba(var(--bgs-ivory-rgb),.07),transparent 100%)}
+.box{position:relative;flex:none;width:var(--bw);height:calc(var(--bw) * 4 / 3);z-index:2;transform-origin:50% 100%;transform:translateY(0);transition:transform .45s cubic-bezier(.32,.72,0,1)}
+.box .face{position:absolute;inset:0;border-radius:5px;overflow:hidden;background:var(--bgs-plate);box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14),-6px 12px 22px -10px rgba(0,0,0,.9);z-index:2;transform:perspective(600px) rotateY(var(--lean,0deg));transform-origin:50% 100%}
+.box .face img{width:100%;height:100%;object-fit:cover}
+.box .face::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,.16) 0,transparent 30%,transparent 72%,rgba(0,0,0,.25) 100%)}
+.box .spine{display:none}
+/* the backlight: the cover itself, blurred, shaped into a soft halo so it reads as light on the wall, not a second rectangle */
+.box .glow{position:absolute;left:-22%;right:-22%;top:-26%;bottom:-4%;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 46% 46% at 50% 56%,rgba(var(--bgs-gold-rgb),.75) 0,rgba(var(--bgs-gold-rgb),.3) 45%,transparent 100%);filter:blur(8px);opacity:.85;
+  animation:breathe 6s ease-in-out infinite;animation-delay:var(--bd,0s)}    /* animation only: the box itself transitions */
+@keyframes breathe{0%,100%{opacity:.7}50%{opacity:1}}
+.box .foot{position:absolute;left:6%;right:6%;bottom:-5px;height:10px;border-radius:50%;background:rgba(0,0,0,.75);filter:blur(4px);z-index:1}
+.box:hover,.box:focus-visible,.box.up{transform:translateY(-10px) scale(1.04)}
+.box:hover .face,.box.up .face{transform:perspective(600px) rotateY(0deg)}
+.box:hover .glow,.box.up .glow{opacity:1}
+.box .name{position:absolute;left:50%;bottom:-38px;transform:translateX(-50%) translateY(6px);font:600 12px/1 'Fraunces',serif;color:var(--bgs-ivory);white-space:nowrap;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;text-shadow:0 1px 8px #000;z-index:4}
+.box:hover .name,.box.up .name{opacity:1;transform:translateX(-50%)}
+.h11 .cue{bottom:12px;text-decoration:none;pointer-events:auto}
+@media (min-width:900px){
+  .h11 .top{padding:18px 40px}.h11 .wordmark{font-size:28px}
+  .h11 .lead{max-width:1280px;margin:0 auto;width:100%;padding:16px 40px 0}
+  .h11 .lead h1{font-size:clamp(46px,4.9vw,72px);line-height:1.02;max-width:none!important}   /* two lines, broken where the copy says */
+  .h11 .lead p{font-size:18px;line-height:1.5;margin:0;max-width:none!important}   /* two lines, broken where the copy says */
+  .h11 .side{display:block}.h11 .lead .cta{margin-top:22px}
+  /* D1 — Centred: one column down the middle, the shelves' own axis */
+  .h11 .lead{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+  .h11 .lead h1{max-width:9.6em}   /* breaks after the comma: "Every game you own," / "on one page." */
+  .h11 .lead p{max-width:26em}
+  .h11 .side{display:flex;flex-direction:column;align-items:center}
+  .h11 .cta{justify-content:center}
+  .h11 .shelfwall{--bw:clamp(96px,min(9.4vw,13.4svh),128px);gap:clamp(34px,5vh,60px);padding:40px 40px 52px;justify-content:flex-start}
+  .shelf{--g:34px;--pad:0;--over:-64px;width:calc(5 * var(--bw) + 4 * var(--g))}   /* both planks the same length, sized to the fuller row, as in the reference */.plank{height:18px;bottom:-18px}.plank::before{height:70px}
+  .box .name{font-size:14px;bottom:-44px}
+}
+
+.mob{display:contents}.desk{display:none}@media (min-width:900px){.mob{display:none}.desk{display:contents}}
+
+@media (max-width:899px){.h11 .cta{display:flex}.h11 .cta .fab{display:none}}
+
+/* ═════ SECTION 2: the playable vote (was the hero). Same styles, new headline; sits under the shelf hero. */
+.vote{min-height:0;padding-top:64px;padding-bottom:calc(var(--sticky) + 40px);border-top:1px solid var(--line)}
+.vote .inner{padding-top:0}
+.eyebrow-v{font:400 11px/1 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--bgs-gold-dim);margin:0 0 12px}
+.v-h{font:600 clamp(32px,8.6vw,44px)/1.04 'Fraunces',serif;letter-spacing:-.02em;margin:0;font-variation-settings:'opsz' 144}
+@media (min-width:900px){.vote{padding-top:96px;padding-bottom:96px}.v-h{font-size:clamp(44px,4.4vw,60px)}}
+
 /* ═════ STORY (approved: pinned phone, A2 "pieces fly out") ═════ */
 .mono{font:400 12px/1.4 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45)}
 h2{font:600 clamp(28px,7.6vw,44px)/1.06 'Fraunces',serif;letter-spacing:-.015em;margin:0}
@@ -392,29 +460,34 @@ html.rm{scroll-behavior:auto}html.rm *{transition:none!important;animation:none!
 </head>
 <body>
 <div class="demobar" role="group" aria-label="Mockup controls">
-  <b>Hero</b>
+  <b>Vote</b>
   <button data-state="deck" aria-pressed="true">Voting</button>
   <button data-state="waiting" aria-pressed="false">Last vote</button>
   <button data-state="result" aria-pressed="false">Winner</button>
   <button data-state="outvoted" aria-pressed="false">Winner (you passed)</button>
-  <b>Jump</b><a href="#story">Story</a><a href="#signin">Sign-in</a>
+  <b>Jump</b><a href="#vote">Vote</a><a href="#story">Story</a><a href="#signin">Sign-in</a>
   <b>Motion</b><button id="rm" aria-pressed="false">Reduced</button>
 </div>
-<section class="hero" id="hero">
+<section class="hero h11" id="h11">
+  <div class="veil"></div>
+  <header class="top"><span class="wordmark">BoardgameShelf</span><span class="beta">BETA</span><a class="signin" href="#signin">Sign in</a></header>
+  <div class="lead"><h1>Every game you own,<br>on the shelf.</h1><div class="side"><p>A shelf for your boardgame collection.<br>Your friends vote for tonight's game.</p><div class="cta"><a class="fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a><a class="textlink" href="#vote">Try the vote</a></div></div></div>
+  <div class="shelfwall"><div class="mob"><div class="shelf"><button class="box" style="--lean:-7deg;--cover:url('https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg');--bd:-0.0s" aria-label="Cascadia"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Cascadia</span></button><button class="box" style="--lean:4deg;--cover:url('https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg');--bd:-1.3s" aria-label="Codenames"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Codenames</span></button><button class="box" style="--lean:-3deg;--cover:url('https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg');--bd:-2.6s" aria-label="Splendor"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Splendor</span></button><span class="lamp"></span><span class="plank"></span></div><div class="shelf"><button class="box" style="--lean:6deg;--cover:url('https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg');--bd:-0.0s" aria-label="Pandemic"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Pandemic</span></button><button class="box" style="--lean:-5deg;--cover:url('https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg');--bd:-1.3s" aria-label="Just One"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Just One</span></button><button class="box" style="--lean:3deg;--cover:url('https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg');--bd:-2.6s" aria-label="Ark Nova"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Ark Nova</span></button><span class="lamp"></span><span class="plank"></span></div></div><div class="desk"><div class="shelf"><button class="box" style="--lean:-7deg;--cover:url('https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg');--bd:-0.0s" aria-label="Cascadia"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Cascadia</span></button><button class="box" style="--lean:4deg;--cover:url('https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg');--bd:-1.3s" aria-label="Codenames"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Codenames</span></button><button class="box" style="--lean:-3deg;--cover:url('https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg');--bd:-2.6s" aria-label="Splendor"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Splendor</span></button><button class="box" style="--lean:6deg;--cover:url('https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg');--bd:-3.9s" aria-label="Pandemic"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Pandemic</span></button><span class="lamp"></span><span class="plank"></span></div><div class="shelf"><button class="box" style="--lean:-5deg;--cover:url('https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg');--bd:-0.0s" aria-label="Just One"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Just One</span></button><button class="box" style="--lean:3deg;--cover:url('https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg');--bd:-1.3s" aria-label="Ark Nova"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Ark Nova</span></button><button class="box" style="--lean:-6deg;--cover:url('https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg');--bd:-2.6s" aria-label="Patchwork"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Patchwork</span></button><button class="box" style="--lean:5deg;--cover:url('https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg');--bd:-3.9s" aria-label="Root"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Root</span></button><button class="box" style="--lean:-2deg;--cover:url('https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png');--bd:-5.2s" aria-label="Wavelength"><span class="glow"></span><span class="spine"></span><span class="face"><img src="https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png" alt="" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"></span><span class="foot"></span><span class="name">Wavelength</span></button><span class="lamp"></span><span class="plank"></span></div></div></div>
+  <a class="cue" href="#vote"><span class="mono">Try the vote</span><i></i></a>
+</section>
+
+<section class="hero vote" id="vote">
   <div class="bg" aria-hidden="true">
     <div class="wall" id="wall"></div>
     <div class="light" id="light"><img alt=""><img alt=""></div>
     <div class="veil"></div>
   </div>
 
-  <header class="top"><span class="wordmark">BoardgameShelf</span><span class="beta">Beta</span><a class="signin" href="#signin">Sign in</a></header>
-
   <div class="inner">
     <div class="copy">
-      <h1>Pick tonight's game, together.</h1>
-      <p class="lede">Turn your BoardGameGeek collection into a page your friends vote on. Four friends are at this table. Swipe right to play, left to pass.</p>
-      <div class="cta"><a class="fab" href="#signin">Get your shelf<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a><a class="textlink" href="#story">See how it works</a></div>
-    </div>
+      <p class="eyebrow-v">Try it</p><h2 class="v-h">Pick tonight's game, together.</h2>
+      <p class="lede">Four friends are already at this table. Swipe right to play, left to pass, and watch the table decide.</p>
+      </div>
 
     <div class="table" id="table" aria-label="Try a vote">
       <div class="seats" id="seats" aria-hidden="true"><div class="seat " style="--tint:#d98a6f"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat " style="--tint:#9cc096"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat you" style="--tint:#f3eadb"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat " style="--tint:#8db4dc"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div><div class="seat late" style="--tint:#c3a0d2"><svg viewBox="0 0 24 24"><path d="M12 2a3.5 3.5 0 00-3.4 4.3C5.7 7.4 3 9.6 3 11.2c0 1 .9 1.6 2.6 1.3L4 21h6l2-4 2 4h6l-1.6-8.5c1.7.3 2.6-.3 2.6-1.3 0-1.6-2.7-3.8-5.6-4.9A3.5 3.5 0 0012 2z"/></svg><span class="chip"></span><span class="dots"><i></i><i></i><i></i></span></div></div>
@@ -595,6 +668,11 @@ deal();
 
 window.heroDemo={deal,waiting,result,pickWinner,clearTimers,set:(m)=>{idx=5;mine=m},table};
 
+}
+{ /* ═════ hero (H11) ═════ */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+/* tap on a phone = the hover lift, held for a moment */
+$$('.box').forEach(b=>b.addEventListener('click',()=>{$$('.box').forEach(x=>x.classList.remove('up'));b.classList.add('up');setTimeout(()=>b.classList.remove('up'),1800)}));
 }
 { /* ═════ story ═════ */
 
