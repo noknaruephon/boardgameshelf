@@ -317,9 +317,11 @@ googleBtn.addEventListener('click', async () => {
 // ---- Google's button on this site (Google Identity Services) ----
 // Google names the site that receives the token, so the consent screen reads
 // "to continue to boardgameshelf.vercel.app" (or the verified app name)
-// instead of the Supabase project address. Rendered in Google's black theme
-// to sit with the page; if the script fails to load or no client ID is
-// configured, the plain button takes over with the redirect flow.
+// instead of the Supabase project address. Rendered in Google's white
+// ("outline") theme, sized to its wrap — the host itself is still hidden
+// when it is measured, and would read as 0 — if the script fails to load
+// or no client ID is configured, the plain button takes over with the
+// redirect flow.
 async function mountGoogleButton() {
   if (!GOOGLE_CLIENT_ID) throw new Error('no client id');
   const host = document.getElementById('gsiBtn');
@@ -347,9 +349,9 @@ async function mountGoogleButton() {
       }
     },
   });
-  const width = Math.min(400, Math.max(200, Math.floor(host.getBoundingClientRect().width || 360)));
+  const width = Math.min(400, Math.max(200, Math.floor(host.parentElement.getBoundingClientRect().width || 360)));
   window.google.accounts.id.renderButton(host, {
-    type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill',
+    type: 'standard', theme: 'outline', size: 'large', shape: 'pill',
     text: 'continue_with', logo_alignment: 'left', locale: 'en', width,
   });
   host.hidden = false;
