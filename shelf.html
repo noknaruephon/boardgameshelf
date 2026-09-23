@@ -151,6 +151,18 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   }
   .icon-btn:hover{border-color:var(--bgs-gold);color:var(--bgs-ivory);}
   .icon-btn.active{border-color:var(--bgs-gold);color:var(--bgs-gold);}
+  /* ---- view toggle: two stops wearing exactly the .icon-btn look (40px tall, plate, 1px gold-.18 border, 12px radius),
+     so it reads as the filter button's sibling. Not glass. A third stop (List) is a third 38px column and one more .view-ink translate. ---- */
+  .view-toggle{position:relative;flex:none;display:grid;grid-template-columns:repeat(2,38px);height:40px;box-sizing:border-box;padding:0;border-radius:12px;isolation:isolate;
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),0.18);}
+  .view-toggle[hidden]{display:none;}
+  .view-opt{position:relative;z-index:1;width:38px;height:38px;display:grid;place-items:center;background:none;border:0;padding:0;color:var(--bgs-ivory-45);cursor:pointer;transition:color .15s ease;}
+  .view-opt svg{width:15px;height:15px;}
+  .view-opt[aria-checked="true"]{color:var(--bgs-gold);}
+  .view-opt:focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--bgs-gold);border-radius:12px;}
+  .view-ink{position:absolute;top:3px;bottom:3px;left:3px;width:32px;border-radius:9px;background:rgba(var(--bgs-gold-rgb),.14);box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45);transition:transform .22s var(--ease-liquid);}
+  .view-toggle[data-view="cards"] .view-ink{transform:translateX(38px);}
+  @media (prefers-reduced-motion:reduce){.view-ink,.view-opt{transition:none;}}
   .filter-badge{
     position:absolute;
     top:-5px;
@@ -667,6 +679,57 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     background:rgba(var(--bgs-ivory-rgb),0.08);
   }
   .game-card-skeleton .skeleton-line.short{ width:60%; }
+
+  /* ---- shelf view (the landing hero's shelf, for the whole collection). Sibling of .shelf; the card grid is untouched. ----
+     content-visibility:auto on the row implies paint containment, which clips anything outside the row's box: the plank,
+     the lift, the glow and the ring therefore all live inside the row's padding. */
+  .planks{display:flex;flex-direction:column;gap:0;padding:0 0 40px;min-height:260px;   /* rows touch; the row's bottom padding is the spacing */
+    --n:3;--g:14px;--pad:10px;
+    --bw:calc((100% - 2 * var(--pad) - (var(--n) - 1) * var(--g)) / var(--n));}
+  @media (min-width:560px){.planks{--n:4;--g:16px;}}
+  @media (min-width:800px){.planks{--n:6;--g:22px;}}
+  .plankrow{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:var(--g);padding:12px var(--pad) 38px;isolation:isolate;
+    content-visibility:auto;contain-intrinsic-size:auto 220px;}   /* 38px bottom: 14px plank + 24px of its shadow; 12px top: room for the lift */
+  /* the board: a lit top face, a darker front, a gold hairline on the top edge. Walnut on every theme: it is furniture. */
+  .plankrow .plank{position:absolute;left:4px;right:4px;bottom:24px;height:14px;border-radius:2px 2px 3px 3px;z-index:3;
+    background:linear-gradient(to bottom,#5a4231 0 22%,#3a2a20 22% 48%,#2a1d16 48%,#1a110d 100%);
+    box-shadow:inset 0 1px 0 rgba(var(--bgs-gold-rgb),.6),inset 0 -1px 0 rgba(0,0,0,.75),0 1px 0 rgba(0,0,0,.6);}
+  /* the plank's shadow on the wall. No filter:blur and no overhang: either would reach past the row's containment box and get cut flat. */
+  .plankrow .plank::before{content:"";position:absolute;left:0;right:0;top:100%;height:24px;pointer-events:none;
+    background:linear-gradient(to bottom,rgba(0,0,0,.7) 0,rgba(0,0,0,.4) 30%,rgba(0,0,0,.12) 68%,transparent 100%);
+    -webkit-mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(to right,transparent,#000 6%,#000 94%,transparent);}
+  /* the boxes' shadow cast back onto the wall just above the board */
+  .plankrow .plank::after{content:"";position:absolute;left:2%;right:2%;bottom:100%;height:16px;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.45),transparent);}
+  .plankrow .lamp{position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 50% 50% at 50% 45%,rgba(var(--bgs-ivory-rgb),.05),transparent 100%);}
+  /* WebKit rule: .gbox transitions transform only; nothing else in the shelf view animates. */
+  .gbox{position:relative;flex:none;width:var(--bw);aspect-ratio:3/4;z-index:2;padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;
+    transform:translateY(0);transition:transform .35s var(--ease-liquid);}
+  /* z-index 2: the glow (z 1) sits BEHIND the cover, never over it */
+  .gbox .face{position:absolute;inset:0;z-index:2;border-radius:5px;overflow:hidden;background:var(--bgs-plate);
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14),-5px 10px 18px -9px rgba(0,0,0,.9);
+    transform:perspective(600px) rotateY(var(--lean,0deg));transform-origin:50% 100%;}
+  .gbox .face img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+  .gbox .face::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,.14) 0,transparent 30%,transparent 72%,rgba(0,0,0,.22) 100%);}
+  /* one shared warm light per box; flat gradient, no blur, no animation — 196 of these must stay cheap */
+  .gbox .glow{position:absolute;left:-20%;right:-20%;top:-14%;bottom:-3%;z-index:1;pointer-events:none;opacity:.9;
+    background:radial-gradient(ellipse 46% 46% at 50% 56%,rgba(var(--bgs-gold-rgb),.42) 0,rgba(var(--bgs-gold-rgb),.16) 45%,transparent 100%);}
+  .gbox .foot{position:absolute;left:4%;right:4%;bottom:-3px;height:10px;border-radius:50%;background:rgba(0,0,0,.8);filter:blur(3px);z-index:1;}
+  .gbox:hover,.gbox:focus-visible,.gbox:active{transform:translateY(-8px) scale(1.04);z-index:5;}
+  .gbox:hover .face{transform:perspective(600px) rotateY(0);}
+  .gbox:focus-visible{outline:0;}
+  .gbox:focus-visible .face{box-shadow:0 0 0 2px var(--bgs-gold),inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.14);}
+  /* selection + packing: the cards' language on the box. Rings are box-shadow, never border. */
+  .gbox .sel{position:absolute;inset:-4px;border-radius:8px;box-shadow:inset 0 0 0 2px rgba(var(--bgs-ivory-rgb),.35);display:none;z-index:3;pointer-events:none;}
+  .gbox .chk{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:rgba(var(--bgs-bg-rgb),.7);box-shadow:inset 0 0 0 1.5px rgba(var(--bgs-ivory-rgb),.6);display:none;place-items:center;z-index:4;}
+  .gbox .chk svg{width:13px;height:13px;opacity:0;}
+  .gbox .info-btn{z-index:4;}   /* the card's .info-btn placement; display:none outside selection */
+  body.is-selecting .gbox .sel,body.is-selecting .gbox .chk{display:grid;}
+  body.is-selecting .gbox:not(.selected) .face img{opacity:.62;transition:opacity .15s ease;}
+  body.is-selecting .gbox.selected .sel{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  body.is-selecting .gbox.selected .chk{background:var(--bgs-gold);box-shadow:none;}
+  body.is-selecting .gbox.selected .chk svg{opacity:1;}
+  body.is-selecting .gbox.selected .glow{background:radial-gradient(ellipse 46% 46% at 50% 56%,rgba(var(--bgs-gold-rgb),.8) 0,rgba(var(--bgs-gold-rgb),.3) 45%,transparent 100%);}
+  @media (prefers-reduced-motion:reduce){.gbox{transition:none;}}
 
 
   /* Footer lives in css/base.css. The shelf adds FAB clearance so the pill
@@ -1256,6 +1319,18 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     animation:gn-ring-pass 0.5s ease-out both;animation-delay:var(--gn-d,0s);
   }
   body.is-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:var(--gn-d,0s);}
+  /* The shelf view's boxes: same wave, their ring is a box-shadow. */
+  body.is-selecting.gn-waving .gbox .chk{
+    animation:gn-pop 0.36s cubic-bezier(.2,.8,.2,1.25) both;animation-delay:var(--gn-d,0s);
+  }
+  body.is-selecting.gn-waving .gbox:not(.selected) .sel{
+    animation:gn-ring-pass-box 0.5s ease-out both;animation-delay:var(--gn-d,0s);
+  }
+  body.is-selecting.gn-waving .gbox:not(.selected) .face img{transition-delay:var(--gn-d,0s);}
+  @keyframes gn-ring-pass-box{
+    0%,100%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-ivory-rgb),.35);}
+    35%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.9);}
+  }
   @keyframes gn-pop{0%{opacity:0;transform:scale(0.4);}100%{opacity:1;transform:scale(1);}}
   @keyframes gn-ring-pass{0%{border-color:transparent;}35%{border-color:rgba(var(--bgs-gold-rgb),0.9);}100%{border-color:transparent;}}
 
@@ -1467,6 +1542,9 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     body.is-selecting.gn-waving .info-btn,
     body.is-selecting.gn-waving .sel-ring{animation:none;}
     body.is-selecting.gn-waving .game-card:not(.selected) .art img{transition-delay:0s;}
+    body.is-selecting.gn-waving .gbox .chk,
+    body.is-selecting.gn-waving .gbox .sel{animation:none;}
+    body.is-selecting.gn-waving .gbox:not(.selected) .face img{transition-delay:0s;}
   }
 
   /* ---- selected-games tray ---- */
@@ -1599,11 +1677,15 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
       </svg>
       <span class="filter-badge" id="filterBadge" hidden>0</span>
     </button>
-    <button class="icon-btn glass" id="sortBtn" aria-label="Sort ascending" aria-pressed="false">
-      <svg id="sortIcon" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="transition:transform 0.2s ease;">
-        <path d="M7.5 12.5V2.5M7.5 2.5L3 7M7.5 2.5L12 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
+    <div class="view-toggle" id="viewToggle" role="radiogroup" aria-label="Shelf view" data-view="shelf">
+      <button type="button" class="view-opt" data-view="shelf" role="radio" aria-checked="true" aria-label="Shelf view">
+        <svg viewBox="0 0 15 15" fill="none"><rect x="2" y="3" width="3" height="5.5" rx=".8" stroke="currentColor" stroke-width="1.3"/><rect x="6.2" y="2" width="3" height="6.5" rx=".8" stroke="currentColor" stroke-width="1.3"/><rect x="10.4" y="3.5" width="3" height="5" rx=".8" stroke="currentColor" stroke-width="1.3"/><path d="M1 10.5h13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button type="button" class="view-opt" data-view="cards" role="radio" aria-checked="false" aria-label="Card view">
+        <svg viewBox="0 0 15 15" fill="none"><rect x="1.5" y="1.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="8.5" y="1.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="8.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/><rect x="8.5" y="8.5" width="5" height="5" rx="1.2" stroke="currentColor" stroke-width="1.3"/></svg>
+      </button>
+      <span class="view-ink" aria-hidden="true"></span>
+    </div>
   </div>
 
   <div class="chips-row" id="chipsRow" hidden></div>
@@ -2112,7 +2194,7 @@ const freshFilters = () => ({ ...DEFAULT_FILTERS, showExpansions: !!profile?.sho
 const state = {
   filters: freshFilters(),
   search: "",
-  sort: "off", // 'off' (ascending, default) | 'desc'
+  view: 'shelf', // 'shelf' | 'cards' (List later); set from readView() below
   selectionMode: false,
   selectedIds: new Set(), // bggId strings, in selection order — persists across filter changes
 };
@@ -2124,7 +2206,7 @@ function render(){
   shelf.innerHTML = "";
 
   let filtered = applyFilters(games, state.filters, state.search);
-  filtered = filtered.slice().sort((a,b)=> state.sort==="desc" ? a.bggRating - b.bggRating : b.bggRating - a.bggRating);
+  filtered = filtered.slice().sort((a,b)=> b.bggRating - a.bggRating);
 
   // The count line tracks what is showing: the whole pool when nothing is
   // narrowing it, "x of N" once a search or filter does. Expansions only
@@ -2149,6 +2231,8 @@ function render(){
   updateFilterButton();
   renderChips();
 
+  shelf.className = state.view === 'shelf' ? 'planks' : 'shelf';
+
   if(filtered.length===0){
     shelf.innerHTML = `<p class="empty-state">Nothing on the shelf for that.<br>Try another vibe, or widen the player count.<button type="button" id="emptyReset">Clear filters</button></p>`;
     const emptyReset = document.getElementById('emptyReset');
@@ -2160,49 +2244,101 @@ function render(){
     return;
   }
 
-  filtered.forEach(g=>{
-    const el = document.createElement('button');
-    const isSelected = gameNightVisible && state.selectedIds.has(g.bggId);
-    el.className = 'game-card' + (isSelected ? ' selected' : '');
-    el.dataset.id = g.bggId;
-    el.innerHTML = `
-      ${selectionOverlays ? '<span class="sel-ring"></span>' : ''}
-      <div class="art">
-        ${selectionOverlays ? `<span class="checkbox">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
-        <img src="${g.imageSmall || g.image}" alt="${g.title} cover" loading="lazy" decoding="async" data-orig="${g.image}" onerror="if(this.dataset.orig&&this.src!==this.dataset.orig){this.src=this.dataset.orig;delete this.dataset.orig;return}this.closest('.art').style.background='var(--bgs-plate)';this.remove()">
-      </div>
-      <div class="info">
-        <h3 class="title">${g.title}</h3>
-        <div class="meta-row">
-          <span class="rating-pill">★ ${g.bggRating.toFixed(1)}</span>
-          <span class="players">${playersRangeLabel(g.players)}</span>
-        </div>
-      </div>
-    `;
-    if(bag) bag.decorateCard(el, g);
-    el.addEventListener('click', (ev)=>{
-      // Packing turns the tile into a toggle, exactly as selection mode does:
-      // the cover picks the game, the ⓘ is the way to the details.
-      if(bag && bag.packing()){
-        if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
-        bag.toggleGame(g, el);
-        return;
-      }
-      if(gameNightVisible && state.selectionMode){
-        if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
-        toggleSelect(g);
-        return;
-      }
-      openCard(g);
-    });
-    shelf.appendChild(el);
-  });
+  if(state.view === 'shelf'){
+    // N boxes per plank, matching the card grid's columns at this width.
+    const n = shelfPerPlank();
+    for(let i = 0; i < filtered.length; i += n){
+      const row = document.createElement('div');
+      row.className = 'plankrow';
+      filtered.slice(i, i + n).forEach((g, j) => row.appendChild(buildBox(g, i + j)));
+      row.insertAdjacentHTML('beforeend', '<span class="lamp" aria-hidden="true"></span><span class="plank" aria-hidden="true"></span>');
+      shelf.appendChild(row);
+    }
+  } else {
+    filtered.forEach(g => shelf.appendChild(buildCard(g)));
+  }
 
   // Filters/search stay live while selecting; selections persist regardless,
   // so the tray's "hidden by filters" tags need to stay in sync with every
   // re-render, not just the ones that came from toggling a selection.
   if(gameNightVisible && state.selectionMode) updateGnBar();
 }
+
+// The cover <img>, shared by both tile shapes. `wrap` is the element that
+// takes the plate background when no image loads at all.
+function coverImg(g, wrap){
+  return `<img src="${g.imageSmall || g.image}" alt="${g.title} cover" loading="lazy" decoding="async" data-orig="${g.image}" onerror="if(this.dataset.orig&&this.src!==this.dataset.orig){this.src=this.dataset.orig;delete this.dataset.orig;return}this.closest('${wrap}').style.background='var(--bgs-plate)';this.remove()">`;
+}
+
+function buildCard(g){
+  const el = document.createElement('button');
+  const isSelected = gameNightVisible && state.selectedIds.has(g.bggId);
+  el.className = 'game-card tile' + (isSelected ? ' selected' : '');
+  el.dataset.id = g.bggId;
+  el.innerHTML = `
+    ${selectionOverlays ? '<span class="sel-ring"></span>' : ''}
+    <div class="art">
+      ${selectionOverlays ? `<span class="checkbox">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
+      ${coverImg(g, '.art')}
+    </div>
+    <div class="info">
+      <h3 class="title">${g.title}</h3>
+      <div class="meta-row">
+        <span class="rating-pill">★ ${g.bggRating.toFixed(1)}</span>
+        <span class="players">${playersRangeLabel(g.players)}</span>
+      </div>
+    </div>
+  `;
+  if(bag) bag.decorateCard(el, g);
+  el.addEventListener('click', ev => onTileClick(ev, g, el));
+  return el;
+}
+
+// Shelf view: covers only, leaning a little, standing on the plank.
+const SHELF_LEANS = [-6,4,-3,5,-5,3,-4,6,-2,4,-6,2];
+function buildBox(g, i){
+  const el = document.createElement('button');
+  const isSelected = gameNightVisible && state.selectedIds.has(g.bggId);
+  el.type = 'button';
+  el.className = 'gbox tile' + (isSelected ? ' selected' : '');
+  el.dataset.id = g.bggId;
+  el.style.setProperty('--lean', SHELF_LEANS[i % SHELF_LEANS.length] + 'deg');
+  el.setAttribute('aria-label', g.title);
+  el.innerHTML = `
+    <span class="glow"></span>
+    ${selectionOverlays ? `<span class="sel"></span><span class="chk">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
+    <span class="face">${coverImg(g, '.face')}</span>
+    <span class="foot"></span>
+  `;
+  if(bag) bag.decorateCard(el, g);
+  el.addEventListener('click', ev => onTileClick(ev, g, el));
+  return el;
+}
+
+function onTileClick(ev, g, el){
+  // Packing turns the tile into a toggle, exactly as selection mode does:
+  // the cover picks the game, the ⓘ is the way to the details.
+  if(bag && bag.packing()){
+    if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
+    bag.toggleGame(g, el);
+    return;
+  }
+  if(gameNightVisible && state.selectionMode){
+    if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
+    toggleSelect(g);
+    return;
+  }
+  openCard(g);
+}
+
+// Boxes per plank follow the card grid's breakpoints. Re-render only when a
+// breakpoint flips, and only once the shelf view has actually been drawn.
+const shelfMq4 = matchMedia('(min-width:560px)');
+const shelfMq6 = matchMedia('(min-width:800px)');
+function shelfPerPlank(){ return shelfMq6.matches ? 6 : shelfMq4.matches ? 4 : 3; }
+[shelfMq4, shelfMq6].forEach(mq => mq.addEventListener('change', ()=>{
+  if(state.view === 'shelf' && document.getElementById('shelf').classList.contains('planks')) render();
+}));
 
 // The detail modal itself lives in js/game-modal.js + css/game-modal.css, shared
 // with the game-night waiting room so an enhancement to it lands on every page.
@@ -2507,19 +2643,37 @@ document.addEventListener('keydown', (e)=>{
   }
 });
 
-// ---- Sort button ----
+// ---- view (Shelf | Cards; List later) ----
+// Stored as bgs:view; ?view= wins for that load and is saved. The bag route
+// keeps the card grid and has no toggle.
 
-const sortBtn = document.getElementById('sortBtn');
-const sortIcon = document.getElementById('sortIcon');
-sortBtn.addEventListener('click', ()=>{
-  state.sort = state.sort === 'off' ? 'desc' : 'off';
-  const isDesc = state.sort === 'desc';
-  sortBtn.classList.toggle('active', isDesc);
-  sortBtn.setAttribute('aria-pressed', String(isDesc));
-  sortBtn.setAttribute('aria-label', isDesc ? 'Sort descending' : 'Sort ascending');
-  sortIcon.style.transform = isDesc ? 'rotate(180deg)' : 'rotate(0deg)';
+const VIEWS = ['shelf', 'cards'];
+function readView(){
+  const q = new URLSearchParams(location.search).get('view');
+  let v = null;
+  try { v = localStorage.getItem('bgs:view'); } catch (e) {}
+  const pick = VIEWS.includes(q) ? q : (VIEWS.includes(v) ? v : 'shelf');
+  if (q && q !== v) { try { localStorage.setItem('bgs:view', pick); } catch (e) {} }
+  return pick;
+}
+state.view = isBagRoute ? 'cards' : readView();
+
+function setView(v){
+  if (!VIEWS.includes(v) || v === state.view) return;
+  state.view = v;
+  try { localStorage.setItem('bgs:view', v); } catch (e) {}
+  syncViewToggle();
   render();
-});
+}
+function syncViewToggle(){
+  const t = document.getElementById('viewToggle');
+  if (!t) return;
+  t.dataset.view = state.view;
+  t.querySelectorAll('.view-opt').forEach(o => o.setAttribute('aria-checked', String(o.dataset.view === state.view)));
+}
+document.getElementById('viewToggle').hidden = isBagRoute;
+document.querySelectorAll('#viewToggle .view-opt').forEach(o => o.addEventListener('click', () => setView(o.dataset.view)));
+syncViewToggle();
 
 // ---- Search ----
 
@@ -2593,12 +2747,12 @@ function gnFilteredIdSet(){
 // Null when the game is filtered out of the current view — selections persist
 // across filter changes, so every caller has to tolerate that.
 function cardNodeFor(id){
-  return document.getElementById('shelf').querySelector(`.game-card[data-id="${id}"]`);
+  return document.getElementById('shelf').querySelector(`.tile[data-id="${id}"]`);
 }
 
 function clearSelectedCards(){
   document.getElementById('shelf')
-    .querySelectorAll('.game-card.selected')
+    .querySelectorAll('.tile.selected')
     .forEach(el => el.classList.remove('selected'));
 }
 
@@ -2695,7 +2849,7 @@ function primeGnWave(origin){
   const r = origin.getBoundingClientRect();
   const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
 
-  document.querySelectorAll('.game-card').forEach(card => {
+  document.querySelectorAll('.tile').forEach(card => {
     const b = card.getBoundingClientRect();
     // Offscreen cards snap in so scrolling never reveals a half-finished animation.
     if(b.bottom < 0 || b.top > window.innerHeight){ card.style.setProperty('--gn-d', '0s'); return; }
