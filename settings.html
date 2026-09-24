@@ -1465,6 +1465,7 @@ function buildV2Layout() {
   helper.append($('syncHint'));
   summary.append(sync);
   $('bggEdit').classList.add('settings-row--user');
+  $('bggEdit').querySelector('.t').textContent = 'BoardGameGeek username';
   $('bggRo').classList.add('mono');
   $('browseBtn').classList.add('settings-row--sep');
   bgg.card.append($('connectPlate'), summary, helper, v2Hairline('settings-hairline--bgg'), $('bggEdit'), $('bggForm'), $('browseBtn'), $('pickerHost'));
