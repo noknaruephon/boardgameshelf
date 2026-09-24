@@ -45,14 +45,14 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     --mono:'IBM Plex Mono',ui-monospace,monospace;
     --ease:cubic-bezier(.2,.7,.2,1);
   }
-  body{padding:28px 20px calc(40px + env(safe-area-inset-bottom));}
+  body{padding:16px 20px calc(40px + env(safe-area-inset-bottom));}
   .wrap{max-width:560px;margin:0 auto;}
   button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;}
   svg{stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
   [hidden]{display:none!important;}
 
   /* ---- header ---- */
-  .set-head{padding-bottom:22px;}
+  .set-head{padding-bottom:0;}
   .set-back{
     display:inline-flex;align-items:center;gap:4px;
     margin:0 0 18px -4px;padding:6px 8px 6px 4px;border-radius:8px;
@@ -74,26 +74,13 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   }
   .set-who.err{color:var(--bgs-vote-pass);white-space:normal;}
 
-  /* ---- groups and rows ---- */
-  .set-group{margin-top:22px;}
-  .set-group h2{
-    font-family:var(--serif);font-weight:500;font-size:17px;
-    color:var(--bgs-ivory-70);margin:0 0 4px;
-  }
-  .qrplate + .row{margin-top:6px;}
-
+  /* ---- rows (the cards draw the hairlines; see the grouped-cards block) ---- */
   .row{
     display:flex;align-items:center;gap:12px;
     min-height:56px;padding:10px 0;
-    border-bottom:1px solid var(--line);
     width:100%;text-align:left;color:inherit;text-decoration:none;
-    background:none;border-left:0;border-right:0;border-top:0;border-radius:0;
+    background:none;border:0;border-radius:0;
   }
-  /* The visually last row loses its hairline. `:last-child` alone misses the
-     case where hidden siblings (the username form, the browse fallback)
-     follow it, so a row with no visible following sibling counts as last. */
-  .row:last-child{border-bottom:0;}
-  .row:not(:has(~ :not([hidden]))){border-bottom:0;}   /* own rule: a browser without :has() must keep the line above */
   .row .lab{flex:1;min-width:0;display:block;}
   .row .lab .t{display:block;font-size:16px;font-weight:500;}
   .row .lab .s{display:block;font-size:13px;color:var(--bgs-ivory-70);margin-top:2px;}
@@ -131,71 +118,44 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .theme-swatch[aria-checked="true"]{color:var(--bgs-ivory);}
   .theme-swatch:focus-visible{outline:none;}
 
-  /* ---- share mode: Link | QR on the heading row ---- */
-  .h2row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-  .mode{display:flex;padding:3px;border-radius:999px;background:var(--bgs-plate);}
-  .mode button{
-    display:inline-flex;align-items:center;gap:5px;
-    height:28px;padding:0 10px;border-radius:999px;
-    font-size:12.5px;font-weight:500;color:var(--bgs-ivory-70);
-    transition:background .15s var(--ease),color .15s var(--ease);
-  }
-  .mode button svg{width:14px;height:14px;flex:none;}
-  .mode button[aria-selected="true"]{background:var(--bgs-bg);color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line-gold);}
-  .mode button:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
-
-  /* ---- shelf link plate ---- */
-  .linkplate{
-    display:flex;align-items:center;gap:10px;
-    margin-top:10px;padding:12px 14px;border-radius:12px;
-    background:var(--bgs-plate);
-    box-shadow:inset 0 0 0 1px var(--line-gold);   /* gold ring rule: inset box-shadow, never outline */
-  }
+  /* ---- shelf link row ---- */
+  .linkplate{display:flex;align-items:center;gap:10px;min-height:44px;}
+  .linkplate[hidden]{display:none;}   /* display:flex would override the hidden attribute */
   /* The slug is the part that matters, so the prefix is what gets cut:
-     the host runs right-to-left so its ellipsis lands on the left. The
-     <bdi> inside keeps the text itself left-to-right — without it the bidi
-     algorithm moves the trailing "/u/" to the far left and it is the first
-     thing cut. */
+     the host only shrinks, runs right-to-left so its ellipsis lands on the
+     left, and the <bdi> inside keeps the text itself left-to-right — without
+     it the bidi algorithm moves the trailing "/u/" to the far left and it is
+     the first thing cut. The Private tag takes the right end of the row. */
   .linkplate .url{display:flex;min-width:0;flex:1;font-family:var(--mono);font-size:14px;}
   .linkplate .url em{
-    flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     direction:rtl;text-align:left;
     font-style:normal;color:var(--bgs-ivory-45);
   }
   .linkplate .url b{flex:none;font-weight:500;color:var(--bgs-ivory);}
-  /* A slug wider than the plate on its own (BGG allows 64 chars) gives way
-     at its end rather than running under Copy; the prefix is already gone. */
+  /* A slug wider than the row on its own (BGG allows 64 chars) gives way
+     at its end; the prefix is already gone. */
   .linkplate .url b{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .linkplate .copy{
-    color:var(--bgs-gold);font-weight:600;font-size:14px;flex:none;
-    min-height:44px;margin:-10px -6px;padding:0 6px;border-radius:8px;
-  }
-  .linkplate .copy:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
 
-  /* Before BGG is connected the plate stands in for the shelf link: same
-     .linkplate padding, radius, fill and gold hairline, two lines of text
-     instead of an address. */
+  /* Before BGG is connected the plate is the whole BoardGameGeek card:
+     two lines of text and a primary button. */
+  .connectplate{flex-direction:column;align-items:stretch;gap:12px;padding:16px;}
   .connectplate .cp-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
   .connectplate .cp-title{font-size:16px;font-weight:500;color:var(--bgs-ivory);}
   .connectplate .cp-desc{font-size:13px;line-height:1.4;color:var(--bgs-ivory-70);}
-
-  /* ---- QR ticket: ivory with walnut modules, never inverted — light-on-dark
-     codes fail on a lot of camera apps. 14px inside the ticket is the quiet
-     zone scanners need. ---- */
-  .qrplate{
-    margin-top:10px;padding:20px 16px 16px;border-radius:18px;
-    background:var(--bgs-plate);box-shadow:inset 0 0 0 1px var(--line-gold);
-    display:flex;flex-direction:column;align-items:center;
+  .connectplate .copy{
+    display:inline-flex;align-items:center;justify-content:center;
+    height:44px;padding:0 18px;border-radius:12px;
+    background:var(--bgs-gold);color:var(--bgs-bg);font-size:15px;font-weight:600;
   }
-  /* the tabs and both panels set display:flex, which would override the
-     hidden attribute */
-  .mode[hidden],.linkplate[hidden],.qrplate[hidden]{display:none;}
-  .ticket{width:220px;height:220px;padding:14px;border-radius:14px;background:var(--bgs-ivory);}
+  .connectplate .copy:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-bg);}
+
+  /* ---- QR ticket: ivory plate with walnut modules, never inverted — light-on-dark
+     codes fail on a lot of camera apps. The plate's 12px is the quiet zone. ---- */
+  .ticket{width:152px;height:152px;}
   /* The page's icon rule strokes every svg in currentColor; a 1.75-unit
      ivory stroke on 1-unit modules would paint the code out. Fill only. */
   .ticket svg{display:block;width:100%;height:100%;fill:var(--bgs-bg);stroke:none;}
-  .ticket.is-private svg{opacity:.35;}
-  .qrhint{margin-top:12px;font-size:13px;color:var(--bgs-ivory-45);text-align:center;}
 
   /* ---- sync state pill ---- */
   .pill{
@@ -260,15 +220,6 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .btn-quiet{box-shadow:inset 0 0 0 1px var(--line);color:var(--bgs-ivory);}
   .btn-rust{background:var(--bgs-danger-hover);color:var(--bgs-bg);}
   .btn-rust:focus-visible{box-shadow:inset 0 0 0 2px var(--bgs-ivory);}
-
-  /* ---- delete, at the foot ---- */
-  .set-danger{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);}
-  .set-danger .rust{
-    display:block;min-height:44px;padding:10px 6px;margin-left:-6px;border-radius:8px;
-    font-size:14px;font-weight:500;color:var(--bgs-danger-hover);opacity:.85;
-  }
-  .set-danger .rust:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
-  .set-danger .hint{margin:2px 0 0;font-size:12.5px;line-height:1.5;color:var(--bgs-ivory-45);}
 
   /* ---- confirm sheet ---- */
   .scrim{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;}
@@ -372,115 +323,100 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .dn-toast.is-on{opacity:1;}
   .dn-toast svg{width:18px;height:18px;color:var(--bgs-gold);stroke-width:2.25;}
 
-  /* ---- settings2: grouped inset cards (docs/claude-code-spec-settings-a.md) ----
-     Only with ?settings2=1. The module puts .settings--v2 on <body> and moves
-     the existing controls into .settings-card groups; every rule here hangs
-     off that class, so without the flag the page is exactly what it was.
-     Rings are box-shadow throughout, never outline. */
-  .settings--v2{padding:16px 20px calc(40px + env(safe-area-inset-bottom));}
-  .settings--v2 .set-head{padding-bottom:0;}
-  .settings--v2 .settings-group{margin-top:28px;}
-  .settings--v2 .settings-eyebrow{
+  /* ---- grouped inset cards (docs/claude-code-spec-settings-a.md) ----
+     Four .settings-card groups under mono eyebrows. Rings are box-shadow
+     throughout, never outline. */
+  .settings-group{margin-top:28px;}
+  .settings-eyebrow{
     margin:0 0 10px;padding-left:4px;
     font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:1.5px;
     text-transform:uppercase;color:var(--bgs-gold);
   }
-  .settings--v2 .settings-card{background:var(--bgs-plate);border-radius:16px;overflow:hidden;}
-  .settings--v2 .settings-hairline{height:1px;margin-left:16px;background:var(--line);}
+  .settings-card{background:var(--bgs-plate);border-radius:16px;overflow:hidden;}
+  .settings-hairline{height:1px;margin-left:16px;background:var(--line);}
   /* A row that may or may not be preceded by a visible one (the browse
      fallback) carries its own inset hairline. */
-  .settings--v2 .settings-row--sep{position:relative;}
-  .settings--v2 .settings-row--sep::before{content:"";position:absolute;left:16px;right:0;top:0;height:1px;background:var(--line);}
+  .settings-row--sep{position:relative;}
+  .settings-row--sep::before{content:"";position:absolute;left:16px;right:0;top:0;height:1px;background:var(--line);}
 
-  /* Moved .row nodes: the card draws the hairlines, the row only pads. The
+  /* Rows in a card: the card draws the hairlines, the row only pads. The
      focus ring stays inset; the card's overflow clips it to the corners. */
-  .settings--v2 .settings-card .row{min-height:56px;padding:10px 16px;border-bottom:0;border-radius:0;}
-  .settings--v2 .settings-card .row:focus-visible{border-radius:0;}
-  .settings--v2 .settings-card .row .lab .t{font-weight:600;}
-  .settings--v2 .settings-card .row .lab .s{font-size:14px;line-height:20px;}
-  .settings--v2 .settings-card .row .val{font-family:inherit;}
-  .settings--v2 .settings-card .row .val.add,
-  .settings--v2 .settings-card .row .val.mono{font-family:var(--mono);}
-  .settings--v2 .toggle[aria-disabled="true"]{opacity:.5;cursor:default;}
+  .settings-card .row{min-height:56px;padding:10px 16px;border-radius:0;}
+  .settings-card .row:focus-visible{border-radius:0;}
+  .settings-card .row .lab .t{font-weight:600;}
+  .settings-card .row .lab .s{font-size:14px;line-height:20px;}
+  .settings-card .row .val{font-family:inherit;}
+  .settings-card .row .val.add,
+  .settings-card .row .val.mono{font-family:var(--mono);}
+  .toggle[aria-disabled="true"]{opacity:.5;cursor:default;}
 
   /* Sharing: the link block under the Public row. Dimming is a transition
      only; nothing animates on this element. */
-  .settings--v2 .settings-share{padding:12px 16px 16px;transition:opacity .2s var(--ease);}
-  .settings--v2 .settings-share.is-private{opacity:.4;pointer-events:none;}
-  .settings--v2 .settings-card .linkplate{margin:0;padding:0;min-height:44px;border-radius:0;background:none;box-shadow:none;}
-  /* Host and slug sit together; the host only shrinks (its ellipsis on the
-     left, as before), so the Private tag can take the right end of the row. */
-  .settings--v2 .settings-card .linkplate .url em{flex:0 1 auto;}
-  .settings--v2 .settings-url__icon{width:18px;height:18px;flex:none;color:var(--bgs-ivory-45);}
-  .settings--v2 .settings-private{
+  .settings-share{padding:12px 16px 16px;transition:opacity .2s var(--ease);}
+  .settings-share.is-private{opacity:.4;pointer-events:none;}
+  .settings-url__icon{width:18px;height:18px;flex:none;color:var(--bgs-ivory-45);}
+  .settings-private{
     flex:none;font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.1em;
     text-transform:uppercase;color:var(--bgs-ivory-70);
     padding:3px 8px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line);
   }
-  .settings--v2 .settings-actions{display:flex;gap:10px;margin-top:12px;}
-  .settings--v2 .settings-actions .btn{flex:1;padding:0 12px;}
-  .settings--v2 .settings-actions .btn svg{width:18px;height:18px;flex:none;}
-  .settings--v2 .btn--primary{background:var(--bgs-gold);color:var(--bgs-bg);}
-  .settings--v2 .btn--secondary{background:none;color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line);}
-  .settings--v2 .btn--secondary[aria-expanded="true"]{box-shadow:inset 0 0 0 1px var(--line-gold);color:var(--bgs-gold);}
-  .settings--v2 .btn--secondary:focus-visible{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
-  .settings--v2 .settings-qr{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px;padding-top:6px;}
-  .settings--v2 .settings-qr[hidden]{display:none;}
-  .settings--v2 .settings-qr__plate{width:176px;height:176px;padding:12px;border-radius:14px;background:var(--bgs-ivory);}
-  .settings--v2 .settings-qr__plate .ticket{width:152px;height:152px;padding:0;border-radius:0;}
-  .settings--v2 .settings-qr__save{
+  .settings-actions{display:flex;gap:10px;margin-top:12px;}
+  .settings-actions .btn{flex:1;padding:0 12px;}
+  .settings-actions .btn svg{width:18px;height:18px;flex:none;}
+  .btn--primary{background:var(--bgs-gold);color:var(--bgs-bg);}
+  .btn--secondary{background:none;color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line);}
+  .btn--secondary[aria-expanded="true"]{box-shadow:inset 0 0 0 1px var(--line-gold);color:var(--bgs-gold);}
+  .btn--secondary:focus-visible{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .settings-qr{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px;padding-top:6px;}
+  .settings-qr[hidden]{display:none;}
+  .settings-qr__plate{width:176px;height:176px;padding:12px;border-radius:14px;background:var(--bgs-ivory);}
+  .settings-qr__save{
     display:inline-flex;align-items:center;min-height:44px;padding:0 10px;border-radius:8px;
     font-size:14px;font-weight:600;color:var(--bgs-gold);text-decoration:none;
   }
-  .settings--v2 .settings-qr__save:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .settings-qr__save:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
 
   /* BoardGameGeek: count and status on the left, Sync now on the right. */
-  .settings--v2 .settings-row--summary{display:flex;align-items:center;gap:12px;padding:16px 16px 6px;}
-  .settings--v2 .settings-row--summary .settings-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
-  .settings--v2 .settings-row--summary #collectionHint{display:block;font-size:15px;line-height:20px;color:var(--bgs-ivory-70);}
-  .settings--v2 .settings-count{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1;color:var(--bgs-ivory);margin-right:2px;}
-  .settings--v2 .settings-card .pill{
+  .settings-row--summary{display:flex;align-items:center;gap:12px;padding:16px 16px 6px;}
+  .settings-row--summary .settings-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+  .settings-row--summary #collectionHint{display:block;font-size:15px;line-height:20px;color:var(--bgs-ivory-70);}
+  .settings-count{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1;color:var(--bgs-ivory);margin-right:2px;}
+  .settings-card .pill{
     padding:0;background:none;font-family:inherit;font-size:13px;color:var(--bgs-vote-play);
     align-self:flex-start;
   }
-  .settings--v2 .settings-card .pill::before{width:7px;height:7px;background:currentColor;}
-  .settings--v2 .settings-card .pill.is-stale{background:none;color:var(--bgs-ivory-70);}
-  .settings--v2 .settings-card .pill.is-stale::before{background:currentColor;}
-  .settings--v2 .settings-card .settings-sync{
+  .settings-card .pill::before{width:7px;height:7px;background:currentColor;}
+  .settings-card .pill.is-stale{background:none;color:var(--bgs-ivory-70);}
+  .settings-card .pill.is-stale::before{background:currentColor;}
+  .settings-card .settings-sync{
     width:auto;height:44px;min-height:44px;flex:none;padding:0 14px;gap:8px;
     border-radius:12px;color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line);
     transition:transform .12s var(--ease),background .15s var(--ease);
   }
-  .settings--v2 .settings-card .settings-sync:active{transform:scale(.98);}
-  .settings--v2 .settings-card .settings-sync:focus-visible{border-radius:12px;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
-  .settings--v2 .settings-card .settings-sync[aria-disabled="true"]{opacity:.5;transform:none;}
-  .settings--v2 .settings-card .settings-sync .lab{flex:none;}
-  .settings--v2 .settings-card .settings-sync .lab .t{font-size:15px;font-weight:600;}
-  .settings--v2 .settings-card .settings-sync .chev{width:16px;height:16px;color:currentColor;}
-  .settings--v2 .settings-helper{margin:0;padding:0 16px 16px;font-size:14px;line-height:20px;color:var(--bgs-ivory-70);}
-  .settings--v2 .settings-helper .err{color:var(--bgs-vote-pass);}
-  .settings--v2 .settings-card .edit{padding:4px 16px 16px;border-bottom:0;}
-  .settings--v2 .settings-card #pickerHost{padding:0 16px 16px;}
+  .settings-card .settings-sync:active{transform:scale(.98);}
+  .settings-card .settings-sync:focus-visible{border-radius:12px;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .settings-card .settings-sync[aria-disabled="true"]{opacity:.5;transform:none;}
+  .settings-card .settings-sync .lab{flex:none;}
+  .settings-card .settings-sync .lab .t{font-size:15px;font-weight:600;}
+  .settings-card .settings-sync .chev{width:16px;height:16px;color:currentColor;}
+  .settings-helper{margin:0;padding:0 16px 16px;font-size:14px;line-height:20px;color:var(--bgs-ivory-70);}
+  .settings-helper .err{color:var(--bgs-vote-pass);}
+  .settings-card .edit{padding:4px 16px 16px;border-bottom:0;}
+  .settings-card #pickerHost{padding:0 16px 16px;}
   /* Not connected: the connect plate stands in for the whole card body. */
-  .settings--v2 .settings-card.is-connect .settings-row--summary,
-  .settings--v2 .settings-card.is-connect .settings-helper,
-  .settings--v2 .settings-card.is-connect .settings-hairline--bgg,
-  .settings--v2 .settings-card.is-connect .settings-row--user{display:none;}
-  .settings--v2 .settings-card .connectplate{flex-direction:column;align-items:stretch;gap:12px;padding:16px;min-height:0;}
-  .settings--v2 .settings-card .connectplate .copy{
-    display:inline-flex;align-items:center;justify-content:center;
-    margin:0;height:44px;padding:0 18px;border-radius:12px;
-    background:var(--bgs-gold);color:var(--bgs-bg);font-size:15px;
-  }
+  .settings-card.is-connect .settings-row--summary,
+  .settings-card.is-connect .settings-helper,
+  .settings-card.is-connect .settings-hairline--bgg,
+  .settings-card.is-connect .settings-row--user{display:none;}
 
   /* Account */
-  .settings--v2 .settings-row--danger{
+  .settings-row--danger{
     display:flex;align-items:center;width:100%;min-height:56px;padding:10px 16px;margin:0;
-    border-radius:0;font-size:16px;font-weight:600;color:var(--bgs-vote-pass);opacity:1;text-align:left;
+    border-radius:0;font-size:16px;font-weight:600;color:var(--bgs-vote-pass);text-align:left;
   }
-  .settings--v2 .settings-row--danger:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
-  .settings--v2 .settings-footnote{margin:10px 0 0;padding:0 4px;font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);}
-  .settings--v2 .settings-group .msg{padding:0 4px;}
+  .settings-row--danger:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .settings-footnote{margin:10px 0 0;padding:0 4px;font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);}
+  .settings-group .msg{padding:0 4px;}
 
   @media (prefers-reduced-motion:reduce){
     .toggle,.toggle::after,.btn,.dn-save,.dn-toast,.settings-share,.settings-sync{transition:none;}
@@ -524,111 +460,122 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   </div>
 
   <div id="settings" hidden>
-    <section class="set-group" aria-labelledby="g-shelf">
-      <div class="h2row">
-        <h2 id="g-shelf">Your shelf</h2>
-        <div class="mode" id="shareMode" role="tablist" aria-label="Share as">
-          <button type="button" role="tab" id="tab-link" aria-selected="true" aria-controls="share-link" data-mode="link" tabindex="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a3.5 3.5 0 0 0 5 0l4-4a3.5 3.5 0 0 0-5-5l-.5.5"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-4 4a3.5 3.5 0 0 0 5 5l.5-.5"/></svg>Link</button>
-          <button type="button" role="tab" id="tab-qr" aria-selected="false" aria-controls="share-qr" data-mode="qr" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h3v3M20 14v3M14 20h3M20 20h0"/></svg>QR</button>
+    <!-- docs/claude-code-spec-settings-a.md: four inset cards. Glyphs are Tabler's. -->
+    <section class="settings-group">
+      <p class="settings-eyebrow">Sharing</p>
+      <div class="settings-card">
+        <div class="row settings-row--toggle">
+          <span class="lab" id="lbl-public"><span class="t">Public shelf</span><span class="s" id="publicHint">Anyone with the link can browse and start a game night</span></span>
+          <button type="button" class="toggle" id="publicToggle" role="switch" aria-checked="true" aria-labelledby="lbl-public"></button>
+        </div>
+        <div class="settings-hairline"></div>
+        <!-- Dimmed (.is-private) while the shelf is private or there is no shelf yet -->
+        <div class="settings-share" id="shareBlock" data-share>
+          <div class="linkplate settings-url" id="share-link">
+            <svg class="settings-url__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 15l6-6"/><path d="M11 6l.463-.536a5 5 0 0 1 7.071 7.072l-.534.464"/><path d="M13 18l-.397.534a5.068 5.068 0 0 1-7.127 0 4.972 4.972 0 0 1 0-7.071l.524-.463"/></svg>
+            <span class="url" id="shelfUrl"><em><bdi id="shelfHost"></bdi></em><b id="shelfSlug"></b></span>
+            <em class="settings-private" id="privateTag" hidden>Private</em>
+          </div>
+          <div class="settings-actions">
+            <button type="button" class="btn btn--primary" id="copyLink" data-copy="">Copy link</button>
+            <button type="button" class="btn btn--secondary" id="qrToggle" data-qr-toggle aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M7 17v.01"/><path d="M14 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/><path d="M7 7v.01"/><path d="M4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M17 7v.01"/><path d="M14 14h3"/><path d="M20 14v.01"/><path d="M14 14v3"/><path d="M14 20h3"/><path d="M17 17h3"/><path d="M20 17v3"/></svg><span data-qr-label>Show QR</span></button>
+          </div>
+          <div class="settings-qr" id="qrPanel" data-qr-panel hidden>
+            <div class="settings-qr__plate"><div class="ticket" id="share-qr-code" role="img" aria-label="QR code for your shelf"></div></div>
+            <a class="settings-qr__save" id="qrSave" href="#" data-qr-save>Save image</a>
+          </div>
         </div>
       </div>
-
-      <div class="linkplate" id="share-link" role="tabpanel" aria-labelledby="tab-link">
-        <span class="url" id="shelfUrl"><em><bdi id="shelfHost"></bdi></em><b id="shelfSlug"></b></span>
-        <button type="button" class="copy" id="copyLink" data-copy="">Copy</button>
-      </div>
-
-      <div class="linkplate connectplate" id="connectPlate" hidden>
-        <span class="cp-text">
-          <span class="cp-title">Connect your BGG username</span>
-          <span class="cp-desc">to import your collection and generate a shareable link.</span>
-        </span>
-        <button type="button" class="copy" id="connectBtn">Connect</button>
-      </div>
-
-      <div class="qrplate" id="share-qr" role="tabpanel" aria-labelledby="tab-qr" hidden>
-        <div class="ticket" id="share-qr-code" role="img" aria-label="QR code for your shelf"></div>
-        <div class="qrhint" id="qrHint">Point a camera at it</div>
-      </div>
-
-      <!-- docs/claude-code-spec-display-name.md -->
-      <button type="button" class="row" id="displayNameRow">
-        <span class="lab"><span class="t">Display name</span></span>
-        <span class="val" id="displayNameVal" data-display-name></span>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-
-      <div class="row">
-        <span class="lab" id="lbl-public"><span class="t">Public</span><span class="s" id="publicHint">Anyone with the link can browse and start a game night</span></span>
-        <button type="button" class="toggle" id="publicToggle" role="switch" aria-checked="true" aria-labelledby="lbl-public"></button>
-      </div>
-      <div class="row">
-        <span class="lab" id="lbl-expansions"><span class="t">Show expansions</span><span class="s" id="expansionsHint">Expansions you own appear on the shelf and count toward it</span></span>
-        <button type="button" class="toggle" id="expansionsToggle" role="switch" aria-checked="false" aria-labelledby="lbl-expansions"></button>
-      </div>
     </section>
 
-    <!-- docs/claude-code-spec-themes.md -->
-    <section class="set-group" id="lookGroup" aria-labelledby="g-look">
-      <h2 id="g-look">Look</h2>
-      <div class="row">
-        <span class="lab"><span class="t">Theme</span></span>
-        <span class="val" id="themeVal"></span>
-      </div>
-      <div class="theme-strip" id="themeStrip" role="radiogroup" aria-label="Theme"></div>
-    </section>
-
-    <section class="set-group" aria-labelledby="g-bgg">
-      <h2 id="g-bgg">BoardGameGeek</h2>
-
-      <button type="button" class="row" id="bggEdit" data-action="change-username">
-        <span class="lab"><span class="t">Username</span></span>
-        <span class="val" id="bggRo"></span>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-
-      <form class="edit" id="bggForm" hidden novalidate>
-        <input class="field" id="bggNew" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Your BGG username" aria-label="New BGG username">
-        <p class="slug-preview" id="bggNewPreview" aria-live="polite"></p>
-        <p class="hint" id="bggHint">Your shelf address changes with it, so links you've already shared will stop working. Sync again afterwards to load the right collection.</p>
-        <p class="msg" id="bggMsg" aria-live="polite"></p>
-        <div class="acts">
-          <button class="btn btn-quiet" id="bggCancel" type="button">Cancel</button>
-          <button class="btn btn-gold" id="bggSave" type="submit">Save</button>
+    <section class="settings-group">
+      <p class="settings-eyebrow">Display</p>
+      <div class="settings-card">
+        <!-- docs/claude-code-spec-themes.md -->
+        <div class="row">
+          <span class="lab"><span class="t">Theme</span></span>
+          <span class="val" id="themeVal"></span>
         </div>
-      </form>
-
-      <div class="row">
-        <span class="lab"><span class="t">Collection</span><span class="s" id="collectionHint"></span></span>
-        <span class="pill" id="sync-state" aria-live="polite"></span>
+        <div class="theme-strip" id="themeStrip" role="radiogroup" aria-label="Theme"></div>
+        <div class="settings-hairline"></div>
+        <div class="row settings-row--toggle">
+          <span class="lab" id="lbl-expansions"><span class="t">Show expansions</span><span class="s" id="expansionsHint">Expansions you own appear on the shelf and count toward it</span></span>
+          <button type="button" class="toggle" id="expansionsToggle" role="switch" aria-checked="false" aria-labelledby="lbl-expansions"></button>
+        </div>
       </div>
-
-      <button type="button" class="row" id="syncBtn" data-action="sync">
-        <span class="lab"><span class="t">Sync now</span><span class="s" id="syncHint">Pulls owned games. Takes a minute or two for big shelves.</span></span>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11A8 8 0 1 0 18 16"/><path d="M20 4v7h-7"/></svg>
-      </button>
-
-      <!-- fallback while this shelf is empty: browse a stocked one instead -->
-      <button type="button" class="row" id="browseBtn" hidden>
-        <span class="lab"><span class="t">Browse an existing shelf</span><span class="s">Look through a public collection while yours is empty.</span></span>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
-      <div id="pickerHost" hidden></div>
     </section>
 
-    <section class="set-group" aria-labelledby="g-account">
-      <h2 id="g-account">Account</h2>
-      <button type="button" class="row" id="signOutBtn" data-action="signout">
-        <span class="lab"><span class="t">Sign out</span><span class="s" id="signedWith"></span></span>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"/><path d="M9 12h12l-3-3m0 6 3-3"/></svg>
-      </button>
+    <section class="settings-group">
+      <p class="settings-eyebrow">BoardGameGeek</p>
+      <!-- .is-connect while there is no slug: the connect plate is the whole card -->
+      <div class="settings-card" id="bggCard">
+        <div class="linkplate connectplate" id="connectPlate" hidden>
+          <span class="cp-text">
+            <span class="cp-title">Connect your BGG username</span>
+            <span class="cp-desc">to import your collection and generate a shareable link.</span>
+          </span>
+          <button type="button" class="copy" id="connectBtn">Connect</button>
+        </div>
+
+        <div class="settings-row--summary">
+          <div class="settings-summary">
+            <span class="s" id="collectionHint"></span>
+            <span class="pill" id="sync-state" aria-live="polite"></span>
+          </div>
+          <button type="button" class="row settings-sync" id="syncBtn" data-action="sync">
+            <span class="lab"><span class="t">Sync now</span></span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11A8 8 0 1 0 18 16"/><path d="M20 4v7h-7"/></svg>
+          </button>
+        </div>
+        <p class="settings-helper"><span class="s" id="syncHint">Pulls owned games. Takes a minute or two for big shelves.</span></p>
+        <div class="settings-hairline settings-hairline--bgg"></div>
+
+        <button type="button" class="row settings-row--user" id="bggEdit" data-action="change-username">
+          <span class="lab"><span class="t">BoardGameGeek username</span></span>
+          <span class="val mono" id="bggRo"></span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+
+        <form class="edit" id="bggForm" hidden novalidate>
+          <input class="field" id="bggNew" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Your BGG username" aria-label="New BGG username">
+          <p class="slug-preview" id="bggNewPreview" aria-live="polite"></p>
+          <p class="hint" id="bggHint">Your shelf address changes with it, so links you've already shared will stop working. Sync again afterwards to load the right collection.</p>
+          <p class="msg" id="bggMsg" aria-live="polite"></p>
+          <div class="acts">
+            <button class="btn btn-quiet" id="bggCancel" type="button">Cancel</button>
+            <button class="btn btn-gold" id="bggSave" type="submit">Save</button>
+          </div>
+        </form>
+
+        <!-- fallback while this shelf is empty: browse a stocked one instead -->
+        <button type="button" class="row settings-row--sep" id="browseBtn" hidden>
+          <span class="lab"><span class="t">Browse an existing shelf</span><span class="s">Look through a public collection while yours is empty.</span></span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div id="pickerHost" hidden></div>
+      </div>
     </section>
 
-    <footer class="set-danger">
-      <button type="button" class="rust" id="deleteBtn" data-action="delete">Delete account…</button>
-      <p class="hint" id="deleteHint">Removes your shelf, synced collection and sign-in. You'll be asked to confirm.</p>
+    <section class="settings-group">
+      <p class="settings-eyebrow">Account</p>
+      <div class="settings-card">
+        <!-- docs/claude-code-spec-display-name.md -->
+        <button type="button" class="row" id="displayNameRow">
+          <span class="lab"><span class="t">Display name</span></span>
+          <span class="val" id="displayNameVal" data-display-name></span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="settings-hairline"></div>
+        <button type="button" class="row" id="signOutBtn" data-action="signout">
+          <span class="lab"><span class="t">Sign out</span><span class="s" id="signedWith"></span></span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"/><path d="M9 12h12l-3-3m0 6 3-3"/></svg>
+        </button>
+        <div class="settings-hairline"></div>
+        <button type="button" class="settings-row--danger" id="deleteBtn" data-action="delete">Delete account…</button>
+      </div>
+      <p class="settings-footnote" id="deleteHint">Removes your shelf, synced collection and sign-in. You'll be asked to confirm.</p>
       <p class="msg" id="deleteMsg" aria-live="polite"></p>
-    </footer>
+    </section>
   </div>
 
   <!-- confirm sheet, hidden until Delete is tapped -->
@@ -662,13 +609,6 @@ import { THEMES, isTheme, currentTheme, applyTheme, rememberTheme, applyProfileT
 const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
 const show = (id, on) => { $(id).hidden = !on; };
-
-// ---- settings2 flag (docs/claude-code-spec-settings-a.md) ----
-// The grouped-cards layout. Same shape as the flags in shelf.html: a kill
-// switch plus ?settings2=1 to reveal it while off. With it off nothing in
-// the "grouped cards" section below runs and the page is what it was.
-const SETTINGS2_ENABLED = false;
-const V2 = SETTINGS2_ENABLED || new URLSearchParams(location.search).get('settings2') === '1';
 
 const PUBLIC_HINT = 'Anyone with the link can browse and start a game night';
 const PRIVATE_HINT = 'Only you can see it while signed in';
@@ -721,14 +661,13 @@ function renderCollection() {
   if (!connected()) hint.textContent = 'Add your BGG username to sync';
   else if (!profile.last_synced_at) hint.textContent = 'Sync to pull your games';
   else if (ownGameCount === null) hint.textContent = '';
-  else if (V2) {
+  else {
     // The count is the card's headline figure; the noun sits beside it.
     const b = document.createElement('b');
     b.className = 'settings-count';
     b.textContent = String(ownGameCount);
     hint.replaceChildren(b, ` owned game${ownGameCount === 1 ? '' : 's'}`);
   }
-  else hint.textContent = `${ownGameCount} owned game${ownGameCount === 1 ? '' : 's'}`;
   $('delCount').textContent = ownGameCount ? `your ${ownGameCount} synced games` : 'your synced games';
 }
 
@@ -752,16 +691,13 @@ function renderSettings() {
   // link's place asks for the username instead. Which panel shows is
   // setShareMode()'s business; this only takes them away and puts the
   // selected one back.
-  show('shareMode', on && !V2);
   show('connectPlate', !on);
-  if (V2) renderV2Share(on);
-  else for (const tab of modeTabs) $(tab.getAttribute('aria-controls')).hidden = !on || tab.getAttribute('aria-selected') !== 'true';
+  renderShare(on);
   if (on) {
     const url = `${location.origin}/u/${profile.slug}`;
     $('shelfHost').textContent = `${location.host}/u/`;
     $('shelfSlug').textContent = profile.slug;
     $('copyLink').dataset.copy = url;
-    if (!V2) renderQr(url);   // v2 draws it on Show QR instead
     $('delSlug').textContent = `/u/${profile.slug}`;
   }
   // Without a shelf there is no address and no game count to name.
@@ -784,16 +720,13 @@ function renderSettings() {
   $('signedWith').textContent = signedWith();
   renderCollection();
   renderPill();
-  if (V2) renderV2(on);
+  renderConnected(on);
   show('settings', true);
 }
 
-// ---- share mode: Link | QR ----
-// The QR is drawn once per URL and cached; a username change gives a new
-// slug, so a new URL, so it is drawn again. Nothing else redraws it.
-const SHARE_MODE_KEY = 'bgs.shareMode';
-const QR_HINT = 'Point a camera at it';
-const QR_PRIVATE_HINT = 'Your shelf is private — scanning leads to a locked page.';
+// ---- QR ----
+// Drawn once per URL and cached; a username change gives a new slug, so a
+// new URL, so it is drawn again. Nothing else redraws it.
 let qrCache = { url: '', svg: '' };
 
 function buildQrSvg(url) {
@@ -809,49 +742,9 @@ function buildQrSvg(url) {
 function renderQr(url) {
   const ticket = $('share-qr-code');
   ticket.setAttribute('aria-label', `QR code for ${location.host}/u/${profile.slug}`);
-  ticket.classList.toggle('is-private', !profile.is_public);
-  $('qrHint').textContent = profile.is_public ? QR_HINT : QR_PRIVATE_HINT;
   if (qrCache.url === url) return;
-  qrCache = { url, svg: '' };
-  if (typeof qrcode !== 'function') {
-    // vendor/qrcode.min.js did not load; the link panel still works.
-    ticket.innerHTML = '';
-    $('qrHint').textContent = 'Couldn’t draw the code. Copy the link instead.';
-    return;
-  }
-  qrCache.svg = buildQrSvg(url);
+  qrCache = { url, svg: buildQrSvg(url) };
   ticket.innerHTML = qrCache.svg;
-}
-
-const modeTabs = [...$('shareMode').querySelectorAll('[role="tab"]')];
-function setShareMode(mode, { focus = false } = {}) {
-  for (const tab of modeTabs) {
-    const on = tab.dataset.mode === mode;
-    tab.setAttribute('aria-selected', String(on));
-    tab.tabIndex = on ? 0 : -1;
-    $(tab.getAttribute('aria-controls')).hidden = !on;
-    if (on && focus) tab.focus();
-  }
-  try { localStorage.setItem(SHARE_MODE_KEY, mode); } catch { /* private mode, no storage */ }
-}
-for (const tab of modeTabs) tab.addEventListener('click', () => setShareMode(tab.dataset.mode));
-$('shareMode').addEventListener('keydown', (e) => {
-  const i = modeTabs.indexOf(document.activeElement);
-  if (i < 0) return;
-  let next = -1;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (i + 1) % modeTabs.length;
-  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (i - 1 + modeTabs.length) % modeTabs.length;
-  else if (e.key === 'Home') next = 0;
-  else if (e.key === 'End') next = modeTabs.length - 1;
-  if (next < 0) return;
-  e.preventDefault();
-  setShareMode(modeTabs[next].dataset.mode, { focus: true });
-});
-function restoreShareMode() {
-  if (!connected() || V2) return;   // v2 has no tabs; the QR expands inline
-  let saved = null;
-  try { saved = localStorage.getItem(SHARE_MODE_KEY); } catch { /* no storage */ }
-  if (saved === 'qr') setShareMode('qr');
 }
 
 // ---- shelf link ----
@@ -863,7 +756,7 @@ $('copyLink').addEventListener('click', async () => {
     await navigator.clipboard.writeText(url);
     btn.textContent = 'Copied';
     clearTimeout(copiedTimer);
-    copiedTimer = setTimeout(() => { btn.textContent = btn.dataset.label || 'Copy'; }, 1500);
+    copiedTimer = setTimeout(() => { btn.textContent = 'Copy link'; }, 1500);
   } catch {
     // No clipboard access (older WebKit, non-secure context): select the
     // address so a long-press or ⌘C still gets it.
@@ -1000,7 +893,7 @@ $('bggForm').addEventListener('submit', async (e) => {
 
 // ---- visibility ----
 $('publicToggle').addEventListener('click', async () => {
-  if ($('publicToggle').getAttribute('aria-disabled') === 'true') return;   // v2, not connected
+  if ($('publicToggle').getAttribute('aria-disabled') === 'true') return;   // not connected: nothing to make public yet
   const next = !profile.is_public;
   $('publicToggle').setAttribute('aria-checked', String(next));
   $('publicHint').classList.remove('err');
@@ -1400,115 +1293,37 @@ async function saveDisplayName() {
 
 $('displayNameRow').addEventListener('click', openDisplayNameSheet);
 
-// ---- grouped cards (docs/claude-code-spec-settings-a.md, ?settings2=1) ----
-// Four inset cards: Sharing, Display, BoardGameGeek, Account. The existing
-// controls are moved into them, never rebuilt, so every id, data attribute
-// and listener above keeps working. The old sections stay in the DOM,
-// emptied and hidden, until the flag comes out. Glyphs are Tabler's.
-const TABLER_LINK = '<svg class="settings-url__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 15l6-6"/><path d="M11 6l.463-.536a5 5 0 0 1 7.071 7.072l-.534.464"/><path d="M13 18l-.397.534a5.068 5.068 0 0 1-7.127 0 4.972 4.972 0 0 1 0-7.071l.524-.463"/></svg>';
-const TABLER_QR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M7 17v.01"/><path d="M14 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/><path d="M7 7v.01"/><path d="M4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M17 7v.01"/><path d="M14 14h3"/><path d="M20 14v.01"/><path d="M14 14v3"/><path d="M14 20h3"/><path d="M17 17h3"/><path d="M20 17v3"/></svg>';
+// ---- sharing card (docs/claude-code-spec-settings-a.md) ----
+// The link block is always there: without a shelf it is dimmed and reads
+// as a prompt rather than an address; with the shelf private it is dimmed
+// under a Private tag. Either way the QR folds up.
 const CONNECT_URL_TEXT = 'Connect BGG to get your link';
+let shareUrl = '';   // the shelf address the QR and Save image use; '' until connected
 
-const v2El = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
-const v2Hairline = (cls = '') => v2El(`<div class="settings-hairline ${cls}"></div>`);
-function v2Group(eyebrow) {
-  const group = v2El(`<section class="settings-group"><p class="settings-eyebrow">${eyebrow}</p><div class="settings-card"></div></section>`);
-  return { group, card: group.lastElementChild };
-}
-let v2 = null;   // the new nodes the renderers need: share block, Private tag, QR toggle and panel, BGG card
-
-function buildV2Layout() {
-  document.body.classList.add('settings--v2');
-  const root = $('settings');
-  const oldSections = [...root.children];
-
-  // 1 · Sharing: the Public row first, then the link block it governs.
-  const sharing = v2Group('Sharing');
-  const publicRow = $('publicToggle').closest('.row');
-  publicRow.classList.add('settings-row--toggle');
-  $('lbl-public').querySelector('.t').textContent = 'Public shelf';
-  const share = v2El('<div class="settings-share" data-share></div>');
-  const url = $('share-link');   // keeps #shelfUrl / #shelfHost / #shelfSlug; no longer a tab panel
-  url.classList.add('settings-url');
-  url.removeAttribute('role');
-  url.removeAttribute('aria-labelledby');
-  url.prepend(v2El(TABLER_LINK));
-  const privateTag = v2El('<em class="settings-private" hidden>Private</em>');
-  url.append(privateTag);
-  const copy = $('copyLink');
-  copy.classList.add('btn', 'btn--primary');
-  copy.dataset.label = 'Copy link';
-  copy.textContent = copy.dataset.label;
-  const qrToggle = v2El(`<button type="button" class="btn btn--secondary" data-qr-toggle aria-expanded="false">${TABLER_QR}<span data-qr-label>Show QR</span></button>`);
-  const actions = v2El('<div class="settings-actions"></div>');
-  actions.append(copy, qrToggle);
-  const qrPanel = v2El('<div class="settings-qr" data-qr-panel hidden><div class="settings-qr__plate"></div><a class="settings-qr__save" href="#" data-qr-save>Save image</a></div>');
-  qrPanel.firstElementChild.append($('share-qr-code'));   // the existing ticket; renderQr() keeps drawing into it
-  share.append(url, actions, qrPanel);
-  sharing.card.append(publicRow, v2Hairline(), share);
-
-  // 2 · Display: the theme row and strip as they are, then expansions.
-  const display = v2Group('Display');
-  const expansionsRow = $('expansionsToggle').closest('.row');
-  expansionsRow.classList.add('settings-row--toggle');
-  display.card.append($('themeVal').closest('.row'), $('themeStrip'), v2Hairline(), expansionsRow);
-
-  // 3 · BoardGameGeek: count + status with Sync now beside them, the sync
-  // helper under that, then the username row and its form. The connect
-  // plate sits first and stands in for the rest while there is no slug.
-  const bgg = v2Group('BoardGameGeek');
-  const summary = v2El('<div class="settings-row--summary"><div class="settings-summary"></div></div>');
-  summary.firstElementChild.append($('collectionHint'), $('sync-state'));
-  const sync = $('syncBtn');
-  sync.classList.add('settings-sync');
-  const helper = v2El('<p class="settings-helper"></p>');
-  helper.append($('syncHint'));
-  summary.append(sync);
-  $('bggEdit').classList.add('settings-row--user');
-  $('bggEdit').querySelector('.t').textContent = 'BoardGameGeek username';
-  $('bggRo').classList.add('mono');
-  $('browseBtn').classList.add('settings-row--sep');
-  bgg.card.append($('connectPlate'), summary, helper, v2Hairline('settings-hairline--bgg'), $('bggEdit'), $('bggForm'), $('browseBtn'), $('pickerHost'));
-
-  // 4 · Account: display name, sign out, delete; the delete copy under the card.
-  const account = v2Group('Account');
-  $('deleteBtn').classList.add('settings-row--danger');
-  account.card.append($('displayNameRow'), v2Hairline(), $('signOutBtn'), v2Hairline(), $('deleteBtn'));
-  $('deleteHint').classList.add('settings-footnote');
-  account.group.append($('deleteHint'), $('deleteMsg'));
-
-  for (const node of oldSections) node.hidden = true;
-  root.append(sharing.group, display.group, bgg.group, account.group);
-  v2 = { share, privateTag, qrToggle, qrPanel, qrSave: qrPanel.lastElementChild, bggCard: bgg.card, url: '' };
-}
-
-/** The v2 link block is always there; without a shelf it is dimmed and
-    reads as a prompt rather than an address, and with the shelf private it
-    is dimmed under a Private tag. Either way the QR folds up. The old QR
-    hero stays hidden. */
-function renderV2Share(on) {
-  show('share-link', true);
-  show('share-qr', false);
+function renderShare(on) {
   const priv = on && !profile.is_public;
-  v2.url = on ? `${location.origin}/u/${profile.slug}` : '';
+  shareUrl = on ? `${location.origin}/u/${profile.slug}` : '';
   if (!on) {
     $('shelfHost').textContent = '';
     $('shelfSlug').textContent = CONNECT_URL_TEXT;
     $('copyLink').dataset.copy = '';
   }
-  v2.share.classList.toggle('is-private', !on || priv);
-  v2.privateTag.hidden = !priv;
+  $('shareBlock').classList.toggle('is-private', !on || priv);
+  $('privateTag').hidden = !priv;
   if (!on || priv) setQrOpen(false);
-  else if (!v2.qrPanel.hidden) renderQr(v2.url);   // open across a username change: redraw for the new address
+  else if (!$('qrPanel').hidden) renderQr(shareUrl);   // open across a username change: redraw for the new address
 }
 
 // ---- inline QR: Show QR / Hide QR, drawn on first open, closed on every load ----
 function setQrOpen(open) {
-  if (open) renderQr(v2.url);   // the existing renderer; cached per URL
-  v2.qrPanel.hidden = !open;
-  v2.qrToggle.setAttribute('aria-expanded', String(open));
-  v2.qrToggle.querySelector('[data-qr-label]').textContent = open ? 'Hide QR' : 'Show QR';
+  if (open) renderQr(shareUrl);   // cached per URL
+  $('qrPanel').hidden = !open;
+  $('qrToggle').setAttribute('aria-expanded', String(open));
+  $('qrToggle').querySelector('[data-qr-label]').textContent = open ? 'Hide QR' : 'Show QR';
 }
+$('qrToggle').addEventListener('click', () => setQrOpen($('qrPanel').hidden));
+// vendor/qrcode.min.js did not load: no code to show, the link still works.
+if (typeof qrcode !== 'function') $('qrToggle').hidden = true;
 
 /** Save image: the code drawn fresh onto a canvas, black on white with a
     four-module quiet zone, and handed over as a PNG download. On iOS the
@@ -1533,8 +1348,8 @@ function qrToCanvas(url) {
 }
 function saveQrImage(e) {
   e.preventDefault();
-  if (!v2.url || typeof qrcode !== 'function') return;
-  const canvas = qrToCanvas(v2.url);
+  if (!shareUrl || typeof qrcode !== 'function') return;
+  const canvas = qrToCanvas(shareUrl);
   const a = document.createElement('a');
   a.download = `boardgameshelf-${profile.slug}.png`;
   const finish = (href) => {
@@ -1552,25 +1367,19 @@ function saveQrImage(e) {
     }, 'image/png');
   } else finish(canvas.toDataURL('image/png'));
 }
-
-function wireV2() {
-  v2.qrToggle.addEventListener('click', () => setQrOpen(v2.qrPanel.hidden));
-  v2.qrSave.addEventListener('click', saveQrImage);
-}
+$('qrSave').addEventListener('click', saveQrImage);
 
 /** Not connected: Public shows off and disabled, and the BoardGameGeek
     card is the connect plate alone. */
-function renderV2(on) {
+function renderConnected(on) {
   const pub = $('publicToggle');
   if (on) pub.removeAttribute('aria-disabled');
   else {
     pub.setAttribute('aria-checked', 'false');
     pub.setAttribute('aria-disabled', 'true');
   }
-  v2.bggCard.classList.toggle('is-connect', !on);
+  $('bggCard').classList.toggle('is-connect', !on);
 }
-
-if (V2) { buildV2Layout(); wireV2(); }
 
 // ---- boot ----
 try {
@@ -1585,7 +1394,6 @@ try {
     // then has a real profile to write to, connected or not.
     profile = await ensureMyProfile();
     renderSettings();
-    restoreShareMode();
     updateBrowseOffer();
   }
 } catch (err) {
