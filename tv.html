@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TV — BoardgameShelf</title>
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/icon-180.png">
+<meta name="theme-color" content="#171110">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+/* Theme resolver (docs/claude-code-spec-themes.md), before the stylesheet so
+   the first frame is already the right theme: ?theme= (preview only) →
+   localStorage['bgs:theme'] → walnut. Ids are shape-checked here only; an
+   unknown id matches no [data-theme] block and renders walnut, and
+   js/themes.js normalises it later. The meta theme-color follows the
+   applied theme's --bgs-bg once the stylesheet has resolved. */
+(function(){var d=document.documentElement,ok=/^[a-z][a-z0-9-]{0,23}$/,q=null,s=null;
+try{q=new URLSearchParams(location.search).get('theme');}catch(e){}
+try{s=localStorage.getItem('bgs:theme');}catch(e){}
+d.dataset.theme=ok.test(q||'')?q:ok.test(s||'')?s:'walnut';
+document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('meta[name="theme-color"]'),bg=getComputedStyle(d).getPropertyValue('--bgs-bg').trim();if(m&&bg)m.content=bg;});})();
+</script>
+<link rel="stylesheet" href="/css/base.css">
+<style>
+  /* TV mode (docs/claude-code-spec-tv-mode.md, mockup docs/mockups/tv-mode-c.html).
+     Tokens and the theme blocks come from css/base.css. The mockup sizes
+     everything in cqw inside a 16:9 frame; here the frame IS the viewport, so
+     the same numbers are vw (1vw = 19.2px at 1920). Content is centred
+     vertically, so a 16:10 laptop just gets more margin.
+
+     WebKit rule: never an animation and a transition on the same property of
+     the same element. Transitions only: .scene, .seat .chip, .deck, .seats-row,
+     .cover-light img. Animations only: .chip-n.pop (and, from the results
+     commit, .num, .beat, .crown .cov, .flash, the confetti).
+     Gold rings are box-shadow, never outline. */
+  html{overflow:hidden;}
+  body{
+    position:fixed;inset:0;overflow:hidden;
+    min-height:0;padding:0;
+  }
+
+  /* ---- cover light: the base.css layer, but inside the page root and scaled
+     for a 16:9 screen. Nothing lights until the results commit; the layer is
+     built once at load so the swap is a plain opacity transition later. ---- */
+  .cover-light{position:absolute;}
+  .cover-light img{--cl-scale:13;transition:opacity .9s;}
+  .cover-light img.on{opacity:.55;}
+
+  .stage{position:absolute;inset:0;z-index:1;}
+  .stage > .scene{position:absolute;inset:0;transition:opacity .45s;}
+  .stage > .scene.out{opacity:0;}
+
+  /* ---- chrome: eyebrow, wordmark, live line, BGG badge ---- */
+  .chrome{position:absolute;inset:0;z-index:2;pointer-events:none;}
+  .chrome .eyebrow{
+    position:absolute;left:3.2vw;top:2.6vw;
+    font:500 .95vw/1 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--bgs-gold-dim);white-space:nowrap;
+  }
+  .chrome .eyebrow .sep{margin:0 .7vw;color:var(--bgs-ivory-45);}
+  .chrome .eyebrow b{font-weight:500;color:var(--bgs-ivory);}
+  .chrome .eyebrow .round{color:var(--bgs-ivory-45);}
+  .chrome .eyebrow .round:empty{display:none;}
+  .chrome .wordmark{
+    position:absolute;right:3.2vw;top:2.3vw;
+    font:italic 500 1.35vw/1 'Fraunces',serif;color:var(--bgs-ivory-70);
+  }
+  .chrome .live{
+    position:absolute;left:3.2vw;bottom:2.4vw;display:flex;align-items:center;gap:.6vw;
+    font:400 .9vw/1 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45);letter-spacing:.06em;
+  }
+  .chrome .live i{
+    width:.55vw;height:.55vw;border-radius:50%;background:var(--bgs-vote-play);
+    box-shadow:0 0 0 .3vw rgba(var(--bgs-vote-play-rgb),.25);
+  }
+  body.ended .chrome .live i{background:var(--bgs-ivory-45);box-shadow:none;}
+  /* The badge is on screen in every state, never dimmed or hidden (BGG's
+     terms). The one focusable thing on the page, so it keeps the site's
+     box-shadow focus ring. */
+  .chrome .bgg{
+    position:absolute;right:3.2vw;bottom:2.4vw;height:1.7vw;
+    pointer-events:auto;display:block;line-height:0;border-radius:4px;
+  }
+  .chrome .bgg img{height:100%;width:auto;display:block;}
+  .chrome .bgg:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
+
+  /* ---- type ---- */
+  .h1{font:600 4vw/1.1 'Fraunces',serif;letter-spacing:-.01em;margin:0;color:var(--bgs-ivory);text-align:center;}
+  .h1 em{font-style:italic;font-weight:500;color:var(--bgs-gold);}
+  .mono{font:400 1.15vw/1.45 'IBM Plex Mono',monospace;color:var(--bgs-ivory-70);letter-spacing:.04em;text-align:center;}
+  .mono b{color:var(--bgs-ivory);font-weight:500;}
+  .hint{font:400 1.35vw/1.45 'Inter',sans-serif;color:var(--bgs-ivory-70);text-align:center;margin-top:.9vw;}
+  .hint.dim{color:var(--bgs-ivory-45);}
+
+  /* ---- seats (transitions only) ---- */
+  .seats-row{display:flex;gap:2.2vw;justify-content:center;flex-wrap:wrap;padding:0 6vw;transition:opacity .5s;}
+  .seat{--s:5.2vw;position:relative;display:flex;flex-direction:column;align-items:center;gap:.55vw;width:max-content;}
+  .seat .ini{
+    width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;position:relative;
+    background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.16);
+    font:600 calc(var(--s) * .4)/1 'Inter',sans-serif;color:var(--bgs-ivory);
+    box-shadow:0 .6vw 1.6vw rgba(0,0,0,.4);
+  }
+  .seat.host .ini{border-color:rgba(var(--bgs-gold-rgb),.75);color:var(--bgs-gold);}
+  .seat .nm{font:500 .95vw/1 'Inter',sans-serif;color:var(--bgs-ivory-70);white-space:nowrap;}
+  .seat.host .nm::after{
+    content:"host";font:500 .7vw/1 'IBM Plex Mono',monospace;color:var(--bgs-gold-dim);
+    margin-left:.45vw;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .seat .chip{
+    position:absolute;right:-.35vw;bottom:-.25vw;width:calc(var(--s) * .42);height:calc(var(--s) * .42);
+    border-radius:50%;display:grid;place-items:center;font:700 calc(var(--s) * .22)/1 'Inter',sans-serif;
+    background:var(--bgs-ivory);color:var(--bgs-bg);border:2px solid var(--bgs-bg);
+    transform:scale(0);transition:transform .28s cubic-bezier(.2,.9,.25,1),background-color .25s;
+  }
+  .seat .chip.show{transform:scale(1);}
+  .seat .chip.play{background:var(--bgs-vote-play);color:#fff;}
+  .seat .chip.pass{background:var(--bgs-vote-pass);color:#fff;}
+  .seat .chip.novote{background:var(--bgs-plate);color:var(--bgs-ivory-45);border-color:rgba(var(--bgs-ivory-rgb),.25);}
+  .seat.pending .ini{border-style:dashed;}
+  .seat.pending{opacity:.55;}
+
+  /* ---- covers ---- */
+  .cov{
+    position:relative;aspect-ratio:3/4;border-radius:.7vw;overflow:hidden;background:var(--bgs-plate);
+    border:1px solid rgba(var(--bgs-gold-rgb),.2);box-shadow:0 1vw 2.4vw rgba(0,0,0,.5);
+  }
+  .cov img{width:100%;height:100%;object-fit:cover;display:block;}
+  .cov.back{
+    display:grid;place-items:center;color:var(--bgs-gold-dim);font:500 2vw/1 'IBM Plex Mono',monospace;
+    background:repeating-linear-gradient(45deg, rgba(var(--bgs-gold-rgb),.07) 0 .4vw, transparent .4vw .8vw), var(--bgs-plate);
+  }
+  .deck{display:flex;gap:1.5vw;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:0 6vw;transition:opacity .5s;}
+  .deck .cov{width:var(--mw,10.5vw);}
+  /* like the phone reveal, the cover width steps down with the deck */
+  .deck.n-le5{--mw:10.5vw;}
+  .deck.n-le8{--mw:9.2vw;}
+  .deck.n-gt8{--mw:7.4vw;}
+
+  /* ---- QR ticket: gold card, modules in the theme's page colour, like
+     night-host.html ---- */
+  .ticket{
+    background:var(--bgs-gold);border-radius:1.4vw;padding:1.4vw;display:inline-block;
+    box-shadow:0 2vw 4.5vw rgba(0,0,0,.55), inset 0 0 0 .15vw rgba(255,255,255,.28);
+  }
+  .ticket .qr{width:19vw;aspect-ratio:1;display:block;}
+  .ticket .qr svg{width:100%;height:100%;display:block;}
+  .ticket .code{margin:.9vw 0 0;text-align:center;font:600 2.6vw/1 'Fraunces',serif;color:var(--bgs-on-gold);letter-spacing:.18em;}
+
+  /* ---- scenes ---- */
+  .col{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:5vw 4vw 9vw;
+  }
+
+  /* waiting */
+  .wait .ticket{margin:2.4vw 0 1.6vw;}
+  .chips{position:absolute;left:0;right:0;bottom:4.8vw;display:flex;justify-content:center;gap:.9vw;flex-wrap:wrap;padding:0 8vw;}
+  .chip-n{
+    padding:.75vw 1.3vw;border-radius:99px;border:1px solid rgba(var(--bgs-gold-rgb),.3);
+    background:rgba(var(--bgs-plate-rgb),.85);font:500 1.15vw/1 'Inter',sans-serif;color:var(--bgs-ivory);
+  }
+  .chip-n .host{font:500 .7vw/1 'IBM Plex Mono',monospace;color:var(--bgs-gold-dim);margin-left:.6vw;letter-spacing:.08em;text-transform:uppercase;}
+  .chip-n.pop{animation:pop .45s cubic-bezier(.2,.9,.25,1) both;}
+  .chip-n.empty{opacity:.22;color:transparent;border-style:dashed;min-width:7vw;}
+  @keyframes pop{0%{transform:scale(.4);opacity:0;}100%{transform:scale(1);opacity:1;}}
+
+  /* voting */
+  .vote .seats-row{margin-top:2.2vw;}
+  .vote .deck{margin-top:3vw;}
+  /* fixed-width digit, so the swap from 1 to 2 does not shift the line */
+  .vote .h1 .n{display:inline-block;min-width:2.2ch;text-align:right;}
+
+  /* sealed (the results commit replaces this holding scene) */
+  .count .h1{font-size:3.6vw;}
+
+  /* ended */
+  .end .h1{font-size:3.4vw;}
+  .end .hint{max-width:46vw;}
+  .end .shelf-link{margin-top:2.2vw;}
+
+  /* ---- a phone opened /tv/…: one plate, nothing else ---- */
+  .small-plate{
+    display:none;position:absolute;inset:0;z-index:3;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:24px 20px;background:var(--bgs-bg);
+  }
+  .small-plate .eyebrow{
+    font:500 10.5px/1 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--bgs-gold-dim);margin-bottom:10px;
+  }
+  .small-plate .eyebrow b{font-weight:500;color:var(--bgs-ivory);margin-left:8px;}
+  .small-plate h1{font:600 26px/1.15 'Fraunces',serif;letter-spacing:-.01em;margin:0 0 18px;color:var(--bgs-ivory);}
+  .small-plate .mono{font-size:13px;line-height:1.5;}
+  @media (max-width:899px){
+    .stage,.chrome,.cover-light{display:none;}
+    .small-plate{display:flex;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .stage > .scene,.seat .chip,.deck,.seats-row,.cover-light img{transition:none;}
+    .chip-n.pop{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage"></div>
+
+<div class="chrome">
+  <div class="eyebrow">Game Night<span class="sep">·</span><b id="codeTxt"></b><span class="round" id="roundTxt"></span></div>
+  <div class="wordmark">boardgameshelf</div>
+  <div class="live"><i></i><span id="liveTxt">waiting room</span></div>
+  <a class="bgg" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
+    <img src="/assets/powered-by-bgg.svg" alt="" width="150" height="33">
+  </a>
+</div>
+
+<div class="small-plate" id="smallPlate"></div>
+
+<script type="module">
+// Absolute paths: this page is reached via a Vercel rewrite (/tv/:code), so the
+// browser's URL — which relative imports resolve against — is the pretty path,
+// not this file's real location. A relative import here 404s silently and the
+// whole module script never runs.
+import { supabase } from '/js/supabase.js';
+import { fetchSession } from '/js/session.js';
+import { joinSessionChannel, MIN_PLAYERS_TO_START } from '/js/presence.js';
+import { deckFromSession } from '/js/waiting-room.js';
+import { fetchGamesForSession } from '/js/shelf-data.js';
+import { applyProfileTheme } from '/js/themes.js';
+import { initCoverLight } from '/js/cover-light.js';
+
+// The QR library is the one dependency this page can live without: the join
+// link is printed under the ticket either way. So it loads on its own, and a
+// CDN that is unreachable leaves the ticket without a code rather than
+// taking the whole screen down with it.
+let QRCode = null;
+try { QRCode = (await import('https://esm.sh/qrcode@1.5.3')).default; } catch { /* no QR; the link line still shows */ }
+
+// Built once, before any render, inside the page root (the body is the
+// 16:9 frame here) so the results commit has a layer to light.
+initCoverLight();
+
+const stage = document.getElementById('stage');
+const codeTxt = document.getElementById('codeTxt');
+const roundTxt = document.getElementById('roundTxt');
+const liveTxt = document.getElementById('liveTxt');
+
+// Participant names are typed by people and reach markup, including
+// attribute values. Same helper results.html uses.
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const NOT_FOUND = 'That game night has ended, or the code is wrong.';
+const SHOW_ERROR_DETAIL = new URLSearchParams(location.search).has('debug');
+
+function codeFromPath() {
+  // /tv/{code}
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  return parts[1] || null;
+}
+
+function errorDetail(e) {
+  return [e?.code, e?.message || String(e), e?.hint].filter(Boolean).join(' · ');
+}
+
+// All timeouts go in one array, as on results.html, so a status change can
+// clear everything that is pending in one go.
+let timers = [];
+const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+// Scene changes cross-fade: the new scene is inserted under the old one, the
+// old one fades out and is removed.
+let scene = null; // { kind, el }
+function setScene(kind, html) {
+  const old = stage.querySelector('.scene');
+  const el = document.createElement('div');
+  el.className = 'scene';
+  el.innerHTML = html;
+  if (old) {
+    old.classList.add('out');
+    later(() => old.remove(), 460);
+    stage.insertBefore(el, old);
+  } else {
+    stage.appendChild(el);
+  }
+  scene = { kind, el };
+  return el;
+}
+
+const setLive = (t) => { liveTxt.textContent = t; };
+
+// The owner's slug for the ended screen's shelf link; null when the session
+// has no owner or their profile is private.
+let shelfSlug = null;
+
+// The link line under the ticket and on the ended screen. The host is read
+// from the page rather than written out, so it matches the QR's link on a
+// preview deployment and on `vercel dev` too.
+const joinLine = (code) => `<div class="mono">${esc(location.host)}<br><b>/vote/${esc(code)}</b></div>`;
+
+function renderEnded(message, detail) {
+  if (detail) console.error('[game night]', detail);
+  clearTimers();
+  document.body.classList.add('ended');
+  setLive('ended');
+  setScene('ended', `
+    <div class="col end">
+      <h1 class="h1">Game night over</h1>
+      <div class="hint">${message}</div>
+      ${detail && SHOW_ERROR_DETAIL ? `<div class="mono">${esc(detail)}</div>` : ''}
+      ${shelfSlug ? `<div class="mono shelf-link">${esc(location.host)}<b>/u/${esc(shelfSlug)}</b></div>` : ''}
+    </div>`);
+}
+
+// A phone that opened the TV link: one plate with the same link and code.
+function renderSmallPlate(code) {
+  document.getElementById('smallPlate').innerHTML = `
+    <div class="eyebrow">Game Night${code ? `<b>${esc(code)}</b>` : ''}</div>
+    <h1>TV mode is for a big screen</h1>
+    ${code ? joinLine(code) : ''}`;
+}
+
+/**
+ * The night's owner: their theme (the TV is a shelf surface, so it takes the
+ * owner's theme like every other shelf page) and their slug for the ended
+ * screen. Null for a session with no owner, or an owner whose profile is
+ * private and so invisible here.
+ */
+async function ownerProfile(session) {
+  if (!session?.owner_id) return null;
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('slug, theme')
+    .eq('id', session.owner_id)
+    .maybeSingle();
+  if (error) return null;
+  return data;
+}
+
+const code = codeFromPath();
+codeTxt.textContent = code || '';
+renderSmallPlate(code);
+if (!code) {
+  renderEnded(NOT_FOUND);
+} else {
+  init(code);
+}
+
+async function init(code) {
+  let session;
+  try {
+    session = await fetchSession(code);
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.', errorDetail(e));
+    return;
+  }
+  if (!session) {
+    renderEnded(NOT_FOUND);
+    return;
+  }
+
+  const owner = await ownerProfile(session);
+  shelfSlug = owner?.slug || null;
+  // Before the first scene, so the QR's modules are drawn in the right theme's
+  // page colour.
+  applyProfileTheme(owner);
+
+  if (session.status === 'cancelled') {
+    renderEnded(`${esc(session.host_name)} ended this game night.`);
+    return;
+  }
+
+  let games;
+  try {
+    games = await fetchGamesForSession(session);
+  } catch (e) {
+    renderEnded('Something went wrong loading this game night.', errorDetail(e));
+    return;
+  }
+
+  runTV({ code, session, games });
+}
+
+function runTV({ code, session, games }) {
+  let deck = deckFromSession(session, games);
+  let players = [];
+  const host = () => esc(session.host_name);
+  // Which status/round the stage currently shows, so a row update that
+  // changes neither does not restart the cross-fade.
+  let shownKey = null;
+  const seenChips = new Set();
+
+  /* ---- chrome ---- */
+  function setChrome() {
+    const r = session.round >= 2 ? `round ${session.round} · ` : '';
+    roundTxt.innerHTML = session.round >= 2
+      ? `<span class="sep">·</span>Round ${session.round}<span class="sep">·</span>tie-break` : '';
+    const word = { waiting: 'waiting room', voting: `${r}voting`, done: `${r}results`, cancelled: 'ended' }[session.status];
+    if (word) setLive(word);
+  }
+
+  /* ---- pieces ---- */
+  const initial = (name) => esc(Array.from(String(name || ''))[0] || '?');
+  const seatHTML = (p) => `
+    <div class="seat${p.isHost ? ' host' : ''}${p.finished ? '' : ' pending'}" data-name="${esc(p.name)}">
+      <span class="ini">${initial(p.name)}<i class="chip ok${p.finished ? ' show' : ''}">✓</i></span>
+      <span class="nm">${esc(p.name)}</span>
+    </div>`;
+  // Deck covers use the mid-size cover, the exact string the results commit
+  // hands to setCoverLight(), so the light is served from cache.
+  const coverSrc = (g) => g.imageMid || g.image;
+  const covHTML = (g, faceUp) => faceUp
+    ? `<div class="cov"><img src="${esc(coverSrc(g))}" alt="${esc(g.title)} cover" decoding="async" onerror="this.remove()"></div>`
+    : '<div class="cov back">?</div>';
+  const deckCls = (n) => (n <= 5 ? 'n-le5' : n <= 8 ? 'n-le8' : 'n-gt8');
+  // rows = ceil(n/5), perRow = ceil(n/rows): 6 → 3+3, 10 → 5+5, the same rule
+  // as the phone reveal.
+  function deckStyle(n) {
+    if (n <= 5) return '';
+    const rows = Math.ceil(n / 5), perRow = Math.ceil(n / rows);
+    const mw = n <= 8 ? 9.2 : 7.4;
+    return `max-width:${Math.round((perRow * mw + (perRow - 1) * 1.5 + 12) * 100) / 100}vw`;
+  }
+  const chipsHTML = () => {
+    const present = players.map((p) => `
+      <span class="chip-n${seenChips.has(p.name) ? '' : ' pop'}">${esc(p.name)}${p.isHost ? '<span class="host">host</span>' : ''}</span>`);
+    // No fixed seat count: one chip per person here, and a dashed slot only
+    // for what is still missing before the host can start.
+    const empty = Math.max(0, MIN_PLAYERS_TO_START - players.length);
+    return present.concat(Array.from({ length: empty }, () => '<span class="chip-n empty">&nbsp;</span>')).join('');
+  };
+  const waitingHint = () => {
+    const n = players.length;
+    return n < MIN_PLAYERS_TO_START
+      ? `Waiting for one more before ${host()} can start`
+      : `${n} at the table · waiting for ${host()} to start`;
+  };
+
+  async function drawQR(el) {
+    const box = el.querySelector('.qr');
+    if (!box || !QRCode) return;
+    const url = `${window.location.origin}/vote/${code}`;
+    // The modules are drawn in the theme's page colour on the gold ticket.
+    const dark = getComputedStyle(document.documentElement).getPropertyValue('--bgs-bg').trim() || '#000';
+    try {
+      const svg = await QRCode.toString(url, {
+        type: 'svg', margin: 0, color: { dark, light: '#00000000' },
+      });
+      if (box.isConnected) box.innerHTML = svg;
+    } catch { /* the link line under the ticket still shows */ }
+  }
+
+  /* ---- scenes ---- */
+  function renderWaiting() {
+    const el = setScene('waiting', `
+      <div class="col wait">
+        <h1 class="h1">Scan to join</h1>
+        <div class="ticket"><div class="qr"></div><div class="code">${esc(code)}</div></div>
+        ${joinLine(code)}
+        <div class="hint dim">${waitingHint()}</div>
+      </div>
+      <div class="chips">${chipsHTML()}</div>`);
+    players.forEach((p) => seenChips.add(p.name));
+    drawQR(el);
+  }
+  function updateWaiting() {
+    const el = scene.el;
+    el.querySelector('.chips').innerHTML = chipsHTML();
+    players.forEach((p) => seenChips.add(p.name));
+    el.querySelector('.hint').textContent = waitingHint();
+  }
+
+  const finishedCount = () => players.filter((p) => p.finished).length;
+  function renderVoting() {
+    setScene('voting', `
+      <div class="col vote">
+        <h1 class="h1"><em class="n">${finishedCount()}</em> of ${players.length} have voted</h1>
+        <div class="hint">Swipe right to play, left to pass. Votes stay sealed until the last one lands.</div>
+        <div class="seats-row">${players.map(seatHTML).join('')}</div>
+        <div class="deck ${deckCls(deck.length)}" style="${deckStyle(deck.length)}">${deck.map((g) => covHTML(g, session.reveal_deck)).join('')}</div>
+      </div>`);
+  }
+  function updateVoting() {
+    const el = scene.el;
+    const h1 = el.querySelector('.h1');
+    h1.innerHTML = `<em class="n">${finishedCount()}</em> of ${players.length} have voted`;
+    const row = el.querySelector('.seats-row');
+    const shown = [...row.querySelectorAll('.seat')].map((s) => s.dataset.name);
+    if (shown.join('\u0000') !== players.map((p) => p.name).join('\u0000')) {
+      // Someone arrived or left: rebuild the row.
+      row.innerHTML = players.map(seatHTML).join('');
+      return;
+    }
+    // Same table: only the ticks move, so they get to transition in.
+    players.forEach((p, i) => {
+      const seat = row.children[i];
+      seat.classList.toggle('pending', !p.finished);
+      seat.querySelector('.chip').classList.toggle('show', !!p.finished);
+    });
+  }
+
+  // Holding scene for `done`; the results commit replaces this with the
+  // countdown, the count and the crown.
+  function renderSealed() {
+    setScene('sealed', `
+      <div class="col count">
+        <h1 class="h1">Votes are sealed</h1>
+      </div>`);
+  }
+
+  function renderStatus() {
+    const key = `${session.status}:${session.round}`;
+    if (key === shownKey) return;
+    shownKey = key;
+    clearTimers();
+    setChrome();
+    switch (session.status) {
+      case 'waiting': renderWaiting(); break;
+      case 'voting': renderVoting(); break;
+      case 'done': renderSealed(); break;
+      case 'cancelled':
+        controller.leave();
+        renderEnded(`${host()} ended this game night.`);
+        break;
+      default: break;
+    }
+  }
+
+  // Presence keys must be unique, so two TVs in one room are both fine.
+  const tvKey = `tv:${(crypto.randomUUID?.() || Math.random().toString(36).slice(2)).slice(0, 8)}`;
+  const controller = joinSessionChannel({
+    code,
+    participantName: tvKey,
+    isHost: false,
+    tv: true,
+    onPresence: ({ players: p }) => {
+      players = p;
+      if (scene?.kind === 'waiting') updateWaiting();
+      else if (scene?.kind === 'voting') updateVoting();
+    },
+    onSession: (row) => {
+      // The whole row: a rematch changes round and game_ids with the status.
+      session = { ...session, ...row };
+      deck = deckFromSession(session, games);
+    },
+    onStatus: () => renderStatus(),
+  });
+
+  window.addEventListener('pagehide', () => controller.leave());
+
+  renderStatus();
+}
+</script>
+</body>
+</html>
