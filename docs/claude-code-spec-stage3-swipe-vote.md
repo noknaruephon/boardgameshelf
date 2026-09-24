@@ -86,6 +86,12 @@ create table votes (
   primary key (session_code, participant_name, game_id)
 );
 
+-- Every new public table ships with its grants (see docs/supabase-conventions.md).
+-- Anon only selects; inserts go through submit_vote(), which is SECURITY DEFINER.
+grant select                         on public.votes to anon;
+grant select, insert, update, delete on public.votes to authenticated;
+grant select, insert, update, delete on public.votes to service_role;
+
 alter table participants add column finished_at timestamptz;
 ```
 

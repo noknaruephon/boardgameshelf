@@ -28,6 +28,14 @@ create table if not exists votes (
   primary key (session_code, participant_name, game_id)
 );
 
+-- Grants (docs/supabase-conventions.md). Anon only reads: js/session.js's
+-- fetchVotes() and fetchSessionVotes() select this table directly with the
+-- anon key. Inserts go through submit_vote(), which is SECURITY DEFINER and
+-- needs no table grant for the caller. RLS (section 3) is the second layer.
+grant select                         on public.votes to anon;
+grant select, insert, update, delete on public.votes to authenticated;
+grant select, insert, update, delete on public.votes to service_role;
+
 -- Where the table pre-exists with `liked boolean`, migrate the column in
 -- place rather than dropping and recreating the table: that preserves the
 -- primary key and both foreign keys — including the composite FK to
@@ -85,10 +93,8 @@ create policy "votes are inserted only through submit_vote"
 -- No update/delete policy: votes lock on swipe. Nothing here goes through a
 -- raw table write for votes — always submit_vote().
 
--- RLS is only evaluated after the base GRANT allows the query at all.
--- js/session.js's fetchVotes() reads this table directly with the anon key
--- (not through a SECURITY DEFINER function), so it needs this.
-grant select, insert on votes to anon, authenticated;
+-- RLS is only evaluated after the base GRANT allows the query at all. The
+-- grants sit directly under the CREATE TABLE in section 1.
 
 -- PostgREST only sees schema changes once its cache reloads. Supabase
 -- normally does this automatically on DDL; harmless when already current.
