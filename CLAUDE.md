@@ -9,7 +9,7 @@ Two small Node serverless functions in `api/` talk to BoardGameGeek (BGG).
 - `css/`: stylesheets.
 - `api/`: Vercel functions. `api/_lib/` has BGG XML parsing, HTTP helpers, server Supabase client.
 - `scripts/`: one-off sync/migration scripts (Node and Python).
-- `supabase/migrations/`: SQL, applied via Supabase SQL editor or `supabase db push`.
+- `supabase/migrations/`: SQL, applied via Supabase SQL editor or `supabase db push`. New tables follow `docs/supabase-conventions.md` (grants + RLS in the same migration).
 - `docs/`: feature specs. Read one only when working on that feature; do not read the folder wholesale.
 - `covers/`, `assets/`, `AppIcon_assets/`, `vendor/`: images, fonts, minified libs. Never read these.
 - `games.json`: legacy 400KB seed data (array of `{bggId, title, players, time, weight, ...}`). Do not read it; grep for a field if needed.

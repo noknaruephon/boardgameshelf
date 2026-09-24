@@ -64,8 +64,15 @@ create index if not exists bags_owner_updated_idx on bags (owner, updated_at des
 -- RLS on, no policies, grants revoked: the anon and authenticated roles cannot
 -- select, insert, update or delete a row directly, whatever a later GRANT
 -- might add by mistake. The functions run as the table owner.
+--
+-- Grants (docs/supabase-conventions.md): this table deliberately departs from
+-- the usual anon-select / authenticated-write set. Nothing in the browser
+-- reads or writes bags itself — every access is one of the SECURITY DEFINER
+-- functions below — so anon and authenticated get no table privilege at all.
+-- Only the service role (scripts/, api/) touches the table directly.
 alter table bags enable row level security;
 revoke all on bags from anon, authenticated;
+grant select, insert, update, delete on public.bags to service_role;
 
 -- ---------------------------------------------------------------------------
 -- 3. functions

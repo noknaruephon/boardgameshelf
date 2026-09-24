@@ -28,6 +28,14 @@ create table if not exists profiles (
   constraint profiles_slug_format check (slug ~ '^[a-z0-9][a-z0-9._-]{0,63}$')
 );
 
+-- Grants live next to the table (see docs/supabase-conventions.md). Anon only
+-- reads: /u/<slug> and the game-night owner lookup. Rows are created and
+-- edited by the signed-in owner, so the write grants go to authenticated;
+-- RLS below narrows every verb to the caller's own row.
+grant select                         on public.profiles to anon;
+grant select, insert, update, delete on public.profiles to authenticated;
+grant select, insert, update, delete on public.profiles to service_role;
+
 -- ---------------------------------------------------------------------------
 -- 2. games — the shared cache, one row per BGG thing
 -- ---------------------------------------------------------------------------
@@ -64,6 +72,12 @@ create table if not exists games (
   updated_at      timestamptz not null default now()
 );
 
+-- Anon and authenticated only ever read the cache (joined from user_games).
+-- The sync functions in /api write it with the service role.
+grant select                         on public.games to anon;
+grant select, insert, update, delete on public.games to authenticated;
+grant select, insert, update, delete on public.games to service_role;
+
 -- Idempotent column adds, for a `games` table created from an earlier draft.
 alter table games add column if not exists extras jsonb;
 alter table games add column if not exists player_recommendations jsonb;
@@ -84,6 +98,12 @@ create table if not exists user_games (
   primary key (user_id, bgg_id)
 );
 
+-- Anon reads public shelves; the owner (authenticated) may write their own
+-- rows, though in practice /api/sync/collection does that with the service role.
+grant select                         on public.user_games to anon;
+grant select, insert, update, delete on public.user_games to authenticated;
+grant select, insert, update, delete on public.user_games to service_role;
+
 create index if not exists user_games_bgg_id_idx on user_games (bgg_id);
 
 -- ---------------------------------------------------------------------------
@@ -103,17 +123,12 @@ create index if not exists sessions_owner_id_idx on sessions (owner_id);
 -- ---------------------------------------------------------------------------
 
 -- RLS is only evaluated after the base GRANT allows the query at all (a lesson
--- Stage 3 and Stage 4 each learned once), so the grants are explicit here.
+-- Stage 3 and Stage 4 each learned once). The grants sit directly under each
+-- CREATE TABLE above; the policies here are the second, row-level layer.
 
 alter table profiles   enable row level security;
 alter table games      enable row level security;
 alter table user_games enable row level security;
-
-grant select                         on profiles   to anon, authenticated;
-grant insert, update                 on profiles   to authenticated;
-grant select                         on games      to anon, authenticated;
-grant select                         on user_games to anon, authenticated;
-grant insert, update, delete         on user_games to authenticated;
 
 -- profiles: a public profile is readable by anyone; a private one only by its
 -- owner. Only the owner can create or change their row, and the row's id must
@@ -154,8 +169,8 @@ create policy "user_games: write own"
   with check (auth.uid() = user_id);
 
 -- games: public read. No insert/update/delete policy at all, so with RLS on
--- the anon and authenticated roles cannot write even though a GRANT could be
--- added later by mistake. The service role bypasses RLS and is the only writer.
+-- the anon and authenticated roles cannot write whatever the table-level
+-- GRANT says. The service role bypasses RLS and is the only writer.
 drop policy if exists "games: public read" on games;
 create policy "games: public read"
   on games for select

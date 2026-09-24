@@ -38,6 +38,9 @@ create table public.bags (
 alter table public.bags enable row level security;
 -- No policies: the anon role cannot touch the table directly. All access goes through the RPCs below.
 revoke all on public.bags from anon, authenticated;
+-- Grants ship with the table (see docs/supabase-conventions.md). anon and authenticated get
+-- none on purpose; only the service role reads or writes bags outside the RPCs.
+grant select, insert, update, delete on public.bags to service_role;
 ```
 
 RPCs — all `security definer`, `set search_path = public`, executable by `anon`:
