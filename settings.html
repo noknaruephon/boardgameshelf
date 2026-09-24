@@ -372,8 +372,118 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .dn-toast.is-on{opacity:1;}
   .dn-toast svg{width:18px;height:18px;color:var(--bgs-gold);stroke-width:2.25;}
 
+  /* ---- settings2: grouped inset cards (docs/claude-code-spec-settings-a.md) ----
+     Only with ?settings2=1. The module puts .settings--v2 on <body> and moves
+     the existing controls into .settings-card groups; every rule here hangs
+     off that class, so without the flag the page is exactly what it was.
+     Rings are box-shadow throughout, never outline. */
+  .settings--v2{padding:16px 20px calc(40px + env(safe-area-inset-bottom));}
+  .settings--v2 .set-head{padding-bottom:0;}
+  .settings--v2 .settings-group{margin-top:28px;}
+  .settings--v2 .settings-eyebrow{
+    margin:0 0 10px;padding-left:4px;
+    font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--bgs-gold);
+  }
+  .settings--v2 .settings-card{background:var(--bgs-plate);border-radius:16px;overflow:hidden;}
+  .settings--v2 .settings-hairline{height:1px;margin-left:16px;background:var(--line);}
+  /* A row that may or may not be preceded by a visible one (the browse
+     fallback) carries its own inset hairline. */
+  .settings--v2 .settings-row--sep{position:relative;}
+  .settings--v2 .settings-row--sep::before{content:"";position:absolute;left:16px;right:0;top:0;height:1px;background:var(--line);}
+
+  /* Moved .row nodes: the card draws the hairlines, the row only pads. The
+     focus ring stays inset; the card's overflow clips it to the corners. */
+  .settings--v2 .settings-card .row{min-height:56px;padding:10px 16px;border-bottom:0;border-radius:0;}
+  .settings--v2 .settings-card .row:focus-visible{border-radius:0;}
+  .settings--v2 .settings-card .row .lab .t{font-weight:600;}
+  .settings--v2 .settings-card .row .lab .s{font-size:14px;line-height:20px;}
+  .settings--v2 .settings-card .row .val{font-family:inherit;}
+  .settings--v2 .settings-card .row .val.add,
+  .settings--v2 .settings-card .row .val.mono{font-family:var(--mono);}
+  .settings--v2 .toggle[aria-disabled="true"]{opacity:.5;cursor:default;}
+
+  /* Sharing: the link block under the Public row. Dimming is a transition
+     only; nothing animates on this element. */
+  .settings--v2 .settings-share{padding:12px 16px 16px;transition:opacity .2s var(--ease);}
+  .settings--v2 .settings-share.is-private{opacity:.4;pointer-events:none;}
+  .settings--v2 .settings-card .linkplate{margin:0;padding:0;min-height:44px;border-radius:0;background:none;box-shadow:none;}
+  /* Host and slug sit together; the host only shrinks (its ellipsis on the
+     left, as before), so the Private tag can take the right end of the row. */
+  .settings--v2 .settings-card .linkplate .url em{flex:0 1 auto;}
+  .settings--v2 .settings-url__icon{width:18px;height:18px;flex:none;color:var(--bgs-ivory-45);}
+  .settings--v2 .settings-private{
+    flex:none;font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--bgs-ivory-70);
+    padding:3px 8px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line);
+  }
+  .settings--v2 .settings-actions{display:flex;gap:10px;margin-top:12px;}
+  .settings--v2 .settings-actions .btn{flex:1;padding:0 12px;}
+  .settings--v2 .settings-actions .btn svg{width:18px;height:18px;flex:none;}
+  .settings--v2 .btn--primary{background:var(--bgs-gold);color:var(--bgs-bg);}
+  .settings--v2 .btn--secondary{background:none;color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line);}
+  .settings--v2 .btn--secondary[aria-expanded="true"]{box-shadow:inset 0 0 0 1px var(--line-gold);color:var(--bgs-gold);}
+  .settings--v2 .btn--secondary:focus-visible{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .settings--v2 .settings-qr{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px;padding-top:6px;}
+  .settings--v2 .settings-qr[hidden]{display:none;}
+  .settings--v2 .settings-qr__plate{width:176px;height:176px;padding:12px;border-radius:14px;background:var(--bgs-ivory);}
+  .settings--v2 .settings-qr__plate .ticket{width:152px;height:152px;padding:0;border-radius:0;}
+  .settings--v2 .settings-qr__save{
+    display:inline-flex;align-items:center;min-height:44px;padding:0 10px;border-radius:8px;
+    font-size:14px;font-weight:600;color:var(--bgs-gold);text-decoration:none;
+  }
+  .settings--v2 .settings-qr__save:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+
+  /* BoardGameGeek: count and status on the left, Sync now on the right. */
+  .settings--v2 .settings-row--summary{display:flex;align-items:center;gap:12px;padding:16px 16px 6px;}
+  .settings--v2 .settings-row--summary .settings-summary{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;}
+  .settings--v2 .settings-row--summary #collectionHint{display:block;font-size:15px;line-height:20px;color:var(--bgs-ivory-70);}
+  .settings--v2 .settings-count{font-family:var(--serif);font-size:28px;font-weight:600;line-height:1;color:var(--bgs-ivory);margin-right:2px;}
+  .settings--v2 .settings-card .pill{
+    padding:0;background:none;font-family:inherit;font-size:13px;color:var(--bgs-vote-play);
+    align-self:flex-start;
+  }
+  .settings--v2 .settings-card .pill::before{width:7px;height:7px;background:currentColor;}
+  .settings--v2 .settings-card .pill.is-stale{background:none;color:var(--bgs-ivory-70);}
+  .settings--v2 .settings-card .pill.is-stale::before{background:currentColor;}
+  .settings--v2 .settings-card .settings-sync{
+    width:auto;height:44px;min-height:44px;flex:none;padding:0 14px;gap:8px;
+    border-radius:12px;color:var(--bgs-ivory);box-shadow:inset 0 0 0 1px var(--line);
+    transition:transform .12s var(--ease),background .15s var(--ease);
+  }
+  .settings--v2 .settings-card .settings-sync:active{transform:scale(.98);}
+  .settings--v2 .settings-card .settings-sync:focus-visible{border-radius:12px;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .settings--v2 .settings-card .settings-sync[aria-disabled="true"]{opacity:.5;transform:none;}
+  .settings--v2 .settings-card .settings-sync .lab{flex:none;}
+  .settings--v2 .settings-card .settings-sync .lab .t{font-size:15px;font-weight:600;}
+  .settings--v2 .settings-card .settings-sync .chev{width:16px;height:16px;color:currentColor;}
+  .settings--v2 .settings-helper{margin:0;padding:0 16px 16px;font-size:14px;line-height:20px;color:var(--bgs-ivory-70);}
+  .settings--v2 .settings-helper .err{color:var(--bgs-vote-pass);}
+  .settings--v2 .settings-card .edit{padding:4px 16px 16px;border-bottom:0;}
+  .settings--v2 .settings-card #pickerHost{padding:0 16px 16px;}
+  /* Not connected: the connect plate stands in for the whole card body. */
+  .settings--v2 .settings-card.is-connect .settings-row--summary,
+  .settings--v2 .settings-card.is-connect .settings-helper,
+  .settings--v2 .settings-card.is-connect .settings-hairline--bgg,
+  .settings--v2 .settings-card.is-connect .settings-row--user{display:none;}
+  .settings--v2 .settings-card .connectplate{flex-direction:column;align-items:stretch;gap:12px;padding:16px;min-height:0;}
+  .settings--v2 .settings-card .connectplate .copy{
+    display:inline-flex;align-items:center;justify-content:center;
+    margin:0;height:44px;padding:0 18px;border-radius:12px;
+    background:var(--bgs-gold);color:var(--bgs-bg);font-size:15px;
+  }
+
+  /* Account */
+  .settings--v2 .settings-row--danger{
+    display:flex;align-items:center;width:100%;min-height:56px;padding:10px 16px;margin:0;
+    border-radius:0;font-size:16px;font-weight:600;color:var(--bgs-vote-pass);opacity:1;text-align:left;
+  }
+  .settings--v2 .settings-row--danger:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--bgs-gold);}
+  .settings--v2 .settings-footnote{margin:10px 0 0;padding:0 4px;font-size:13px;line-height:1.5;color:var(--bgs-ivory-45);}
+  .settings--v2 .settings-group .msg{padding:0 4px;}
+
   @media (prefers-reduced-motion:reduce){
-    .toggle,.toggle::after,.btn,.dn-save,.dn-toast{transition:none;}
+    .toggle,.toggle::after,.btn,.dn-save,.dn-toast,.settings-share,.settings-sync{transition:none;}
     .pill.is-syncing::before,.dn-spin{animation:none;}
   }
 </style>
@@ -553,6 +663,13 @@ const $ = (id) => document.getElementById(id);
 const say = (el, text, kind = '') => { el.textContent = text; el.className = `msg ${kind}`; };
 const show = (id, on) => { $(id).hidden = !on; };
 
+// ---- settings2 flag (docs/claude-code-spec-settings-a.md) ----
+// The grouped-cards layout. Same shape as the flags in shelf.html: a kill
+// switch plus ?settings2=1 to reveal it while off. With it off nothing in
+// the "grouped cards" section below runs and the page is what it was.
+const SETTINGS2_ENABLED = false;
+const V2 = SETTINGS2_ENABLED || new URLSearchParams(location.search).get('settings2') === '1';
+
 const PUBLIC_HINT = 'Anyone with the link can browse and start a game night';
 const PRIVATE_HINT = 'Only you can see it while signed in';
 const EXPANSIONS_ON_HINT = 'Expansions you own appear on the shelf and count toward it';
@@ -603,7 +720,15 @@ function renderCollection() {
   const hint = $('collectionHint');
   if (!connected()) hint.textContent = 'Add your BGG username to sync';
   else if (!profile.last_synced_at) hint.textContent = 'Sync to pull your games';
-  else hint.textContent = ownGameCount === null ? '' : `${ownGameCount} owned game${ownGameCount === 1 ? '' : 's'}`;
+  else if (ownGameCount === null) hint.textContent = '';
+  else if (V2) {
+    // The count is the card's headline figure; the noun sits beside it.
+    const b = document.createElement('b');
+    b.className = 'settings-count';
+    b.textContent = String(ownGameCount);
+    hint.replaceChildren(b, ` owned game${ownGameCount === 1 ? '' : 's'}`);
+  }
+  else hint.textContent = `${ownGameCount} owned game${ownGameCount === 1 ? '' : 's'}`;
   $('delCount').textContent = ownGameCount ? `your ${ownGameCount} synced games` : 'your synced games';
 }
 
@@ -627,15 +752,16 @@ function renderSettings() {
   // link's place asks for the username instead. Which panel shows is
   // setShareMode()'s business; this only takes them away and puts the
   // selected one back.
-  show('shareMode', on);
+  show('shareMode', on && !V2);
   show('connectPlate', !on);
-  for (const tab of modeTabs) $(tab.getAttribute('aria-controls')).hidden = !on || tab.getAttribute('aria-selected') !== 'true';
+  if (V2) renderV2Share(on);
+  else for (const tab of modeTabs) $(tab.getAttribute('aria-controls')).hidden = !on || tab.getAttribute('aria-selected') !== 'true';
   if (on) {
     const url = `${location.origin}/u/${profile.slug}`;
     $('shelfHost').textContent = `${location.host}/u/`;
     $('shelfSlug').textContent = profile.slug;
     $('copyLink').dataset.copy = url;
-    renderQr(url);
+    if (!V2) renderQr(url);   // v2 draws it on Show QR instead
     $('delSlug').textContent = `/u/${profile.slug}`;
   }
   // Without a shelf there is no address and no game count to name.
@@ -658,6 +784,7 @@ function renderSettings() {
   $('signedWith').textContent = signedWith();
   renderCollection();
   renderPill();
+  if (V2) renderV2(on);
   show('settings', true);
 }
 
@@ -721,7 +848,7 @@ $('shareMode').addEventListener('keydown', (e) => {
   setShareMode(modeTabs[next].dataset.mode, { focus: true });
 });
 function restoreShareMode() {
-  if (!connected()) return;
+  if (!connected() || V2) return;   // v2 has no tabs; the QR expands inline
   let saved = null;
   try { saved = localStorage.getItem(SHARE_MODE_KEY); } catch { /* no storage */ }
   if (saved === 'qr') setShareMode('qr');
@@ -736,7 +863,7 @@ $('copyLink').addEventListener('click', async () => {
     await navigator.clipboard.writeText(url);
     btn.textContent = 'Copied';
     clearTimeout(copiedTimer);
-    copiedTimer = setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+    copiedTimer = setTimeout(() => { btn.textContent = btn.dataset.label || 'Copy'; }, 1500);
   } catch {
     // No clipboard access (older WebKit, non-secure context): select the
     // address so a long-press or ⌘C still gets it.
@@ -873,6 +1000,7 @@ $('bggForm').addEventListener('submit', async (e) => {
 
 // ---- visibility ----
 $('publicToggle').addEventListener('click', async () => {
+  if ($('publicToggle').getAttribute('aria-disabled') === 'true') return;   // v2, not connected
   const next = !profile.is_public;
   $('publicToggle').setAttribute('aria-checked', String(next));
   $('publicHint').classList.remove('err');
@@ -1271,6 +1399,178 @@ async function saveDisplayName() {
 }
 
 $('displayNameRow').addEventListener('click', openDisplayNameSheet);
+
+// ---- grouped cards (docs/claude-code-spec-settings-a.md, ?settings2=1) ----
+// Four inset cards: Sharing, Display, BoardGameGeek, Account. The existing
+// controls are moved into them, never rebuilt, so every id, data attribute
+// and listener above keeps working. The old sections stay in the DOM,
+// emptied and hidden, until the flag comes out. Glyphs are Tabler's.
+const TABLER_LINK = '<svg class="settings-url__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 15l6-6"/><path d="M11 6l.463-.536a5 5 0 0 1 7.071 7.072l-.534.464"/><path d="M13 18l-.397.534a5.068 5.068 0 0 1-7.127 0 4.972 4.972 0 0 1 0-7.071l.524-.463"/></svg>';
+const TABLER_QR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M7 17v.01"/><path d="M14 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/><path d="M7 7v.01"/><path d="M4 15a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M17 7v.01"/><path d="M14 14h3"/><path d="M20 14v.01"/><path d="M14 14v3"/><path d="M14 20h3"/><path d="M17 17h3"/><path d="M20 17v3"/></svg>';
+const CONNECT_URL_TEXT = 'Connect BGG to get your link';
+
+const v2El = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+const v2Hairline = (cls = '') => v2El(`<div class="settings-hairline ${cls}"></div>`);
+function v2Group(eyebrow) {
+  const group = v2El(`<section class="settings-group"><p class="settings-eyebrow">${eyebrow}</p><div class="settings-card"></div></section>`);
+  return { group, card: group.lastElementChild };
+}
+let v2 = null;   // the new nodes the renderers need: share block, Private tag, QR toggle and panel, BGG card
+
+function buildV2Layout() {
+  document.body.classList.add('settings--v2');
+  const root = $('settings');
+  const oldSections = [...root.children];
+
+  // 1 · Sharing: the Public row first, then the link block it governs.
+  const sharing = v2Group('Sharing');
+  const publicRow = $('publicToggle').closest('.row');
+  publicRow.classList.add('settings-row--toggle');
+  $('lbl-public').querySelector('.t').textContent = 'Public shelf';
+  const share = v2El('<div class="settings-share" data-share></div>');
+  const url = $('share-link');   // keeps #shelfUrl / #shelfHost / #shelfSlug; no longer a tab panel
+  url.classList.add('settings-url');
+  url.removeAttribute('role');
+  url.removeAttribute('aria-labelledby');
+  url.prepend(v2El(TABLER_LINK));
+  const privateTag = v2El('<em class="settings-private" hidden>Private</em>');
+  url.append(privateTag);
+  const copy = $('copyLink');
+  copy.classList.add('btn', 'btn--primary');
+  copy.dataset.label = 'Copy link';
+  copy.textContent = copy.dataset.label;
+  const qrToggle = v2El(`<button type="button" class="btn btn--secondary" data-qr-toggle aria-expanded="false">${TABLER_QR}<span data-qr-label>Show QR</span></button>`);
+  const actions = v2El('<div class="settings-actions"></div>');
+  actions.append(copy, qrToggle);
+  const qrPanel = v2El('<div class="settings-qr" data-qr-panel hidden><div class="settings-qr__plate"></div><a class="settings-qr__save" href="#" data-qr-save>Save image</a></div>');
+  qrPanel.firstElementChild.append($('share-qr-code'));   // the existing ticket; renderQr() keeps drawing into it
+  share.append(url, actions, qrPanel);
+  sharing.card.append(publicRow, v2Hairline(), share);
+
+  // 2 · Display: the theme row and strip as they are, then expansions.
+  const display = v2Group('Display');
+  const expansionsRow = $('expansionsToggle').closest('.row');
+  expansionsRow.classList.add('settings-row--toggle');
+  display.card.append($('themeVal').closest('.row'), $('themeStrip'), v2Hairline(), expansionsRow);
+
+  // 3 · BoardGameGeek: count + status with Sync now beside them, the sync
+  // helper under that, then the username row and its form. The connect
+  // plate sits first and stands in for the rest while there is no slug.
+  const bgg = v2Group('BoardGameGeek');
+  const summary = v2El('<div class="settings-row--summary"><div class="settings-summary"></div></div>');
+  summary.firstElementChild.append($('collectionHint'), $('sync-state'));
+  const sync = $('syncBtn');
+  sync.classList.add('settings-sync');
+  const helper = v2El('<p class="settings-helper"></p>');
+  helper.append($('syncHint'));
+  summary.append(sync);
+  $('bggEdit').classList.add('settings-row--user');
+  $('bggEdit').querySelector('.t').textContent = 'BoardGameGeek username';
+  $('bggRo').classList.add('mono');
+  $('browseBtn').classList.add('settings-row--sep');
+  bgg.card.append($('connectPlate'), summary, helper, v2Hairline('settings-hairline--bgg'), $('bggEdit'), $('bggForm'), $('browseBtn'), $('pickerHost'));
+
+  // 4 · Account: display name, sign out, delete; the delete copy under the card.
+  const account = v2Group('Account');
+  $('deleteBtn').classList.add('settings-row--danger');
+  account.card.append($('displayNameRow'), v2Hairline(), $('signOutBtn'), v2Hairline(), $('deleteBtn'));
+  $('deleteHint').classList.add('settings-footnote');
+  account.group.append($('deleteHint'), $('deleteMsg'));
+
+  for (const node of oldSections) node.hidden = true;
+  root.append(sharing.group, display.group, bgg.group, account.group);
+  v2 = { share, privateTag, qrToggle, qrPanel, qrSave: qrPanel.lastElementChild, bggCard: bgg.card, url: '' };
+}
+
+/** The v2 link block is always there; without a shelf it is dimmed and
+    reads as a prompt rather than an address, and with the shelf private it
+    is dimmed under a Private tag. Either way the QR folds up. The old QR
+    hero stays hidden. */
+function renderV2Share(on) {
+  show('share-link', true);
+  show('share-qr', false);
+  const priv = on && !profile.is_public;
+  v2.url = on ? `${location.origin}/u/${profile.slug}` : '';
+  if (!on) {
+    $('shelfHost').textContent = '';
+    $('shelfSlug').textContent = CONNECT_URL_TEXT;
+    $('copyLink').dataset.copy = '';
+  }
+  v2.share.classList.toggle('is-private', !on || priv);
+  v2.privateTag.hidden = !priv;
+  if (!on || priv) setQrOpen(false);
+  else if (!v2.qrPanel.hidden) renderQr(v2.url);   // open across a username change: redraw for the new address
+}
+
+// ---- inline QR: Show QR / Hide QR, drawn on first open, closed on every load ----
+function setQrOpen(open) {
+  if (open) renderQr(v2.url);   // the existing renderer; cached per URL
+  v2.qrPanel.hidden = !open;
+  v2.qrToggle.setAttribute('aria-expanded', String(open));
+  v2.qrToggle.querySelector('[data-qr-label]').textContent = open ? 'Hide QR' : 'Show QR';
+}
+
+/** Save image: the code drawn fresh onto a canvas, black on white with a
+    four-module quiet zone, and handed over as a PNG download. On iOS the
+    file lands in Files, as the poster's download does. */
+const QR_PNG_SIZE = 640;
+function qrToCanvas(url) {
+  const qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  const n = qr.getModuleCount();
+  const quiet = 4;
+  const cell = Math.max(1, Math.floor(QR_PNG_SIZE / (n + quiet * 2)));
+  const px = cell * (n + quiet * 2);
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = px;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, px, px);
+  ctx.fillStyle = '#000000';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) ctx.fillRect((c + quiet) * cell, (r + quiet) * cell, cell, cell);
+  return canvas;
+}
+function saveQrImage(e) {
+  e.preventDefault();
+  if (!v2.url || typeof qrcode !== 'function') return;
+  const canvas = qrToCanvas(v2.url);
+  const a = document.createElement('a');
+  a.download = `boardgameshelf-${profile.slug}.png`;
+  const finish = (href) => {
+    a.href = href;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+  if (canvas.toBlob) {
+    canvas.toBlob((blob) => {
+      if (!blob) { finish(canvas.toDataURL('image/png')); return; }
+      const href = URL.createObjectURL(blob);
+      finish(href);
+      setTimeout(() => URL.revokeObjectURL(href), 10000);
+    }, 'image/png');
+  } else finish(canvas.toDataURL('image/png'));
+}
+
+function wireV2() {
+  v2.qrToggle.addEventListener('click', () => setQrOpen(v2.qrPanel.hidden));
+  v2.qrSave.addEventListener('click', saveQrImage);
+}
+
+/** Not connected: Public shows off and disabled, and the BoardGameGeek
+    card is the connect plate alone. */
+function renderV2(on) {
+  const pub = $('publicToggle');
+  if (on) pub.removeAttribute('aria-disabled');
+  else {
+    pub.setAttribute('aria-checked', 'false');
+    pub.setAttribute('aria-disabled', 'true');
+  }
+  v2.bggCard.classList.toggle('is-connect', !on);
+}
+
+if (V2) { buildV2Layout(); wireV2(); }
 
 // ---- boot ----
 try {
