@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="walnut">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TV mode — C · The stage (locked: countdown build-up, look-up phones)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── css/base.css tokens, verbatim from the repo (lines 1–144) ── */
+/* Shared foundation for every page: design tokens and page chrome.
+   Link this before any other stylesheet and before the page's own <style>,
+   so a page can still override what it needs to.
+
+   This exists because the shelf and the waiting-room pages each carried their
+   own copy of the palette and the body background, and the copies drifted —
+   the waiting room's background lost its solid colour layer and overscrolling
+   showed the browser's white canvas. Change a token or the page chrome here
+   and every page follows. */
+
+/* Themes (docs/claude-code-spec-themes.md). The surface tokens — page bg,
+   plate, ivory, their RGB variants and the ivory hairline — live in one
+   block per theme below, walnut doubling as the :root default. Everything
+   else, gold above all, is shared and stays in :root. <html data-theme="…"> is set by the inline resolver in
+   each page's <head> and by js/themes.js; a theme is one block here plus
+   one entry in the registry. */
+
+:root{
+  --bgs-gold:#E4B54D;
+  --bgs-gold-rgb:228,181,77;
+  /* ink on a gold fill — warm, not the page bg; full-contrast black on brass glares */
+  --bgs-on-gold:#2A1F0C;
+  /* the brighter brass for :hover on a gold fill */
+  --bgs-gold-hover:#F0C455;
+  /* extended: dimmed gold for mono/meta labels — no token in spec sec.2 covers this role, closest match to legacy --brass-dim.
+     Mixed from the brighter brass (#F0C455) at .80, not from --bgs-gold: the eyebrow and mono meta went muddy at .62 of the fill colour. */
+  --bgs-gold-dim:rgba(240,196,85,0.80);
+  --bgs-icon-gold:#E4B54D;
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line-gold:rgba(228,181,77,0.22);
+  /* warning — a gap in what a bag covers (docs/bag-pack-bar-spec.md) */
+  --bgs-amber:#E0A83A;
+  /* destructive actions — cancelling a game night */
+  --bgs-danger:#B84A40;
+  --bgs-danger-hover:#D2665B;
+  /* swipe-vote colours — warm sage + warm clay, deliberately distinct from
+     --bgs-danger above: passing on a game isn't destructive and must not
+     borrow the cancel-a-game-night colour. */
+  --bgs-vote-play:#5FB07F;
+  --bgs-vote-play-rgb:95,176,127;
+  --bgs-vote-pass:#D9645A;
+  --bgs-vote-pass-rgb:217,100,90;
+  /* live-voting / presence surfaces — reserved, nothing consumes it yet */
+  --bgs-info:#5B9CDB;
+  --bgs-info-rgb:91,156,219;
+
+  /* Liquid Glass (docs/claude-code-spec-liquid-glass.md). The material itself
+     lives in css/glass.css, which shelf.html loads; the tokens sit here so
+     every page can use the easing and the card layout without it. */
+  --glass-fill-a:.52;                 /* plate tint alpha; pressed .74 */
+  --glass-blur:22px;
+  --glass-sat:1.6;
+  --glass-rim-w:1.5px;                /* refraction ring width */
+  --glass-rim-light:rgba(var(--bgs-ivory-rgb),.22);
+  --glass-rim-gold:rgba(var(--bgs-gold-rgb),.28);
+  --glass-shadow:0 12px 32px rgba(0,0,0,.45), 0 1px 0 rgba(0,0,0,.4);
+  --glass-sheen:rgba(var(--bgs-ivory-rgb),.10);
+  --light-x:20%;                      /* specular position; JS moves it on scroll */
+  --ease-liquid:cubic-bezier(.32,.72,0,1);
+  --dur:.55s;
+}
+
+/* Brown themes. The hairline and muted roles the spec names --bgs-line and
+   --bgs-muted are the existing --line and --bgs-ivory-45: the spec's opaque
+   line colour is what each theme's ivory at .10 lands on over its plate, and
+   its muted colour is ivory at .45 over the plate, so the alpha tokens keep
+   compositing correctly over covers and glass. --bgs-bg-radial sits between
+   bg and plate, the same step navy takes.
+
+   Walnut is the default: :root carries it so a page with no data-theme, or
+   an unknown one, renders walnut. It comes first because :root and an
+   attribute selector tie on specificity, so the later block wins and every
+   named theme has to follow it. */
+:root, [data-theme="walnut"]{
+  --bgs-bg:#171110;
+  --bgs-bg-rgb:23,17,16;
+  --bgs-bg-radial:#1F1816;
+  --bgs-plate:#211915;
+  --bgs-plate-rgb:33,25,21;
+  --bgs-ivory:#F2E9DA;
+  --bgs-ivory-rgb:242,233,218;
+  --bgs-ivory-70:rgba(242,233,218,0.72);
+  --bgs-ivory-45:rgba(242,233,218,0.45);
+  --line:rgba(242,233,218,0.10);
+}
+/* Navy — the values :root carried before themes existed, moved here
+   unchanged. */
+[data-theme="navy"]{
+  --bgs-bg:#0B0E13;
+  --bgs-bg-rgb:11,14,19;
+  --bgs-bg-radial:#131821;
+  --bgs-plate:#161A21;
+  --bgs-plate-rgb:22,26,33;
+  --bgs-ivory:#EEF1F5;
+  --bgs-ivory-rgb:238,241,245;
+  --bgs-ivory-70:rgba(238,241,245,0.72);
+  --bgs-ivory-45:rgba(238,241,245,0.45);
+  /* hairlines — the shelf's ivory rule between rows, and the gold plate edge
+     base.css already draws on .deck-card; settings ledger rows and the link
+     plate use these instead of repeating the literals */
+  --line:rgba(238,241,245,0.10);
+}
+
+[data-theme="mahogany"]{
+  --bgs-bg:#1A100D;
+  --bgs-bg-rgb:26,16,13;
+  --bgs-bg-radial:#241611;
+  --bgs-plate:#2A1812;
+  --bgs-plate-rgb:42,24,18;
+  --bgs-ivory:#F4E8D8;
+  --bgs-ivory-rgb:244,232,216;
+  --bgs-ivory-70:rgba(244,232,216,0.72);
+  --bgs-ivory-45:rgba(244,232,216,0.45);
+  --line:rgba(244,232,216,0.10);
+}
+[data-theme="oak"]{
+  --bgs-bg:#1E1812;
+  --bgs-bg-rgb:30,24,18;
+  --bgs-bg-radial:#28201A;
+  --bgs-plate:#2B231A;
+  --bgs-plate-rgb:43,35,26;
+  --bgs-ivory:#F3EBDA;
+  --bgs-ivory-rgb:243,235,218;
+  --bgs-ivory-70:rgba(243,235,218,0.72);
+  --bgs-ivory-45:rgba(243,235,218,0.45);
+  --line:rgba(243,235,218,0.10);
+}
+
+/* Theme cross-fade. js/themes.js puts .theme-switching on <html> for the
+   250ms around a switch, so these surfaces fade instead of snapping. Inert
+   surfaces only: WebKit silently drops a transition whose property an
+   animation on the same element already owns, so nothing that animates
+   background-color, border-color or color (the Game Night pill, toasts,
+   pulse rings, .sel-ring) is listed here; those snap, which is fine. */
+html.theme-switching, html.theme-switching body,
+html.theme-switching .game-card{
+  transition:background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+@media (prefers-reduced-motion:reduce){
+  html.theme-switching *{transition:none !important;}
+}
+
+
+/* ── mockup page chrome ── */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+html{background:#0b0908}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px 16px 78px;color:var(--bgs-ivory);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;background:#0b0908}
+
+/* The TV: a 16:9 canvas, everything sized in cqw (1cqw = 19.2px at 1920). */
+.tv{
+  position:relative;overflow:hidden;
+  width:min(100vw - 32px, (100vh - 100px) * 16 / 9);aspect-ratio:16/9;container-type:inline-size;
+  border-radius:10px;color:var(--bgs-ivory);
+  background:radial-gradient(ellipse at top, var(--bgs-bg-radial) 0%, var(--bgs-bg) 55%), var(--bgs-bg);
+  box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+}
+.stage{position:absolute;inset:0;z-index:1}
+.stage > .scene{position:absolute;inset:0;transition:opacity .45s}
+.stage > .scene.out{opacity:0}
+
+/* chrome: eyebrow, wordmark, live pill, BGG badge */
+.chrome{position:absolute;inset:0;z-index:2;pointer-events:none}
+.chrome .eyebrow{position:absolute;left:3.2cqw;top:2.6cqw;font:500 .95cqw/1 'IBM Plex Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--bgs-gold-dim)}
+.chrome .eyebrow b{font-weight:500;color:var(--bgs-ivory);margin-left:.9cqw}
+.chrome .eyebrow .round{margin-left:.9cqw;color:var(--bgs-ivory-45)}
+.chrome .eyebrow .round:empty{display:none}
+.chrome .wordmark{position:absolute;right:3.2cqw;top:2.3cqw;font:italic 500 1.35cqw/1 'Fraunces',serif;color:var(--bgs-ivory-70)}
+.chrome .bgg{position:absolute;right:3.2cqw;bottom:2.4cqw;height:1.7cqw}
+.chrome .bgg img{height:100%;width:auto;display:block}
+.chrome .live{position:absolute;left:3.2cqw;bottom:2.4cqw;display:flex;align-items:center;gap:.6cqw;font:400 .9cqw/1 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45);letter-spacing:.06em}
+.chrome .live i{width:.55cqw;height:.55cqw;border-radius:50%;background:var(--bgs-vote-play);box-shadow:0 0 0 .3cqw rgba(var(--bgs-vote-play-rgb),.25)}
+.tv.ended .chrome .live i{background:var(--bgs-ivory-45);box-shadow:none}
+
+/* cover light — base.css block, absolute to the TV and scaled for 16:9 */
+.cover-light{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.cover-light img{position:absolute;left:50%;top:50%;width:160px;height:200px;object-fit:cover;opacity:0;transition:opacity .9s;filter:blur(22px) saturate(1.6);transform:translate(-50%,-50%) scale(var(--cl-scale,13))}
+.cover-light img.on{opacity:.55}
+.cover-light::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom, var(--bgs-bg) 0, rgba(var(--bgs-bg-rgb),.35) 22%, rgba(var(--bgs-bg-rgb),.25) 70%, rgba(var(--bgs-bg-rgb),.85) 100%)}
+
+/* ── type ── */
+.h1{font:600 4cqw/1.1 'Fraunces',serif;letter-spacing:-.01em;margin:0;color:var(--bgs-ivory);text-align:center}
+.h1 em{font-style:italic;font-weight:500;color:var(--bgs-gold)}
+.mono{font:400 1.15cqw/1.45 'IBM Plex Mono',monospace;color:var(--bgs-ivory-70);letter-spacing:.04em;text-align:center}
+.mono b{color:var(--bgs-ivory);font-weight:500}
+.hint{font:400 1.35cqw/1.45 'Inter',sans-serif;color:var(--bgs-ivory-70);text-align:center;margin-top:.9cqw}
+.hint.dim{color:var(--bgs-ivory-45)}
+
+/* ── seats (transitions only) ── */
+.seats-row{display:flex;gap:2.2cqw;justify-content:center;flex-wrap:wrap;padding:0 6cqw}
+.seat{--s:5.2cqw;position:relative;display:flex;flex-direction:column;align-items:center;gap:.55cqw;width:max-content}
+.seat .ini{width:var(--s);height:var(--s);border-radius:50%;display:grid;place-items:center;position:relative;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-ivory-rgb),.16);font:600 calc(var(--s)*.4)/1 'Inter',sans-serif;color:var(--bgs-ivory);box-shadow:0 .6cqw 1.6cqw rgba(0,0,0,.4)}
+.seat.host .ini{border-color:rgba(var(--bgs-gold-rgb),.75);color:var(--bgs-gold)}
+.seat .nm{font:500 .95cqw/1 'Inter',sans-serif;color:var(--bgs-ivory-70);white-space:nowrap}
+.seat.host .nm::after{content:"host";font:500 .7cqw/1 'IBM Plex Mono',monospace;color:var(--bgs-gold-dim);margin-left:.45cqw;letter-spacing:.08em;text-transform:uppercase}
+.seat .chip{position:absolute;right:-.35cqw;bottom:-.25cqw;width:calc(var(--s)*.42);height:calc(var(--s)*.42);border-radius:50%;display:grid;place-items:center;font:700 calc(var(--s)*.22)/1 'Inter',sans-serif;background:var(--bgs-ivory);color:var(--bgs-bg);border:2px solid var(--bgs-bg);transform:scale(0);transition:transform .28s cubic-bezier(.2,.9,.25,1), background .25s}
+.seat .chip.show{transform:scale(1)}
+.seat .chip.play{background:var(--bgs-vote-play);color:#fff}
+.seat .chip.pass{background:var(--bgs-vote-pass);color:#fff}
+.seat .chip.novote{background:var(--bgs-plate);color:var(--bgs-ivory-45);border-color:rgba(var(--bgs-ivory-rgb),.25)}
+.seat.pending .ini{border-style:dashed}
+.seat.pending{opacity:.55}
+.seats-row.hidden{display:none}
+
+/* ── covers and minis ── */
+.cov{position:relative;aspect-ratio:3/4;border-radius:.7cqw;overflow:hidden;background:var(--bgs-plate);border:1px solid rgba(var(--bgs-gold-rgb),.2);box-shadow:0 1cqw 2.4cqw rgba(0,0,0,.5)}
+.cov img{width:100%;height:100%;object-fit:cover;display:block}
+.cov.back{display:grid;place-items:center;color:var(--bgs-gold-dim);font:500 2cqw/1 'IBM Plex Mono',monospace;background:repeating-linear-gradient(45deg, rgba(var(--bgs-gold-rgb),.07) 0 .4cqw, transparent .4cqw .8cqw), var(--bgs-plate)}
+.deck{display:flex;gap:1.5cqw;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:0 6cqw}
+.deck .cov{width:var(--mw,10.5cqw)}
+.mini{display:flex;flex-direction:column;align-items:center;gap:.6cqw;transition:opacity .45s, transform .45s cubic-bezier(.2,.9,.25,1)}
+.mini .cov{width:var(--mw,9.2cqw);transition:box-shadow .45s}
+.pips{display:flex;gap:.28cqw;height:.5cqw}
+.pips i{width:var(--pip,.5cqw);height:.5cqw;border-radius:50%;background:rgba(var(--bgs-ivory-rgb),.14);transition:background .2s, box-shadow .2s}
+.pips i.on{background:var(--bgs-gold);box-shadow:0 0 .6cqw rgba(var(--bgs-gold-rgb),.6)}
+.pips .num{font:500 .8cqw/1 'IBM Plex Mono',monospace;color:var(--bgs-gold);height:.8cqw}
+.decided .mini{opacity:.32}
+.decided .mini.win{opacity:1;transform:translateY(-.9cqw) scale(1.12)}
+.decided .mini.win .cov{box-shadow:0 0 0 .2cqw var(--bgs-gold), 0 0 2.4cqw rgba(var(--bgs-gold-rgb),.35)}
+.decided.nobody .mini{opacity:.22}
+/* deck sizes: like the phone reveal, the mini width steps down with the deck */
+.deck.n-le5{--mw:10.5cqw}.deck.n-le8{--mw:9.2cqw}.deck.n-gt8{--mw:7.4cqw}
+
+/* ── crown (animations only) ── */
+.crowns{display:none;justify-content:center;gap:2.4cqw;margin-top:1.2cqw;position:relative}
+.result .crowns{display:flex}
+.crown{position:relative}
+.crown .cov{width:var(--cw,19.5cqw);border-radius:1.2cqw;border-color:rgba(var(--bgs-gold-rgb),.55);box-shadow:0 2cqw 5cqw rgba(0,0,0,.6), 0 0 6cqw rgba(var(--bgs-gold-rgb),.25);animation:crown .75s cubic-bezier(.2,.9,.25,1) both}
+.crowns.two .crown .cov{--cw:15cqw}.crowns.three .crown .cov{--cw:11.5cqw}
+.crown:nth-child(2) .cov{animation-delay:.12s}.crown:nth-child(3) .cov{animation-delay:.24s}
+@keyframes crown{0%{transform:translateY(3cqw) scale(.6) rotate(-4deg);opacity:0}60%{transform:translateY(-.6cqw) scale(1.05) rotate(1deg);opacity:1}100%{transform:none;opacity:1}}
+.flash{position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;border-radius:50%;pointer-events:none;background:radial-gradient(circle, rgba(var(--bgs-gold-rgb),.55) 0%, rgba(var(--bgs-gold-rgb),.18) 35%, transparent 70%);transform:translate(-50%,-50%) scale(.2);opacity:0;animation:flash 1s ease-out both}
+@keyframes flash{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.confetti i{position:absolute;width:.45cqw;height:.7cqw;border-radius:.1cqw}
+.pill{display:inline-flex;align-items:center;gap:.5cqw;padding:.55cqw 1cqw;border-radius:99px;border:1px solid rgba(var(--bgs-gold-rgb),.35);font:500 .95cqw/1 'IBM Plex Mono',monospace;color:var(--bgs-gold);letter-spacing:.04em;background:rgba(var(--bgs-plate-rgb),.7)}
+.fade{opacity:0;transform:translateY(.8cqw);transition:opacity .5s, transform .5s}
+.fade.show{opacity:1;transform:none}
+
+/* ── QR ticket (gold card, modules in the theme bg, like night-host.html) ── */
+.ticket{background:var(--bgs-gold);border-radius:1.4cqw;padding:1.4cqw;display:inline-block;box-shadow:0 2cqw 4.5cqw rgba(0,0,0,.55), inset 0 0 0 .15cqw rgba(255,255,255,.28)}
+.ticket .qr{width:var(--qr,19cqw);aspect-ratio:1;display:block}
+.ticket .qr svg{width:100%;height:100%;display:block}
+.ticket .code{margin:.9cqw 0 0;text-align:center;font:600 2.6cqw/1 'Fraunces',serif;color:var(--bgs-on-gold);letter-spacing:.18em}
+
+/* ── scenes ── */
+.col{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5cqw 4cqw 9cqw}
+
+/* waiting */
+.wait .ticket{margin:2.4cqw 0 1.6cqw}
+.chips{position:absolute;left:0;right:0;bottom:4.8cqw;display:flex;justify-content:center;gap:.9cqw;flex-wrap:wrap;padding:0 8cqw}
+.chip-n{padding:.75cqw 1.3cqw;border-radius:99px;border:1px solid rgba(var(--bgs-gold-rgb),.3);background:rgba(var(--bgs-plate-rgb),.85);font:500 1.15cqw/1 'Inter',sans-serif;color:var(--bgs-ivory)}
+.chip-n .host{font:500 .7cqw/1 'IBM Plex Mono',monospace;color:var(--bgs-gold-dim);margin-left:.6cqw;letter-spacing:.08em;text-transform:uppercase}
+.chip-n.pop{animation:pop .45s cubic-bezier(.2,.9,.25,1) both}
+.chip-n.empty{opacity:.22;color:transparent;border-style:dashed;min-width:7cqw}
+@keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* voting */
+.vote .seats-row{margin-top:2.2cqw}
+.vote .deck{margin-top:3cqw}
+.vote .h1 .n{display:inline-block;min-width:2.2ch;text-align:right}
+
+/* count / result */
+.count{padding:7cqw 4cqw 6cqw}
+.count .h1{font-size:3.6cqw}
+.count .seats-row{margin-top:1.8cqw}
+.count .seats-row .seat{--s:4cqw}
+.count .deck{margin-top:2.6cqw}
+.result .count .deck, .result .deck{display:none}
+.result .h1{font-size:3.8cqw}
+.res-meta{display:none;flex-direction:column;align-items:center;gap:.9cqw;margin-top:1.6cqw}
+.result .res-meta{display:flex}
+.res-meta .ttl{font:600 2.4cqw/1.1 'Fraunces',serif;color:var(--bgs-ivory)}
+.res-meta .ttl small{font:400 1.4cqw/1 'Inter',sans-serif;color:var(--bgs-ivory-45);margin:0 .6cqw}
+.result .seats-row{margin-top:1.6cqw}
+.result.nobody .deck{display:flex}
+.result.nobody .crowns{display:none}
+
+/* ended */
+.end .h1{font-size:3.4cqw}
+.end .hint{max-width:46cqw}
+.end .shelf-link{margin-top:2.2cqw}
+
+
+/* ── pre-reveal countdown (locked: option R4, covers stay face up, no flash on zero) ── */
+.count .h1 .sub{display:block;font:400 1.3cqw/1.4 'Inter',sans-serif;color:var(--bgs-ivory-45);margin-top:.8cqw;letter-spacing:0}
+.num-layer{position:absolute;left:50%;top:var(--cy,62%);transform:translate(-50%,-50%);pointer-events:none;z-index:3;display:grid;place-items:center}
+.num-layer .num{grid-area:1/1;font:600 19cqw/1 'Fraunces',serif;color:var(--bgs-gold);letter-spacing:-.04em;animation:cdnum .82s cubic-bezier(.2,.9,.25,1) both;text-shadow:0 0 6cqw rgba(var(--bgs-gold-rgb),.35)}
+@keyframes cdnum{0%{transform:scale(1.5);opacity:0}18%{opacity:1;transform:scale(1)}75%{opacity:1;transform:scale(.96)}100%{opacity:0;transform:scale(.9)}}
+.num-layer .beat{grid-area:1/1;width:16cqw;height:16cqw;border-radius:50%;box-shadow:0 0 0 .25cqw rgba(var(--bgs-gold-rgb),.55);animation:cdbeat .82s ease-out both}
+@keyframes cdbeat{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.8);opacity:0}}
+.counting .deck,.counting .seats-row{opacity:.28;transition:opacity .5s}
+.deck,.seats-row{transition:opacity .5s}
+
+/* phone inset — mockup-only picture-in-picture of one voter's phone */
+.phone{position:absolute;right:3.2cqw;bottom:5.4cqw;width:9.6cqw;aspect-ratio:9/19.5;border-radius:1.4cqw;background:var(--bgs-bg);border:.28cqw solid #2b2320;box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.7);overflow:hidden;z-index:5;display:none}
+.tv.pip .phone{display:block}
+.phone .scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1cqw .8cqw;gap:.5cqw;transition:opacity .4s}
+.phone .scr.out{opacity:0}
+.phone .eb{font:500 .42cqw/1 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--bgs-gold-dim)}
+.phone .t{font:600 1cqw/1.15 'Fraunces',serif;color:var(--bgs-ivory)}
+.phone .s{font:400 .5cqw/1.4 'Inter',sans-serif;color:var(--bgs-ivory-70)}
+.phone .arrow{width:2.6cqw;height:2.6cqw;border-radius:50%;border:1px solid rgba(var(--bgs-gold-rgb),.4);display:grid;place-items:center;color:var(--bgs-gold);font-size:1.3cqw;margin-bottom:.4cqw;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-.35cqw)}}
+.phone .mini-cov{width:3.6cqw;aspect-ratio:3/4;border-radius:.4cqw;overflow:hidden;border:1px solid rgba(var(--bgs-gold-rgb),.4);background:var(--bgs-plate)}
+.phone .mini-cov img{width:100%;height:100%;object-fit:cover;display:block}
+.phone .btn{margin-top:.5cqw;padding:.45cqw 1cqw;border-radius:99px;background:var(--bgs-gold);color:var(--bgs-on-gold);font:600 .5cqw/1 'Inter',sans-serif}
+.phone .lbl{position:absolute;left:0;right:0;bottom:.5cqw;text-align:center;font:400 .4cqw/1 'IBM Plex Mono',monospace;color:var(--bgs-ivory-45);letter-spacing:.08em}
+
+
+/* reduced motion */
+html.rm .tv *{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){.tv *{transition:none!important;animation:none!important}}
+
+/* mockup-only demo bar */
+.demobar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:6px;align-items:center;padding:9px 10px calc(9px + env(safe-area-inset-bottom,0px));overflow-x:auto;white-space:nowrap;background:#0b0908;border-top:1px solid rgba(255,255,255,.1);font:400 11.5px/1 'IBM Plex Mono',monospace;color:#eee}
+.demobar b{font-weight:500;opacity:.55;margin:0 2px 0 8px}
+.demobar button{padding:7px 10px;border-radius:99px;border:1px solid rgba(255,255,255,.16);background:none;color:inherit;font:inherit;flex:none;cursor:pointer}
+.demobar button[aria-pressed="true"]{background:#f3eadb;color:#111}
+.demobar button.play{border-color:var(--bgs-gold);color:var(--bgs-gold)}
+</style>
+</head>
+<body>
+
+<div class="tv" id="tv">
+  <div class="cover-light" aria-hidden="true"><img alt=""><img alt=""></div>
+  <div class="stage" id="stage"></div>
+  <div class="chrome">
+    <div class="eyebrow">Game Night <b>FOX7</b><span class="round" id="roundTxt"></span></div>
+    <div class="wordmark">boardgameshelf</div>
+    <div class="live"><i></i><span id="liveTxt">waiting room</span></div>
+    <a class="bgg"><img src="https://boardgameshelf.vercel.app/assets/powered-by-bgg.svg" alt="Powered by BoardGameGeek"></a>
+  </div>
+  <div class="confetti" id="confetti"></div>
+  <div class="phone" id="phone" aria-hidden="true"></div>
+</div>
+
+<div class="demobar" role="group" aria-label="Mockup controls">
+  <button id="playall" class="play">▶ Play the night</button>
+  <b>Phase</b>
+  <button data-phase="waiting" aria-pressed="true">Waiting</button>
+  <button data-phase="voting" aria-pressed="false">Voting</button>
+  <button data-phase="reveal" aria-pressed="false">Count → result</button>
+  <button data-phase="rematch" aria-pressed="false">Rematch (round 2)</button>
+  <button data-phase="ended" aria-pressed="false">Ended</button>
+  <button id="replay">↻ Replay</button>
+  <b>Outcome</b>
+  <button data-outcome="winner" aria-pressed="true">Winner</button>
+  <button data-outcome="tie" aria-pressed="false">Tie</button>
+  <button data-outcome="nobody" aria-pressed="false">Nobody</button>
+  <button data-outcome="forced" aria-pressed="false">Forced</button>
+  <b>Deck</b>
+  <button data-reveal="1" aria-pressed="true">Shown</button><button data-reveal="0" aria-pressed="false">Hidden</button>
+  <button data-deck="3" aria-pressed="false">3</button><button data-deck="6" aria-pressed="true">6</button><button data-deck="10" aria-pressed="false">10</button>
+  <b>Table</b>
+  <button data-table="2" aria-pressed="false">2</button><button data-table="5" aria-pressed="true">5</button><button data-table="8" aria-pressed="false">8</button>
+  <b>Theme</b>
+  <button data-theme="walnut" aria-pressed="true">Walnut</button><button data-theme="navy" aria-pressed="false">Navy</button><button data-theme="mahogany" aria-pressed="false">Mahogany</button><button data-theme="oak" aria-pressed="false">Oak</button>
+  <button id="pip" aria-pressed="true">Phone inset</button>
+  <button id="rm" aria-pressed="false">Reduced motion</button>
+</div>
+
+<script type="module">
+let QRCode = null;
+try { QRCode = (await import('https://esm.sh/qrcode@1.5.3')).default; } catch { /* offline: stand-in pattern below */ }
+
+const DECK_ALL = [{"bggId": "295947", "title": "Cascadia", "image": "https://cf.geekdo-images.com/MjeJZfulbsM1DSV3DrGJYA__original/img/B374C04Eip7fmQBGJzgiOTp-jyQ=/0x0/filters:format(jpeg)/pic5100691.jpg"}, {"bggId": "178900", "title": "Codenames", "image": "https://cf.geekdo-images.com/nC6ifPCDnAItwoKSKXVrnw__original/img/Id-jjIer_61ZbvI2_RVRCeBZFY4=/0x0/filters:format(jpeg)/pic8907965.jpg"}, {"bggId": "148228", "title": "Splendor", "image": "https://cf.geekdo-images.com/MZvNcL5AZoBS6of9Pv2BjA__original/img/z6jTSwhyGDqR69HNkSbGQql3VG4=/0x0/filters:format(jpeg)/pic2524282.jpg"}, {"bggId": "30549", "title": "Pandemic", "image": "https://cf.geekdo-images.com/3vBX9OLgJWknYu2Fy2lWdw__original/img/WDFmYRRJ8HpXt1E2vvZb1OEPjs8=/0x0/filters:format(jpeg)/pic8233136.jpg"}, {"bggId": "254640", "title": "Just One", "image": "https://cf.geekdo-images.com/uRVY_4287U7moXhgQcWLvg__original/img/eDiRjb-ghxTG_YM6LN1w2AxrR2o=/0x0/filters:format(jpeg)/pic4912588.jpg"}, {"bggId": "342942", "title": "Ark Nova", "image": "https://cf.geekdo-images.com/SoU8p28Sk1s8MSvoM4N8pQ__itemrep@2x/img/Pr8zSaMINlALYjR0agud0_EFESs=/fit-in/492x600/filters:strip_icc()/pic6293412.jpg"}, {"bggId": "163412", "title": "Patchwork", "image": "https://cf.geekdo-images.com/RDOwMRBnIb3Ehl6GyXj9xg__original/img/iVl8KAZ8JMmDXsnBqQecFRkOhK8=/0x0/filters:format(jpeg)/pic8669620.jpg"}, {"bggId": "237182", "title": "Root", "image": "https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__itemrep@2x/img/ws8Cu10dtH9Dk0bzuc4xHmIKDEc=/fit-in/492x600/filters:strip_icc()/pic4254509.jpg"}, {"bggId": "262543", "title": "Wavelength", "image": "https://cf.geekdo-images.com/z4fbPdmJg_5yphJEvql4ZA__original/img/bP1gM8RC-o5iz20_WazBaBNDHnU=/0x0/filters:format(png)/pic4552862.png"}, {"bggId": "225694", "title": "Decrypto", "image": "https://cf.geekdo-images.com/X6HDeg8AhGXGhB8je65MTw__original/img/A2cgVhqNzUMUGg7_GJ5omWcdkt8=/0x0/filters:format(jpeg)/pic7303572.jpg"}];
+
+const CODE = 'FOX7';
+const JOIN_URL = `https://boardgameshelf.vercel.app/vote/${CODE}`;
+const NAMES = ['Nok','Bee','Tan','Fern','Mook','Pim','Ice','Nut'];
+const TIED = [1, 3]; // Codenames, Pandemic
+
+const state = { phase:'waiting', outcome:'winner', table:5, deckN:6, reveal:true, round:1 };
+let timers = [];
+const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+const rm = () => document.documentElement.classList.contains('rm') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const tv = document.getElementById('tv');
+const stage = document.getElementById('stage');
+const confettiBox = document.getElementById('confetti');
+
+/* ── data ── */
+const players = () => NAMES.slice(0, state.table).map((name, i) => ({ name, isHost: i === 0 }));
+const deck = () => state.round === 2 ? TIED.map((j) => DECK_ALL[j]) : DECK_ALL.slice(0, state.deckN);
+const WIN = () => (state.round === 2 ? 0 : 1);
+/* votes[i][j] ∈ 'play' | 'pass' | null (null = never voted on it — forced results) */
+function votes() {
+  const ps = players(), ds = deck(), n = ps.length, w = WIN();
+  const v = ps.map((_, i) => ds.map((__, j) => ((i + j) % 3 !== 0 ? 'play' : 'pass')));
+  ps.forEach((_, i) => { v[i][w] = i === n - 1 ? 'pass' : 'play'; });
+  ds.forEach((_, j) => {
+    if (j === w) return;
+    let plays = v.filter((r) => r[j] === 'play').length;
+    for (let i = 0; i < n && plays > n - 2; i++) if (v[i][j] === 'play') { v[i][j] = 'pass'; plays--; }
+  });
+  if (state.outcome === 'tie' && state.round === 1 && ds.length > 3) {
+    // two games at rank 1: copy the winner's column onto the second tied game
+    ps.forEach((_, i) => { v[i][TIED[1]] = v[i][w]; });
+  }
+  if (state.outcome === 'nobody') ps.forEach((_, i) => ds.forEach((__, j) => { v[i][j] = 'pass'; }));
+  if (state.outcome === 'forced') { const i = n - 1; ds.forEach((__, j) => { v[i][j] = null; }); if (n > 2) ds.forEach((__, j) => { if (j > 1) v[n - 2][j] = null; }); }
+  return v;
+}
+const plays = (v, j) => v.filter((r) => r[j] === 'play').length;
+const topRank = (v, ds) => { const c = ds.map((_, j) => plays(v, j)); const m = Math.max(...c); return { max: m, idx: c.map((x, j) => (x === m ? j : -1)).filter((j) => j >= 0) }; };
+
+/* ── cover light ── */
+let lightIdx = 0;
+function setLight(url) {
+  const imgs = tv.querySelectorAll('.cover-light img');
+  if (!url) { imgs.forEach((i) => i.classList.remove('on')); return; }
+  const next = imgs[lightIdx ^= 1], prev = imgs[lightIdx ^ 1];
+  next.onerror = () => next.classList.remove('on');
+  next.src = url; next.classList.add('on'); prev.classList.remove('on');
+}
+
+/* ── pieces ── */
+const ini = (name) => Array.from(name)[0];
+const seatHTML = (p, cls = '') => `<div class="seat ${p.isHost ? 'host' : ''} ${cls}" data-name="${p.name}"><span class="ini">${ini(p.name)}<i class="chip"></i></span><span class="nm">${p.name}</span></div>`;
+const covHTML = (g, faceUp, cls = '') => faceUp
+  ? `<div class="cov ${cls}"><img src="${g.image}" alt="${g.title} cover" onerror="this.remove()"></div>`
+  : `<div class="cov back ${cls}">?</div>`;
+function miniHTML(g, j, n) {
+  // like the phone reveal: pips while they fit, a counted number when they don't
+  const usePips = n <= 8;
+  return `<div class="mini" data-j="${j}">${covHTML(g, true)}
+    <div class="pips">${usePips ? Array.from({ length: n }, () => '<i></i>').join('') : '<span class="num">0</span>'}</div></div>`;
+}
+const deckCls = (n) => (n <= 5 ? 'n-le5' : n <= 8 ? 'n-le8' : 'n-gt8');
+async function drawQR() {
+  const box = stage.querySelector('.qr'); if (!box) return;
+  const dark = getComputedStyle(document.documentElement).getPropertyValue('--bgs-bg').trim() || '#000';
+  try {
+    if (!QRCode) throw new Error('offline');
+    box.innerHTML = await QRCode.toString(JOIN_URL, { type: 'svg', margin: 0, color: { dark, light: '#00000000' } });
+  } catch {
+    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const N = 29; let cells = '';
+    const inF = (x, y) => (x < 7 && y < 7) || (x >= N - 7 && y < 7) || (x < 7 && y >= N - 7);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      let on;
+      if (inF(x, y)) { const fx = x >= N - 7 ? x - (N - 7) : x, fy = y >= N - 7 ? y - (N - 7) : y; on = fx === 0 || fy === 0 || fx === 6 || fy === 6 || (fx >= 2 && fx <= 4 && fy >= 2 && fy <= 4); }
+      else on = rnd() < .47;
+      if (on) cells += `<rect x="${x}" y="${y}" width="1" height="1"/>`;
+    }
+    box.innerHTML = `<svg viewBox="0 0 ${N} ${N}" shape-rendering="crispEdges" fill="${dark}">${cells}</svg>`;
+  }
+}
+const ticketHTML = () => `<div class="ticket"><div class="qr"></div><div class="code">${CODE}</div></div>`;
+const joinLine = () => `<div class="mono">boardgameshelf.vercel.app<br><b>/vote/${CODE}</b></div>`;
+function setChip(name, kind) {
+  const chip = stage.querySelector(`.seat[data-name="${name}"] .chip`); if (!chip) return;
+  chip.className = `chip ${kind} show`;
+  chip.textContent = kind === 'pass' ? '✕' : kind === 'novote' ? '–' : '✓';
+}
+function confetti() {
+  if (rm()) return;
+  confettiBox.innerHTML = '';
+  const colours = ['var(--bgs-gold)', 'var(--bgs-vote-play)', 'var(--bgs-vote-pass)', 'var(--bgs-ivory)'];
+  const W = tv.clientWidth, H = tv.clientHeight;
+  for (let k = 0; k < 48; k++) {
+    const i = document.createElement('i');
+    i.style.background = colours[k % 4]; i.style.left = `${W * .5}px`; i.style.top = `${H * .42}px`;
+    confettiBox.appendChild(i);
+    const dx = (Math.random() - .5) * W * 1.1, dy = -H * (.25 + Math.random() * .45), fall = H * (.9 + Math.random() * .4);
+    i.animate([
+      { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+      { transform: `translate(${dx * .6}px,${dy}px) rotate(${Math.random() * 360}deg)`, opacity: 1, offset: .35 },
+      { transform: `translate(${dx}px,${fall}px) rotate(${Math.random() * 900}deg)`, opacity: 0 },
+    ], { duration: 1400 + Math.random() * 900, easing: 'cubic-bezier(.2,.7,.4,1)', fill: 'forwards' }).onfinish = () => i.remove();
+  }
+}
+function setScene(html) {
+  // cross-fade: the old scene fades out while the new one is already in place underneath
+  const old = stage.querySelector('.scene');
+  const el = document.createElement('div'); el.className = 'scene'; el.innerHTML = html;
+  if (old) { old.classList.add('out'); later(() => old.remove(), 460); stage.insertBefore(el, old); }
+  else stage.appendChild(el);
+  return el;
+}
+const setLive = (t) => { document.getElementById('liveTxt').textContent = t; };
+const setRound = () => { document.getElementById('roundTxt').textContent = state.round === 2 ? `Round 2 · tie-break` : ''; };
+
+/* ── scenes ── */
+function sceneWaiting(ps, here, pop) {
+  const n = here.size;
+  const hint = n < 2 ? `Waiting for one more before ${ps[0].name} can start` : `${n} at the table · waiting for ${ps[0].name} to start`;
+  return `<div class="col wait">
+      <h1 class="h1">Scan to join</h1>
+      ${ticketHTML()}
+      ${joinLine()}
+      <div class="hint dim">${hint}</div>
+    </div>
+    <div class="chips">${ps.map((p) => here.has(p.name)
+      ? `<span class="chip-n ${p.name === pop ? 'pop' : ''}">${p.name}${p.isHost ? '<span class="host">host</span>' : ''}</span>`
+      : `<span class="chip-n empty">&nbsp;</span>`).join('')}</div>`;
+}
+function sceneVoting(ps, done) {
+  const ds = deck();
+  return `<div class="col vote">
+      <h1 class="h1"><em class="n">${done.size}</em> of ${ps.length} have voted</h1>
+      <div class="hint">Swipe right to play, left to pass. Votes stay sealed until the last one lands.</div>
+      <div class="seats-row">${ps.map((p) => seatHTML(p, done.has(p.name) ? '' : 'pending')).join('')}</div>
+      <div class="deck ${deckCls(ds.length)}" style="${deckWidth(ds.length)}">${ds.map((g) => covHTML(g, state.reveal)).join('')}</div>
+    </div>`;
+}
+function sceneReveal(ps, ds) {
+  return `<div class="col count">
+      <h1 class="h1">Votes are sealed</h1>
+      <div class="crowns"></div>
+      <div class="res-meta fade"></div>
+      <div class="seats-row">${ps.map((p) => seatHTML(p)).join('')}</div>
+      <div class="deck ${deckCls(ds.length)}" style="${deckWidth(ds.length)}">${ds.map((g, j) => miniHTML(g, j, ps.length)).join('')}</div>
+    </div>`;
+}
+/* rows = ceil(n/5), perRow = ceil(n/rows): 6 → 3+3, 10 → 5+5 (same rule as the phone reveal) */
+function deckWidth(n) {
+  if (n <= 5) return '';
+  const rows = Math.ceil(n / 5), perRow = Math.ceil(n / rows);
+  const mw = n <= 8 ? 9.2 : 7.4;
+  return `max-width:${perRow * mw + (perRow - 1) * 1.5 + 12}cqw`;
+}
+function sceneEnded(kind) {
+  const msg = kind === 'cancelled' ? `${NAMES[0]} ended this game night.` : 'That game night has ended, or the code is wrong.';
+  return `<div class="col end">
+      <h1 class="h1">Game night over</h1>
+      <div class="hint">${msg}</div>
+      <div class="mono shelf-link">boardgameshelf.vercel.app<b>/u/noknaruephon</b></div>
+    </div>`;
+}
+
+
+/* ── phone inset (mockup-only): what one voter's phone shows while the TV carries the reveal ── */
+function phone(html) {
+  const ph = document.getElementById('phone');
+  const olds = [...ph.querySelectorAll('.scr')];
+  const el = document.createElement('div'); el.className = 'scr'; el.innerHTML = html;
+  olds.forEach((o) => { o.classList.add('out'); setTimeout(() => o.remove(), 420); });
+  ph.appendChild(el);
+}
+const phoneWaiting = () => `<div class="eb">Game Night</div><div class="t">Waiting</div><div class="s">for Nok to start</div><div class="lbl">Bee's phone</div>`;
+const phoneSwiping = (k, n) => `<div class="eb">Game Night</div><div class="t">${k} of ${n}</div><div class="s">swiped</div><div class="mini-cov"><img src="${deck()[k % deck().length].image}" alt=""></div><div class="lbl">Bee's phone</div>`;
+const phoneLookUp = () => `<div class="arrow">↑</div><div class="t">Look up</div><div class="s">The table is deciding<br>on the big screen</div><div class="lbl">Bee's phone</div>`;
+const phoneResult = (w, line, btn) => `<div class="eb">${w ? 'Tonight we play' : "It's a tie"}</div>${w ? `<div class="mini-cov"><img src="${w.image}" alt=""></div><div class="t">${w.title}</div>` : ''}<div class="s">${line}</div><div class="btn">${btn}</div><div class="lbl">Bee's phone</div>`;
+
+/* ── the countdown: five beats over the deck, covers stay face up, nothing flashes on zero ── */
+function countdown(sc) {
+  const H = sc.querySelector('.h1');
+  H.innerHTML = 'All votes are in<span class="sub">Look up</span>';
+  const layer = document.createElement('div'); layer.className = 'num-layer'; sc.appendChild(layer);
+  later(() => {
+    const sr = sc.getBoundingClientRect(), d = sc.querySelector('.deck').getBoundingClientRect();
+    sc.style.setProperty('--cy', `${((d.top + d.height / 2 - sr.top) / sr.height) * 100}%`);
+  }, 40);
+  later(() => sc.classList.add('counting'), 500);
+  const N = 5, beat = 820, t0 = 900;
+  for (let k = 0; k < N; k++) later(() => { layer.innerHTML = `<div class="beat"></div><div class="num">${N - k}</div>`; }, t0 + k * beat);
+  const tZero = t0 + N * beat;
+  later(() => { layer.remove(); sc.classList.remove('counting'); }, tZero);
+  return tZero + 500;
+}
+
+/* ── sequences ── */
+function runWaiting(onDone) {
+  setLive('waiting room'); setLight(null);
+  const ps = players(), here = new Set([ps[0].name]);
+  setScene(sceneWaiting(ps, here, ps[0].name)); drawQR(); phone(phoneWaiting());
+  ps.slice(1).forEach((p, k) => later(() => {
+    here.add(p.name);
+    const chips = stage.querySelector('.scene:not(.out) .chips');
+    const hint = stage.querySelector('.scene:not(.out) .hint');
+    if (chips) chips.innerHTML = ps.map((q) => here.has(q.name)
+      ? `<span class="chip-n ${q.name === p.name ? 'pop' : ''}">${q.name}${q.isHost ? '<span class="host">host</span>' : ''}</span>`
+      : `<span class="chip-n empty">&nbsp;</span>`).join('');
+    if (hint) hint.textContent = `${here.size} at the table · waiting for ${ps[0].name} to start`;
+    if (here.size === ps.length && onDone) later(onDone, 1600);
+  }, 900 + k * 750));
+  if (ps.length === 1 && onDone) later(onDone, 1600);
+}
+function runVoting(onDone) {
+  setLive(state.round === 2 ? 'round 2 · voting' : 'voting'); setLight(null); setRound();
+  const ps = players(), ds = deck(), done = new Set();
+  setScene(sceneVoting(ps, done));
+  phone(phoneSwiping(Math.max(1, ds.length - 2), ds.length));
+  const order = [1, 3, 0, 4, 2, 6, 5, 7].filter((i) => i < ps.length);
+  const lastK = state.outcome === 'forced' ? Math.max(0, order.length - 2) : order.length; // forced: the host moves on before the last one or two finish
+  order.slice(0, lastK).forEach((i, k) => later(() => {
+    done.add(ps[i].name);
+    const sc = stage.querySelector('.scene:not(.out)');
+    sc.querySelector('.h1 .n').textContent = done.size;
+    const seat = sc.querySelector(`.seat[data-name="${ps[i].name}"]`); seat?.classList.remove('pending');
+    setChip(ps[i].name, 'ok');
+    if (k === lastK - 1 && onDone) later(onDone, 1500);
+  }, 1400 + k * 1300));
+  if (state.reveal) { let k = 0; const cyc = () => { setLight(ds[k++ % ds.length].image); later(cyc, 2800); }; cyc(); }
+}
+function runReveal() {
+  setLive(state.round === 2 ? 'round 2 · results' : 'results'); setLight(null); setRound();
+  const ps = players(), ds = deck(), v = votes(), n = ps.length;
+  const { max, idx } = topRank(v, ds);
+  const outcome = max === 0 ? 'nobody' : idx.length > 1 ? 'tie' : 'winner';
+  const sc = setScene(sceneReveal(ps, ds));
+  const H = sc.querySelector('.h1'), setH = (t) => { H.innerHTML = t; };
+  const counts = ds.map((_, j) => plays(v, j));
+  // sealed: a tick for everyone who finished, a dash for anyone with a missing vote (forced results)
+  ps.forEach((p, i) => setChip(p.name, v[i].some((x) => x === null) ? 'novote' : 'ok'));
+  phone(phoneLookUp());
+  let t = rm() ? 2500 : countdown(sc); // reduced motion: a still "All votes are in · Look up" hold instead
+  if (rm()) setH('All votes are in<span class="sub">Look up</span>');
+  later(() => setH('Counting the votes'), t);
+  t += 500;
+  const total = counts.reduce((a, b) => a + b, 0);
+  const step = Math.min(110, Math.max(40, Math.round(1500 / Math.max(1, total))));
+  if (outcome === 'nobody') t += 1100;
+  else {
+    for (let k = 0; k < max; k++) ds.forEach((_, j) => {
+      if (counts[j] <= k) return;
+      later(() => {
+        const mini = sc.querySelector(`.mini[data-j="${j}"]`);
+        const pip = mini?.querySelectorAll('.pips i')[k]; if (pip) pip.classList.add('on');
+        const num = mini?.querySelector('.num'); if (num) num.textContent = k + 1;
+      }, t);
+      t += step;
+    });
+  }
+  t += 450;
+  later(() => {
+    sc.classList.add('decided'); if (outcome === 'nobody') sc.classList.add('nobody');
+    if (outcome !== 'nobody') idx.forEach((j) => sc.querySelector(`.mini[data-j="${j}"]`)?.classList.add('win'));
+    if (outcome === 'winner') setLight(ds[idx[0]].image);
+    setH(outcome === 'winner' ? 'The table has decided' : outcome === 'tie' ? "It's a tie" : "Nobody's feeling it tonight");
+  }, t);
+  t += 950;
+  later(() => {
+    sc.classList.add('result'); if (outcome === 'nobody') sc.classList.add('nobody');
+    const crowns = sc.querySelector('.crowns'), meta = sc.querySelector('.res-meta');
+    if (outcome === 'winner') {
+      const w = ds[idx[0]];
+      crowns.innerHTML = `<div class="crown"><div class="flash"></div>${covHTML(w, true)}</div>`;
+      meta.innerHTML = `<span class="ttl">${w.title}</span><span class="pill">${counts[idx[0]]} of ${n} said play</span>`;
+      setH('Tonight we <em>play</em>'); confetti();
+      ps.forEach((p, i) => later(() => setChip(p.name, v[i][idx[0]] ?? 'novote'), 650 + i * 130));
+      later(() => phone(phoneResult(w, `${counts[idx[0]]} of ${n} said play`, 'Done')), 1400);
+    } else if (outcome === 'tie') {
+      const shown = idx.slice(0, 3);
+      crowns.className = `crowns ${['', '', 'two', 'three'][shown.length] || 'three'}`;
+      crowns.innerHTML = shown.map((j) => `<div class="crown">${covHTML(ds[j], true)}</div>`).join('');
+      meta.innerHTML = `<span class="ttl">${idx.map((j) => ds[j].title).join('<small>·</small>')}</span><span class="pill">${max} of ${n} each</span><div class="hint dim">${ps[0].name} can start a tie-break round on these from their phone</div>`;
+      sc.querySelector('.seats-row').classList.add('hidden');
+      setH("It's a tie");
+      later(() => phone(phoneResult(null, idx.map((j) => ds[j].title).join(' · '), 'Rematch')), 1400);
+    } else {
+      meta.innerHTML = `<div class="hint dim">Everyone passed on everything. ${ps[0].name} can pick a new deck from their phone.</div>`;
+      setH("Nobody's feeling it tonight");
+      later(() => phone(`<div class="eb">Game Night</div><div class="t">Nobody's feeling it</div><div class="s">Everyone passed on everything</div><div class="btn">New deck</div><div class="lbl">Bee's phone</div>`), 1400);
+    }
+    later(() => meta.classList.add('show'), 500);
+  }, t);
+}
+function runEnded() {
+  setLive('ended'); setLight(null); tv.classList.add('ended');
+  setScene(sceneEnded('cancelled')); phone(`<div class="eb">Game Night</div><div class="t">Game night over</div><div class="s">Nok ended this game night.</div><div class="lbl">Bee's phone</div>`);
+}
+
+/* ── controller ── */
+function reset() { timers.forEach(clearTimeout); timers = []; confettiBox.innerHTML = ''; tv.classList.remove('ended'); stage.innerHTML = ''; setRound(); }
+function go() {
+  reset();
+  if (state.phase === 'waiting') { state.round = 1; runWaiting(); }
+  if (state.phase === 'voting') { state.round = 1; runVoting(); }
+  if (state.phase === 'reveal') { state.round = 1; runReveal(); }
+  if (state.phase === 'rematch') { state.round = 2; runVoting(() => runReveal()); }
+  if (state.phase === 'ended') runEnded();
+}
+function playAll() {
+  reset(); state.round = 1;
+  runWaiting(() => runVoting(() => {
+    runReveal();
+    // a tie flows on into the tie-break round after a beat, like the host tapping Rematch
+    const v = votes(), { idx } = topRank(v, deck());
+    if (idx.length > 1) later(() => { state.round = 2; runVoting(() => runReveal()); }, 9000);
+  }));
+}
+const press = (attr, btn) => document.querySelectorAll(`.demobar button[${attr}]`).forEach((b) => b.setAttribute('aria-pressed', b === btn));
+const bind = (attr, fn) => document.querySelectorAll(`.demobar button[${attr}]`).forEach((b) => b.addEventListener('click', () => { fn(b.dataset); press(attr, b); go(); }));
+bind('data-phase', (d) => { state.phase = d.phase; });
+bind('data-outcome', (d) => { state.outcome = d.outcome; });
+bind('data-reveal', (d) => { state.reveal = d.reveal === '1'; });
+bind('data-deck', (d) => { state.deckN = Number(d.deck); });
+bind('data-table', (d) => { state.table = Number(d.table); });
+bind('data-theme', (d) => { document.documentElement.dataset.theme = d.theme; });
+document.getElementById('replay').addEventListener('click', go);
+document.getElementById('pip').addEventListener('click', (e) => { const on = e.currentTarget.getAttribute('aria-pressed') !== 'true'; e.currentTarget.setAttribute('aria-pressed', on); tv.classList.toggle('pip', on); });
+tv.classList.add('pip');
+document.getElementById('playall').addEventListener('click', playAll);
+document.getElementById('rm').addEventListener('click', (e) => {
+  const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
+  e.currentTarget.setAttribute('aria-pressed', on); document.documentElement.classList.toggle('rm', on); go();
+});
+go();
+</script>
+</body>
+</html>
