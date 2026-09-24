@@ -619,6 +619,23 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   /* center top: a cover's title sits along its top edge, so that is the edge
      the 4:5 crop keeps. */
   .game-card .art img{ width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+  /* A game with no cover: its title on a plain box, tinted with the game's
+     colour where one exists. Fills .art on a card and .face on a box alike. */
+  .no-cover{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    padding:10px 8px;
+    text-align:center;
+    background:linear-gradient(160deg, var(--c, var(--bgs-plate)), var(--bgs-plate) 85%);
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-ivory-rgb),.1);
+  }
+  .no-cover b{
+    font-family:'Fraunces',serif; font-weight:600;
+    font-size:clamp(11px, 3.2vw, 14px); line-height:1.25; letter-spacing:-.005em;
+    color:var(--bgs-ivory);
+    display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  @media (min-width:800px){ .no-cover b{ font-size:13px; } }
 
   .game-card .info{
     padding:9px 10px 11px;
@@ -724,7 +741,8 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .gbox .chk svg{width:13px;height:13px;opacity:0;}
   .gbox .info-btn{z-index:4;}   /* the card's .info-btn placement; display:none outside selection */
   body.is-selecting .gbox .sel,body.is-selecting .gbox .chk{display:grid;}
-  body.is-selecting .gbox:not(.selected) .face img{opacity:.62;transition:opacity .15s ease;}
+  body.is-selecting .gbox:not(.selected) .face img,
+  body.is-selecting .gbox:not(.selected) .face .no-cover{opacity:.62;transition:opacity .15s ease;}
   body.is-selecting .gbox.selected .sel{box-shadow:inset 0 0 0 2px var(--bgs-gold);}
   body.is-selecting .gbox.selected .chk{background:var(--bgs-gold);box-shadow:none;}
   body.is-selecting .gbox.selected .chk svg{opacity:1;}
@@ -1260,7 +1278,8 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     font-style:normal;font-size:12px;font-weight:700;color:var(--bgs-ivory-70);font-family:'Fraunces',serif;
   }
   body.is-selecting .info-btn:hover i{border-color:var(--bgs-gold);color:var(--bgs-gold);}
-  body.is-selecting .game-card:not(.selected) .art img{opacity:0.62;transition:opacity 0.15s ease;}
+  body.is-selecting .game-card:not(.selected) .art img,
+  body.is-selecting .game-card:not(.selected) .art .no-cover{opacity:0.62;transition:opacity 0.15s ease;}
 
   /* ---- bottom bar ---- */
   .gn-bar{
@@ -2264,10 +2283,28 @@ function render(){
   if(gameNightVisible && state.selectionMode) updateGnBar();
 }
 
-// The cover <img>, shared by both tile shapes. `wrap` is the element that
-// takes the plate background when no image loads at all.
-function coverImg(g, wrap){
-  return `<img src="${g.imageSmall || g.image}" alt="${g.title} cover" loading="lazy" decoding="async" data-orig="${g.image}" onerror="if(this.dataset.orig&&this.src!==this.dataset.orig){this.src=this.dataset.orig;delete this.dataset.orig;return}this.closest('${wrap}').style.background='var(--bgs-plate)';this.remove()">`;
+// The cover, shared by both tile shapes. A game with no image at all gets
+// its title on a plain box instead; so does one whose image fails to load
+// (after one retry on the unsized original, in case the optimiser is what
+// failed). `wireCover` attaches that fallback once the markup is in the DOM.
+function coverImg(g){
+  if(!g.image) return noCover(g);
+  return `<img src="${g.imageSmall || g.image}" alt="${g.title} cover" loading="lazy" decoding="async" data-orig="${g.image}">`;
+}
+function noCover(g){
+  return `<span class="no-cover" style="--c:${g.color || ''}"><b>${g.title}</b></span>`;
+}
+function wireCover(el, g){
+  const img = el.querySelector('img[data-orig]');
+  if(!img) return;
+  img.addEventListener('error', ()=>{
+    if(img.dataset.orig && img.src !== img.dataset.orig){
+      img.src = img.dataset.orig;
+      delete img.dataset.orig;
+      return;
+    }
+    img.outerHTML = noCover(g);
+  });
 }
 
 function buildCard(g){
@@ -2279,7 +2316,7 @@ function buildCard(g){
     ${selectionOverlays ? '<span class="sel-ring"></span>' : ''}
     <div class="art">
       ${selectionOverlays ? `<span class="checkbox">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
-      ${coverImg(g, '.art')}
+      ${coverImg(g)}
     </div>
     <div class="info">
       <h3 class="title">${g.title}</h3>
@@ -2289,6 +2326,7 @@ function buildCard(g){
       </div>
     </div>
   `;
+  wireCover(el, g);
   if(bag) bag.decorateCard(el, g);
   el.addEventListener('click', ev => onTileClick(ev, g, el));
   return el;
@@ -2307,9 +2345,10 @@ function buildBox(g, i){
   el.innerHTML = `
     <span class="glow"></span>
     ${selectionOverlays ? `<span class="sel"></span><span class="chk">${GN_CHECK_SVG}</span><span class="info-btn" data-gn-info role="button" aria-label="${g.title} details"><i>i</i></span>` : ''}
-    <span class="face">${coverImg(g, '.face')}</span>
+    <span class="face">${coverImg(g)}</span>
     <span class="foot"></span>
   `;
+  wireCover(el, g);
   if(bag) bag.decorateCard(el, g);
   el.addEventListener('click', ev => onTileClick(ev, g, el));
   return el;
