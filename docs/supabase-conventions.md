@@ -37,6 +37,10 @@ all; say so in a comment next to the `revoke`.
 `service_role` always gets all four verbs. It bypasses RLS, and it is what
 `api/` and `scripts/` use.
 
+Two tables predate the repo and have no `create table` here: `sessions` and
+`participants` were made by hand in the dashboard. Their grants live in
+`20260924000000_gamenight_grants.sql` instead.
+
 ## Grants and RLS are separate layers
 
 Postgres checks them in order, and both must pass:
