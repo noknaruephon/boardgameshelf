@@ -761,7 +761,7 @@ function renderSettings() {
     $('shelfHost').textContent = `${location.host}/u/`;
     $('shelfSlug').textContent = profile.slug;
     $('copyLink').dataset.copy = url;
-    renderQr(url);
+    if (!V2) renderQr(url);   // v2 draws it on Show QR instead
     $('delSlug').textContent = `/u/${profile.slug}`;
   }
   // Without a shelf there is no address and no game count to name.
@@ -1439,7 +1439,7 @@ function buildV2Layout() {
   copy.classList.add('btn', 'btn--primary');
   copy.dataset.label = 'Copy link';
   copy.textContent = copy.dataset.label;
-  const qrToggle = v2El(`<button type="button" class="btn btn--secondary" data-qr-toggle aria-expanded="false">${TABLER_QR}Show QR</button>`);
+  const qrToggle = v2El(`<button type="button" class="btn btn--secondary" data-qr-toggle aria-expanded="false">${TABLER_QR}<span data-qr-label>Show QR</span></button>`);
   const actions = v2El('<div class="settings-actions"></div>');
   actions.append(copy, qrToggle);
   const qrPanel = v2El('<div class="settings-qr" data-qr-panel hidden><div class="settings-qr__plate"></div><a class="settings-qr__save" href="#" data-qr-save>Save image</a></div>');
@@ -1479,21 +1479,83 @@ function buildV2Layout() {
 
   for (const node of oldSections) node.hidden = true;
   root.append(sharing.group, display.group, bgg.group, account.group);
-  v2 = { share, privateTag, qrToggle, qrPanel, bggCard: bgg.card };
+  v2 = { share, privateTag, qrToggle, qrPanel, qrSave: qrPanel.lastElementChild, bggCard: bgg.card, url: '' };
 }
 
 /** The v2 link block is always there; without a shelf it is dimmed and
-    reads as a prompt rather than an address. The old QR hero stays hidden. */
+    reads as a prompt rather than an address, and with the shelf private it
+    is dimmed under a Private tag. Either way the QR folds up. The old QR
+    hero stays hidden. */
 function renderV2Share(on) {
   show('share-link', true);
   show('share-qr', false);
+  const priv = on && !profile.is_public;
+  v2.url = on ? `${location.origin}/u/${profile.slug}` : '';
   if (!on) {
     $('shelfHost').textContent = '';
     $('shelfSlug').textContent = CONNECT_URL_TEXT;
     $('copyLink').dataset.copy = '';
   }
-  v2.share.classList.toggle('is-private', !on);
-  v2.privateTag.hidden = true;
+  v2.share.classList.toggle('is-private', !on || priv);
+  v2.privateTag.hidden = !priv;
+  if (!on || priv) setQrOpen(false);
+  else if (!v2.qrPanel.hidden) renderQr(v2.url);   // open across a username change: redraw for the new address
+}
+
+// ---- inline QR: Show QR / Hide QR, drawn on first open, closed on every load ----
+function setQrOpen(open) {
+  if (open) renderQr(v2.url);   // the existing renderer; cached per URL
+  v2.qrPanel.hidden = !open;
+  v2.qrToggle.setAttribute('aria-expanded', String(open));
+  v2.qrToggle.querySelector('[data-qr-label]').textContent = open ? 'Hide QR' : 'Show QR';
+}
+
+/** Save image: the code drawn fresh onto a canvas, black on white with a
+    four-module quiet zone, and handed over as a PNG download. On iOS the
+    file lands in Files, as the poster's download does. */
+const QR_PNG_SIZE = 640;
+function qrToCanvas(url) {
+  const qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  const n = qr.getModuleCount();
+  const quiet = 4;
+  const cell = Math.max(1, Math.floor(QR_PNG_SIZE / (n + quiet * 2)));
+  const px = cell * (n + quiet * 2);
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = px;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, px, px);
+  ctx.fillStyle = '#000000';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) ctx.fillRect((c + quiet) * cell, (r + quiet) * cell, cell, cell);
+  return canvas;
+}
+function saveQrImage(e) {
+  e.preventDefault();
+  if (!v2.url || typeof qrcode !== 'function') return;
+  const canvas = qrToCanvas(v2.url);
+  const a = document.createElement('a');
+  a.download = `boardgameshelf-${profile.slug}.png`;
+  const finish = (href) => {
+    a.href = href;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+  if (canvas.toBlob) {
+    canvas.toBlob((blob) => {
+      if (!blob) { finish(canvas.toDataURL('image/png')); return; }
+      const href = URL.createObjectURL(blob);
+      finish(href);
+      setTimeout(() => URL.revokeObjectURL(href), 10000);
+    }, 'image/png');
+  } else finish(canvas.toDataURL('image/png'));
+}
+
+function wireV2() {
+  v2.qrToggle.addEventListener('click', () => setQrOpen(v2.qrPanel.hidden));
+  v2.qrSave.addEventListener('click', saveQrImage);
 }
 
 /** Not connected: Public shows off and disabled, and the BoardGameGeek
@@ -1508,7 +1570,7 @@ function renderV2(on) {
   v2.bggCard.classList.toggle('is-connect', !on);
 }
 
-if (V2) buildV2Layout();
+if (V2) { buildV2Layout(); wireV2(); }
 
 // ---- boot ----
 try {
