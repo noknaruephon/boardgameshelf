@@ -166,6 +166,166 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   }
   .cancel-btn:hover{color:var(--bgs-danger-hover);}
 
+  /* ---- The stage (docs/claude-code-spec-lobby-stage.md, behind ?lobby=1) ----
+     The hidden deck is the hero, the QR and code sit in a glass share bar,
+     the roster is glass chips and Start voting is a pill that turns gold the
+     moment the table can start. Everything below is stage-only: the classic
+     render() above never emits these classes. Rings are box-shadow, never
+     outline; the glass material's own focus slot covers .glass elements. */
+  .stage-title{font-size:34px;line-height:1.05;text-align:left;margin:0 0 6px;}
+  .stage-sub{font-size:13px;color:var(--bgs-ivory-70);text-align:left;margin:0 0 18px;}
+  .stage .deck{margin-bottom:18px;}
+
+  .share-bar{
+    display:flex;gap:14px;align-items:center;border-radius:18px;padding:12px;
+    margin-bottom:18px;background:var(--bgs-plate); /* css/glass.css replaces this */
+  }
+  .share-bar__qr{
+    flex:1;min-width:0;display:flex;gap:14px;align-items:center;text-align:left;
+    background:transparent;border:0;padding:0;margin:0;font:inherit;color:inherit;
+    cursor:pointer;border-radius:12px;
+  }
+  .share-bar__qr:focus-visible{
+    outline:none;box-shadow:0 0 0 3px var(--bgs-bg),0 0 0 5px var(--bgs-gold);
+  }
+  .qr-frame--thumb{width:76px;height:76px;padding:6px;border-radius:10px;flex-shrink:0;}
+  .share-bar__text{display:block;min-width:0;}
+  .share-bar__kicker{
+    display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--bgs-gold);
+  }
+  .share-bar__code{
+    display:block;font-family:'Fraunces',serif;font-weight:600;font-size:36px;
+    letter-spacing:.04em;line-height:1;margin:4px 0;
+  }
+  .share-bar__hint{display:block;font-size:11px;color:var(--bgs-ivory-70);}
+  .share-bar__copy{
+    width:44px;height:44px;border-radius:50%;flex-shrink:0;border:0;padding:0;
+    background:var(--bgs-gold);color:var(--bgs-on-gold);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .share-bar__copy svg{width:18px;height:18px;display:block;}
+  .share-bar__copy:focus-visible{
+    outline:none;box-shadow:0 0 0 3px var(--bgs-bg),0 0 0 5px var(--bgs-gold);
+  }
+
+  .here{
+    display:flex;align-items:center;margin-bottom:10px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  }
+  .here__label{color:var(--bgs-gold);}
+  /* Dotted leader between the label and the count, without a third span. */
+  .here::after{content:"";flex:1;order:1;margin:0 10px;border-top:1px dotted rgba(var(--bgs-ivory-rgb),.2);}
+  .here__n{order:2;color:var(--bgs-ivory-70);}
+  .here-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;height:40px;border-radius:999px;
+    padding:0 14px 0 5px;font-size:13px;font-weight:500;box-sizing:border-box;
+    background:var(--bgs-plate); /* css/glass.css replaces this */
+    animation:pop .28s cubic-bezier(.2,1.2,.4,1);
+  }
+  /* WebKit drops a transition that shares a property with an animation:
+     `pop` moves transform and opacity, so the material's transform
+     transition must not apply here. Outranks .glass in css/glass.css. */
+  .here-row .chip.glass{transition:none;}
+  .chip__avatar{
+    width:30px;height:30px;border-radius:50%;flex-shrink:0;background:var(--bgs-plate);
+    box-shadow:inset 0 0 0 1.5px var(--bgs-gold);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:600;font-size:14px;color:var(--bgs-ivory);
+  }
+  .chip__tag{
+    font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--bgs-gold);margin-left:2px;
+  }
+  .chip--open{
+    background:transparent;border:1.5px dashed rgba(var(--bgs-ivory-rgb),.2);
+    padding:0 14px 0 12px;color:var(--bgs-ivory-70);
+  }
+  .chip--open .pulse{flex-shrink:0;}
+  .chip--open:not(.is-waiting) .pulse{animation:none;opacity:1;}
+
+  .tv-row{display:flex;justify-content:center;margin-bottom:12px;}
+  .tv-pill{
+    display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;
+    border:0;font:inherit;font-size:13px;font-weight:600;color:var(--bgs-ivory);cursor:pointer;
+    background:var(--bgs-plate); /* css/glass.css replaces this */
+  }
+  .tv-pill svg{width:16px;height:16px;display:block;}
+
+  .start-pill{
+    display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:56px;
+    border-radius:999px;border:0;padding:0 20px;box-sizing:border-box;
+    font:inherit;font-size:16px;font-weight:600;color:var(--bgs-ivory);cursor:pointer;
+    background:var(--bgs-plate); /* css/glass.css replaces this */
+  }
+  /* The glass is the dim: no opacity on the disabled pill. */
+  .start-pill:disabled{color:rgba(var(--bgs-ivory-rgb),.38);cursor:default;}
+  .start-pill.is-ready{
+    background:var(--bgs-gold);color:var(--bgs-on-gold);
+    box-shadow:0 12px 32px rgba(var(--bgs-gold-rgb),.25);
+  }
+  .start-pill.is-ready:disabled{color:var(--bgs-on-gold);opacity:.6;} /* while the start request is in flight */
+  .start-pill.is-ready:focus-visible{
+    outline:none;
+    box-shadow:0 0 0 3px var(--bgs-bg),0 0 0 5px var(--bgs-gold),0 12px 32px rgba(var(--bgs-gold-rgb),.25);
+  }
+  .start-pill svg{width:18px;height:18px;display:block;}
+
+  /* Full-screen QR sheet: the one intentionally light surface, on the theme's
+     ivory/ink pair. Enter is a transition on this element only. */
+  .qr-sheet{
+    position:fixed;inset:0;z-index:50; /* above the TV sheet (css/share-sheet.css, 41) */
+    background:var(--bgs-ivory);color:var(--bgs-bg);
+    padding:calc(52px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;box-sizing:border-box;overflow:auto;
+    opacity:0;transform:translateY(8px);
+    transition:opacity .22s ease,transform .22s ease;
+  }
+  .qr-sheet[hidden]{display:none;}
+  .qr-sheet.is-open{opacity:1;transform:none;}
+  .qr-sheet__bar{
+    position:absolute;top:calc(10px + env(safe-area-inset-top));left:24px;right:14px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .qr-sheet__kicker{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(var(--bgs-bg-rgb),.55);
+  }
+  .qr-sheet__x{
+    width:40px;height:40px;border-radius:50%;border:0;padding:0;background:transparent;
+    color:var(--bgs-bg);font:inherit;font-size:26px;line-height:1;cursor:pointer;
+    box-shadow:inset 0 0 0 1.5px rgba(var(--bgs-bg-rgb),.15);
+  }
+  .qr-sheet__x:focus-visible,.qr-sheet__copy:focus-visible{
+    outline:none;box-shadow:0 0 0 3px var(--bgs-ivory),0 0 0 5px var(--bgs-gold);
+  }
+  .qr-frame--big{
+    width:min(300px,100%);height:auto;aspect-ratio:1;padding:18px;border-radius:20px;
+    margin-top:24px;box-shadow:0 16px 40px rgba(var(--bgs-bg-rgb),.14);
+  }
+  .qr-sheet__code{
+    font-family:'Fraunces',serif;font-weight:600;font-size:64px;letter-spacing:.08em;
+    padding-left:.08em;line-height:1;color:var(--bgs-bg);margin-top:20px;
+  }
+  .qr-sheet__url{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(var(--bgs-bg-rgb),.55);margin-top:8px;
+  }
+  .qr-sheet__help{
+    font-size:14px;color:rgba(var(--bgs-bg-rgb),.7);text-align:center;line-height:1.5;
+    max-width:300px;margin:auto 0 16px;
+  }
+  .qr-sheet__copy{
+    width:100%;max-width:300px;height:48px;border-radius:999px;border:0;
+    background:var(--bgs-bg);color:var(--bgs-ivory);font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .chip{animation:none;}
+    .chip .pulse{animation:none;}
+    .qr-sheet{transform:none;transition:opacity .22s ease;}
+  }
+
   /* ---- name gate (host opening the link on a fresh device) ---- */
   .join-card{
     background:var(--bgs-plate);border-radius:16px;padding:22px;
@@ -193,6 +353,27 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     text-align:center;font-size:13px;color:var(--bgs-ivory-70);line-height:1.6;margin:0 0 22px;
   }
 </style>
+<script>
+  // Liquid Glass (docs/claude-code-spec-liquid-glass.md). Same loader as
+  // vote-swipe.html: live for everyone, ?glass=0 opts a device out (persisted
+  // to localStorage.bgsGlass) and ?glass=1 opts it back in. css/glass.css is
+  // appended last in <head>, so it wins over the styles above at equal
+  // specificity. Only the stage lobby (?lobby=1) uses the material on this
+  // page; the .glass class sits in its markup regardless and is inert without it.
+  (function(){
+    var GLASS_ENABLED = true;
+    try{
+      var q = new URLSearchParams(location.search).get('glass');
+      if(q === '0') localStorage.setItem('bgsGlass', '0');
+      else if(q === '1') localStorage.removeItem('bgsGlass');
+      var off = localStorage.getItem('bgsGlass') === '0';
+      if(GLASS_ENABLED ? off : !(q === '1')) return;
+    }catch(e){ if(!GLASS_ENABLED) return; }
+    var link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = '/css/glass.css';
+    document.head.appendChild(link);
+  })();
+</script>
 </head>
 <body>
 
@@ -243,7 +424,7 @@ import QRCode from 'https://esm.sh/qrcode@1.5.3';
 // the whole module script never runs, leaving the page stuck on "Loading…".
 import { fetchSession, joinGameNight, startVoting, cancelGameNight, sessionErrorMessage } from '/js/session.js';
 import { joinSessionChannel, MIN_PLAYERS_TO_START } from '/js/presence.js';
-import { deckHTML, attachDeckHandlers, rosterHTML, deckFromSession } from '/js/waiting-room.js';
+import { deckHTML, attachDeckHandlers, rosterHTML, lobbyRosterHTML, deckFromSession } from '/js/waiting-room.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
 
@@ -258,6 +439,13 @@ let backLabel = 'Back to the shelf';
 // for the laptop or the television. Nothing else on this screen changes.
 const TV_ENABLED = false;
 const tvOn = TV_ENABLED || new URLSearchParams(location.search).get('tv') === '1';
+
+// ---- Stage lobby flag (docs/claude-code-spec-lobby-stage.md) ----
+// Same shape as the TV flag: ships off, ?lobby=1 reveals it. On: the host's
+// waiting room renders as "the stage" (renderStage below). Off: the page is
+// exactly as before.
+const LOBBY_ENABLED = false;
+const lobbyOn = LOBBY_ENABLED || new URLSearchParams(location.search).get('lobby') === '1';
 
 const confirmDialog = document.getElementById('confirm');
 const confirmBody = document.getElementById('confirmBody');
@@ -370,6 +558,11 @@ function runHost({ code, session, deck, hostName }) {
   }
 
   function render() {
+    if (lobbyOn) renderStage();
+    else renderClassic();
+  }
+
+  function renderClassic() {
     const n = players.length;
     const canStart = n >= MIN_PLAYERS_TO_START;
     const short = MIN_PLAYERS_TO_START - n;
@@ -404,30 +597,185 @@ function runHost({ code, session, deck, hostName }) {
     document.getElementById('cancelNight').addEventListener('click', onCancel);
   }
 
+  // ---- The stage (docs/claude-code-spec-lobby-stage.md, behind ?lobby=1) ----
+  const ICON_COPY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>';
+  const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const ICON_TV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="m17 2-5 5-5-5"/></svg>';
+
+  function stageSub() {
+    const games = deck.length === 1 ? 'game' : 'games';
+    const shown = session.reveal_deck ? 'shown' : 'hidden until voting';
+    const picked = session.mode === 'random' ? 'picked at random' : 'you picked them';
+    return `${deck.length} ${games} · ${shown} · ${picked}`;
+  }
+
+  function renderStage() {
+    const n = players.length;
+    const canStart = n >= MIN_PLAYERS_TO_START;
+    const short = MIN_PLAYERS_TO_START - n;
+    screen.classList.add('stage');
+    screen.innerHTML = `
+      <div class="eyebrow">Game Night</div>
+      <h1 class="stage-title">Tonight's deck</h1>
+      <p class="stage-sub">${stageSub()}</p>
+      ${deckHTML(deck, session.reveal_deck)}
+      <div class="share-bar glass">
+        <button class="share-bar__qr" id="qrOpen" type="button" aria-label="Show the QR code full screen">
+          <span class="qr-frame qr-frame--thumb" id="qr"></span>
+          <span class="share-bar__text">
+            <span class="share-bar__kicker">Join code</span>
+            <span class="share-bar__code">${code}</span>
+            <span class="share-bar__hint">Tap the code to fill the screen</span>
+          </span>
+        </button>
+        <button class="share-bar__copy" id="copyLink" type="button" aria-label="Copy link">${ICON_COPY}</button>
+      </div>
+      ${lobbyRosterHTML(players, hostName, canStart)}
+      ${tvOn ? `
+      <div class="tv-row">
+        <button class="tv-pill glass" id="showTv" type="button">${ICON_TV}Show on TV</button>
+      </div>` : ''}
+      <button class="start-pill${canStart ? ' is-ready' : ' glass'}" id="startBtn" ${canStart ? '' : 'disabled'} type="button">
+        ${canStart ? `Start voting · ${n} players ${ICON_ARROW}` : 'Start voting'}
+      </button>
+      ${canStart
+        ? '<p class="start-hint">Everyone swipes on their own phone.</p>'
+        : `<p class="start-hint">Needs ${short} more ${short === 1 ? 'player' : 'players'} to start</p>`}
+      <button class="cancel-btn" id="cancelNight" type="button">Cancel game night</button>
+    `;
+    drawQR();
+    document.getElementById('qrOpen').addEventListener('click', (e) => openQrSheet(e.currentTarget));
+    document.getElementById('copyLink').addEventListener('click', copyLink);
+    document.getElementById('showTv')?.addEventListener('click', (e) => openTvSheet(e.currentTarget));
+    document.getElementById('startBtn').addEventListener('click', onStartVoting);
+    document.getElementById('cancelNight').addEventListener('click', onCancel);
+  }
+
+  // The QR is encoded once per page; every frame (the ticket, the share-bar
+  // thumb, the full-screen sheet) paints the same SVG string.
+  let qrSvgPromise = null;
+
+  function qrSvg() {
+    if (!qrSvgPromise) {
+      const url = `${window.location.origin}/vote/${code}`;
+      // The modules are drawn in the theme's page colour on the gold ticket.
+      const dark = getComputedStyle(document.documentElement).getPropertyValue('--bgs-bg').trim() || '#000';
+      qrSvgPromise = QRCode.toString(url, {
+        type: 'svg', margin: 0, color: { dark, light: '#00000000' },
+      }).catch(() => '');
+    }
+    return qrSvgPromise;
+  }
+
   async function drawQR() {
     const box = document.getElementById('qr');
     if (!box) return;
-    const url = `${window.location.origin}/vote/${code}`;
-    // The modules are drawn in the theme's page colour on the gold ticket.
-    const dark = getComputedStyle(document.documentElement).getPropertyValue('--bgs-bg').trim() || '#000';
-    try {
-      const svg = await QRCode.toString(url, {
-        type: 'svg', margin: 0, color: { dark, light: '#00000000' },
-      });
-      box.innerHTML = svg;
-    } catch (e) {
-      box.textContent = 'QR';
-    }
+    const svg = await qrSvg();
+    if (svg) box.innerHTML = svg;
+    else box.textContent = 'QR';
   }
 
-  function copyLink() {
+  function copyLink(ev) {
     const url = `${window.location.origin}/vote/${code}`;
-    const btn = document.getElementById('copyLink');
+    const btn = (ev && ev.currentTarget) || document.getElementById('copyLink');
     navigator.clipboard.writeText(url).then(() => {
+      if (btn.classList.contains('share-bar__copy')) {
+        // Icon-only round: the feedback is a check for 1.6s, not a text swap.
+        btn.innerHTML = ICON_CHECK;
+        btn.setAttribute('aria-label', 'Copied');
+        setTimeout(() => {
+          if (!btn.isConnected) return;
+          btn.innerHTML = ICON_COPY;
+          btn.setAttribute('aria-label', 'Copy link');
+        }, 1600);
+        return;
+      }
       const original = btn.textContent;
       btn.textContent = 'Copied!';
       setTimeout(() => { if (btn.isConnected) btn.textContent = original; }, 1600);
     }).catch(() => {});
+  }
+
+  // ---- Full-screen QR sheet (stage only) ----
+  // One instance, built on first open, like the TV sheet. Close: ×, Esc.
+  // Focus goes to × on open and back to the opener on close; the body scroll
+  // lock comes from js/scroll-lock.js like every other overlay.
+  let qrSheet = null;
+
+  function openQrSheet(opener) {
+    if (!qrSheet) qrSheet = buildQrSheet();
+    qrSheet.open(opener);
+  }
+
+  function buildQrSheet() {
+    const el = document.createElement('div');
+    el.className = 'qr-sheet';
+    el.id = 'qrSheet';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-modal', 'true');
+    el.setAttribute('aria-labelledby', 'qrSheetTitle');
+    el.hidden = true;
+    el.innerHTML = `
+      <div class="qr-sheet__bar">
+        <span class="qr-sheet__kicker" id="qrSheetTitle">Scan to join</span>
+        <button class="qr-sheet__x" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="qr-frame qr-frame--big" id="qrBig"></div>
+      <div class="qr-sheet__code">${code}</div>
+      <div class="qr-sheet__url">${location.host}/vote/${code}</div>
+      <p class="qr-sheet__help">Hold the phone up — anyone at the table can scan with their camera.</p>
+      <button class="qr-sheet__copy" type="button">Copy link</button>
+    `;
+    document.body.appendChild(el);
+
+    const closeBtn = el.querySelector('.qr-sheet__x');
+    const big = el.querySelector('#qrBig');
+    let opener = null;
+    let hideTimer = 0;
+    const isOpen = () => !el.hidden;
+
+    function open(from) {
+      opener = from || null;
+      clearTimeout(hideTimer);
+      qrSvg().then((svg) => {
+        if (svg) big.innerHTML = svg;
+        else big.textContent = 'QR';
+      });
+      el.hidden = false;
+      // Two frames so the first paint is the hidden state and the class
+      // change transitions from it (opacity + 8px rise, on this element only).
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('is-open')));
+      syncScrollLock();
+      closeBtn.focus({ preventScroll: true });
+    }
+
+    function close() {
+      if (!isOpen()) return;
+      el.classList.remove('is-open');
+      hideTimer = setTimeout(() => {
+        el.hidden = true;
+        syncScrollLock();
+      }, 240);
+      const back = opener;
+      opener = null;
+      if (back && document.contains(back)) back.focus({ preventScroll: true });
+    }
+
+    closeBtn.addEventListener('click', close);
+    el.querySelector('.qr-sheet__copy').addEventListener('click', copyLink);
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key !== 'Tab') return;
+      // Keep focus inside the dialog: × … Copy link, wrapping.
+      const items = [closeBtn, el.querySelector('.qr-sheet__copy')];
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    registerOverlay(isOpen);
+
+    return { el, open, close };
   }
 
   // ---- Show on TV (docs/claude-code-spec-tv-mode.md, Casting) ----
