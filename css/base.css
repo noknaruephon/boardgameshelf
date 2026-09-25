@@ -228,57 +228,83 @@ body.scroll-locked{
 .shuffle .deck-card:nth-child(2){z-index:2;animation-delay:.63s;}
 .shuffle .deck-card:nth-child(3){z-index:1;animation-delay:1.26s;}
 
-/* Four face-down cards dealt into a neat deck, then a gold ring pulse — the
-   loading animation for every game-night screen's static shell, the stretch
-   between page load and the first render. Built from .deck-card.back above,
-   like the shuffle, and distinct from it on purpose: the shuffle holds the
-   table, this one gathers the games.
+/* The backlit deal (docs/claude-code-spec-loading-deal.md) — the loading
+   animation for every game-night screen's static shell, the stretch between
+   page load and the first render. Four face-down cards deal in from the top
+   right, fan into a hand over one warm gold backlight, square up under the
+   ring pulse, fade and re-deal. Built from .deck-card.back above, like the
+   shuffle, and distinct from it on purpose: the shuffle holds the table, this
+   one gathers the games.
    Pure CSS, so it runs before a page's module script resolves — an import
    that 404s leaves the shell on screen, and it should still look alive.
-   Cards animate transform+opacity only; the ring animates box-shadow only, on
-   its own element. One animation per element and no transition on an animated
-   property: WebKit silently drops a transition that fights an animation, which
-   is also why these cards never take .clickable. */
-.deal-wrap{height:120px;display:flex;align-items:center;justify-content:center;margin:26px 0 0;}
-.deal{position:relative;width:64px;height:85px;}
+   Cards animate transform+opacity only; the light animates opacity only, on
+   its own element; the ring animates box-shadow only, on its own element. One
+   animation per element and no transition on an animated property: WebKit
+   silently drops a transition that fights an animation, which is also why
+   these cards never take .clickable.
+   Markup: .deal-light first (so it paints behind), four .deck-card.back, then
+   .deal-ring — the nth-child rules below count from that order. */
+.deal-wrap{height:200px;display:flex;align-items:center;justify-content:center;margin:0;}
+.deal{position:relative;width:260px;height:170px;}
 .deal .deck-card{
-  position:absolute;inset:0;width:64px;height:85px;
-  border-radius:8px;font-size:18px;
-  box-shadow:0 8px 18px rgba(0,0,0,.45);
+  position:absolute;left:50%;top:50%;width:86px;height:116px;margin:-64px 0 0 -43px;
+  border-radius:10px;transform-origin:50% 135%;   /* pivot below the card: the fan reads as a hand */
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(var(--bgs-gold-rgb),.08) 0 4px,
+      transparent 4px 8px),
+    var(--bgs-plate);
+  border:1px solid rgba(var(--bgs-gold-rgb),.28);
+  box-shadow:0 14px 30px rgba(0,0,0,.55),inset 0 1px 0 rgba(var(--bgs-ivory-rgb),.06);
+  font-family:'Fraunces',serif;font-weight:600;font-size:24px;color:var(--bgs-gold-dim);
   opacity:0;
-  animation:bgs-deal-in 3.4s cubic-bezier(.3,.7,.3,1) infinite;
+  animation:bgs-deal-in 3.8s cubic-bezier(.3,.7,.3,1) infinite;
 }
-.deal .deck-card:nth-child(1){--rest:rotate(-5deg);}
-.deal .deck-card:nth-child(2){--rest:rotate(4deg);animation-delay:.22s;}
-.deal .deck-card:nth-child(3){--rest:rotate(-2deg);animation-delay:.44s;}
-.deal .deck-card:nth-child(4){--rest:rotate(0deg);animation-delay:.66s;}
+.deal .deck-card:nth-child(2){--rest:rotate(-22deg);z-index:1;}
+.deal .deck-card:nth-child(3){--rest:rotate(-7deg);z-index:2;animation-delay:.16s;}
+.deal .deck-card:nth-child(4){--rest:rotate(7deg);z-index:3;animation-delay:.32s;}
+.deal .deck-card:nth-child(5){--rest:rotate(22deg);z-index:4;animation-delay:.48s;}
 @keyframes bgs-deal-in{
-  0%   {opacity:0;transform:translate(110px,-90px) rotate(28deg);}
-  12%  {opacity:1;transform:translate(0,0) var(--rest);}   /* lands, tilted */
-  16%  {transform:translate(0,0) var(--rest);}
-  30%  {transform:translate(0,0) rotate(0deg);}            /* squares up */
-  84%  {opacity:1;transform:translate(0,0) rotate(0deg);}
-  94%,100%{opacity:0;transform:translate(0,0) rotate(0deg);}
+  0%  {opacity:0;transform:translate(150px,-170px) rotate(38deg);}   /* off-screen, top right */
+  13% {opacity:1;transform:translate(0,0) var(--rest);}              /* lands in the fan */
+  58% {opacity:1;transform:translate(0,0) var(--rest);}              /* holds the hand */
+  70% {opacity:1;transform:translate(0,0) rotate(0deg);}             /* squares up */
+  86% {opacity:1;transform:translate(0,0) rotate(0deg);}
+  96%,100%{opacity:0;transform:translate(0,0) rotate(0deg);}          /* fades, re-deals */
 }
-/* Gold ring: inset box-shadow, never outline. */
+/* Backlight: one warm gold ellipse behind the hand, breathing on opacity. */
+.deal-light{
+  position:absolute;left:50%;top:50%;width:300px;height:190px;margin:-95px 0 0 -150px;
+  border-radius:50%;z-index:0;pointer-events:none;
+  background:radial-gradient(closest-side,
+    rgba(var(--bgs-gold-rgb),.42),
+    rgba(var(--bgs-gold-rgb),.12) 55%,
+    rgba(var(--bgs-gold-rgb),0));
+  filter:blur(14px);
+  animation:bgs-deal-breathe 3.8s ease-in-out infinite;
+}
+@keyframes bgs-deal-breathe{0%,100%{opacity:.55;}50%{opacity:1;}}
+/* Gold ring around the squared-up deck: inset box-shadow, never outline. */
 .deal-ring{
-  position:absolute;inset:-7px;border-radius:13px;pointer-events:none;
+  position:absolute;left:50%;top:50%;width:104px;height:134px;margin:-73px 0 0 -52px;
+  border-radius:15px;z-index:5;pointer-events:none;
   box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);
-  animation:bgs-ring-pulse 3.4s infinite;
+  animation:bgs-ring-pulse 3.8s infinite;
 }
 @keyframes bgs-ring-pulse{
-  0%,30%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
-  40%   {box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.7);}
-  58%,100%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+  0%,70%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
+  78%   {box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.75);}
+  92%,100%{box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),0);}
 }
 
-/* Reduced motion: a static assembled deck under a steady half-strength ring
-   says the same thing the motion did. Nothing here needs an animation to
-   become visible, so dropping it can never leave the shell blank. */
+/* Reduced motion: a static fanned hand under a steady light says the same
+   thing the motion did. Nothing here needs an animation to become visible,
+   so dropping it can never leave the shell blank. */
 @media (prefers-reduced-motion:reduce){
   .shuffle .deck-card{animation:none;}
-  .deal .deck-card{animation:none;opacity:1;transform:translate(0,0) rotate(0deg);}
-  .deal-ring{animation:none;box-shadow:inset 0 0 0 2px rgba(var(--bgs-gold-rgb),.45);}
+  .deal .deck-card{animation:none;opacity:1;transform:translate(0,0) var(--rest);}
+  .deal-light{animation:none;opacity:.8;}
+  .deal-ring{animation:none;box-shadow:none;}
 }
 
 /* ---- cover light (docs/claude-code-spec-vote-cover-light.md) ----
