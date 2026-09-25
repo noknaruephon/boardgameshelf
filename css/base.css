@@ -307,6 +307,18 @@ body.scroll-locked{
   .deal-ring{animation:none;box-shadow:none;}
 }
 
+/* The loading shell: the hand centred in the viewport with the copy under it, the
+   footer pinned to the bottom. Scoped with :has() so it applies only while the
+   static shell is on screen — the first screen.innerHTML render removes .deal-shell
+   and the page's normal flow returns, no JS involved. */
+body:has(.deal-shell){display:flex;flex-direction:column;}
+body:has(.deal-shell) .screen{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center;}
+body:has(.deal-shell) .shelf-footer{margin-top:auto;}
+.deal-shell{display:flex;flex-direction:column;align-items:center;gap:34px;padding-bottom:24px;}
+.deal-shell__copy{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.deal-shell .eyebrow{margin:0;}
+.deal-shell h1{margin:0;font-size:26px;line-height:1.2;}
+
 /* ---- cover light (docs/claude-code-spec-vote-cover-light.md) ----
    Behind ?coverlight=1. The screen takes the colour of the card on top of
    the deck: one heavily blurred, enlarged copy of that card's cover sits
