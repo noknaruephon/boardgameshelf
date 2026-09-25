@@ -197,15 +197,20 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 <body>
 
 <div class="screen" id="screen">
-  <div class="eyebrow">Game Night</div>
-  <h1>Dealing tonight's picks&hellip;</h1>
-  <div class="deal-wrap">
-    <div class="deal" aria-hidden="true">
-      <div class="deck-card back">?</div>
-      <div class="deck-card back">?</div>
-      <div class="deck-card back">?</div>
-      <div class="deck-card back">?</div>
-      <div class="deal-ring"></div>
+  <div class="deal-shell">
+    <div class="deal-wrap">
+      <div class="deal" aria-hidden="true">
+        <div class="deal-light"></div>
+        <div class="deck-card back">?</div>
+        <div class="deck-card back">?</div>
+        <div class="deck-card back">?</div>
+        <div class="deck-card back">?</div>
+        <div class="deal-ring"></div>
+      </div>
+    </div>
+    <div class="deal-shell__copy">
+      <div class="eyebrow">Game Night</div>
+      <h1>Dealing tonight's picks&hellip;</h1>
     </div>
   </div>
 </div>
