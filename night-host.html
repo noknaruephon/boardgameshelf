@@ -470,11 +470,13 @@ const TV_ENABLED = false;
 const tvOn = TV_ENABLED || new URLSearchParams(location.search).get('tv') === '1';
 
 // ---- Stage lobby flag (docs/claude-code-spec-lobby-stage.md) ----
-// Same shape as the TV flag: ships off, ?lobby=1 reveals it. On: the host's
-// waiting room renders as "the stage" (renderStage below). Off: the page is
-// exactly as before.
-const LOBBY_ENABLED = false;
-const lobbyOn = LOBBY_ENABLED || new URLSearchParams(location.search).get('lobby') === '1';
+// Same shape as the TV flag. Live for everyone: the host's waiting room
+// renders as "the stage" (renderStage below). ?lobby=0 shows the classic
+// page on that load (renderClassic, unchanged) for comparison or as a
+// per-device escape hatch; ?lobby=1 would reveal the stage were it off.
+const LOBBY_ENABLED = true;
+const lobbyParam = new URLSearchParams(location.search).get('lobby');
+const lobbyOn = lobbyParam === '0' ? false : (LOBBY_ENABLED || lobbyParam === '1');
 
 const confirmDialog = document.getElementById('confirm');
 const confirmBody = document.getElementById('confirmBody');
