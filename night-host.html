@@ -73,6 +73,9 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
     transition:border-color .15s ease;
   }
   .copy-btn:hover{border-color:var(--bgs-gold);}
+  /* Copy link and Show on TV side by side (TV mode, behind the flag below). */
+  .code-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+  a.copy-btn{display:inline-block;text-decoration:none;}
 
   .recap{
     font-size:11.5px;color:var(--bgs-ivory-45);text-align:center;margin-bottom:20px;
@@ -223,6 +226,14 @@ const screen = document.getElementById('screen');
 // Where "Back to the shelf" goes: the owner's shelf once the session is known.
 let shelfHref = '/';
 let backLabel = 'Back to the shelf';
+
+// ---- TV mode flag (docs/claude-code-spec-tv-mode.md) ----
+// Ships off, the same shape as the swipe screen's cover light flag: ?tv=1
+// reveals it. On: a "Show on TV" link in the waiting room opens /tv/{code}
+// for the laptop or the television. Nothing else on this screen changes.
+const TV_ENABLED = false;
+const tvOn = TV_ENABLED || new URLSearchParams(location.search).get('tv') === '1';
+
 const confirmDialog = document.getElementById('confirm');
 const confirmBody = document.getElementById('confirmBody');
 
@@ -344,7 +355,12 @@ function runHost({ code, session, deck, hostName }) {
         <div class="qr-frame" id="qr"></div>
         <div class="code-row">
           <div class="code-small">${code}</div>
-          <button class="copy-btn" id="copyLink">Copy link</button>
+          ${tvOn ? `
+          <div class="code-actions">
+            <button class="copy-btn" id="copyLink">Copy link</button>
+            <a class="copy-btn" href="/tv/${code}" target="_blank" rel="noopener">Show on TV</a>
+          </div>` : `
+          <button class="copy-btn" id="copyLink">Copy link</button>`}
         </div>
       </div>
       <div class="recap">${recapLine()}</div>

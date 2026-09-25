@@ -343,13 +343,25 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   }
   @keyframes spin{to{transform:rotate(360deg);}}
 
+  /* ---- look up (TV mode, docs/claude-code-spec-tv-mode.md) ----
+     The holding card while the TV plays the reveal. The arrow bobs
+     (animation only, on the arrow); nothing else here moves. */
+  .lookup{display:flex;flex-direction:column;align-items:center;gap:18px;padding:28px 6px 10px;}
+  .lookup h1{margin:0;}
+  .lookup-ring{
+    width:92px;height:92px;border-radius:50%;display:grid;place-items:center;
+    border:1px solid rgba(var(--bgs-gold-rgb),.4);
+  }
+  .lookup-ring span{color:var(--bgs-gold);font-size:34px;line-height:1;animation:bob 1.6s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
   /* Reduced motion: the result of a vote is identical, it just arrives without
      the travel — instant swap, static stamp, count updates without rolling.
      Nothing here relies on an animation to become visible, so dropping the
      motion can never leave a card or a count blank. */
   @media (prefers-reduced-motion:reduce){
     /* .shuffle and .deal are handled by css/base.css, which ships its own rules. */
-    .spinner{animation:none;}
+    .spinner,.lookup-ring span{animation:none;}
     .stack .card,.stack .cover,.tally .roll span,.caption{transition:none!important;}
     .stamp.commit{animation-duration:.01s!important;}
     /* The press still scales, it just snaps there. */
@@ -497,6 +509,17 @@ const coverLightOn =
 // the results screen.
 if (coverLightOn) initCoverLight();
 
+// ---- TV mode flag (docs/claude-code-spec-tv-mode.md) ----
+// Ships off, the same shape as the cover light flag above: ?tv=1 reveals it.
+// With a TV in the session, the phones hold a "Look up" card while the big
+// screen plays the reveal, then land on the results' final state. With no TV
+// in the session, or with the flag off, nothing about the phone flow changes.
+const TV_ENABLED = false;
+const tvOn = TV_ENABLED || new URLSearchParams(location.search).get('tv') === '1';
+// How long a phone waits on its look-up card for the TV to report the
+// reveal before it goes to the results on its own (a TV tab closed mid-count).
+const LOOK_UP_MAX_MS = 20000;
+
 function codeFromPath() {
   // /vote/{code}/swipe
   const parts = window.location.pathname.split('/').filter(Boolean);
@@ -627,6 +650,10 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
   let players = [];
   let navigated = false;
   let hintTimer;
+  // The latest presence payload: whether a TV is in the session, and the
+  // round it has finished revealing.
+  let lastPresence = { tvPresent: false, tvRevealedRound: 0 };
+  let lookUpTimer;
   // True from the moment a vote is cast until its card has finished leaving.
   // Drags, buttons and keys all ignore input while it is set, so hammering
   // either button cannot vote twice on one card or race the promotion.
@@ -1036,6 +1063,31 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     }
   }
 
+  // With a TV in the session the reveal plays on the big screen, not here:
+  // this phone holds a look-up card, still on the channel, and leaves in
+  // goLookUpResults() once the TV reports it has landed on the result.
+  function renderLookUp() {
+    screenState = 'lookup';
+    screen.innerHTML = `
+      <div class="eyebrow">Game Night · ${code}</div>
+      <div class="lookup">
+        <div class="lookup-ring" aria-hidden="true"><span>&uarr;</span></div>
+        <h1>Look up</h1>
+        <p class="waiting-sub">The table is deciding on the big screen</p>
+      </div>`;
+  }
+
+  function goLookUpResults() {
+    if (screenState !== 'lookup') return;
+    screenState = 'results';
+    clearTimeout(lookUpTimer);
+    // The key results.html reads as "seen already", so the phone lands on
+    // the final state with the light on and no second count.
+    try { sessionStorage.setItem(`gamenight:${code}:revealed:${session.round}`, '1'); } catch (e) { /* private mode: the count plays again */ }
+    controller.leave();
+    window.location.href = `/results/${code}`;
+  }
+
   document.getElementById('confirmKeep').addEventListener('click', () => {
     confirmDialog.classList.remove('open');
     syncScrollLock();
@@ -1058,17 +1110,27 @@ function runSwipe({ code, session, deck, myName, startIndex }) {
     participantName: myName,
     isHost,
     finished: index >= deck.length,
-    onPresence: ({ players: p }) => {
-      players = p;
+    onPresence: (presence) => {
+      lastPresence = presence;
+      players = presence.players;
       if (screenState === 'waiting') renderWaiting();
+      // The TV has landed on this round's result: the room has seen it.
+      else if (screenState === 'lookup' && presence.tvRevealedRound >= session.round) goLookUpResults();
     },
     onStatus: (status) => {
       if (navigated) return;
       if (status === 'done') {
         navigated = true;
         clearInterval(hintTimer);
-        controller.leave();
-        window.location.href = `/results/${code}`;
+        if (tvOn && lastPresence.tvPresent) {
+          renderLookUp();
+          lookUpTimer = setTimeout(goLookUpResults, LOOK_UP_MAX_MS);
+          // Already revealed by the time this phone heard: no reason to hold.
+          if (lastPresence.tvRevealedRound >= session.round) goLookUpResults();
+        } else {
+          controller.leave();
+          window.location.href = `/results/${code}`;
+        }
       }
     },
   });
