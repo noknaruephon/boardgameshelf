@@ -28,7 +28,7 @@ export const BETA_FEEDBACK_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfEai
 // the receiver URL https://boardgameshelf.vercel.app/tv?cast=1. Public by
 // design, like the client ID above. Leave empty and the "Show on TV" sheet
 // offers no Cast button, only the address to type on the TV.
-export const CAST_APP_ID = '';
+export const CAST_APP_ID = 'D808FBA0';
 // The message channel between the host's phone and the TV. Also written out
 // in tv.html's inline receiver bootstrap, which cannot import this file.
 export const CAST_NAMESPACE = 'urn:x-cast:app.boardgameshelf.tv';
