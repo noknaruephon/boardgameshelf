@@ -17,7 +17,7 @@
 <meta name="theme-color" content="#171110">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script>
 /* Theme resolver (docs/claude-code-spec-themes.md), before the stylesheet so
    the first frame is already the right theme: ?theme= (preview only) →
@@ -174,7 +174,36 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
      outline; the glass material's own focus slot covers .glass elements. */
   .stage-title{font-size:34px;line-height:1.05;text-align:left;margin:0 0 6px;}
   .stage-sub{font-size:13px;color:var(--bgs-ivory-70);text-align:left;margin:0 0 18px;}
-  .stage .deck{margin-bottom:18px;}
+
+  /* The fan: the deck as a hand of cards under a gold glow. fanHTML() sets
+     --n, --step and the size set (--w/--h/--r/--q) on .fan, --i and the
+     z-index per card (middle on top). Cards are .deck-card from css/base.css
+     for the back pattern and border; only size, radius, glyph and position
+     change here. The glow is always gold, deck shown or hidden. No motion. */
+  .fan-wrap{position:relative;height:222px;margin-bottom:18px;}
+  .fan-glow{
+    position:absolute;top:70px;left:50%;width:300px;height:170px;margin-left:-150px;
+    border-radius:999px;pointer-events:none;z-index:0;
+    background:radial-gradient(closest-side, rgba(var(--bgs-gold-rgb),.38), rgba(var(--bgs-gold-rgb),0));
+    filter:blur(26px);
+  }
+  .fan{position:absolute;inset:0;}
+  .fan .deck-card{
+    position:absolute;top:44px;left:calc(50% - var(--w) / 2);
+    width:var(--w);height:var(--h);aspect-ratio:auto;border-radius:var(--r);
+    --rot:calc((var(--i) - (var(--n) - 1) / 2) * var(--step));
+    transform:rotate(var(--rot));transform-origin:50% 135%;
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.22), 0 10px 24px rgba(0,0,0,.5);
+  }
+  .fan .deck-card.back{font:italic 600 var(--q)/1 'Fraunces',serif;}
+  /* base.css presses a clickable card with scale(); keep the card's rotation under it. */
+  .fan .deck-card.clickable:active{transform:rotate(var(--rot)) scale(.94);}
+  .fan-more{
+    position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:11;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;
+    color:var(--bgs-gold);background:var(--bgs-plate);border-radius:999px;padding:5px 10px;
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.35);
+  }
 
   .share-bar{
     display:flex;gap:14px;align-items:center;border-radius:18px;padding:12px;
@@ -424,7 +453,7 @@ import QRCode from 'https://esm.sh/qrcode@1.5.3';
 // the whole module script never runs, leaving the page stuck on "Loading…".
 import { fetchSession, joinGameNight, startVoting, cancelGameNight, sessionErrorMessage } from '/js/session.js';
 import { joinSessionChannel, MIN_PLAYERS_TO_START } from '/js/presence.js';
-import { deckHTML, attachDeckHandlers, rosterHTML, lobbyRosterHTML, deckFromSession } from '/js/waiting-room.js';
+import { deckHTML, attachDeckHandlers, rosterHTML, lobbyRosterHTML, fanHTML, deckFromSession } from '/js/waiting-room.js';
 import { registerOverlay, syncScrollLock } from '/js/scroll-lock.js';
 import { fetchGamesForSession, shelfHrefForSession, backLabelForSession } from '/js/shelf-data.js';
 
@@ -619,7 +648,7 @@ function runHost({ code, session, deck, hostName }) {
       <div class="eyebrow">Game Night</div>
       <h1 class="stage-title">Tonight's deck</h1>
       <p class="stage-sub">${stageSub()}</p>
-      ${deckHTML(deck, session.reveal_deck)}
+      ${fanHTML(deck, session.reveal_deck)}
       <div class="share-bar glass">
         <button class="share-bar__qr" id="qrOpen" type="button" aria-label="Show the QR code full screen">
           <span class="qr-frame qr-frame--thumb" id="qr"></span>
