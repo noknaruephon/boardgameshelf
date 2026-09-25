@@ -22,3 +22,13 @@ export const GOOGLE_CLIENT_ID = '155273334974-1ek55c13gpffo7nf3qj7nik6db17l5r0.a
 // Where the beta pill's tooltip sends feedback (a Google Form or Tally link).
 // Leave empty and the tooltip shows no link at all.
 export const BETA_FEEDBACK_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfEaiXzYwaCAT8-w84JM-DpA8Sjhsg7r75TuJuQDhPNsGcx3w/viewform';
+
+// Google Cast application ID for TV mode (docs/claude-code-spec-tv-mode.md,
+// Casting): the custom receiver registered in the Cast Developer Console with
+// the receiver URL https://boardgameshelf.vercel.app/tv?cast=1. Public by
+// design, like the client ID above. Leave empty and the "Show on TV" sheet
+// offers no Cast button, only the address to type on the TV.
+export const CAST_APP_ID = 'D808FBA0';
+// The message channel between the host's phone and the TV. Also written out
+// in tv.html's inline receiver bootstrap, which cannot import this file.
+export const CAST_NAMESPACE = 'urn:x-cast:app.boardgameshelf.tv';

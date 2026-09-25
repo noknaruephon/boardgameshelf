@@ -23,6 +23,42 @@ try{s=localStorage.getItem('bgs:theme');}catch(e){}
 d.dataset.theme=ok.test(q||'')?q:ok.test(s||'')?s:'walnut';
 document.addEventListener('DOMContentLoaded',function(){var m=document.querySelector('meta[name="theme-color"]'),bg=getComputedStyle(d).getPropertyValue('--bgs-bg').trim();if(m&&bg)m.content=bg;});})();
 </script>
+<script>
+/* Google Cast receiver bootstrap (docs/claude-code-spec-tv-mode.md, Casting).
+   Only when a Cast device launched this page: the receiver URL registered in
+   the Cast console is /tv?cast=1. A classic script rather than part of the
+   module, because Chrome's launch waits for the receiver to start and the
+   module first fetches supabase-js from esm.sh, which a slow device could
+   turn into a launch timeout. The listener is registered before start(), or
+   the namespace is never declared. The namespace is CAST_NAMESPACE in
+   js/config.js too; a classic script cannot import it. The module reads
+   window.__bgsCast and listens for 'bgs:cast-code'. */
+(function(){
+  var bgs = { active: false, code: null, failed: false };
+  window.__bgsCast = bgs;
+  var q = null; try { q = new URLSearchParams(location.search).get('cast'); } catch (e) {}
+  if (q !== '1') return;
+  bgs.active = true;
+  var tell = function(){ document.dispatchEvent(new CustomEvent('bgs:cast-code')); };
+  var s = document.createElement('script');
+  s.src = 'https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js';
+  s.onload = function(){
+    try {
+      var ctx = window.cast.framework.CastReceiverContext.getInstance();
+      ctx.addCustomMessageListener('urn:x-cast:app.boardgameshelf.tv', function(ev){
+        var code = ev && ev.data && ev.data.code;
+        if (!code) return;
+        bgs.code = String(code);
+        tell();
+      });
+      // No media here, so without this CAF would close an idle receiver.
+      ctx.start({ disableIdleTimeout: true, skipPlayersLoad: true, statusText: 'BoardgameShelf' });
+    } catch (e) { bgs.failed = true; tell(); }
+  };
+  s.onerror = function(){ bgs.failed = true; tell(); };
+  document.head.appendChild(s);
+})();
+</script>
 <link rel="stylesheet" href="/css/base.css">
 <style>
   /* TV mode (docs/claude-code-spec-tv-mode.md, mockup docs/mockups/tv-mode-c.html).
@@ -254,10 +290,25 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .fade{opacity:0;transform:translateY(.8vw);transition:opacity .5s,transform .5s;}
   .fade.show{opacity:1;transform:none;}
 
-  /* ended */
+  /* ended, and the two plates that share its layout: waiting for a Cast
+     sender, and typing a code on a TV browser (/tv with no code) */
   .end .h1{font-size:3.4vw;}
   .end .hint{max-width:46vw;}
   .end .shelf-link{margin-top:2.2vw;}
+  .code-form{display:flex;align-items:center;justify-content:center;gap:1vw;margin-top:2.2vw;}
+  .code-input{
+    width:14vw;background:rgba(0,0,0,.28);border:1.5px solid rgba(var(--bgs-ivory-rgb),.18);
+    border-radius:1vw;padding:.9vw 1vw .9vw 1.2vw;color:var(--bgs-ivory);
+    font:600 2.6vw/1 'Fraunces',serif;letter-spacing:.18em;text-transform:uppercase;text-align:center;
+  }
+  .code-input::placeholder{color:rgba(var(--bgs-ivory-rgb),.22);}
+  /* gold ring via box-shadow, never outline */
+  .code-input:focus{outline:none;border-color:var(--bgs-gold);box-shadow:0 0 0 .2vw rgba(var(--bgs-gold-rgb),.35);}
+  .code-go{
+    background:var(--bgs-gold);color:var(--bgs-on-gold);border:0;border-radius:99px;
+    padding:1.05vw 2vw;font:700 1.3vw/1 'Inter',sans-serif;cursor:pointer;
+  }
+  .code-go:focus-visible{outline:none;box-shadow:0 0 0 2px var(--bgs-bg),0 0 0 4px var(--bgs-gold);}
 
   /* ---- a phone opened /tv/…: one plate, nothing else ---- */
   .small-plate{
@@ -291,7 +342,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 <div class="stage" id="stage"></div>
 
 <div class="chrome">
-  <div class="eyebrow">Game Night<span class="sep">·</span><b id="codeTxt"></b><span class="round" id="roundTxt"></span></div>
+  <div class="eyebrow">Game Night<b id="codeTxt"></b><span class="round" id="roundTxt"></span></div>
   <div class="wordmark">boardgameshelf</div>
   <div class="live"><i></i><span id="liveTxt">waiting room</span></div>
   <a class="bgg" href="https://boardgamegeek.com" target="_blank" rel="noopener" aria-label="Powered by BoardGameGeek (opens in a new tab)">
@@ -319,9 +370,12 @@ import { initCoverLight, setCoverLight } from '/js/cover-light.js';
 // The QR library is the one dependency this page can live without: the join
 // link is printed under the ticket either way. So it loads on its own, and a
 // CDN that is unreachable leaves the ticket without a code rather than
-// taking the whole screen down with it.
+// taking the whole screen down with it. A promise rather than a top-level
+// await, so the module parses on the older Chromium a Chromecast runs.
 let QRCode = null;
-try { QRCode = (await import('https://esm.sh/qrcode@1.5.3')).default; } catch { /* no QR; the link line still shows */ }
+const qrReady = import('https://esm.sh/qrcode@1.5.3')
+  .then((m) => { QRCode = m.default; })
+  .catch(() => { /* no QR; the link line still shows */ });
 
 // Built once, before any render, inside the page root (the body is the
 // 16:9 frame here), so the winner's light is a plain opacity swap later.
@@ -431,14 +485,76 @@ async function ownerProfile(session) {
   return data;
 }
 
-const code = codeFromPath();
-codeTxt.textContent = code || '';
-renderSmallPlate(code);
-if (!code) {
-  renderEnded(NOT_FOUND);
-} else {
+// The night on screen, so a Cast sender can swap it for another one.
+let currentController = null;
+let bootedCode = null;
+
+function boot(code) {
+  bootedCode = code;
+  codeTxt.innerHTML = `<span class="sep">·</span>${esc(code)}`;
   init(code);
 }
+
+/** Tears the current night down so boot() can start another. */
+function leaveCurrent() {
+  clearTimers();
+  setCoverLight(null);
+  confettiBox.innerHTML = '';
+  document.body.classList.remove('ended');
+  currentController?.leave();
+  currentController = null;
+  shelfSlug = null;
+}
+
+// Launched on a Cast device (see the receiver bootstrap in <head>): the code
+// arrives from the host's phone rather than the address. A second code for
+// another night swaps the screen over; the same code again is ignored.
+function waitForCastCode() {
+  setLive('ready');
+  setScene('cast', `
+    <div class="col end">
+      <h1 class="h1">Ready for game night</h1>
+      <div class="hint">Waiting for the host's phone</div>
+    </div>`);
+  const take = () => {
+    const c = window.__bgsCast;
+    if (c.code && c.code !== bootedCode) {
+      if (bootedCode) leaveCurrent();
+      boot(c.code);
+    } else if (c.failed && !bootedCode) {
+      renderEnterCode();
+    }
+  };
+  document.addEventListener('bgs:cast-code', take);
+  take();
+}
+
+// /tv with no code: a TV browser types the short address, then the code.
+function renderEnterCode() {
+  setLive('ready');
+  const el = setScene('enter', `
+    <div class="col end">
+      <h1 class="h1">Show a game night here</h1>
+      <div class="hint">Type the code from the host's phone</div>
+      <form class="code-form" autocomplete="off">
+        <input class="code-input" name="code" maxlength="4" pattern="[A-Za-z0-9]{4}" required
+          autocapitalize="characters" spellcheck="false" placeholder="CODE" aria-label="Game night code">
+        <button class="code-go" type="submit">Show</button>
+      </form>
+    </div>`);
+  el.querySelector('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = e.target.elements.code.value.trim().toUpperCase();
+    if (/^[A-Z0-9]{4}$/.test(v)) window.location.href = `/tv/${v}`;
+  });
+  el.querySelector('input').focus();
+}
+
+const code = codeFromPath();
+renderSmallPlate(code);
+if (code) boot(code);
+else if (window.__bgsCast?.active) waitForCastCode();
+else renderEnterCode();
 
 async function init(code) {
   let session;
@@ -598,7 +714,9 @@ function runTV({ code, session, games }) {
 
   async function drawQR(el) {
     const box = el.querySelector('.qr');
-    if (!box || !QRCode) return;
+    if (!box) return;
+    await qrReady;
+    if (!QRCode) return;
     const url = `${window.location.origin}/vote/${code}`;
     // The modules are drawn in the theme's page colour on the gold ticket.
     const dark = getComputedStyle(document.documentElement).getPropertyValue('--bgs-bg').trim() || '#000';
@@ -903,6 +1021,7 @@ function runTV({ code, session, games }) {
     onStatus: () => renderStatus(),
   });
 
+  currentController = controller;
   window.addEventListener('pagehide', () => controller.leave());
 
   renderStatus();

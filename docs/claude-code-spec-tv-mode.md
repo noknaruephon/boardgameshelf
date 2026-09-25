@@ -240,3 +240,18 @@ Stop for review.
 - [ ] Walnut, Navy, Mahogany, Oak with no per-theme rule; BGG badge visible in every state
 - [ ] Reduced motion: still hold, then final state; no countdown, no confetti
 - [ ] No `outline` anywhere; no element carries both an animation and a transition on the same property
+
+---
+
+## Casting: "Show on TV" sends the page to the television
+
+Shipped after Commit 3, still behind `TV_ENABLED` / `?tv=1`. The waiting room's **Show on TV** is a button that opens a bottom sheet (built on `createBottomSheet` from `js/share-sheet.js`, styled with the share sheet's parts):
+
+- **Cast to a TV** — shown only when the Google Cast Web Sender SDK reports a Cast device in reach, which happens in Chrome on Android and on the desktop and nowhere else (iPhones never see it). One tap opens Chrome's device picker, launches the registered receiver on the television and sends it the night's code. While connected the row reads "On {device}" with **Stop**. On `pagehide` the phone leaves the session without closing it, so the TV keeps the night while the host swipes.
+- For every other TV: the short address `boardgameshelf.vercel.app/tv` and the code to type on the TV's browser, **Copy** (the full `/tv/{code}` link), **Share…** (native share, where the browser has one) and **Open here** (the old behaviour, for a laptop that is the TV).
+
+`js/cast-sender.js` wraps the SDK (`loadCastSender`, `castCode`, `stopCasting`, `leaveCast`). `js/config.js` holds `CAST_APP_ID` (empty = no Cast button) and `CAST_NAMESPACE`.
+
+**Receiver.** The URL registered in the Cast console is `https://boardgameshelf.vercel.app/tv?cast=1` (`vercel.json` rewrites `/tv` to `tv.html`). An inline classic script in `tv.html`'s `<head>` loads the CAF Receiver v3 SDK, registers a listener on `urn:x-cast:app.boardgameshelf.tv` for `{ code }`, and starts the context with `disableIdleTimeout` (no media here, so CAF would otherwise close an idle receiver). The page shows "Ready for game night · Waiting for the host's phone" until a code arrives, then runs exactly as `/tv/{code}`; a different code later swaps the night, the same code is ignored. `/tv` with no code and no Cast launch shows an enter-the-code form, so a smart-TV browser only types the short address and four characters.
+
+**Owner setup (once).** Cast SDK Developer Console → Add New Application → Custom Receiver, name "BoardgameShelf TV", receiver URL above → copy the Application ID into `CAST_APP_ID`. Add New Device with the Chromecast's serial (device settings in Google Home; enable sending the serial), wait about 15 minutes, reboot the device. Until the app is published only registered devices can launch it; `chrome://inspect` on a desktop Chrome on the same network shows the receiver's console. Publish when done.

@@ -75,7 +75,32 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
   .copy-btn:hover{border-color:var(--bgs-gold);}
   /* Copy link and Show on TV side by side (TV mode, behind the flag below). */
   .code-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
-  a.copy-btn{display:inline-block;text-decoration:none;}
+
+  /* ---- Show on TV sheet (docs/claude-code-spec-tv-mode.md, Casting) ----
+     Built on createBottomSheet with the share sheet's parts (css/share-sheet.css);
+     only the Cast row and the big code are its own. */
+  .tv-sheet__cast[hidden],.tv-sheet__on[hidden],.tv-sheet__err[hidden]{display:none;}
+  .tv-sheet__on{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    height:44px;padding:0 6px 0 14px;border-radius:22px;
+    box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),.45);
+    font-size:13px;font-weight:600;color:var(--bgs-gold);
+  }
+  .tv-sheet__err{font-size:12px;color:var(--bgs-danger-hover);text-align:center;margin:8px 0 0;}
+  .tv-sheet__or{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--bgs-ivory-45);text-align:center;margin:14px 0 0;
+  }
+  .tv-sheet__label{font-size:12px;color:var(--bgs-ivory-45);text-align:center;margin:12px 0 8px;}
+  .tv-sheet__code{
+    display:flex;align-items:baseline;justify-content:center;gap:12px;flex-wrap:wrap;margin:0 0 12px;
+    font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--bgs-ivory-70);
+  }
+  .tv-sheet__code b{
+    font-family:'Fraunces',serif;font-weight:600;font-size:26px;letter-spacing:.18em;
+    color:var(--bgs-gold);padding-left:.18em;
+  }
+  .tv-sheet a.share-sheet__btn{text-decoration:none;}
 
   .recap{
     font-size:11.5px;color:var(--bgs-ivory-45);text-align:center;margin-bottom:20px;
@@ -358,7 +383,7 @@ function runHost({ code, session, deck, hostName }) {
           ${tvOn ? `
           <div class="code-actions">
             <button class="copy-btn" id="copyLink">Copy link</button>
-            <a class="copy-btn" href="/tv/${code}" target="_blank" rel="noopener">Show on TV</a>
+            <button class="copy-btn" id="showTv" type="button">Show on TV</button>
           </div>` : `
           <button class="copy-btn" id="copyLink">Copy link</button>`}
         </div>
@@ -374,6 +399,7 @@ function runHost({ code, session, deck, hostName }) {
     `;
     drawQR();
     document.getElementById('copyLink').addEventListener('click', copyLink);
+    document.getElementById('showTv')?.addEventListener('click', (e) => openTvSheet(e.currentTarget));
     document.getElementById('startBtn').addEventListener('click', onStartVoting);
     document.getElementById('cancelNight').addEventListener('click', onCancel);
   }
@@ -402,6 +428,108 @@ function runHost({ code, session, deck, hostName }) {
       btn.textContent = 'Copied!';
       setTimeout(() => { if (btn.isConnected) btn.textContent = original; }, 1600);
     }).catch(() => {});
+  }
+
+  // ---- Show on TV (docs/claude-code-spec-tv-mode.md, Casting) ----
+  // One sheet, built on first tap. A Cast button where Chrome has a TV to
+  // cast to; for every other TV, the short address and the code to type on
+  // its browser, with Copy and Share. Both modules load lazily, so a host who
+  // never taps it never fetches them.
+  let tvSheet = null;
+  let castModule = null;
+
+  async function openTvSheet(opener) {
+    if (!tvSheet) tvSheet = await buildTvSheet();
+    tvSheet.open(opener, { focus: tvSheet.el.querySelector('[data-sheet-close]') });
+  }
+
+  async function buildTvSheet() {
+    const [{ createBottomSheet }, cast] = await Promise.all([
+      import('/js/share-sheet.js'),
+      import('/js/cast-sender.js'),
+    ]);
+    castModule = cast;
+    const tvUrl = `${window.location.origin}/tv/${code}`;
+    const sheet = createBottomSheet({
+      className: 'tv-sheet',
+      titleId: 'tvSheetTitle',
+      bodyHTML: `
+        <h2 class="bsheet__title" id="tvSheetTitle">Show on TV</h2>
+        <p class="share-sheet__sub">The big screen follows the night live</p>
+        <div class="tv-sheet__cast" data-tv-cast hidden>
+          <button type="button" class="share-sheet__btn share-sheet__btn--gold" data-tv-cast-btn>Cast to a TV</button>
+          <div class="tv-sheet__on" data-tv-on hidden>
+            <span data-tv-device></span>
+            <button type="button" class="share-sheet__copy" data-tv-stop>Stop</button>
+          </div>
+          <p class="tv-sheet__err" data-tv-err hidden></p>
+          <p class="tv-sheet__or">or</p>
+        </div>
+        <p class="tv-sheet__label">On the TV's browser, go to</p>
+        <div class="tv-sheet__code"><span>${window.location.host}/tv</span><b>${code}</b></div>
+        <div class="share-sheet__url">
+          <span data-tv-url>${window.location.host}/tv/${code}</span>
+          <button type="button" class="share-sheet__copy" data-tv-copy>Copy</button>
+        </div>
+        <div class="share-sheet__row">
+          <button type="button" class="share-sheet__btn" data-tv-share>Share…</button>
+          <a class="share-sheet__btn" href="/tv/${code}" target="_blank" rel="noopener">Open here</a>
+          <button type="button" class="share-sheet__btn" data-sheet-close>Done</button>
+        </div>`,
+    });
+    const el = sheet.el;
+    const q = (s) => el.querySelector(s);
+
+    const copyBtn = q('[data-tv-copy]');
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(tvUrl);
+        copyBtn.textContent = 'Copied';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1200);
+      } catch {
+        // No clipboard access: select the address so a long-press still gets it.
+        const range = document.createRange();
+        range.selectNodeContents(q('[data-tv-url]'));
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    });
+
+    const shareBtn = q('[data-tv-share]');
+    shareBtn.hidden = typeof navigator.share !== 'function';
+    shareBtn.addEventListener('click', () => {
+      navigator.share({ url: tvUrl, title: 'Game night on the TV' }).catch(() => {});
+    });
+
+    // Cast: hidden until the SDK says a TV is in reach.
+    const block = q('[data-tv-cast]');
+    const castBtn = q('[data-tv-cast-btn]');
+    const onRow = q('[data-tv-on]');
+    const device = q('[data-tv-device]');
+    const err = q('[data-tv-err]');
+    const paint = (s) => {
+      block.hidden = !s.available;
+      castBtn.hidden = s.connected;
+      onRow.hidden = !s.connected;
+      device.textContent = s.deviceName ? `On ${s.deviceName}` : 'On the TV';
+      castBtn.textContent = s.connecting ? 'Connecting…' : 'Cast to a TV';
+    };
+    cast.onCastState(paint);
+    castBtn.addEventListener('click', async () => {
+      err.hidden = true;
+      try {
+        await cast.castCode(code);
+      } catch (e) {
+        console.error('[game night] cast', e);
+        err.textContent = "Couldn't reach the TV. Try again, or open the link on it.";
+        err.hidden = false;
+      }
+    });
+    q('[data-tv-stop]').addEventListener('click', () => cast.stopCasting());
+    cast.loadCastSender().then((ok) => { if (ok) paint(cast.castState()); });
+
+    return sheet;
   }
 
   async function onStartVoting() {
@@ -475,7 +603,12 @@ function runHost({ code, session, deck, hostName }) {
     },
   });
 
-  window.addEventListener('pagehide', () => controller.leave());
+  window.addEventListener('pagehide', () => {
+    controller.leave();
+    // Leave the Cast session without closing it: the TV keeps the night while
+    // this phone moves on to the swipe screen.
+    castModule?.leaveCast();
+  });
 }
 </script>
 </body>

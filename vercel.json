@@ -26,6 +26,7 @@
     { "source": "/vote/:code",        "destination": "/vote.html" },
     { "source": "/vote/:code/swipe",  "destination": "/vote-swipe.html" },
     { "source": "/results/:code",     "destination": "/results.html" },
+    { "source": "/tv",                "destination": "/tv.html" },
     { "source": "/tv/:code",          "destination": "/tv.html" }
   ]
 }
