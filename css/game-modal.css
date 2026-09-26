@@ -5,139 +5,106 @@
 
 /* Requires css/base.css, which owns the design tokens this file uses. */
 
-/* The modal's own box is `.backdrop .card`, not a bare `.card`. It used to be
-   unscoped, which meant every page linking this file had `.card` silently
-   styled as a modal panel — an opaque plate, a gold border, overflow:hidden
-   and a pop animation. The swipe screen's card stack uses `.card` for its
-   depth layer and inherited all of it: the dragged card was clipped by the
-   outer box, a border sat over the deck, the card behind was hidden behind an
-   opaque plate, and the animation collided with the depth transition. Keep
-   these selectors scoped. */
+/* The modal's own box is `.backdrop .card.stage`, not a bare `.card`. It used
+   to be unscoped, which meant every page linking this file had `.card`
+   silently styled as a modal panel — an opaque plate, a gold border and
+   overflow:hidden. The swipe screen's card stack uses `.card` for its depth
+   layer and inherited all of it: the dragged card was clipped by the outer
+   box, a border sat over the deck, the card behind was hidden behind an
+   opaque plate. Keep these selectors scoped. */
 
-/* modal */
+/* Nothing in this file uses a CSS animation. Opacity and transform on the
+   backdrop and the card are driven by transitions only — WebKit silently drops
+   a transition that fights a keyframe animation on the same property, the
+   rule css/base.css:129 states for the deal-in loader. Keep it that way. */
+
+/* ---- shell ---- */
 .backdrop{
   position:fixed;inset:0;
   /* A tint, not a blur: a full-viewport backdrop-filter over 197 covers is
-     re-created on every open, and with the sticky Close's blur below it was
-     what still reloaded iOS Safari when reading a few games in a row. */
+     re-created on every open, and was what reloaded iOS Safari when reading
+     a few games in a row. */
   background:rgba(var(--bgs-bg-rgb),0.78);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0;
   z-index:30;
+  opacity:0;visibility:hidden;
+  transition:opacity .4s ease, visibility 0s linear .4s;
 }
-.backdrop.open{display:flex;}
-.backdrop .card{
-  background:var(--bgs-plate);
-  border:1px solid rgba(var(--bgs-gold-rgb),0.3);
-  border-radius:16px;
-  max-width:440px;
-  width:100%;
+.backdrop.open{opacity:1;visibility:visible;transition:opacity .4s ease;}
+
+/* Phone: the modal is the whole screen. */
+.backdrop .card.stage{
   position:relative;
-  animation:bgs-modal-pop 0.18s ease;
-  max-height:85vh;
+  width:100%;height:100%;
+  background:var(--bgs-bg);
+  border:none;border-radius:0;
+  display:flex;flex-direction:column;
   overflow:hidden;
-  display:flex;
-  flex-direction:column;
 }
 #card-body{
-  /* Bottom padding = Close button's top edge + 20px, so the last item can
-     scroll clear of the button without leaving a dead gap. */
-  padding:30px 30px calc(78px + env(safe-area-inset-bottom));
-  flex:1 1 auto;
-  min-height:0;
-  overflow-y:auto;
+  flex:1 1 auto;min-height:0;overflow-y:auto;
+  padding:0 24px calc(40px + env(safe-area-inset-bottom));
 }
-@keyframes bgs-modal-pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
-.card-cover-wrap{
-  width:100%;
-  min-height:80px;
-  border-radius:10px;
-  margin:-6px 0 18px;
-  box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* Bottom fade so the last line reads as scrollable. */
+.backdrop .card.stage::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:60px;z-index:4;
+  background:linear-gradient(to top, var(--bgs-bg), rgba(var(--bgs-bg-rgb),0));
+  pointer-events:none;
 }
-.card-cover{
-  display:block;
-  max-width:100%;
-  max-height:360px;
-  width:auto;
-  height:auto;
+
+/* Desktop: a centred panel with the same insides. */
+@media (min-width:700px){
+  .backdrop{padding:24px;}
+  .backdrop .card.stage{
+    width:560px;height:auto;max-height:90vh;
+    border-radius:20px;
+    border:1px solid rgba(var(--bgs-gold-rgb),0.3);
+  }
+  .backdrop .card.stage::after{border-radius:0 0 20px 20px;}
 }
-.flip-scene{
-  width:100%;
-  margin:-6px 0 18px;
-  perspective:1400px;
-}
-.flip-card{
+
+/* ---- hero ---- */
+.stage-hero{
   position:relative;
-  width:100%;
-  aspect-ratio:4 / 3;
-  max-height:360px;
-  cursor:pointer;
-  touch-action:pan-y;
-  transform-style:preserve-3d;
-  transition:transform 0.55s cubic-bezier(.4,.2,.2,1);
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:calc(84px + env(safe-area-inset-top));
 }
-.flip-card.flipped{
-  transform:rotateY(180deg);
-}
-.flip-face{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:10px;
-  box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
-  overflow:hidden;
-  backface-visibility:hidden;
-  background:var(--bgs-bg);
-}
-.flip-back{
-  transform:rotateY(180deg);
-}
-.flip-card:not(.flipped) .flip-back{
+.stage-light{
+  position:absolute;left:-64px;right:-64px;top:20px;height:380px;
+  background:radial-gradient(ellipse at 50% 62%,
+    rgba(var(--bgs-gold-rgb),0.30) 0%,
+    rgba(var(--bgs-gold-rgb),0.10) 40%,
+    rgba(var(--bgs-gold-rgb),0) 68%);
   pointer-events:none;
 }
-.flip-card.flipped .flip-front{
-  pointer-events:none;
+.stage-cover-wrap{
+  position:relative;
+  width:min(300px, calc(100vw - 90px));
+  min-height:80px;
+  border-radius:8px;overflow:hidden;
+  box-shadow:0 30px 50px -18px rgba(0,0,0,0.8), 0 0 0 1px rgba(var(--bgs-ivory-rgb),0.06);
 }
-.flip-face .card-cover{
-  max-width:100%;
-  max-height:100%;
-  width:auto;
-  height:auto;
-  object-fit:contain;
-}
-.flip-hint{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:11px;
-  color:var(--bgs-gold-dim);
-  text-align:center;
-  margin:8px 0 0;
-}
+.card-cover{display:block;width:100%;height:auto;}
+@media (min-width:700px){ .stage-cover-wrap{width:300px;} }
+/* media-stack: the cover layer keeps sizing the block, as today. */
+.stage-hero .media-stack{width:min(300px, calc(100vw - 90px));position:relative;}
+@media (min-width:700px){ .stage-hero .media-stack{width:300px;} }
+/* The hero is a flex column, so the row's margins do not collapse: top is the
+   gap to the cover, bottom is left to .stage-hero + .stage-title. */
+.stage-hero .media-toggle-row{margin:14px 0 0;}
 
 /* ---- cover / table-shot crossfade ---- */
 /* Only built for games that have a tableShot; everything else keeps the plain
    cover markup above, untouched. */
 .media-stack{
-  /* No padding, border or overflow here on purpose: the cover's own -6px/18px
-     margins must keep collapsing straight through this wrapper, or adding the
-     toggle would shift the whole modal body. */
   position:relative;
 }
 .media-layer{
   opacity:0;
   /* Transition only. Nothing may put a CSS animation on these elements —
      WebKit silently drops a transition that fights an animation, the same rule
-     css/base.css:129 states for the deal-in loader. The modal's entrance
-     animation (bgs-modal-pop) is on `.backdrop .card`, an ancestor, so it does
-     not touch these; keep it that way. */
+     css/base.css:129 states for the deal-in loader. */
   transition:opacity 0.32s ease;
 }
 .media-layer.on{opacity:1;}
@@ -150,16 +117,14 @@
      fine, cropping box art is not, which is why the cover layer keeps its own
      object-fit and the container is never forced to a fixed ratio. */
   object-fit:cover;
-  border-radius:10px;
-  box-shadow:0 6px 16px -6px rgba(0,0,0,0.5);
+  /* Same corner and shadow as .stage-cover-wrap, so the crossfade swaps only
+     the picture. */
+  border-radius:8px;
+  box-shadow:0 30px 50px -18px rgba(0,0,0,0.8), 0 0 0 1px rgba(var(--bgs-ivory-rgb),0.06);
 }
 .media-toggle-row{
   display:flex;
   justify-content:center;
-  /* -8px collapses against the cover's 18px bottom margin to leave the 10px
-     the mockup shows above the toggle; the 18px below keeps the gap to the
-     title identical to a modal with no toggle. */
-  margin:-8px 0 18px;
 }
 .media-toggle{
   display:inline-flex;
@@ -195,52 +160,39 @@
   .media-layer,
   .media-toggle__btn{transition:none;}
 }
-.backdrop .card h2{
-  font-family:'Fraunces',serif;
-  font-weight:600;
-  font-size:24px;
-  margin:0 0 14px;
-  line-height:1.2;
+
+/* ---- text ---- */
+.stage-eyebrow{
+  margin:26px 0 0;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--bgs-gold);
 }
-.stat-row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:16px;
-}
-.stat-chip{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:12px;
+.backdrop .card h2.stage-title{
+  margin:26px 0 0;text-align:center;
+  font-family:'Fraunces',serif;font-weight:600;font-size:30px;line-height:1.1;
   color:var(--bgs-ivory);
-  background:rgba(var(--bgs-ivory-rgb),0.08);
-  border:1px solid rgba(var(--bgs-ivory-rgb),0.16);
-  border-radius:6px;
-  padding:5px 10px;
-  display:flex;
-  align-items:center;
-  gap:6px;
 }
-.stat-icon{ color:var(--bgs-icon-gold); flex-shrink:0; }
-.backdrop .card p.blurb{
-  font-size:15px;
-  line-height:1.6;
-  color:var(--bgs-ivory-70);
-  margin:0 0 18px;
+/* Same specificity as the rule above, or the 26px hero gap would win. */
+.backdrop .card .stage-eyebrow + h2.stage-title{margin-top:8px;}
+.stage-meta{
+  margin:12px 0 0;
+  display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--bgs-ivory-70);
 }
-.backdrop .card .tag{
-  font-family:'IBM Plex Mono',monospace;
-  font-size:11px;
-  letter-spacing:0.06em;
-  text-transform:uppercase;
-  color:var(--bgs-gold);
-}
+.stage-meta__item{display:inline-flex;align-items:center;gap:5px;}
+.stage-meta__item .stat-icon{color:var(--bgs-icon-gold);flex-shrink:0;}
+.stage-meta__sep{color:rgba(var(--bgs-ivory-rgb),0.35);}
+.stage-meta__best{color:var(--bgs-gold);}
+.backdrop .card p.blurb{margin:22px 0 0;font-size:15px;line-height:1.6;color:var(--bgs-ivory-70);}
+
+/* ---- highlights ---- */
 .why-heading{
   font-family:'IBM Plex Mono',monospace;
   font-size:11px;
   letter-spacing:0.08em;
   text-transform:uppercase;
   color:var(--bgs-gold-dim);
-  margin:20px 0 10px;
+  margin:18px 0 10px;
 }
 .why-list{
   list-style:none;
@@ -267,157 +219,108 @@
   border-radius:50%;
   background:var(--bgs-gold);
 }
-.close-btn{
-  position:absolute;
-  top:16px;right:16px;
-  z-index:10;
-  background:rgba(var(--bgs-bg-rgb),0.55);
-  border:none;
-  border-radius:50%;
-  width:30px;
-  height:30px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--bgs-ivory);
-  font-size:16px;
-  cursor:pointer;
-  line-height:1;
-  padding:0;
-}
-.close-btn:hover{color:var(--bgs-ivory);}
 
-/* ---- sticky action row on the existing detail modal ---- */
+/* ---- close ---- */
+/* A tinted plate with the glass rim, not blurred glass: it sits over content
+   that scrolls under it, and a backdrop-filter there re-blurs on every frame
+   of that scroll — the heaviest thing in the modal on a phone. */
+.close-btn{
+  position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:10;
+  width:44px;height:44px;border-radius:50%;border:none;padding:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--bgs-ivory);
+  background:rgba(var(--bgs-plate-rgb),0.92);
+  box-shadow:inset 0 0 0 1px rgba(var(--bgs-gold-rgb),0.28),
+             inset 1px 1px 0 rgba(var(--bgs-ivory-rgb),0.22),
+             0 8px 24px -10px rgba(0,0,0,0.6);
+}
+@media (min-width:700px){ .close-btn{top:16px;} }
+
+/* ---- selection mode: one floating gold pill ---- */
 .card-sticky{
-  /* Floats over #card-body rather than sitting below it, so content scrolls
-     under the fade and the below-fold Highlights are discoverable.
-     .card is position:relative, so this resolves against the modal; the
-     corner .close-btn is z-index:10 and stays on top. */
   position:absolute;left:0;right:0;bottom:0;z-index:5;
-  padding:28px 20px calc(14px + env(safe-area-inset-bottom));
-  /* Solid behind the button, then a 28px fade at the top edge so content
-     visibly slides under it. */
-  background:linear-gradient(to top,
-    var(--bgs-plate) 0%,
-    var(--bgs-plate) 62%,
-    rgba(var(--bgs-plate-rgb),0) 100%);
-  display:flex;gap:10px;
+  display:flex;justify-content:center;
+  padding:0 20px calc(24px + env(safe-area-inset-bottom));
+  pointer-events:none;
 }
 .card-sticky .modal__add{
-  flex:1;background:var(--bgs-gold);color:var(--bgs-on-gold);border:none;font:inherit;
-  font-size:13.5px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:7px;
+  pointer-events:auto;
+  height:48px;padding:0 22px;border-radius:24px;border:none;cursor:pointer;
+  background:var(--bgs-gold);color:var(--bgs-on-gold);
+  font:inherit;font-size:13.5px;font-weight:700;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 12px 32px -12px rgba(0,0,0,0.6);
 }
 .card-sticky .modal__add.is-in{
-  background:transparent;color:var(--bgs-gold);border:1.5px solid rgba(var(--bgs-gold-rgb),0.55);
+  background:rgba(var(--bgs-plate-rgb),0.92);color:var(--bgs-gold);
+  box-shadow:inset 0 0 0 1.5px rgba(var(--bgs-gold-rgb),0.55), 0 12px 32px -12px rgba(0,0,0,0.6);
 }
 .card-sticky .modal__add svg{width:15px;height:15px;}
-.card-sticky .modal__close{
-  /* Near-solid tint, no blur: the button sits over content that scrolls
-     under it, and a backdrop-filter there re-blurs on every frame of that
-     scroll — the heaviest thing in the modal on a phone. .92 keeps ivory
-     text well past 4.5:1 over any cover. */
-  background:rgba(var(--bgs-plate-rgb),0.92);
-  border:1.5px solid rgba(var(--bgs-ivory-rgb),0.45);
-  box-shadow:0 1px 0 rgba(var(--bgs-ivory-rgb),0.10) inset,
-             0 8px 24px -10px rgba(0,0,0,0.6);
-  color:var(--bgs-ivory);font:inherit;font-size:13px;font-weight:600;
-  padding:13px 16px;border-radius:10px;cursor:pointer;
-}
-body:not(.gn-selecting) .card-sticky .modal__add{display:none;}
-body:not(.gn-selecting) .card-sticky .modal__close{flex:1;}
+body:not(.gn-selecting) .card-sticky{display:none;}
+body.gn-selecting #card-body{padding-bottom:calc(96px + env(safe-area-inset-bottom));}
 
-/* Solid plate when the OS asks for less transparency. */
-@media (prefers-reduced-transparency:reduce){
-  .card-sticky .modal__close{background:var(--bgs-plate);}
-}
-
-/* ---- "Teach me in 60 seconds" ---- */
-/* Rendered only when the game carries a `teach` field, in the
-   same all-or-nothing way Stats was; when absent, no section, no divider.
-   Always the last section, so the modal reads cover → who/how long → why →
-   how to play. Nothing in this block animates or transitions. */
-.teach-section{
-  margin-top:20px;padding-top:18px;
-  border-top:1px solid rgba(var(--bgs-ivory-rgb),0.10);
-}
-.teach-section .why-heading{margin-top:0;display:flex;align-items:center;gap:6px;}
-.teach-section .why-heading svg{color:var(--bgs-gold);}
-
-/* Draft label — shown only while teach.reviewed is false. Sits directly
-   under the heading, in the heading's own voice (gold-dim at 11px is the
-   same contrast deviation .why-heading already makes). */
-.teach-draft{
-  display:flex;align-items:center;gap:7px;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.02em;
-  color:var(--bgs-gold-dim);margin:-4px 0 12px;
-}
-.teach-draft svg{flex-shrink:0;}
-
-/* -- The five beats ----------------------------------------------------
-   Picture first, caption second. Each beat is an 84px scene beside a
-   twelve-word caption; "Your turn" is the exception — a three-frame strip,
-   because a turn *is* a sequence and the layout should say so.
-   Scenes are inline SVG from js/teach-scenes.js, in the Tabler line style
-   the app already uses for icons: ivory strokes for the world, gold for the
-   one thing the player does. */
-.teach-beats{list-style:none;margin:0;padding:0;}
-.teach-beat{
-  display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center;
-  padding:12px 0;border-bottom:1px solid rgba(var(--bgs-ivory-rgb),0.10);
-}
-.teach-beat:first-child{padding-top:2px;}
-.teach-beat:last-child{border-bottom:none;padding-bottom:4px;}
-.teach-beat--strip{grid-template-columns:1fr;gap:10px;}
-.teach-scene{
-  width:84px;height:84px;border-radius:10px;
-  background:rgba(var(--bgs-bg-rgb),0.35);
-  border:1px solid rgba(var(--bgs-ivory-rgb),0.08);
-  display:flex;align-items:center;justify-content:center;
-}
-.teach-scene svg{width:100%;height:100%;display:block;overflow:visible;}
-.teach-beat__label{
-  display:flex;align-items:center;gap:6px;
-  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;
-  text-transform:uppercase;color:var(--bgs-gold-dim);margin:0 0 4px;
-}
-.teach-beat__label svg{color:var(--bgs-gold);}
-.teach-beat__text{font-size:15px;line-height:1.45;color:var(--bgs-ivory);margin:0;}
-/* the three-frame strip */
-.teach-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-.teach-frame{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
-.teach-frame .teach-scene{position:relative;width:100%;height:auto;aspect-ratio:1/1;}
-.teach-frame__cap{font-size:12px;line-height:1.35;color:var(--bgs-ivory-70);margin:0;text-align:center;}
-.teach-frame__num{
-  position:absolute;top:6px;left:6px;
-  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
-  /* full gold, not gold-dim: at 10px this is text and needs 4.5:1. gold-dim
-     on the plate is ~4.0:1; full gold is ~8:1. */
-  color:var(--bgs-gold);
-}
-.teach-beat--strip .teach-beat__text{color:var(--bgs-ivory-70);font-size:13.5px;}
-/* SVG palette — CSS vars so the scenes retheme with the app */
-.pg-line{stroke:var(--bgs-ivory);stroke-opacity:.72;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.pg-dim{stroke:var(--bgs-ivory);stroke-opacity:.32;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;}
-.pg-fill{fill:rgba(var(--bgs-ivory-rgb),.06);}
-.pg-gold{stroke:var(--bgs-gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.pg-gold-fill{fill:rgba(var(--bgs-gold-rgb),.20);}
-.pg-gold-solid{fill:var(--bgs-gold);}
-.pg-ivory-solid{fill:var(--bgs-ivory);fill-opacity:.72;}
-.pg-mono{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;fill:var(--bgs-gold);}
-
-/* Word budget footer — the discipline the format depends on. ivory-70, not
-   the mockup's ivory-45: at 11px this is text, and ivory-45 measures 3.94:1
-   on the plate against the 4.5:1 it needs — the same deviation the
-   media-toggle makes above. ivory-70 gives 8.0:1. */
-.teach-foot{
-  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--bgs-ivory-70);
-  margin:12px 0 0;text-align:center;
-}
-
-/* Visible keyboard focus on the dark plate. */
+/* Visible keyboard focus on the dark plate — an inset ring, never outline:
+   outline paints beneath child elements and ignores the rounded corners. */
 .close-btn:focus-visible,
 .media-toggle__btn:focus-visible,
-.card-sticky button:focus-visible{
-  outline:2px solid var(--bgs-gold);outline-offset:2px;
+.card-sticky .modal__add:focus-visible{
+  box-shadow:inset 0 0 0 2px var(--bgs-gold);
+}
+
+/* ---- The lift: shelf → stage ---- */
+/* Pieces that come in behind the ghost. Selectors stay scoped to .card.stage
+   so nothing outside the modal is touched. */
+.card.stage :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+  opacity:0;
+}
+.card.stage :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row){
+  transform:translateY(18px);
+}
+.card.stage .close-btn{transform:scale(.8);}
+
+.card.stage.is-in .stage-light{opacity:1;transition:opacity .5s ease .15s;}
+.card.stage.is-in :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row){
+  opacity:1;transform:none;
+  transition:opacity .35s ease .3s, transform .45s cubic-bezier(.2,.8,.2,1) .3s;
+}
+.card.stage.is-in .close-btn,
+.card.stage.is-in .card-sticky{opacity:1;transform:none;transition:opacity .25s ease .4s, transform .25s ease .4s;}
+
+/* Leaving: text goes first, quickly, no delay. */
+.card.stage.is-out :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+  opacity:0;transition:opacity .2s ease;
+}
+
+/* The real cover is hidden while the ghost is in flight. */
+.card.stage.is-lifting .stage-cover-wrap{visibility:hidden;}
+
+/* The ghost. Sized to the DESTINATION rect; transform + clip-path carry it
+   to/from the shelf. Two properties, two transitions, one element — the
+   WebKit rule is satisfied because nothing here is a keyframe animation. It
+   is a child of body, not the backdrop, so the backdrop fading out on close
+   never hides it. */
+.lift-ghost{
+  position:fixed;z-index:31;
+  border-radius:8px;overflow:hidden;
+  transform-origin:0 0;
+  pointer-events:none;
+  will-change:transform, clip-path;
+  transition:transform .55s var(--ease-liquid), clip-path .55s var(--ease-liquid);
+}
+.lift-ghost img{display:block;width:100%;height:100%;}
+
+/* Plain fade for openers with no origin, and for reduced motion. */
+.backdrop.no-lift .card.stage{transform:scale(.96);transition:transform .35s var(--ease-liquid);}
+.backdrop.no-lift.open .card.stage{transform:none;}
+@media (prefers-reduced-motion:reduce){
+  /* Both shell rules, or .backdrop.open's own transition would keep 400ms. */
+  .backdrop{transition:opacity .15s ease, visibility 0s linear .15s;}
+  .backdrop.open{transition:opacity .15s ease;}
+  /* The .is-in / .is-out rules above outrank a bare .card.stage selector, so
+     they are named here too. */
+  .card.stage :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky),
+  .card.stage:is(.is-in,.is-out) :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+    transform:none;transition:none;
+  }
+  .backdrop.no-lift .card.stage{transform:none;transition:none;}
 }

@@ -1,6 +1,5 @@
 import { timeLabel, weightLabel, playersRangeLabel } from './filters.js';
 import { registerOverlay, syncScrollLock } from './scroll-lock.js';
-import { renderScene } from './teach-scenes.js';
 
 // The game detail modal, shared by the shelf and the game-night waiting room.
 // Markup lives here and styling in css/game-modal.css, so an enhancement to
@@ -9,50 +8,23 @@ import { renderScene } from './teach-scenes.js';
 const PLUS_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 const TICK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
 
-const PLAYERS_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="8" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 15c2.5.3 4.5 2 4.5 5"/></svg>`;
-const TIME_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg>`;
-const WEIGHT_ICON = `<svg class="stat-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 006 0z"/><path d="M19 7l-3 6a3 3 0 006 0z"/><path d="M5 7h14"/><path d="M9 21h6"/></svg>`;
+const PLAYERS_ICON = `<svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="8" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14.5 15c2.5.3 4.5 2 4.5 5"/></svg>`;
+const TIME_ICON = `<svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/></svg>`;
+const WEIGHT_ICON = `<svg class="stat-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7l-3 6a3 3 0 006 0z"/><path d="M19 7l-3 6a3 3 0 006 0z"/><path d="M5 7h14"/><path d="M9 21h6"/></svg>`;
 
 const VIEW_COVER_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M5 8h14"/></svg>`;
 const VIEW_TABLE_ICON = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="9" rx="9" ry="4"/><path d="M5 12v6M19 12v6M12 13v7"/></svg>`;
-
-// Tabler line icons: 24 viewBox, currentColor stroke, 1.75, no fill.
-const ic = (paths, s = 15, w = 1.75) =>
-  `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
-const SCHOOL_ICON = ic('<path d="M22 9l-10-4-10 4 10 4 10-4v6"/><path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/>', 16);
-const ALERT_ICON  = ic('<path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636-2.87l-8.106-13.536a1.914 1.914 0 0 0-3.274 0z"/><path d="M12 16h.01"/>', 13);
-const PENCIL_ICON = ic('<path d="M4 20h4L18.5 9.5a2.828 2.828 0 1 0-4-4L4 16v4"/><path d="M13.5 6.5l4 4"/>', 13);
-
-// ---- "Teach me in 60 seconds" feature flag ----
-// Live: every visitor gets the section, so the flag is now a kill switch
-// rather than a curtain, the same shape as the shelf's Game Night flag. Set it
-// back to false to pull the section without reverting anything; ?teach=1
-// still reveals it while it is off. Read once at module load.
-const TEACH_ENABLED = true;
-const teachVisible =
-  TEACH_ENABLED || new URLSearchParams(location.search).get('teach') === '1';
 
 // Inline onerror prefix: a sized cover that fails (the optimiser is not
 // available) retries once with the original before the handler gives up.
 const FALLBACK_ONCE = "if(this.dataset.orig&&this.src!==this.dataset.orig){this.src=this.dataset.orig;delete this.dataset.orig;return}";
 
+// One cover, uncropped, on the stage. There is no plate behind it; a cover
+// that never arrives tints its box with the game's colour so something still
+// sits under the light. `backImage` stays in the data but is no longer shown.
 function coverHTML(g) {
-  if (g.backImage) {
-    return `
-      <div class="flip-scene">
-        <div class="flip-card" id="flip-card">
-          <div class="flip-face flip-front">
-            <img class="card-cover" src="${g.imageMid || g.imageLarge || g.image}" alt="${g.title} box cover" loading="lazy" decoding="async" data-orig="${g.imageLarge || g.image}" onerror="${FALLBACK_ONCE}this.style.display='none'">
-          </div>
-          <div class="flip-face flip-back">
-            <img class="card-cover" src="${g.backImage}" alt="${g.title} back of box" loading="lazy" decoding="async" onerror="this.style.display='none'">
-          </div>
-        </div>
-        <p class="flip-hint">⟲ tap or swipe to see the back of the box</p>
-      </div>`;
-  }
   return `
-    <div class="card-cover-wrap" style="background:${g.color}22">
+    <div class="stage-cover-wrap">
       <img class="card-cover" src="${g.imageMid || g.imageLarge || g.image}" alt="${g.title} box cover" width="600" height="450" loading="lazy" decoding="async" fetchpriority="low" data-orig="${g.imageLarge || g.image}" onerror="${FALLBACK_ONCE}this.parentElement.style.background='${g.color}';this.style.display='none'">
     </div>`;
 }
@@ -65,12 +37,6 @@ function coverHTML(g) {
 // art's own aspect ratio, as it does today; only the photo is absolutely
 // positioned over it. That keeps both images uncropped-by-the-container and
 // leaves nothing to reflow mid-crossfade.
-//
-// Flip games: the photo overlays the whole scene, so it also covers the "tap or
-// swipe" hint under the card and stands ~13% taller than the box art did. That
-// reads fine — the photo simply fills the block — but it is the one place the
-// two cover treatments interact, and no game carries both fields today (6 have
-// backImage, none have tableShot). Worth a look if that ever changes.
 function mediaHTML(g) {
   const cover = coverHTML(g);
   if (!g.tableShot) return cover;
@@ -88,60 +54,6 @@ function mediaHTML(g) {
     </div>`;
 }
 
-// ---- Teach me in 60 seconds ----
-// Five beats, picture first. Scene SVGs are decorative: the caption beside
-// each one is the accessible text, so they are aria-hidden rather than
-// role="img" — naming the scene as well would read everything twice.
-const TEACH_BEAT_KEYS = ['hook', 'win', 'turn', 'gotcha', 'first'];
-
-function beatHTML(b) {
-  const icon = b.key === 'gotcha' ? ALERT_ICON : '';
-  if (b.scene === 'strip') {
-    return `
-      <li class="teach-beat teach-beat--strip">
-        <p class="teach-beat__label">${icon}${b.label}</p>
-        <div class="teach-strip">
-          ${b.steps.map((s, i) => `
-            <div class="teach-frame">
-              <div class="teach-scene"><span class="teach-frame__num">${i + 1}</span>${renderScene(s.scene)}</div>
-              <p class="teach-frame__cap">${s.caption}</p>
-            </div>`).join('')}
-        </div>
-        <p class="teach-beat__text">${b.caption}</p>
-      </li>`;
-  }
-  return `
-    <li class="teach-beat">
-      <div class="teach-scene">${renderScene(b.scene)}</div>
-      <div>
-        <p class="teach-beat__label">${icon}${b.label}</p>
-        <p class="teach-beat__text">${b.caption}</p>
-      </div>
-    </li>`;
-}
-
-// All-or-nothing, the same contract the Stats section had: with the flag off,
-// no `teach` field, or anything other than the five beats in order, nothing is
-// emitted — so no heading and no divider is ever left behind.
-function teachHTML(g) {
-  if (!teachVisible) return '';
-  const t = g.teach;
-  if (!t || !Array.isArray(t.beats) || t.beats.length !== 5) return '';
-  if (t.beats.some((b, i) => !b || b.key !== TEACH_BEAT_KEYS[i])) return '';
-  const strip = t.beats[2];
-  if (strip.scene === 'strip' && (!Array.isArray(strip.steps) || strip.steps.length !== 3)) return '';
-  const draft = t.reviewed !== true;
-  return `
-    <section class="teach-section">
-      <p class="why-heading">${SCHOOL_ICON} Teach me in 60 seconds</p>
-      ${draft ? `<p class="teach-draft">${PENCIL_ICON} Draft — not yet checked against the rulebook</p>` : ''}
-      <ol class="teach-beats">
-        ${t.beats.map(beatHTML).join('')}
-      </ol>
-      <p class="teach-foot">${t.wordCount} words · five pictures</p>
-    </section>`;
-}
-
 // Curated on the owner's shelf; a freshly synced shelf has none, and an empty
 // "Highlights" heading would say so louder than leaving it out.
 function highlightsHTML(g) {
@@ -154,55 +66,45 @@ function highlightsHTML(g) {
     </ul>`;
 }
 
+// "best at 3–4" from playerRecommendations ({ "3": "best", "4": "best", … }).
+// Contiguous run → "3–4"; single → "3"; gaps → "2, 4". Nothing → ''.
+// Display-only, so it lives here rather than in filters.js.
+function bestAtLabel(g) {
+  const rec = g.playerRecommendations;
+  if (!rec) return '';
+  const best = Object.keys(rec).filter((k) => rec[k] === 'best').map(Number).sort((a, b) => a - b);
+  if (!best.length) return '';
+  const runs = [];
+  for (const n of best) {
+    const r = runs[runs.length - 1];
+    if (r && n === r[1] + 1) r[1] = n; else runs.push([n, n]);
+  }
+  const txt = runs.map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(', ');
+  return ` <span class="stage-meta__best">· best at ${txt}</span>`;
+}
+
 function bodyHTML(g) {
   return `
-    ${mediaHTML(g)}
-    <h2>${g.title}</h2>
-    <div class="stat-row">
-      <span class="stat-chip">${PLAYERS_ICON} ${playersRangeLabel(g.players)}</span>
-      <span class="stat-chip">${TIME_ICON} ${timeLabel(g.time)}</span>
-      <span class="stat-chip">${WEIGHT_ICON} ${weightLabel(g.weightScore)}</span>
+    <div class="stage-hero">
+      <span class="stage-light" aria-hidden="true"></span>
+      ${mediaHTML(g)}
     </div>
+    ${g.tag ? `<p class="stage-eyebrow">${g.tag}</p>` : ''}
+    <h2 class="stage-title">${g.title}</h2>
+    <p class="stage-meta">
+      <span class="stage-meta__item">${PLAYERS_ICON}${playersRangeLabel(g.players)}${bestAtLabel(g)}</span>
+      <span class="stage-meta__sep" aria-hidden="true">·</span>
+      <span class="stage-meta__item">${TIME_ICON}${timeLabel(g.time)}</span>
+      <span class="stage-meta__sep" aria-hidden="true">·</span>
+      <span class="stage-meta__item">${WEIGHT_ICON}${weightLabel(g.weightScore)}</span>
+    </p>
     <p class="blurb">${g.blurb}</p>
-    ${highlightsHTML(g)}
-    ${g.tag ? `<span class="tag">${g.tag}</span>` : ''}${teachHTML(g)}`;
+    ${highlightsHTML(g)}`;
 }
 
-// The back-of-box flip: tap, or swipe horizontally. Re-wired on every open
-// because the cover markup is rebuilt each time.
-function wireFlip(root) {
-  const flipCard = root.querySelector('#flip-card');
-  if (!flipCard) return;
-
-  const frontImg = flipCard.querySelector('.flip-front .card-cover');
-  const applyRatio = () => {
-    if (frontImg.naturalWidth && frontImg.naturalHeight) {
-      flipCard.style.aspectRatio = `${frontImg.naturalWidth} / ${frontImg.naturalHeight}`;
-    }
-  };
-  if (frontImg.complete) applyRatio();
-  else frontImg.addEventListener('load', applyRatio, { once: true });
-
-  let startX = 0, startY = 0;
-  const toggle = () => flipCard.classList.toggle('flipped');
-  flipCard.addEventListener('click', toggle);
-  flipCard.addEventListener('touchstart', (e) => {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  }, { passive: true });
-  flipCard.addEventListener('touchend', (e) => {
-    const dx = e.changedTouches[0].clientX - startX;
-    const dy = e.changedTouches[0].clientY - startY;
-    if (Math.abs(dx) > 20 && Math.abs(dx) > Math.abs(dy)) {
-      toggle();
-      e.preventDefault();
-    }
-  });
-}
-
-// Cover <-> table-shot crossfade. Like the flip, re-wired on every open because
-// the media markup is rebuilt each time — which is also what resets the view to
-// Cover, per spec.
+// Cover <-> table-shot crossfade. Re-wired on every open because the media
+// markup is rebuilt each time — which is also what resets the view to Cover,
+// per spec.
 function wireMediaToggle(root) {
   const stack = root.querySelector('.media-stack');
   if (!stack) return;
@@ -246,22 +148,23 @@ function wireMediaToggle(root) {
  * Builds the modal and returns a handle to it.
  *
  * @param {object}   [opts]
- * @param {object}   [opts.selection] omit for a read-only modal (Close only).
- *   Supply `{ isSelected(game), toggle(game) }` to add the deck button beside
- *   Close — the shelf does this in game-night builds. CSS keeps that button
- *   hidden until `body.gn-selecting` is set, so it only shows while selecting.
+ * @param {object}   [opts.selection] omit for a read-only modal.
+ *   Supply `{ isSelected(game), toggle(game) }` to add the floating deck pill —
+ *   the shelf does this in game-night builds. CSS keeps that pill hidden until
+ *   `body.gn-selecting` is set, so it only shows while selecting.
  */
 export function createGameModal({ selection } = {}) {
   let openGame = null;
 
   document.body.insertAdjacentHTML('beforeend', `
     <div class="backdrop" id="backdrop">
-      <div class="card" id="card">
-        <button class="close-btn" id="close-btn" type="button" aria-label="Close">✕</button>
+      <div class="card stage" id="card">
+        <button class="close-btn" id="close-btn" type="button" aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
         <div id="card-body"></div>
         <div class="card-sticky" id="cardSticky">
           ${selection ? '<button class="modal__add" id="modalAddBtn" type="button"></button>' : ''}
-          <button class="modal__close" id="modalCloseBtn" type="button">Close</button>
         </div>
       </div>
     </div>
@@ -271,17 +174,160 @@ export function createGameModal({ selection } = {}) {
   // Every page gets this modal, so registering here locks the background on
   // all of them without each page repeating itself.
   registerOverlay(() => backdrop.classList.contains('open'));
+  const card = document.getElementById('card');
   const body = document.getElementById('card-body');
   const addBtn = document.getElementById('modalAddBtn');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  // ---- The lift ----
+  // One element moves: a fixed-position ghost copy of the tapped cover. It
+  // starts exactly over the shelf card's art (same crop), flies to the stage
+  // cover's rectangle while the crop relaxes to the full box art, then hands
+  // off to the real cover. Close plays it in reverse. Everything is
+  // transform + clip-path + opacity; no layout animates.
+  let origin = null;        // the shelf element we lifted from
+  let ghost = null;
+  let settle = 0;           // timeout id for the hand-off
+
+  function coverRect() {
+    return body.querySelector('.stage-cover-wrap')?.getBoundingClientRect();
+  }
+
+  // Places the ghost over `rect` as the shelf crops it (cover-fit, centred,
+  // top-aligned) given the ghost's own box `dest`.
+  function shelfTransform(rect, dest) {
+    const s = Math.max(rect.width / dest.width, rect.height / dest.height);
+    const dx = rect.left + (rect.width - dest.width * s) / 2 - dest.left;
+    const dy = rect.top - dest.top;
+    const insetX = (dest.width - rect.width / s) / 2;
+    const insetB = dest.height - rect.height / s;
+    return {
+      transform: `translate(${dx}px, ${dy}px) scale(${s})`,
+      clip: `inset(0 ${insetX}px ${insetB}px ${insetX}px)`,
+    };
+  }
+
+  function makeGhost(dest, src) {
+    const el = document.createElement('div');
+    el.className = 'lift-ghost';
+    el.style.left = `${dest.left}px`;
+    el.style.top = `${dest.top}px`;
+    el.style.width = `${dest.width}px`;
+    el.style.height = `${dest.height}px`;
+    el.innerHTML = `<img src="${src}" alt="">`;
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function killGhost() {
+    clearTimeout(settle);
+    ghost?.remove();
+    ghost = null;
+    card.classList.remove('is-lifting');
+  }
+
+  /**
+   * @param {object} game
+   * @param {object} [opts]
+   * @param {Element} [opts.from] the shelf element whose bounds the cover
+   *   lifts from (`.game-card .art` or `.gbox .face`). Omit for a plain fade.
+   */
+  function open(game, { from } = {}) {
+    killGhost();
+    openGame = game;
+    body.innerHTML = bodyHTML(game);
+    body.scrollTop = 0;
+    wireMediaToggle(body);
+    refreshFooter();
+    card.classList.remove('is-out');
+
+    const fromImg = from?.querySelector('img');
+    const lift = !!(from && fromImg && fromImg.complete && fromImg.naturalWidth && !reduced.matches);
+
+    // The stage cover takes the shelf's already-decoded bitmap first, so the
+    // block has its final height before the mid-size image arrives.
+    const coverImg = body.querySelector('.card-cover');
+    if (lift && coverImg) {
+      coverImg.style.aspectRatio = `${fromImg.naturalWidth} / ${fromImg.naturalHeight}`;
+      const hi = coverImg.src;
+      coverImg.src = fromImg.currentSrc || fromImg.src;
+      const pre = new Image();
+      pre.onload = () => { if (openGame === game) coverImg.src = hi; };
+      pre.src = hi;
+    }
+
+    backdrop.classList.toggle('no-lift', !lift);
+    backdrop.classList.add('open');
+    syncScrollLock();
+
+    if (!lift) {
+      origin = null;
+      requestAnimationFrame(() => card.classList.add('is-in'));
+      return;
+    }
+
+    origin = from;
+    card.classList.add('is-lifting');
+    const dest = coverRect();                 // forces layout with the modal visible
+    const start = shelfTransform(from.getBoundingClientRect(), dest);
+    const el = ghost = makeGhost(dest, coverImg.src);
+    el.style.transform = start.transform;
+    el.style.clipPath = start.clip;
+    // Two frames: one to commit the start state, one to transition from it.
+    // `el` is this call's ghost: a close or reopen in between replaces it,
+    // and the stale frame must not touch the new one.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (ghost !== el) return;
+      el.style.transform = 'none';
+      el.style.clipPath = 'inset(0)';
+      card.classList.add('is-in');
+      settle = setTimeout(killGhost, 600);   // hand-off; transitionend is not relied on
+    }));
+  }
 
   function close() {
-    backdrop.classList.remove('open');
+    if (!backdrop.classList.contains('open')) return;
     openGame = null;
-    syncScrollLock();
-    // Drop the body so the cover's decoded bitmap can be released: with the
-    // markup left in place each game read added another full-size image to
-    // what the page held, and a few in a row reloaded iOS Safari.
-    body.innerHTML = '';
+    card.classList.remove('is-in');
+    card.classList.add('is-out');
+
+    const dest = coverRect();
+    const onScreen = origin && document.contains(origin) && (() => {
+      const r = origin.getBoundingClientRect();
+      return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+    })();
+    const lift = onScreen && dest && !reduced.matches;
+
+    const finish = () => {
+      killGhost();
+      backdrop.classList.remove('open');
+      card.classList.remove('is-out');
+      syncScrollLock();
+      // Drop the body so the cover's decoded bitmap can be released: with the
+      // markup left in place each game read added another full-size image to
+      // what the page held, and a few in a row reloaded iOS Safari.
+      body.innerHTML = '';
+      origin = null;
+    };
+
+    if (!lift) { finish(); return; }
+
+    killGhost();
+    card.classList.add('is-lifting');
+    const img = body.querySelector('.card-cover');
+    const el = ghost = makeGhost(dest, img?.currentSrc || img?.src || '');
+    // Start from an explicit full-box clip: `none` → `inset()` cannot
+    // interpolate, and the crop would snap instead of closing in.
+    el.style.transform = 'none';
+    el.style.clipPath = 'inset(0)';
+    const end = shelfTransform(origin.getBoundingClientRect(), dest);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (ghost !== el) return;               // reopened during the first frames
+      el.style.transform = end.transform;
+      el.style.clipPath = end.clip;
+      backdrop.classList.remove('open');      // backdrop fades under the returning ghost
+      settle = setTimeout(finish, 560);
+    }));
   }
 
   function refreshFooter() {
@@ -293,19 +339,27 @@ export function createGameModal({ selection } = {}) {
       : `${PLUS_SVG} Add to tonight`;
   }
 
-  function open(game) {
-    openGame = game;
-    body.innerHTML = bodyHTML(game);
-    body.scrollTop = 0;
-    wireFlip(body);
-    wireMediaToggle(body);
-    refreshFooter();
-    backdrop.classList.add('open');
-    syncScrollLock();
-  }
+  // Swipe-down to close: a vertical pull of more than 90px that starts with
+  // the body scrolled to the top. No follow-the-finger — the lift itself is
+  // the dismissal animation. Nothing happens while the body is scrolled.
+  let touchX = 0, touchY = 0, pulling = false;
+  body.addEventListener('touchstart', (e) => {
+    pulling = body.scrollTop === 0;
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+  }, { passive: true });
+  body.addEventListener('touchmove', (e) => {
+    if (!pulling) return;
+    const dx = e.touches[0].clientX - touchX;
+    const dy = e.touches[0].clientY - touchY;
+    if (dy > 90 && Math.abs(dy) > Math.abs(dx)) {
+      pulling = false;
+      close();
+    }
+  }, { passive: true });
+  body.addEventListener('touchend', () => { pulling = false; }, { passive: true });
 
   document.getElementById('close-btn').addEventListener('click', close);
-  document.getElementById('modalCloseBtn').addEventListener('click', close);
   backdrop.addEventListener('click', (e) => {
     if (e.target === backdrop) close();
   });
