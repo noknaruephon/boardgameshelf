@@ -270,14 +270,16 @@ export function createGameModal({ selection } = {}) {
     card.classList.add('is-lifting');
     const dest = coverRect();                 // forces layout with the modal visible
     const start = shelfTransform(from.getBoundingClientRect(), dest);
-    ghost = makeGhost(dest, coverImg.src);
-    ghost.style.transform = start.transform;
-    ghost.style.clipPath = start.clip;
+    const el = ghost = makeGhost(dest, coverImg.src);
+    el.style.transform = start.transform;
+    el.style.clipPath = start.clip;
     // Two frames: one to commit the start state, one to transition from it.
+    // `el` is this call's ghost: a close or reopen in between replaces it,
+    // and the stale frame must not touch the new one.
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (!ghost) return;                     // closed during the first frames
-      ghost.style.transform = 'none';
-      ghost.style.clipPath = 'inset(0)';
+      if (ghost !== el) return;
+      el.style.transform = 'none';
+      el.style.clipPath = 'inset(0)';
       card.classList.add('is-in');
       settle = setTimeout(killGhost, 600);   // hand-off; transitionend is not relied on
     }));
@@ -313,16 +315,16 @@ export function createGameModal({ selection } = {}) {
     killGhost();
     card.classList.add('is-lifting');
     const img = body.querySelector('.card-cover');
-    ghost = makeGhost(dest, img?.currentSrc || img?.src || '');
+    const el = ghost = makeGhost(dest, img?.currentSrc || img?.src || '');
     // Start from an explicit full-box clip: `none` → `inset()` cannot
     // interpolate, and the crop would snap instead of closing in.
-    ghost.style.transform = 'none';
-    ghost.style.clipPath = 'inset(0)';
+    el.style.transform = 'none';
+    el.style.clipPath = 'inset(0)';
     const end = shelfTransform(origin.getBoundingClientRect(), dest);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (!ghost) return;
-      ghost.style.transform = end.transform;
-      ghost.style.clipPath = end.clip;
+      if (ghost !== el) return;               // reopened during the first frames
+      el.style.transform = end.transform;
+      el.style.clipPath = end.clip;
       backdrop.classList.remove('open');      // backdrop fades under the returning ghost
       settle = setTimeout(finish, 560);
     }));
