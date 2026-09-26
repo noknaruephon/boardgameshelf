@@ -28,7 +28,7 @@ await launch();
   check('stage: glass.css linked', await has(page, 'link[href="/css/glass.css"]'));
   const pill = await page.$eval('#startBtn', (b) => ({ disabled: b.disabled, cls: b.className, txt: b.textContent.trim() }));
   check('start pill n=1: disabled, glass, "Start voting"', pill.disabled && /\bglass\b/.test(pill.cls) && !/is-ready/.test(pill.cls) && pill.txt === 'Start voting', JSON.stringify(pill));
-  check('start hint n=1', (await text(page, '.start-hint')) === 'Needs 1 more player to start', await text(page, '.start-hint'));
+  check('start hint n=1', (await text(page, '.start-hint')) === 'Need at least 2 players to start', await text(page, '.start-hint'));
   check('start pill disabled: no opacity dim', (await css(page, '#startBtn', 'opacity')) === '1', await css(page, '#startBtn', 'opacity'));
   check('start pill disabled text = ivory 38%', /0\.38\)$/.test(await css(page, '#startBtn', 'color')), await css(page, '#startBtn', 'color'));
   check('here count 1', (await text(page, '.here__n')) === '1');
