@@ -86,7 +86,6 @@ function bestAtLabel(g) {
 function bodyHTML(g) {
   return `
     <div class="stage-hero">
-      <span class="stage-light" aria-hidden="true"></span>
       ${mediaHTML(g)}
     </div>
     ${g.tag ? `<p class="stage-eyebrow">${g.tag}</p>` : ''}
