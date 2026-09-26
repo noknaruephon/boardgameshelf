@@ -339,26 +339,6 @@ export function createGameModal({ selection } = {}) {
       : `${PLUS_SVG} Add to tonight`;
   }
 
-  // Swipe-down to close: a vertical pull of more than 90px that starts with
-  // the body scrolled to the top. No follow-the-finger — the lift itself is
-  // the dismissal animation. Nothing happens while the body is scrolled.
-  let touchX = 0, touchY = 0, pulling = false;
-  body.addEventListener('touchstart', (e) => {
-    pulling = body.scrollTop === 0;
-    touchX = e.touches[0].clientX;
-    touchY = e.touches[0].clientY;
-  }, { passive: true });
-  body.addEventListener('touchmove', (e) => {
-    if (!pulling) return;
-    const dx = e.touches[0].clientX - touchX;
-    const dy = e.touches[0].clientY - touchY;
-    if (dy > 90 && Math.abs(dy) > Math.abs(dx)) {
-      pulling = false;
-      close();
-    }
-  }, { passive: true });
-  body.addEventListener('touchend', () => { pulling = false; }, { passive: true });
-
   document.getElementById('close-btn').addEventListener('click', close);
   backdrop.addEventListener('click', (e) => {
     if (e.target === backdrop) close();

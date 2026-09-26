@@ -43,7 +43,10 @@
   overflow:hidden;
 }
 #card-body{
-  flex:1 1 auto;min-height:0;overflow-y:auto;
+  flex:1 1 auto;min-height:0;
+  /* x hidden, not auto: anything poking past the sides would otherwise make
+     the whole modal pan sideways under a finger on iOS. */
+  overflow:hidden auto;
   padding:0 24px calc(40px + env(safe-area-inset-bottom));
 }
 /* Bottom fade so the last line reads as scrollable. */
@@ -70,9 +73,15 @@
   display:flex;flex-direction:column;align-items:center;
   padding-top:calc(84px + env(safe-area-inset-top));
 }
+/* The light's box stops at #card-body's padding edge, never past it: the body
+   is the scroll container, so anything wider became horizontal scroll (the
+   modal panned sideways on iOS) and the glow was cut where the box left the
+   viewport. The ellipse keeps the size the wider box gave it — 450 × 276px is
+   what farthest-corner resolved to on a phone — so the fall-off is unchanged
+   and reaches the screen edge at ~.08 alpha, where it was clipped anyway. */
 .stage-light{
-  position:absolute;left:-64px;right:-64px;top:20px;height:380px;
-  background:radial-gradient(ellipse at 50% 62%,
+  position:absolute;left:-24px;right:-24px;top:20px;height:380px;
+  background:radial-gradient(450px 276px at 50% 62%,
     rgba(var(--bgs-gold-rgb),0.30) 0%,
     rgba(var(--bgs-gold-rgb),0.10) 40%,
     rgba(var(--bgs-gold-rgb),0) 68%);
