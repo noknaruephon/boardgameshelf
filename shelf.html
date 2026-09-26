@@ -2355,19 +2355,22 @@ function buildBox(g, i){
 }
 
 function onTileClick(ev, g, el){
+  // The cover lifts out of this element into the modal: the card's .art in
+  // grid view, the box's .face in shelf view.
+  const from = el.querySelector('.art, .face');
   // Packing turns the tile into a toggle, exactly as selection mode does:
   // the cover picks the game, the ⓘ is the way to the details.
   if(bag && bag.packing()){
-    if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
+    if(ev.target.closest('[data-gn-info]')){ openCard(g, from); return; }
     bag.toggleGame(g, el);
     return;
   }
   if(gameNightVisible && state.selectionMode){
-    if(ev.target.closest('[data-gn-info]')){ openCard(g); return; }
+    if(ev.target.closest('[data-gn-info]')){ openCard(g, from); return; }
     toggleSelect(g);
     return;
   }
-  openCard(g);
+  openCard(g, from);
 }
 
 // Boxes per plank follow the card grid's breakpoints. Re-render only when a
@@ -2390,8 +2393,8 @@ const gameModal = createGameModal(gameNightVisible ? {
   },
 } : {});
 
-function openCard(g){
-  gameModal.open(g);
+function openCard(g, from){
+  gameModal.open(g, { from });
 }
 
 function closeDetailModal(){

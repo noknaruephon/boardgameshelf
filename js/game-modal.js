@@ -174,17 +174,158 @@ export function createGameModal({ selection } = {}) {
   // Every page gets this modal, so registering here locks the background on
   // all of them without each page repeating itself.
   registerOverlay(() => backdrop.classList.contains('open'));
+  const card = document.getElementById('card');
   const body = document.getElementById('card-body');
   const addBtn = document.getElementById('modalAddBtn');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+  // ---- The lift ----
+  // One element moves: a fixed-position ghost copy of the tapped cover. It
+  // starts exactly over the shelf card's art (same crop), flies to the stage
+  // cover's rectangle while the crop relaxes to the full box art, then hands
+  // off to the real cover. Close plays it in reverse. Everything is
+  // transform + clip-path + opacity; no layout animates.
+  let origin = null;        // the shelf element we lifted from
+  let ghost = null;
+  let settle = 0;           // timeout id for the hand-off
+
+  function coverRect() {
+    return body.querySelector('.stage-cover-wrap')?.getBoundingClientRect();
+  }
+
+  // Places the ghost over `rect` as the shelf crops it (cover-fit, centred,
+  // top-aligned) given the ghost's own box `dest`.
+  function shelfTransform(rect, dest) {
+    const s = Math.max(rect.width / dest.width, rect.height / dest.height);
+    const dx = rect.left + (rect.width - dest.width * s) / 2 - dest.left;
+    const dy = rect.top - dest.top;
+    const insetX = (dest.width - rect.width / s) / 2;
+    const insetB = dest.height - rect.height / s;
+    return {
+      transform: `translate(${dx}px, ${dy}px) scale(${s})`,
+      clip: `inset(0 ${insetX}px ${insetB}px ${insetX}px)`,
+    };
+  }
+
+  function makeGhost(dest, src) {
+    const el = document.createElement('div');
+    el.className = 'lift-ghost';
+    el.style.left = `${dest.left}px`;
+    el.style.top = `${dest.top}px`;
+    el.style.width = `${dest.width}px`;
+    el.style.height = `${dest.height}px`;
+    el.innerHTML = `<img src="${src}" alt="">`;
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function killGhost() {
+    clearTimeout(settle);
+    ghost?.remove();
+    ghost = null;
+    card.classList.remove('is-lifting');
+  }
+
+  /**
+   * @param {object} game
+   * @param {object} [opts]
+   * @param {Element} [opts.from] the shelf element whose bounds the cover
+   *   lifts from (`.game-card .art` or `.gbox .face`). Omit for a plain fade.
+   */
+  function open(game, { from } = {}) {
+    killGhost();
+    openGame = game;
+    body.innerHTML = bodyHTML(game);
+    body.scrollTop = 0;
+    wireMediaToggle(body);
+    refreshFooter();
+    card.classList.remove('is-out');
+
+    const fromImg = from?.querySelector('img');
+    const lift = !!(from && fromImg && fromImg.complete && fromImg.naturalWidth && !reduced.matches);
+
+    // The stage cover takes the shelf's already-decoded bitmap first, so the
+    // block has its final height before the mid-size image arrives.
+    const coverImg = body.querySelector('.card-cover');
+    if (lift && coverImg) {
+      coverImg.style.aspectRatio = `${fromImg.naturalWidth} / ${fromImg.naturalHeight}`;
+      const hi = coverImg.src;
+      coverImg.src = fromImg.currentSrc || fromImg.src;
+      const pre = new Image();
+      pre.onload = () => { if (openGame === game) coverImg.src = hi; };
+      pre.src = hi;
+    }
+
+    backdrop.classList.toggle('no-lift', !lift);
+    backdrop.classList.add('open');
+    syncScrollLock();
+
+    if (!lift) {
+      origin = null;
+      requestAnimationFrame(() => card.classList.add('is-in'));
+      return;
+    }
+
+    origin = from;
+    card.classList.add('is-lifting');
+    const dest = coverRect();                 // forces layout with the modal visible
+    const start = shelfTransform(from.getBoundingClientRect(), dest);
+    ghost = makeGhost(dest, coverImg.src);
+    ghost.style.transform = start.transform;
+    ghost.style.clipPath = start.clip;
+    // Two frames: one to commit the start state, one to transition from it.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (!ghost) return;                     // closed during the first frames
+      ghost.style.transform = 'none';
+      ghost.style.clipPath = 'inset(0)';
+      card.classList.add('is-in');
+      settle = setTimeout(killGhost, 600);   // hand-off; transitionend is not relied on
+    }));
+  }
 
   function close() {
-    backdrop.classList.remove('open');
+    if (!backdrop.classList.contains('open')) return;
     openGame = null;
-    syncScrollLock();
-    // Drop the body so the cover's decoded bitmap can be released: with the
-    // markup left in place each game read added another full-size image to
-    // what the page held, and a few in a row reloaded iOS Safari.
-    body.innerHTML = '';
+    card.classList.remove('is-in');
+    card.classList.add('is-out');
+
+    const dest = coverRect();
+    const onScreen = origin && document.contains(origin) && (() => {
+      const r = origin.getBoundingClientRect();
+      return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+    })();
+    const lift = onScreen && dest && !reduced.matches;
+
+    const finish = () => {
+      killGhost();
+      backdrop.classList.remove('open');
+      card.classList.remove('is-out');
+      syncScrollLock();
+      // Drop the body so the cover's decoded bitmap can be released: with the
+      // markup left in place each game read added another full-size image to
+      // what the page held, and a few in a row reloaded iOS Safari.
+      body.innerHTML = '';
+      origin = null;
+    };
+
+    if (!lift) { finish(); return; }
+
+    killGhost();
+    card.classList.add('is-lifting');
+    const img = body.querySelector('.card-cover');
+    ghost = makeGhost(dest, img?.currentSrc || img?.src || '');
+    // Start from an explicit full-box clip: `none` → `inset()` cannot
+    // interpolate, and the crop would snap instead of closing in.
+    ghost.style.transform = 'none';
+    ghost.style.clipPath = 'inset(0)';
+    const end = shelfTransform(origin.getBoundingClientRect(), dest);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (!ghost) return;
+      ghost.style.transform = end.transform;
+      ghost.style.clipPath = end.clip;
+      backdrop.classList.remove('open');      // backdrop fades under the returning ghost
+      settle = setTimeout(finish, 560);
+    }));
   }
 
   function refreshFooter() {
@@ -196,15 +337,25 @@ export function createGameModal({ selection } = {}) {
       : `${PLUS_SVG} Add to tonight`;
   }
 
-  function open(game) {
-    openGame = game;
-    body.innerHTML = bodyHTML(game);
-    body.scrollTop = 0;
-    wireMediaToggle(body);
-    refreshFooter();
-    backdrop.classList.add('open');
-    syncScrollLock();
-  }
+  // Swipe-down to close: a vertical pull of more than 90px that starts with
+  // the body scrolled to the top. No follow-the-finger — the lift itself is
+  // the dismissal animation. Nothing happens while the body is scrolled.
+  let touchX = 0, touchY = 0, pulling = false;
+  body.addEventListener('touchstart', (e) => {
+    pulling = body.scrollTop === 0;
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+  }, { passive: true });
+  body.addEventListener('touchmove', (e) => {
+    if (!pulling) return;
+    const dx = e.touches[0].clientX - touchX;
+    const dy = e.touches[0].clientY - touchY;
+    if (dy > 90 && Math.abs(dy) > Math.abs(dx)) {
+      pulling = false;
+      close();
+    }
+  }, { passive: true });
+  body.addEventListener('touchend', () => { pulling = false; }, { passive: true });
 
   document.getElementById('close-btn').addEventListener('click', close);
   backdrop.addEventListener('click', (e) => {

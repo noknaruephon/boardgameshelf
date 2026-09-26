@@ -266,3 +266,61 @@ body.gn-selecting #card-body{padding-bottom:calc(96px + env(safe-area-inset-bott
 .card-sticky .modal__add:focus-visible{
   box-shadow:inset 0 0 0 2px var(--bgs-gold);
 }
+
+/* ---- The lift: shelf → stage ---- */
+/* Pieces that come in behind the ghost. Selectors stay scoped to .card.stage
+   so nothing outside the modal is touched. */
+.card.stage :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+  opacity:0;
+}
+.card.stage :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row){
+  transform:translateY(18px);
+}
+.card.stage .close-btn{transform:scale(.8);}
+
+.card.stage.is-in .stage-light{opacity:1;transition:opacity .5s ease .15s;}
+.card.stage.is-in :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row){
+  opacity:1;transform:none;
+  transition:opacity .35s ease .3s, transform .45s cubic-bezier(.2,.8,.2,1) .3s;
+}
+.card.stage.is-in .close-btn,
+.card.stage.is-in .card-sticky{opacity:1;transform:none;transition:opacity .25s ease .4s, transform .25s ease .4s;}
+
+/* Leaving: text goes first, quickly, no delay. */
+.card.stage.is-out :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+  opacity:0;transition:opacity .2s ease;
+}
+
+/* The real cover is hidden while the ghost is in flight. */
+.card.stage.is-lifting .stage-cover-wrap{visibility:hidden;}
+
+/* The ghost. Sized to the DESTINATION rect; transform + clip-path carry it
+   to/from the shelf. Two properties, two transitions, one element — the
+   WebKit rule is satisfied because nothing here is a keyframe animation. It
+   is a child of body, not the backdrop, so the backdrop fading out on close
+   never hides it. */
+.lift-ghost{
+  position:fixed;z-index:31;
+  border-radius:8px;overflow:hidden;
+  transform-origin:0 0;
+  pointer-events:none;
+  will-change:transform, clip-path;
+  transition:transform .55s var(--ease-liquid), clip-path .55s var(--ease-liquid);
+}
+.lift-ghost img{display:block;width:100%;height:100%;}
+
+/* Plain fade for openers with no origin, and for reduced motion. */
+.backdrop.no-lift .card.stage{transform:scale(.96);transition:transform .35s var(--ease-liquid);}
+.backdrop.no-lift.open .card.stage{transform:none;}
+@media (prefers-reduced-motion:reduce){
+  /* Both shell rules, or .backdrop.open's own transition would keep 400ms. */
+  .backdrop{transition:opacity .15s ease, visibility 0s linear .15s;}
+  .backdrop.open{transition:opacity .15s ease;}
+  /* The .is-in / .is-out rules above outrank a bare .card.stage selector, so
+     they are named here too. */
+  .card.stage :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky),
+  .card.stage:is(.is-in,.is-out) :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+    transform:none;transition:none;
+  }
+  .backdrop.no-lift .card.stage{transform:none;transition:none;}
+}
