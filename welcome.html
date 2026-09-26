@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded',function(){var m=document.querySele
 </div>
 
 <script type="module">
-import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName } from '/js/auth.js';
+import { getUser, fetchMyProfile, claimProfile, lookupBggUser, userDisplayName, signInWithGoogleCredential } from '/js/auth.js';
 import { runSync, BATCH_SIZE, BATCH_SECONDS } from '/js/sync.js';
 import { mountShelfPicker } from '/js/shelf-picker.js';
 
@@ -484,6 +484,22 @@ $('copyLink').addEventListener('click', async () => {
 // ---- boot ----
 
 try {
+  // A phone's Google sign-in arrives here by redirect: /api/auth/google puts
+  // the ID token in the fragment, the landing page left the nonce in this
+  // tab's sessionStorage. Exchange them with Supabase, then carry on as a
+  // signed-in visit. The fragment is dropped before anything else can see it.
+  const gsi = /[#&]gsi=([^&]+)/.exec(location.hash);
+  if (gsi) {
+    history.replaceState(null, '', location.pathname);
+    const nonce = sessionStorage.getItem('bgsGsiNonce');
+    sessionStorage.removeItem('bgsGsiNonce');
+    try {
+      await signInWithGoogleCredential(decodeURIComponent(gsi[1]), nonce);
+    } catch {
+      location.replace('/#signin&gsi=error');
+      throw new Error('signed out');
+    }
+  }
   user = await getUser();
   if (!user) { location.replace('/'); throw new Error('signed out'); }
   profile = await fetchMyProfile();
