@@ -36,7 +36,7 @@ Behind `lobbyOn`. `render()` branches: `lobbyOn ? renderStage() : render()` (kee
 .here-row                   [N Nok HOST] [M Mai] … [◌ Waiting for players…]
 .tv-row (only if tvOn)      [glass pill: Show on TV]
 .start-pill                 Start voting  |  Start voting · 3 players
-.start-hint                 Needs 1 more player to start  |  Everyone swipes on their own phone.
+.start-hint                 Need at least 2 players to start  |  Everyone swipes on their own phone.
 .cancel-btn                 Cancel game night (existing)
 ```
 
@@ -94,7 +94,7 @@ This replaces `.recap` (remove it in the stage branch).
 
 `.start-btn` is replaced (stage branch only) by `.start-pill`:
 
-- Not ready: `disabled`, glass material, label "Start voting", text `--bgs-ivory` at 38%. Hint: `Needs ${short} more ${player(s)} to start`.
+- Not ready: `disabled`, glass material, label "Start voting", text `--bgs-ivory` at 38%. Hint: `Need at least ${MIN_PLAYERS_TO_START} players to start`.
 - Ready: gold fill, `--bgs-on-gold` text, label `Start voting · ${n} players`, trailing arrow icon, hint "Everyone swipes on their own phone." (existing).
 - Same `id="startBtn"`, same handler.
 
@@ -214,7 +214,7 @@ Replaces the `deckHTML()` call in the stage branch with `fanHTML(deck, session.r
 - [ ] Share bar: QR scans to `/vote/{code}`; copy round copies the same URL and swaps to a check for 1.6s; tapping QR or code opens the sheet.
 - [ ] QR sheet: 300px QR scans from ~1.5 m; × and Esc close; focus returns to the opener; page doesn't scroll behind it; Copy link works there.
 - [ ] Roster: host chip carries HOST; a second phone joining pops a new chip; open chip reads "Waiting for players…" with the pulse at n < min, "Room for more" with no pulse at n ≥ min; chips wrap cleanly at 5–8 names.
-- [ ] Start pill: glass + "Start voting" + "Needs 1 more player to start" at n=1; gold + "Start voting · 2 players" + "Everyone swipes on their own phone." at n=2; tapping starts voting as today.
+- [ ] Start pill: glass + "Start voting" + "Need at least 2 players to start" at n=1; gold + "Start voting · 2 players" + "Everyone swipes on their own phone." at n=2; tapping starts voting as today.
 - [ ] `?tv=1&lobby=1`: "Show on TV" pill appears above the start pill and opens the TV sheet; without `?tv=1` no row, no gap.
 - [ ] Cancel game night still present and working.
 - [ ] Walnut, Navy, Mahogany, Oak: no hard-coded colours; QR sheet readable on all four.

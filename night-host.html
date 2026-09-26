@@ -649,7 +649,6 @@ function runHost({ code, session, deck, hostName }) {
   function renderStage() {
     const n = players.length;
     const canStart = n >= MIN_PLAYERS_TO_START;
-    const short = MIN_PLAYERS_TO_START - n;
     screen.classList.add('stage');
     screen.innerHTML = `
       <div class="eyebrow">Game Night</div>
@@ -677,7 +676,7 @@ function runHost({ code, session, deck, hostName }) {
       </button>
       ${canStart
         ? '<p class="start-hint">Everyone swipes on their own phone.</p>'
-        : `<p class="start-hint">Needs ${short} more ${short === 1 ? 'player' : 'players'} to start</p>`}
+        : `<p class="start-hint">Need at least ${MIN_PLAYERS_TO_START} players to start</p>`}
       <button class="cancel-btn" id="cancelNight" type="button">Cancel game night</button>
     `;
     drawQR();
