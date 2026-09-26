@@ -1,0 +1,14 @@
+{
+  "name": "run-game-night-harness",
+  "private": true,
+  "type": "module",
+  "description": "Playwright harness that drives the game-night pages with Supabase, presence and the QR import stubbed. See ../SKILL.md.",
+  "scripts": {
+    "fonts": "bash fetch-fonts.sh",
+    "smoke": "node smoke.mjs all",
+    "checklist": "node lobby-checklist.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
+}

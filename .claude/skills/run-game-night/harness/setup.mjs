@@ -1,9 +1,9 @@
-// Shared harness for night-host.html: static server on the repo root, Chromium at
-// phone size, and routes that replace the network the page needs but this
-// container cannot reach — Supabase (js/session.js, js/presence.js,
-// js/shelf-data.js), the esm.sh QR import, and Google Fonts. The page's own
-// code (night-host.html, js/waiting-room.js, js/scroll-lock.js, the modal,
-// css/) runs unmodified.
+// Shared harness for the game-night pages (night-host, vote, vote-swipe,
+// results): static server on the repo root, Chromium at phone size, and routes
+// that replace the network the pages need but this container cannot reach —
+// Supabase (js/session.js, js/presence.js, js/shelf-data.js), the esm.sh QR
+// import, and Google Fonts. The pages' own code and every other module run
+// unmodified. tv.html imports js/supabase.js directly and is not covered.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,6 +14,13 @@ export const REPO = path.resolve(HERE, '../../../..');
 export const PORT = 8123;
 export const ORIGIN = `http://127.0.0.1:${PORT}`;
 export const CODE = '5G37';
+/** Pretty URLs (vercel.json rewrites) → the file that serves them. */
+export const PAGES = {
+  host: { path: `/night/${CODE}/host`, file: 'night-host.html', match: /^\/night\/[^/]+\/host$/ },
+  vote: { path: `/vote/${CODE}`, file: 'vote.html', match: /^\/vote\/[^/]+$/ },
+  swipe: { path: `/vote/${CODE}/swipe`, file: 'vote-swipe.html', match: /^\/vote\/[^/]+\/swipe$/, status: 'voting' },
+  results: { path: `/results/${CODE}`, file: 'results.html', match: /^\/results\/[^/]+$/, status: 'done' },
+};
 export const SHOTS = path.join(HERE, 'shots');
 fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -58,11 +65,13 @@ export async function launch() {
 }
 
 /**
- * A phone-sized page with every route wired. Fixture comes from the page URL:
- * ?d=5 deck size · ?reveal=1 deck shown · ?mode=random · ?broken=1 gives game 2
- * a 404 cover · plus the page's own flags (?lobby=0, ?tv=1, ?theme=navy, ?glass=0).
+ * A phone-sized page with every route wired. Fixture comes from the page URL
+ * (see stubs/session.js): ?d=5 deck size · ?reveal=1 · ?mode=random · ?status=
+ * · ?players=Nok,Mai · ?votes=win|tie|nobody|partial · ?myvotes=N · ?broken=1
+ * gives game 2 a 404 cover · plus the pages' own flags (?lobby=0, ?tv=1,
+ * ?theme=navy, ?glass=0). `name` is this device's stored name (null = not joined).
  */
-export async function newPage({ reducedMotion } = {}) {
+export async function newPage({ reducedMotion, name = 'Nok' } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
     permissions: ['clipboard-read', 'clipboard-write'], reducedMotion: reducedMotion || 'no-preference',
@@ -78,31 +87,45 @@ export async function newPage({ reducedMotion } = {}) {
     await page.route('https://fonts.googleapis.com/**', (r) => r.fulfill({ status: 200, contentType: 'text/css', body: file(fontsCss) }));
     await page.route('**/__fonts/*', (r) => r.fulfill({ status: 200, contentType: 'font/woff2', body: file(path.join(HERE, 'fonts', path.basename(new URL(r.request().url()).pathname))) }));
   }
-  // The Vercel rewrite /night/:code/host -> night-host.html (globs do not match past a query string).
-  await page.route((u) => /\/night\/[^/]+\/host$/.test(u.pathname), (r) => r.fulfill({ status: 200, contentType: 'text/html', body: file(path.join(REPO, 'night-host.html')) }));
+  // The Vercel rewrites (URL predicates: globs do not match past a query string).
+  for (const p of Object.values(PAGES)) {
+    await page.route((u) => p.match.test(u.pathname), (r) => r.fulfill({ status: 200, contentType: 'text/html', body: file(path.join(REPO, p.file)) }));
+  }
   for (const m of ['session', 'presence', 'shelf-data']) {
     await page.route(`**/js/${m}.js`, (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: file(path.join(HERE, 'stubs', `${m}.js`)) }));
   }
   await page.route('https://esm.sh/qrcode@1.5.3', (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: file(path.join(HERE, 'stubs', 'qrcode.js')) }));
   await page.route('**/u/nok', (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>shelf stub</title>' }));
-  // Skip the name gate: the host already has a name on this device.
-  await page.addInitScript(([k, v]) => { sessionStorage.setItem(k, v); }, [`gamenight:${CODE}:name`, 'Nok']);
+  // Skip the name gate: this device already joined under `name`.
+  if (name) await page.addInitScript(([k, v]) => { sessionStorage.setItem(k, v); }, [`gamenight:${CODE}:name`, name]);
   return page;
 }
 
-/** Loads the host page and waits for runHost() to render (start button present, presence stub ready). */
-export async function open(page, query = '') {
-  await page.goto(`${ORIGIN}/night/${CODE}/host${query}`);
+/**
+ * Loads one of PAGES and waits until it has rendered and joined presence
+ * (the stub's __pushPlayers exists). Adds the status the page expects
+ * (swipe: voting, results: done) unless the query sets one.
+ */
+export async function openPage(page, kind, query = '') {
+  const p = PAGES[kind];
+  if (!p) throw new Error(`unknown page "${kind}" — one of ${Object.keys(PAGES).join(', ')}`);
+  if (p.status && !/[?&]status=/.test(query)) query += (query ? '&' : '?') + `status=${p.status}`;
+  await page.goto(`${ORIGIN}${p.path}${query}`);
   try {
-    await page.waitForSelector('#startBtn', { timeout: 15000 });
+    await page.waitForFunction(() => typeof window.__pushPlayers === 'function', null, { timeout: 15000 });
   } catch (e) {
     const html = await page.evaluate(() => (document.getElementById('screen')?.innerHTML || document.documentElement.outerHTML).replace(/\s+/g, ' ').slice(0, 300));
-    console.log('LOAD FAILED', query, '\n', html, '\n', page.errors.join('\n'));
+    console.log('LOAD FAILED', kind, query, page.url(), '\n', html, '\n', page.errors.join('\n'));
     throw e;
   }
-  await page.waitForFunction(() => typeof window.__pushPlayers === 'function');
   await page.evaluate(() => document.fonts.ready);
   await sleep(150);
+}
+
+/** The host page: openPage('host') plus a wait for runHost()'s start button. */
+export async function open(page, query = '') {
+  await openPage(page, 'host', query);
+  await page.waitForSelector('#startBtn', { timeout: 5000 });
 }
 
 /** Simulates presence: the first name is the host. */
