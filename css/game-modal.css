@@ -73,20 +73,6 @@
   display:flex;flex-direction:column;align-items:center;
   padding-top:calc(84px + env(safe-area-inset-top));
 }
-/* The light's box stops at #card-body's padding edge, never past it: the body
-   is the scroll container, so anything wider became horizontal scroll (the
-   modal panned sideways on iOS) and the glow was cut where the box left the
-   viewport. The ellipse keeps the size the wider box gave it — 450 × 276px is
-   what farthest-corner resolved to on a phone — so the fall-off is unchanged
-   and reaches the screen edge at ~.08 alpha, where it was clipped anyway. */
-.stage-light{
-  position:absolute;left:-24px;right:-24px;top:20px;height:380px;
-  background:radial-gradient(450px 276px at 50% 62%,
-    rgba(var(--bgs-gold-rgb),0.30) 0%,
-    rgba(var(--bgs-gold-rgb),0.10) 40%,
-    rgba(var(--bgs-gold-rgb),0) 68%);
-  pointer-events:none;
-}
 .stage-cover-wrap{
   position:relative;
   width:min(300px, calc(100vw - 90px));
@@ -279,7 +265,7 @@ body.gn-selecting #card-body{padding-bottom:calc(96px + env(safe-area-inset-bott
 /* ---- The lift: shelf → stage ---- */
 /* Pieces that come in behind the ghost. Selectors stay scoped to .card.stage
    so nothing outside the modal is touched. */
-.card.stage :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+.card.stage :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
   opacity:0;
 }
 .card.stage :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row){
@@ -287,7 +273,6 @@ body.gn-selecting #card-body{padding-bottom:calc(96px + env(safe-area-inset-bott
 }
 .card.stage .close-btn{transform:scale(.8);}
 
-.card.stage.is-in .stage-light{opacity:1;transition:opacity .5s ease .15s;}
 .card.stage.is-in :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row){
   opacity:1;transform:none;
   transition:opacity .35s ease .3s, transform .45s cubic-bezier(.2,.8,.2,1) .3s;
@@ -296,7 +281,7 @@ body.gn-selecting #card-body{padding-bottom:calc(96px + env(safe-area-inset-bott
 .card.stage.is-in .card-sticky{opacity:1;transform:none;transition:opacity .25s ease .4s, transform .25s ease .4s;}
 
 /* Leaving: text goes first, quickly, no delay. */
-.card.stage.is-out :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+.card.stage.is-out :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
   opacity:0;transition:opacity .2s ease;
 }
 
@@ -327,8 +312,8 @@ body.gn-selecting #card-body{padding-bottom:calc(96px + env(safe-area-inset-bott
   .backdrop.open{transition:opacity .15s ease;}
   /* The .is-in / .is-out rules above outrank a bare .card.stage selector, so
      they are named here too. */
-  .card.stage :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky),
-  .card.stage:is(.is-in,.is-out) :is(.stage-light,.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
+  .card.stage :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky),
+  .card.stage:is(.is-in,.is-out) :is(.stage-eyebrow,.stage-title,.stage-meta,.blurb,.why-heading,.why-list,.media-toggle-row,.close-btn,.card-sticky){
     transform:none;transition:none;
   }
   .backdrop.no-lift .card.stage{transform:none;transition:none;}
