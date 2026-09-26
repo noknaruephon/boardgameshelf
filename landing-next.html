@@ -326,6 +326,9 @@ async function mountGoogleButton() {
   if (!GOOGLE_CLIENT_ID) throw new Error('no client id');
   const host = document.getElementById('gsiBtn');
   const { raw, hashed } = await makeNonce();
+  // Phones and tablets sign in in this same tab (see sameTab below), so the
+  // raw nonce has to outlive this page: /welcome reads it back.
+  sessionStorage.setItem('bgsGsiNonce', raw);
   await new Promise((resolve, reject) => {
     const s = document.createElement('script');
     s.src = 'https://accounts.google.com/gsi/client';
@@ -335,10 +338,20 @@ async function mountGoogleButton() {
     document.head.appendChild(s);
   });
   if (!window.google?.accounts?.id) throw new Error('gsi unavailable');
+  // Popup mode opens Google in a new tab; on a phone that tab sits blank
+  // while iOS Safari suspends this one behind it, and the credential has to
+  // find its way back through the closed popup. Phones run the redirect
+  // mode instead: this tab goes to Google, Google posts the token to
+  // /api/auth/google, which lands on /welcome with it. Desktop keeps the
+  // popup. The login_uri must be among the client's authorized redirect
+  // URIs in the Google Cloud console.
+  const sameTab = window.matchMedia('(hover:none) and (pointer:coarse)').matches;
   window.google.accounts.id.initialize({
     client_id: GOOGLE_CLIENT_ID,
     nonce: hashed,
-    ux_mode: 'popup',
+    ...(sameTab
+      ? { ux_mode: 'redirect', login_uri: `${location.origin}/api/auth/google` }
+      : { ux_mode: 'popup' }),
     callback: async ({ credential }) => {
       say('Signing you in…');
       try {
@@ -362,6 +375,11 @@ async function mountGoogleButton() {
   host.removeAttribute('aria-hidden');
 }
 mountGoogleButton().catch((err) => { console.warn('Google control not mounted, gold button uses the redirect flow:', err.message); });
+// /api/auth/google sends a same-tab sign-in that did not check out back here.
+if (/[#&]gsi=error\b/.test(location.hash)) {
+  history.replaceState(null, '', location.pathname + '#signin');
+  say("Google sign-in didn't complete. Try again.", 'err');
+}
 
 // ---- Email as progressive disclosure ----
 const emailToggle = document.getElementById('emailToggle');
